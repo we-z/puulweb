@@ -102,9 +102,19 @@
     }
     
     .get-started-btn:hover {
-        background-color: black;
+      background-color: black;
       color: white;
       border-radius: 0;
+    }
+
+    /* Override styles for header button */
+    header .get-started-btn {
+        font-size: 1.2rem;
+      position: static;
+      transform: none;
+      margin-left: auto;
+      top: auto;
+      z-index: auto;
     }
 
     @media (max-width: 600px) {
@@ -121,8 +131,7 @@
       }
       
       .get-started-btn {
-        padding: 8px 16px;
-        font-size: 1rem;
+        top: 15%;
       }
     }
   </style>
@@ -130,6 +139,7 @@
 <body>
   <header>
     <h1>Puul</h1>
+    <button class="get-started-btn">Get Access</button>
   </header>
   <main>
     <h1>Generate Leads With AI</h1>
