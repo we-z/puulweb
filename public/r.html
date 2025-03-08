@@ -31,6 +31,59 @@
       font-weight: 600;
     }
     
+    /* Container for header buttons */
+    .header-buttons {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 30px;
+    }
+    
+    /* Override styles for header button */
+    header .get-started-btn {
+      font-size: 1.2rem;
+      position: static;
+      transform: none;
+      margin-left: auto;
+      top: auto;
+      z-index: auto;
+    }
+    
+    /* Remove extra margin for Sign In inside header-buttons */
+    .header-buttons .get-started-btn {
+      margin-left: 0;
+    }
+    
+    /* Secondary button styling for Contact and About */
+    .secondary-btn {
+      background: none;
+      border: none;
+      box-shadow: none;
+      color: inherit;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0;
+      position: relative;
+    }
+    
+    .secondary-btn::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -2px;
+      width: 100%;
+      height: 2px;
+      background: currentColor;
+      transform: translateY(20px);
+      opacity: 0;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    
+    .secondary-btn:hover::after {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    
     main {
       margin-top: 8rem;
       text-align: center;
@@ -106,18 +159,8 @@
       background-color: black;
       color: white;
     }
-
-    /* Override styles for header button */
-    header .get-started-btn {
-      font-size: 1.2rem;
-      position: static;
-      transform: none;
-      margin-left: auto;
-      top: auto;
-      z-index: auto;
-    }
-
-    /* Shimmer animation for the get-started-btn within the image container */
+    
+    /* Shimmer animation for the Get Started button in the image container */
     .image-container .get-started-btn {
       overflow: hidden;
     }
@@ -166,7 +209,11 @@
 <body>
   <header>
     <h1>Puul</h1>
-    <button class="get-started-btn">Sign In</button>
+    <div class="header-buttons">
+      <button class="secondary-btn">Contact</button>
+      <button class="secondary-btn">About</button>
+      <button class="get-started-btn">Sign In</button>
+    </div>
   </header>
   <main>
     <h1>Generate Leads With AI</h1>
