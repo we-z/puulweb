@@ -14,7 +14,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
     }
     
     header {
@@ -32,6 +32,7 @@
     }
     
     main {
+      margin-top: 8rem;
       text-align: center;
       width: 90%;
       margin-top: 4rem;
@@ -68,6 +69,21 @@
       color: black;
     }
 
+    .image-container {
+      width: 100%;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 2rem;
+    }
+
+    .image-container img {
+      max-width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+
     @media (max-width: 600px) {
       main {
         margin-top: 5rem;
@@ -75,6 +91,10 @@
       main p {
         font-size: 1.2rem;
         margin: 0;
+      }
+      
+      .image-container {
+        margin-top: 1rem;
       }
     }
   </style>
@@ -87,5 +107,8 @@
     <h1>Generate Leads With AI</h1>
     <p>Puul is the <strong>Lead Generation Platform</strong> for <strong>Real Estate Agents,</strong> powered by <strong>AI</strong> to help you grow your business.</p>
   </main>
+  <div class="image-container">
+    <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/price-solar-desktop.png?alt=media&token=b4933d35-41a6-4f96-961a-5ca710ed093c" alt="Price Solar Desktop">
+  </div>
 </body>
 </html>
