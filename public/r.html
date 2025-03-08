@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Puul - Generate Leads With AI</title>
-  <!-- Preload button images -->
   <style>
     body {
       margin: 0;
@@ -27,7 +26,6 @@
       align-items: center;
       padding: 30px;
       background-color: white;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0);
       width: 90%;
     }
     
@@ -44,7 +42,6 @@
       margin-top: 4rem;
     }
     
-    /* Shimmer effect only on the text color using a gradient */
     main h1 {
       font-size: clamp(5rem, 10vw, 9rem);
       margin-bottom: 2rem;
@@ -77,76 +74,14 @@
       color: black;
     }
 
-    a {
-        color: black;
-        text-decoration: none;
-    }
-
-    a:hover {
-        text-decoration: underline;
-    }
-    
-    .button {
-      display: inline-block;
-      margin-top: 6rem;
-      margin-bottom: 6rem;
-      text-decoration: none;
-      text-align: center;
-      position: relative;
-      width: 300px;
-    }
-    
-    .button img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      transition: opacity 0.3s ease;
-      display: block;
-    }
-    
-    .button .hover-img {
-      position: absolute;
-      left: 0;
-      top: 0;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-    
-    .button:hover .default-img {
-      opacity: 0;
-    }
-    
-    .button:hover .hover-img {
-      opacity: 1;
-    }
-    
-    footer {
-      position: absolute;
-      bottom: 30px;
-      width: 80%;
-      text-align: center;
-      font-size: 24px;
-      color: black;
-    }
-    
     @media (max-width: 600px) {
-        main {
-            margin-top: 5rem;
-        }
+      main {
+        margin-top: 5rem;
+      }
       main p {
         font-size: 1.2rem;
         margin-top: 0rem;
         margin-bottom: 0;
-      }
-      .button {
-        margin-top: 3rem;
-        margin-bottom: 6rem;
-      }
-      .footer {
-        font-size: 18px;
-        position: static;
-        margin-top: 2rem;
-        margin-bottom: 1rem;
       }
     }
   </style>
