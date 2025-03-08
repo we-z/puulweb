@@ -47,7 +47,7 @@
       color: transparent;
       -webkit-background-clip: text;
       background-clip: text;
-      animation: shimmer 6s linear infinite;
+      animation: shimmer 9s linear infinite;
     }
     
     @keyframes shimmer {
@@ -87,7 +87,7 @@
     
     .get-started-btn {
       position: absolute;
-      top: 6%;
+      top: 10%;
       transform: translateY(-50%);
       background-color: rgb(221, 221, 221);
       color: black;
@@ -109,12 +109,39 @@
 
     /* Override styles for header button */
     header .get-started-btn {
-        font-size: 1.2rem;
+      font-size: 1.2rem;
       position: static;
       transform: none;
       margin-left: auto;
       top: auto;
       z-index: auto;
+    }
+
+    /* Shimmer animation for the get-started-btn within the image container */
+    .image-container .get-started-btn {
+      overflow: hidden;
+    }
+    
+    .image-container .get-started-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(120deg, transparent, rgb(255, 255, 255), transparent);
+      transform: skewX(-25deg);
+      animation: shimmer-btn 3s infinite;
+      pointer-events: none;
+    }
+    
+    @keyframes shimmer-btn {
+      0% {
+        left: -100%;
+      }
+      100% {
+        left: 100%;
+      }
     }
 
     @media (max-width: 600px) {
