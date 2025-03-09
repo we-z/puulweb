@@ -31,7 +31,6 @@
       font-weight: 600;
     }
     
-    /* Container for desktop header buttons */
     .header-buttons {
       margin-left: auto;
       display: flex;
@@ -39,7 +38,6 @@
       gap: 30px;
     }
     
-    /* Desktop get-started button style */
     header .get-started-btn {
       font-size: 1.2rem;
       position: static;
@@ -49,14 +47,12 @@
       z-index: auto;
     }
     
-    /* Remove extra margin for Sign In inside header-buttons */
     .header-buttons .get-started-btn {
       margin-left: 0;
       background-color: rgb(240, 237, 237);
       border-radius: 3rem;
     }
     
-    /* Secondary button styling for Contact and About */
     .secondary-btn {
       background: none;
       border: none;
@@ -123,12 +119,11 @@
       color: black;
     }
 
-    /* Updated image container with placeholder gradient and fixed aspect ratio */
     .image-container {
       width: 100%;
       position: relative;
       background: linear-gradient(to bottom, white, black);
-      aspect-ratio: 16 / 9; /* Matches the 2880×1620 dimensions */
+      aspect-ratio: 16 / 9;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -141,7 +136,6 @@
       object-fit: contain;
     }
     
-    /* Desktop Get Started button style */
     .get-started-btn {
       position: absolute;
       top: 10%;
@@ -164,7 +158,6 @@
       color: white;
     }
     
-    /* Shimmer animation for the Get Started button in the image container */
     .image-container .get-started-btn {
       overflow: hidden;
     }
@@ -191,12 +184,10 @@
       }
     }
 
-    /* Default: Hide mobile menu button */
     #mobileMenuBtn {
       display: none;
     }
 
-    /* Mobile styles */
     @media (max-width: 600px) {
       main {
         margin-top: 5rem;
@@ -214,19 +205,16 @@
         top: 15%;
       }
 
-      /* Hide desktop header buttons on mobile */
       .header-buttons {
         display: none;
       }
 
-      /* Show mobile menu button */
       #mobileMenuBtn {
         display: block;
         margin-left: auto;
       }
     }
 
-    /* Mobile popup menu styles with animation */
     .mobile-menu {
       position: fixed;
       top: 0;
@@ -260,7 +248,6 @@
       cursor: pointer;
       display: block;
     }
-    /* Override button positioning in mobile menu so they stay vertical */
     .mobile-menu .get-started-btn,
     .mobile-menu .secondary-btn {
       position: static;
@@ -286,7 +273,6 @@
       transform: translate(30%, 0%);
     }
 
-    /* About Section Styles */
     .about-section {
       width: 100%;
       background-color: black;
@@ -364,14 +350,13 @@
       <button class="secondary-btn">About</button>
       <button class="get-started-btn">Sign In</button>
     </div>
-    <!-- Mobile menu button -->
     <button id="mobileMenuBtn" class="get-started-btn">Menu</button>
   </header>
   <main>
     <h1>Generate Leads With AI</h1>
     <p>
       Puul is the <strong>Lead Generation AI Platform</strong> for
-      <strong>Real Estate Agents,</strong> and <strong>Property Managers,</strong> that helps you grow your business.
+      <strong>Real Estate Agents</strong> and <strong>Property Managers</strong> that helps you grow your business.
     </p>
   </main>
   <div class="image-container">
@@ -383,20 +368,20 @@
   <section class="about-section">
     <div class="about-content">
       <h2>About Puul</h2>
-      <p>Puul is an innovative AI-powered lead generation platform designed to help real estate agents grow their business. We leverage advanced analytics, automation tools, and seamless integrations to connect you with quality leads and drive success in today's competitive market.</p>
+      <p>Puul transforms real estate lead generation with AI—streamlining prospecting, nurturing, and management. Our innovative platform, rooted in the tech hub of Palo Alto, empowers you to close deals faster.</p>
     </div>
     <div class="cards-container">
       <div class="card">
-        <h3>Smart Analytics</h3>
-        <p>Gain insights with real-time data and advanced analytics to optimize your marketing strategies.</p>
+        <h3>Precision Prospecting</h3>
+        <p>AI pinpoints high-potential leads with data-driven accuracy.</p>
       </div>
       <div class="card">
-        <h3>Automation Tools</h3>
-        <p>Streamline your workflow with cutting-edge automation tools tailored for real estate professionals.</p>
+        <h3>Smart Nurturing</h3>
+        <p>Engage prospects with adaptive workflows that evolve with every interaction.</p>
       </div>
       <div class="card">
-        <h3>Seamless Integration</h3>
-        <p>Connect effortlessly with your favorite CRM and enhance your lead management process.</p>
+        <h3>Effortless Management</h3>
+        <p>Simplify follow-ups and CRM tasks with seamless AI integration.</p>
       </div>
     </div>
   </section>
