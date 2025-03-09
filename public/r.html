@@ -285,6 +285,75 @@
       cursor: pointer;
       transform: translate(30%, 0%);
     }
+
+    /* About Section Styles */
+    .about-section {
+      width: 100%;
+      background-color: black;
+      color: white;
+      text-align: center;
+      padding-bottom: 6rem;
+    }
+    .about-section .about-content h2 {
+      font-size: 6rem;
+      margin-bottom: 3rem;
+    }
+    .about-section .about-content p {
+      font-size: 1.5rem;
+      max-width: 800px;
+      margin: 0 auto 6rem auto;
+    }
+    .cards-container {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 2rem;
+    }
+    .card {
+      background-color: #1a1a1a;
+      border-radius: 8px;
+      padding: 20px;
+      width: 300px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s ease;
+    }
+    .card h3 {
+      margin-top: 0;
+    }
+    .card p {
+      font-size: 1rem;
+    }
+    .card::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -150%;
+      width: 150%;
+      height: 100%;
+      background: linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent);
+      transform: skewX(-25deg);
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+    }
+    .card:hover::after {
+      opacity: 1;
+      animation: card-shimmer 1s forwards;
+    }
+    @keyframes card-shimmer {
+      0% {
+        left: -150%;
+      }
+      50% {
+        left: 100%;
+      }
+      100% {
+        left: 100%;
+      }
+    }
   </style>
 </head>
 <body>
@@ -309,6 +378,28 @@
     <button class="get-started-btn">Get Started</button>
     <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/price-solar-desktop.png?alt=media&token=b4933d35-41a6-4f96-961a-5ca710ed093c" alt="Price Solar Desktop" />
   </div>
+
+  <!-- About Section -->
+  <section class="about-section">
+    <div class="about-content">
+      <h2>About Puul</h2>
+      <p>Puul is an innovative AI-powered lead generation platform designed to help real estate agents grow their business. We leverage advanced analytics, automation tools, and seamless integrations to connect you with quality leads and drive success in today's competitive market.</p>
+    </div>
+    <div class="cards-container">
+      <div class="card">
+        <h3>Smart Analytics</h3>
+        <p>Gain insights with real-time data and advanced analytics to optimize your marketing strategies.</p>
+      </div>
+      <div class="card">
+        <h3>Automation Tools</h3>
+        <p>Streamline your workflow with cutting-edge automation tools tailored for real estate professionals.</p>
+      </div>
+      <div class="card">
+        <h3>Seamless Integration</h3>
+        <p>Connect effortlessly with your favorite CRM and enhance your lead management process.</p>
+      </div>
+    </div>
+  </section>
   
   <!-- Mobile Popup Menu -->
   <div id="mobileMenu" class="mobile-menu">
