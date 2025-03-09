@@ -188,6 +188,7 @@
       display: none;
     }
 
+    /* Mobile styles for main elements and navigation */
     @media (max-width: 600px) {
       main {
         margin-top: 5rem;
@@ -273,6 +274,7 @@
       transform: translate(30%, 0%);
     }
 
+    /* Base styling for About Section */
     .about-section {
       width: 100%;
       background-color: black;
@@ -338,6 +340,19 @@
       }
       100% {
         left: 100%;
+      }
+    }
+    
+    /* Mobile styling for About Puul section - placed after base styles to override them */
+    @media (max-width: 600px) {
+      .about-section .about-content h2 {
+        font-size: 4rem;
+        margin-bottom: 1.5rem;
+      }
+      .about-section .about-content p {
+        font-size: 1rem;
+        margin: 1rem;
+        margin-bottom: 3rem;
       }
     }
   </style>
