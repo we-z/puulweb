@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/puul-logo.svg?alt=media&token=b0ff0719-0b4d-4837-939c-f4fc1f24fcab" />
   <title>Puul - Generate Leads With AI</title>
   <style>
     body {
@@ -21,12 +23,19 @@
       position: absolute;
       top: 0;
       display: flex;
+      align-items: center;
       padding: 30px;
       width: 90%;
     }
     
+    /* Logo to the left of header title */
+    .site-logo {
+      height: 50px;
+      width: auto;
+    }
+    
     header h1 {
-      font-size: 3rem;
+      font-size: 2rem;
       margin: 0;
       font-weight: 600;
     }
@@ -365,6 +374,8 @@
 </head>
 <body>
   <header>
+    <!-- Site logo placed to the left of the title -->
+    <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/puul-logo.svg?alt=media&token=b0ff0719-0b4d-4837-939c-f4fc1f24fcab" alt="Puul Logo" class="site-logo" />
     <h1>Puul</h1>
     <div class="header-buttons">
       <button class="secondary-btn">Contact</button>
