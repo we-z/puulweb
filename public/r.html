@@ -49,8 +49,15 @@
     
     .header-buttons .get-started-btn {
       margin-left: 0;
-      background-color: rgb(240, 237, 237);
-      border-radius: 3rem;
+      background-color: white;
+      color: black;
+      padding: 9px 30px;
+      border-radius: 0;
+    }
+
+    .header-buttons .get-started-btn:hover {
+      background-color: black;
+      color: white;
     }
     
     .secondary-btn {
@@ -83,13 +90,13 @@
     }
     
     main {
-      margin-top: 9rem;
+      margin-top: 8rem;
       text-align: center;
       width: 90%;
     }
     
     main h1 {
-      font-size: clamp(4rem, 10vw, 6rem);
+      font-size: clamp(2rem, 10vw, 6rem);
       margin-bottom: 2rem;
       font-weight: 550;
       background: linear-gradient(90deg, #cacaca, black, black, black, #cacaca);
@@ -139,49 +146,26 @@
       position: absolute;
       top: 10%;
       transform: translateY(-50%);
-      background-color: rgb(232, 232, 232);
-      color: black;
-      border: 0;
-      border-radius: 1rem;
-      padding: 12px 24px;
-      font-size: 2.7rem;
-      font-weight: 600;
+      background-color: black;
+      color: white;
+      border-radius: 4rem;
+      padding: 12px 36px;
+      font-size: 2.1rem;
+      font-weight: 500;
       transition: all 0.3s ease;
       z-index: 10;
       outline: none;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     }
     
     .get-started-btn:hover {
-      background-color: black;
-      color: white;
+      background-color: white;
+      color: black;
     }
     
     .image-container .get-started-btn {
       overflow: hidden;
     }
-    
-    .image-container .get-started-btn::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(120deg, transparent, rgb(255, 255, 255), transparent);
-      transform: skewX(-25deg);
-      animation: shimmer-btn 3s infinite;
-      pointer-events: none;
-    }
-    
-    @keyframes shimmer-btn {
-      0% {
-        left: -100%;
-      }
-      100% {
-        left: 100%;
-      }
-    }
+
 
     #mobileMenuBtn {
       display: none;
@@ -258,7 +242,7 @@
       background: none;
     }
     .mobile-menu .get-started-btn {
-      background-color: rgb(240, 237, 237);
+      background-color: black;
     }
     .mobile-menu button:hover {
       transform: scale(1.05);
@@ -364,12 +348,12 @@
     <div class="header-buttons">
       <button class="secondary-btn">Contact</button>
       <button class="secondary-btn">About</button>
-      <button class="get-started-btn">Sign In</button>
+      <button class="get-started-btn">Log in</button>
     </div>
     <button id="mobileMenuBtn" class="get-started-btn">Menu</button>
   </header>
   <main>
-    <h1>Automate Property Management</h1>
+    <h1>Automate Property Maintenance</h1>
     <p>
       Puul is the <strong>AI Platform</strong> streamlining operations for
       <strong>Property Managers</strong>, and enhancing tenant satisfaction and <strong>Retention</strong>.
