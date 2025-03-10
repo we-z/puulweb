@@ -19,6 +19,7 @@
       min-height: 100vh;
     }
     
+    /* Original header styling values */
     header {
       position: absolute;
       top: 0;
@@ -26,6 +27,9 @@
       align-items: center;
       padding: 30px;
       width: 95%;
+      background-color: white;
+      z-index: 100;
+      /* Note: no transition here since we update inline continuously */
     }
     
     /* Logo to the left of header title */
@@ -450,7 +454,7 @@
   </div>
 
   <script>
-    // Toggle mobile menu visibility by adding/removing the "active" class
+    // Toggle mobile menu visibility
     const mobileMenuBtn = document.getElementById("mobileMenuBtn");
     const mobileMenu = document.getElementById("mobileMenu");
     const closeMenuBtn = document.getElementById("closeMenuBtn");
@@ -463,11 +467,45 @@
       mobileMenu.classList.remove("active");
     });
 
-    // Close the menu if clicking outside the menu content
     window.addEventListener("click", function (event) {
       if (event.target === mobileMenu) {
         mobileMenu.classList.remove("active");
       }
+    });
+
+    // Smoothly interpolate header styles over a short scroll distance (0-100px)
+    window.addEventListener("scroll", function() {
+      const header = document.querySelector("header");
+      const threshold = 100; // scroll distance over which the animation occurs
+      let scrollY = window.pageYOffset;
+      let t = Math.min(scrollY / threshold, 1);
+
+      // Switch position: absolute at top (t=0) and fixed otherwise
+      header.style.position = (scrollY === 0) ? "absolute" : "fixed";
+
+      // Interpolate values:
+      // Padding: from 30px to 10px vertically and 30px to 20px horizontally
+      let paddingY = 30 - 20 * t; // 30px -> 10px
+      let paddingX = 30 - 10 * t; // 30px -> 20px
+
+      // Margin-top: from 0px to 16px (approx 1rem)
+      let marginTop = 16 * t;
+
+      // Width: from 95% to 80%
+      let widthPercent = 95 - 15 * t;
+
+      // Border radius: from 0px to 48px (approx 3rem)
+      let borderRadius = 48 * t;
+
+      // Box shadow: from none to "0px 0px 9px rgba(0,0,0,0.3)"
+      let boxShadowSize = 9 * t;
+      let boxShadowOpacity = 0.3 * t;
+
+      header.style.padding = `${paddingY}px ${paddingX}px`;
+      header.style.marginTop = `${marginTop}px`;
+      header.style.width = `${widthPercent}%`;
+      header.style.borderRadius = `${borderRadius}px`;
+      header.style.boxShadow = `0px 0px ${boxShadowSize}px rgba(0,0,0,${boxShadowOpacity})`;
     });
   </script>
 </body>
