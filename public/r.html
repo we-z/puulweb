@@ -10,7 +10,7 @@
       padding: 0;
       background-color: white;
       color: black;
-      font-family: Helvetica ;
+      font-family: Helvetica;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -158,7 +158,6 @@
       overflow: hidden;
     }
 
-
     #mobileMenuBtn {
       display: none;
     }
@@ -258,6 +257,36 @@
       text-align: center;
       padding-bottom: 6rem;
     }
+
+    /* Carousel Styles */
+    .logo-carousel {
+      width: 100%;
+      overflow: hidden;
+      margin-bottom: 2rem;
+      margin-top: 4rem;
+    }
+    .carousel-track {
+      display: inline-flex;
+      /* Duplicate content makes the scroll seamless */
+      animation: scroll 20s linear infinite;
+    }
+    .carousel-logo {
+      height: 80px;
+      width: 200px;
+      object-fit: contain;
+      filter: brightness(0) invert(1);
+      /* Add extra space between logos */
+      margin-right: 12rem;
+    }
+    @keyframes scroll {
+      0% {
+        transform: translateX(0);
+      }
+      100% {
+        transform: translateX(-50%);
+      }
+    }
+
     .about-section .about-content h2 {
       font-size: 6rem;
       margin-bottom: 3rem;
@@ -320,7 +349,7 @@
       }
     }
     
-    /* Mobile styling for About Puul section - placed after base styles to override them */
+    /* Mobile styling for About Puul section */
     @media (max-width: 600px) {
       .about-section .about-content h2 {
         font-size: 4rem;
@@ -356,8 +385,26 @@
     <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/price-solar-desktop.png?alt=media&token=b4933d35-41a6-4f96-961a-5ca710ed093c" alt="Price Solar Desktop" />
   </div>
 
-  <!-- About Section -->
+  <!-- About Section with Logo Carousel -->
   <section class="about-section">
+    <!-- Logo Carousel placed above the About Puul text -->
+    <div class="logo-carousel">
+      <div class="carousel-track">
+        <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/wb-primary-logo-primary-colorway-rgb-6.png?alt=media&token=223a94d5-1f28-4201-b7b9-f86516b859c7" alt="Logo 1" class="carousel-logo" />
+        <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/bh-logo.png?alt=media&token=238d3944-a562-4902-bb92-a1d93bda586c" alt="Logo 2" class="carousel-logo" />
+        <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/logo-RPM-living.png?alt=media&token=726cf323-14f2-469c-b708-ab56526c2d9f" alt="Logo 3" class="carousel-logo" />
+        <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/Cushman_%26_Wakefield_logo.svg.png?alt=media&token=ca4c21c0-6bf8-4603-a1ef-880ca8631c95" alt="Logo 4" class="carousel-logo" />
+        <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/Assetlivinglogo.png?alt=media&token=e18ac1bf-29d7-422a-bcfe-2cc4222f8cfc" alt="Logo 5" class="carousel-logo" />
+        <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/Greystar-Corporate-Logo-White-No-Tagline.png?alt=media&token=20cf7a52-4a1f-407a-8ea4-fb2015ce5cad" alt="Logo 6" class="carousel-logo" />
+        <!-- Duplicate logos for seamless looping -->
+        <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/wb-primary-logo-primary-colorway-rgb-6.png?alt=media&token=223a94d5-1f28-4201-b7b9-f86516b859c7" alt="Logo 1 Duplicate" class="carousel-logo" />
+        <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/bh-logo.png?alt=media&token=238d3944-a562-4902-bb92-a1d93bda586c" alt="Logo 2 Duplicate" class="carousel-logo" />
+        <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/logo-RPM-living.png?alt=media&token=726cf323-14f2-469c-b708-ab56526c2d9f" alt="Logo 3 Duplicate" class="carousel-logo" />
+        <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/Cushman_%26_Wakefield_logo.svg.png?alt=media&token=ca4c21c0-6bf8-4603-a1ef-880ca8631c95" alt="Logo 4 Duplicate" class="carousel-logo" />
+        <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/Assetlivinglogo.png?alt=media&token=e18ac1bf-29d7-422a-bcfe-2cc4222f8cfc" alt="Logo 5 Duplicate" class="carousel-logo" />
+        <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/Greystar-Corporate-Logo-White-No-Tagline.png?alt=media&token=20cf7a52-4a1f-407a-8ea4-fb2015ce5cad" alt="Logo 6 Duplicate" class="carousel-logo" />
+      </div>
+    </div>
     <div class="about-content">
       <h2>About Puul</h2>
       <p>Puul transforms property management with AI—automating routine tasks, maintenance scheduling, and communication. Our innovative platform, rooted in the tech hub of Palo Alto, empowers you to manage properties more efficiently and effectively.</p>
