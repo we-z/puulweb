@@ -30,10 +30,8 @@
       background: rgba(255, 255, 255, 0.8);
       backdrop-filter: blur(8px);
       z-index: 100;
-      /* Note: no transition here since we update inline continuously */
     }
     
-    /* Logo to the left of header title */
     .site-logo {
       height: 50px;
       width: auto;
@@ -114,12 +112,8 @@
     }
     
     @keyframes shimmer {
-      0% {
-        background-position: 200% center;
-      }
-      100% {
-        background-position: -200% center;
-      }
+      0% { background-position: 200% center; }
+      100% { background-position: -200% center; }
     }
     
     main p {
@@ -131,7 +125,7 @@
     main p strong {
       color: black;
     }
-
+    
     .image-container {
       width: 100%;
       position: relative;
@@ -141,7 +135,7 @@
       align-items: center;
       justify-content: center;
     }
-
+    
     .image-container img {
       width: 100%;
       height: 100%;
@@ -171,40 +165,21 @@
     .image-container .get-started-btn {
       overflow: hidden;
     }
-
+    
     #mobileMenuBtn {
       display: none;
     }
-
+    
     /* Mobile styles for main elements and navigation */
     @media (max-width: 600px) {
-      main {
-        margin-top: 5rem;
-      }
-      main p {
-        font-size: 1.2rem;
-        margin: 0;
-      }
-      
-      .get-started-btn {
-        top: 15%;
-      }
-
-      .header-buttons {
-        display: none;
-      }
-
-      #mobileMenuBtn {
-        display: block;
-        margin-left: auto;
-      }
-      
-      /* Make image container a square on mobile */
-      .image-container {
-         aspect-ratio: 1 / 1;
-      }
+      main { margin-top: 5rem; }
+      main p { font-size: 1.2rem; margin: 0; }
+      .get-started-btn { top: 15%; }
+      .header-buttons { display: none; }
+      #mobileMenuBtn { display: block; margin-left: auto; }
+      .image-container { aspect-ratio: 1 / 1; }
     }
-
+    
     .mobile-menu {
       position: fixed;
       top: 0;
@@ -243,15 +218,10 @@
       position: static;
       transform: none;
     }
-    .mobile-menu .secondary-btn {
-      background: none;
-    }
-    .mobile-menu .get-started-btn {
-      background-color: black;
-    }
-    .mobile-menu button:hover {
-      transform: scale(1.05);
-    }
+    .mobile-menu .secondary-btn { background: none; }
+    .mobile-menu .get-started-btn { background-color: black; }
+    .mobile-menu button:hover { transform: scale(1.05); }
+    
     .close-menu {
       position: absolute;
       top: 0;
@@ -262,7 +232,7 @@
       cursor: pointer;
       transform: translate(30%, 0%);
     }
-
+    
     /* Base styling for About Section */
     .about-section {
       width: 100%;
@@ -271,17 +241,15 @@
       text-align: center;
       padding-bottom: 6rem;
     }
-
+    
     /* Carousel Styles */
     .logo-carousel {
       width: 100%;
       overflow: hidden;
-      margin-bottom: 4rem;
-      margin-top: 4rem;
+      margin: 4rem 0;
     }
     .carousel-track {
       display: inline-flex;
-      /* Duplicate content makes the scroll seamless */
       animation: scroll 20s linear infinite;
     }
     .carousel-logo {
@@ -289,53 +257,45 @@
       width: 200px;
       object-fit: contain;
       filter: brightness(0) invert(1);
-      /* Add extra space between logos */
       margin-right: 12rem;
     }
     @keyframes scroll {
-      0% {
-        transform: translateX(0);
-      }
-      100% {
-        transform: translateX(-50%);
-      }
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
     }
-
+    
     .about-section .about-content h2 {
       font-size: 3rem;
-      margin-bottom: 3rem;
-      margin-top: 2rem;
+      margin: 1rem 0 2rem 0;
     }
     .about-section .about-content p {
       font-size: 1.5rem;
       max-width: 800px;
       margin: 0 auto 1rem auto;
     }
-
-    /* New CSS for Cards Container and Cards */
+    
+    /* Cards Container and Cards Styling */
     .cards-container {
-        display: flex;
-        justify-content: space-evenly;
-        flex-wrap: wrap;
-        padding: 2rem;
-        box-sizing: border-box;
+      display: flex;
+      justify-content: space-evenly;
+      flex-wrap: wrap;
+      padding: 2rem;
+      box-sizing: border-box;
     }
     .card {
-        background-color: #1a1a1a;
-        border-radius: 8px;
-        padding: 20px;
-        width: 300px;
-        margin: 2rem;
-        position: relative;
-        overflow: hidden;
-        transition: transform 0.3s ease;
+      background-color: #1a1a1a;
+      border-radius: 16px;
+      width: 350px;
+      aspect-ratio: 1;
+      margin: 2rem;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s ease;
+      display: flex;
+      flex-direction: column;
     }
-    .card h3 {
-      margin-top: 0;
-      font-size: 1.5rem;
-    }
-    .card p {
-      font-size: 1rem;
+    .card:hover {
+      transform: translateY(-5px);
     }
     .card::after {
       content: "";
@@ -349,32 +309,50 @@
       opacity: 0;
       transition: opacity 0.5s ease;
     }
-    .card:hover {
-      transform: translateY(-5px);
-    }
     .card:hover::after {
       opacity: 1;
       animation: card-shimmer 1s forwards;
     }
     @keyframes card-shimmer {
-      0% {
-        left: -150%;
-      }
-      50% {
-        left: 100%;
-      }
-      100% {
-        left: 100%;
-      }
+      0% { left: -150%; }
+      50% { left: 100%; }
+      100% { left: 100%; }
     }
-
+    .card-image {
+      flex: 0 0 60%;
+      width: 100%;
+      overflow: hidden;
+    }
+    .card-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .card-content {
+      flex: 0 0 40%;
+      padding: 0 1rem;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .card-content h3 {
+      margin-top: 0;
+      margin-bottom: 0.5rem;
+      font-size: 1.5rem;
+    }
+    .card-content p {
+      margin: 0;
+      font-size: 1rem;
+    }
+    
     /* Align about-content text to the left */
     .about-content {
       text-align: left;
       max-width: 800px;
       margin: 0 auto;
     }
-
+    
     /* Mobile styling for About Puul section */
     @media (max-width: 600px) {
       .about-section .about-content h2 {
@@ -412,8 +390,8 @@
     <button class="get-started-btn">Join Waitlist</button>
     <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/price-solar-desktop.png?alt=media&token=b4933d35-41a6-4f96-961a-5ca710ed093c" alt="Price Solar Desktop" />
   </div>
-
-  <!-- About Section with Logo Carousel -->
+  
+  <!-- About Section with Logo Carousel and Cards -->
   <section class="about-section">
     <!-- Logo Carousel placed above the About Puul text -->
     <div class="logo-carousel">
@@ -435,19 +413,34 @@
     </div>
     
     <div class="cards-container">
-        <div class="card">
+      <div class="card">
+        <div class="card-image">
+          <img src="https://www.vivint.com/sites/default/files/image/2024-10/placeholder_image3.png" alt="Automated Work Orders">
+        </div>
+        <div class="card-content">
           <h3>Automated Work Orders</h3>
           <p>Streamline maintenance requests with AI-powered automation, ensuring timely repairs and tenant satisfaction.</p>
         </div>
-        <div class="card">
+      </div>
+      <div class="card">
+        <div class="card-image">
+          <img src="https://www.vivint.com/sites/default/files/image/2024-10/placeholder_image1.png" alt="Smart Coordination">
+        </div>
+        <div class="card-content">
           <h3>Smart Coordination</h3>
           <p>Efficiently assign and track service providers across multiple properties with intelligent scheduling and updates.</p>
         </div>
-        <div class="card">
+      </div>
+      <div class="card">
+        <div class="card-image">
+          <img src="https://www.vivint.com/sites/default/files/image/2024-10/placeholder_image2.png" alt="Comprehensive Insights">
+        </div>
+        <div class="card-content">
           <h3>Comprehensive Insights</h3>
           <p>Monitor maintenance history, costs, and trends across your portfolio for data-driven decision-making.</p>
         </div>
       </div>
+    </div>
     <div class="about-content">
       <h2>Track maintenance tasks</h2>
       <p>Puul transforms property management with AI—automating routine tasks, maintenance scheduling, and communication. Our innovative platform, rooted in the tech hub of Palo Alto, empowers you to manage properties more efficiently and effectively.</p>
@@ -458,7 +451,7 @@
   <div class="image-container">
     <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/AdobeStock_home.jpg?alt=media&token=5ce4aa3a-bc2b-47fd-bda8-1c9c3e748561" alt="Adobe Stock Home" />
   </div>
-
+  
   <!-- Mobile Popup Menu -->
   <div id="mobileMenu" class="mobile-menu">
     <button id="closeMenuBtn" class="close-menu">&times;</button>
@@ -466,55 +459,44 @@
     <button class="secondary-btn">About</button>
     <button class="get-started-btn">Sign In</button>
   </div>
-
+  
   <script>
     // Toggle mobile menu visibility
     const mobileMenuBtn = document.getElementById("mobileMenuBtn");
     const mobileMenu = document.getElementById("mobileMenu");
     const closeMenuBtn = document.getElementById("closeMenuBtn");
-
+    
     mobileMenuBtn.addEventListener("click", function () {
       mobileMenu.classList.add("active");
     });
-
+    
     closeMenuBtn.addEventListener("click", function () {
       mobileMenu.classList.remove("active");
     });
-
+    
     window.addEventListener("click", function (event) {
       if (event.target === mobileMenu) {
         mobileMenu.classList.remove("active");
       }
     });
-
+    
     // Smoothly interpolate header styles over a short scroll distance (0-100px)
     window.addEventListener("scroll", function() {
       const header = document.querySelector("header");
-      const threshold = 100; // scroll distance over which the animation occurs
+      const threshold = 100;
       let scrollY = window.pageYOffset;
       let t = Math.min(scrollY / threshold, 1);
-
-      // Switch position: absolute at top (t=0) and fixed otherwise
+    
       header.style.position = (scrollY === 0) ? "absolute" : "fixed";
-
-      // Interpolate values:
-      // Padding: from 30px to 10px vertically and 30px to 20px horizontally
-      let paddingY = 30 - 20 * t; // 30px -> 10px
-      let paddingX = 30 - 10 * t; // 30px -> 20px
-
-      // Margin-top: from 0px to 16px (approx 1rem)
+    
+      let paddingY = 30 - 20 * t;
+      let paddingX = 30 - 10 * t;
       let marginTop = 16 * t;
-
-      // Width: from 95% to 80%
       let widthPercent = 95 - 15 * t;
-
-      // Border radius: from 0px to 48px (approx 3rem)
       let borderRadius = 48 * t;
-
-      // Box shadow: from none to "0px 0px 9px rgba(0,0,0,0.3)"
       let boxShadowSize = 9 * t;
       let boxShadowOpacity = 0.3 * t;
-
+    
       header.style.padding = `${paddingY}px ${paddingX}px`;
       header.style.marginTop = `${marginTop}px`;
       header.style.width = `${widthPercent}%`;
