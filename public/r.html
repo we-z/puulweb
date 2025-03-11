@@ -307,10 +307,42 @@
     }
     
     @media (max-width: 600px) {
-      .about-flex {
-        flex-direction: column;
-      }
-    }
+  .about-flex {
+    flex-direction: column;
+    align-items: center;
+    max-width: 90%;
+    margin: 5rem auto; /* Reduced margin for better spacing */
+  }
+
+  .about-flex .about-content {
+    padding: 1rem;
+  }
+
+  .about-flex .about-content h2 {
+    font-size: 1.8rem; /* Reduce heading size */
+    margin-bottom: 0.8rem;
+  }
+
+  .about-flex .about-content p {
+    font-size: 1.2rem; /* Reduce text size */
+    margin: 0 auto;
+  }
+
+  .about-flex .about-image {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .about-flex .about-image img {
+    width: 90%;
+    max-width: 350px;
+    aspect-ratio: 1;
+    border-radius: 12px;
+    margin: 1rem auto;
+  }
+}
     
     /* Cards Container and Cards Styling */
     .cards-container {
