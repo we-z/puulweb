@@ -264,14 +264,52 @@
       100% { transform: translateX(-50%); }
     }
     
-    .about-section .about-content h2 {
-      font-size: 3rem;
-      margin: 1rem 0 2rem 0;
-    }
-    .about-section .about-content p {
-      font-size: 1.5rem;
+    .about-section .about-content {
+      text-align: left;
       max-width: 800px;
-      margin: 0 auto 1rem auto;
+      margin: 3rem auto;
+      margin-top: 12rem;
+    }
+    
+    /* New Flex Container for About Content and Image */
+    .about-flex {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 2rem;
+      margin: 12rem auto;
+      max-width: 80%;
+    }
+    .about-flex .about-content {
+      flex: 1;
+      padding: 1rem;
+      text-align: left; /* h2 and p remain left aligned */
+      margin: 0;
+    }
+    .about-flex .about-content h2 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+    .about-flex .about-content p {
+      font-size: 1.75rem;
+    }
+    .about-flex .about-image {
+      flex: 1;
+      padding: 1rem;
+    }
+    .about-flex .about-image img {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 12px;
+      margin: 1rem;
+      object-fit: cover;
+    }
+    
+    @media (max-width: 600px) {
+      .about-flex {
+        flex-direction: column;
+      }
     }
     
     /* Cards Container and Cards Styling */
@@ -346,26 +384,6 @@
       margin: 0;
       font-size: 1.1rem;
     }
-    
-    /* Align about-content text to the left */
-    .about-content {
-      text-align: left;
-      max-width: 800px;
-      margin: 0 auto;
-    }
-    
-    /* Mobile styling for About Puul section */
-    @media (max-width: 600px) {
-      .about-section .about-content h2 {
-        font-size: 4rem;
-        margin-bottom: 1.5rem;
-      }
-      .about-section .about-content p {
-        font-size: 1rem;
-        margin: 1rem;
-        margin-bottom: 3rem;
-      }
-    }
   </style>
 </head>
 <body>
@@ -392,7 +410,7 @@
     <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/price-solar-desktop.png?alt=media&token=b4933d35-41a6-4f96-961a-5ca710ed093c" alt="Price Solar Desktop" />
   </div>
   
-  <!-- About Section with Logo Carousel and Cards -->
+  <!-- About Section with Logo Carousel, Cards, and New Flex Container -->
   <section class="about-section">
     <!-- Logo Carousel placed above the About Puul text -->
     <div class="logo-carousel">
@@ -442,9 +460,16 @@
         </div>
       </div>
     </div>
-    <div class="about-content">
-      <h2>Track maintenance tasks</h2>
-      <p>Puul transforms property management with AI—automating routine tasks, maintenance scheduling, and communication. Our innovative platform, rooted in the tech hub of Palo Alto, empowers you to manage properties more efficiently and effectively.</p>
+    
+    <!-- New Flex Container with About Content and Image -->
+    <div class="about-flex">
+      <div class="about-content">
+        <h2>Track maintenance tasks</h2>
+        <p>Puul transforms property management with AI—automating routine tasks, maintenance scheduling, and communication. Our innovative platform, rooted in the tech hub of Palo Alto, empowers you to manage properties more efficiently and effectively.</p>
+      </div>
+      <div class="about-image">
+        <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/redwoodhome.webp?alt=media&token=5f60bba5-2b4b-4fe1-988f-ded4e4d6cc61" alt="Redwood Home" />
+      </div>
     </div>
   </section>
   
