@@ -33,7 +33,7 @@
     }
     
     .site-logo {
-      height: 50px;
+      height: 3.2rem;
       width: auto;
     }
     
@@ -423,6 +423,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-bottom: 30vh;
     }
 
     .full-width-image-container img {
@@ -432,6 +433,39 @@
     border-bottom-left-radius: 6rem;
     border-bottom-right-radius: 6rem;
     }
+    .footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 20vh; /* Adjust the height dynamically based on viewport */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    z-index: -1; /* Layer it behind all content */
+    padding: 2rem 0;
+  }
+
+  .footer-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 90%;
+  }
+
+  .footer-logo {
+    height: 36vw; /* Dynamic height */
+    width: auto;
+  }
+
+  .footer-title {
+    font-size: 24vw; /* Scale dynamically */
+    font-weight: bold;
+    margin-left: 2vw;
+    white-space: nowrap;
+  }
   </style>
 </head>
 <body>
@@ -524,6 +558,13 @@
   <!-- New Full-Width Image Section -->
 <div class="full-width-image-container">
     <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/AdobeStock_home.jpg?alt=media&token=5ce4aa3a-bc2b-47fd-bda8-1c9c3e748561" alt="Adobe Stock Home" />
+  </div>
+  <!-- Footer Section -->
+<div class="footer">
+    <div class="footer-content">
+      <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/puul-logo.svg?alt=media&token=b0ff0719-0b4d-4837-939c-f4fc1f24fcab" alt="Puul Logo" class="footer-logo" />
+      <span class="footer-title">Puul</span>
+    </div>
   </div>
   
   <!-- Mobile Popup Menu -->
