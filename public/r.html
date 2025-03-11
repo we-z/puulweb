@@ -311,20 +311,24 @@
       max-width: 800px;
       margin: 0 auto 1rem auto;
     }
+
+    /* New CSS for Cards Container and Cards */
     .cards-container {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 2rem;
+        display: flex;
+        justify-content: space-evenly;
+        flex-wrap: wrap;
+        padding: 2rem;
+        box-sizing: border-box;
     }
     .card {
-      background-color: #1a1a1a;
-      border-radius: 8px;
-      padding: 20px;
-      width: 300px;
-      position: relative;
-      overflow: hidden;
-      transition: transform 0.3s ease;
+        background-color: #1a1a1a;
+        border-radius: 8px;
+        padding: 20px;
+        width: 300px;
+        margin: 2rem;
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.3s ease;
     }
     .card h3 {
       margin-top: 0;
@@ -363,7 +367,14 @@
         left: 100%;
       }
     }
-    
+
+    /* Align about-content text to the left */
+    .about-content {
+      text-align: left;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
     /* Mobile styling for About Puul section */
     @media (max-width: 600px) {
       .about-section .about-content h2 {
@@ -438,9 +449,9 @@
       </div>
     </div>
     <div class="about-content">
-        <h2>Track Tasks</h2>
-        <p>Puul transforms property management with AI—automating routine tasks, maintenance scheduling, and communication. Our innovative platform, rooted in the tech hub of Palo Alto, empowers you to manage properties more efficiently and effectively.</p>
-      </div>
+      <h2>Track Tasks</h2>
+      <p>Puul transforms property management with AI—automating routine tasks, maintenance scheduling, and communication. Our innovative platform, rooted in the tech hub of Palo Alto, empowers you to manage properties more efficiently and effectively.</p>
+    </div>
   </section>
   
   <!-- New Full-Width Image Section -->
