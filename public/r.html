@@ -264,85 +264,119 @@
       100% { transform: translateX(-50%); }
     }
     
-    .about-section .about-content {
-      text-align: left;
-      max-width: 800px;
-      margin: 3rem auto;
-      margin-top: 12rem;
-    }
     
     /* New Flex Container for About Content and Image */
     .about-flex {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
       flex-wrap: wrap;
       gap: 2rem;
       margin: 12rem auto;
       max-width: 80%;
+      position: relative;
+      min-height: 200vh; /* Taller container to allow for scrolling */
     }
+    
+    /* Unified sticky container for all elements */
+    .sticky-container {
+      display: flex;
+      width: 100%;
+      position: sticky;
+      top: 150px;
+      gap: 2rem;
+    }
+    
+    /* Vertical progress bar */
+    .progress-bar-container {
+      height: 50vh;
+      width: 3px;
+      background-color: rgba(255, 255, 255, 0.2);
+      z-index: 10;
+      margin-right: 2rem;
+    }
+    
+    .progress-bar {
+      width: 100%;
+      background-color: white;
+      height: 0%;
+      transition: height 0.1s ease;
+    }
+    
+    /* Content container */
+    .content-wrapper {
+      display: flex;
+      width: 100%;
+      justify-content: space-between;
+      gap: 4rem;
+    }
+    
     .about-flex .about-content {
       flex: 1;
       padding: 1rem;
-      text-align: left; /* h2 and p remain left aligned */
+      text-align: left;
       margin: 0;
+      height: fit-content;
+      display: flex;
+      flex-direction: column;
+      justify-content: center; /* Center content vertically */
+      max-width: 45%; /* Ensure it takes roughly half the space */
+      position: relative; /* For absolute positioning of content sections */
+      min-height: 300px; /* Ensure minimum height for content */
     }
     .about-flex .about-content h2 {
       font-size: 3rem;
       margin-bottom: 1rem;
+      transition: opacity 0.5s ease;
     }
     .about-flex .about-content p {
       font-size: 1.75rem;
+      transition: opacity 0.5s ease;
+      margin-top: 0;
     }
     .about-flex .about-image {
       flex: 1;
       padding: 1rem;
+      max-width: 45%; /* Ensure it takes roughly half the space */
+      position: relative; /* For absolute positioning of image sections */
+      min-height: 300px; /* Ensure minimum height for images */
     }
     .about-flex .about-image img {
       width: 100%;
       aspect-ratio: 1;
       border-radius: 12px;
-      margin: 1rem;
+      margin: 0;
       object-fit: cover;
     }
     
-    @media (max-width: 600px) {
-  .about-flex {
-    flex-direction: column;
-    align-items: center;
-    max-width: 90%;
-    margin: 5rem auto; /* Reduced margin for better spacing */
-  }
-
-  .about-flex .about-content {
-    padding: 1rem;
-  }
-
-  .about-flex .about-content h2 {
-    font-size: 1.8rem; /* Reduce heading size */
-    margin-bottom: 0.8rem;
-  }
-
-  .about-flex .about-content p {
-    font-size: 1.2rem; /* Reduce text size */
-    margin: 0 auto;
-  }
-
-  .about-flex .about-image {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    padding: 0;
-  }
-
-  .about-flex .about-image img {
-    width: 90%;
-    max-width: 350px;
-    aspect-ratio: 1;
-    border-radius: 12px;
-    margin: 1rem auto;
-  }
-}
+    /* Content sections that will fade in/out */
+    .content-section {
+      position: absolute;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      left: 0;
+      width: 100%;
+      top: 0;
+      overflow: hidden; /* Prevent content from overflowing */
+    }
+    
+    .content-section.active {
+      opacity: 1;
+    }
+    
+    /* Multiple images for the scroll effect */
+    .image-section {
+      position: absolute;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      width: 100%;
+      top: 0;
+      overflow: hidden; /* Prevent images from overflowing */
+    }
+    
+    .image-section.active {
+      opacity: 1;
+    }
     
     /* Cards Container and Cards Styling */
     .cards-container {
@@ -418,54 +452,137 @@
       font-size: 1.1rem;
     }
     .full-width-image-container {
-    width: 100%;
-    background-color: white; /* Set the background to white */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 30vh;
+      width: 100%;
+      background-color: white; /* Set the background to white */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 30vh;
+      position: relative; /* Add position */
     }
 
     .full-width-image-container img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-bottom-left-radius: 6rem;
-    border-bottom-right-radius: 6rem;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-bottom-left-radius: 6rem;
+      border-bottom-right-radius: 6rem;
     }
     .footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 20vh; /* Adjust the height dynamically based on viewport */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: white;
-    z-index: -1; /* Layer it behind all content */
-    padding: 2rem 0;
-  }
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 20vh; /* Adjust the height dynamically based on viewport */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: white;
+      z-index: -1; /* Layer it behind all content */
+      padding: 2rem 0;
+    }
 
-  .footer-content {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    max-width: 90%;
-  }
+    .footer-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-width: 90%;
+    }
 
-  .footer-logo {
-    height: 36vw; /* Dynamic height */
-    width: auto;
-  }
+    .footer-logo {
+      height: 36vw; /* Dynamic height */
+      width: auto;
+    }
 
-  .footer-title {
-    font-size: 24vw; /* Scale dynamically */
-    font-weight: bold;
-    margin-left: 2vw;
-    white-space: nowrap;
-  }
+    .footer-title {
+      font-size: 24vw; /* Scale dynamically */
+      font-weight: bold;
+      margin-left: 2vw;
+      white-space: nowrap;
+    }
+
+    /* Add a spacer div to create separation */
+    .section-spacer {
+      height: 50vh;
+      width: 100%;
+      background: black; /* Match about-section background */
+    }
+
+    @media (max-width: 600px) {
+      .about-flex {
+        flex-direction: column;
+        align-items: center;
+        max-width: 90%;
+        margin: 5rem auto;
+        min-height: 150vh; /* Adjusted for mobile */
+      }
+      
+      /* Adjust sticky container for mobile */
+      .sticky-container {
+        flex-direction: column;
+        top: 100px; /* Match mobile sticky position */
+        gap: 1rem;
+      }
+      
+      /* Adjust content wrapper for mobile */
+      .content-wrapper {
+        flex-direction: column;
+        width: 100%;
+        gap: 1rem;
+      }
+      
+      /* Adjust progress bar for mobile */
+      .progress-bar-container {
+        height: 3px; /* Horizontal on mobile */
+        width: 90%; /* Width of container */
+        margin: 0 auto 1rem;
+      }
+      
+      .progress-bar {
+        height: 100%; /* Full height */
+        width: 0%; /* Start at 0% width */
+      }
+
+      .about-flex .about-content {
+        padding: 1rem;
+        width: 100%;
+        max-width: 100%;
+        min-height: 200px; /* Smaller minimum height for mobile */
+      }
+
+      .about-flex .about-content h2 {
+        font-size: 1.8rem;
+        margin-bottom: 0.8rem;
+      }
+
+      .about-flex .about-content p {
+        font-size: 1.2rem;
+        margin: 0;
+      }
+
+      .about-flex .about-image {
+        width: 100%;
+        max-width: 100%;
+        display: flex;
+        justify-content: center;
+        padding: 0;
+        min-height: 200px; /* Smaller minimum height for mobile */
+      }
+
+      .about-flex .about-image img {
+        width: 90%;
+        max-width: 350px;
+        aspect-ratio: 1;
+        border-radius: 12px;
+        margin: 1rem auto;
+      }
+      
+      /* Smaller spacer on mobile */
+      .section-spacer {
+        height: 30vh;
+      }
+    }
   </style>
 </head>
 <body>
@@ -545,22 +662,55 @@
     
     <!-- New Flex Container with About Content and Image -->
     <div class="about-flex">
-      <div class="about-content">
-        <h2>Track maintenance tasks</h2>
-        <p>Puul transforms property management with AI—automating routine tasks, maintenance scheduling, and communication. Our innovative platform, rooted in the tech hub of Palo Alto, empowers you to manage properties more efficiently and effectively.</p>
-      </div>
-      <div class="about-image">
-        <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/redwoodhome.webp?alt=media&token=5f60bba5-2b4b-4fe1-988f-ded4e4d6cc61" alt="Redwood Home" />
+      <!-- Unified sticky container for all elements -->
+      <div class="sticky-container">
+        <!-- Progress bar -->
+        <div class="progress-bar-container">
+          <div class="progress-bar" id="verticalProgressBar"></div>
+        </div>
+        
+        <!-- Content wrapper -->
+        <div class="content-wrapper">
+          <div class="about-content">
+            <div class="content-section" id="section1">
+              <h2>Track maintenance tasks</h2>
+              <p>Puul transforms property management with AI—automating routine tasks, maintenance scheduling, and communication. Our innovative platform, rooted in the tech hub of Palo Alto, empowers you to manage properties more efficiently and effectively.</p>
+            </div>
+            <div class="content-section" id="section2">
+              <h2>Streamline communications</h2>
+              <p>Keep everyone in the loop with automated updates and notifications. Tenants stay informed about maintenance progress while property managers gain real-time insights into service delivery and completion status.</p>
+            </div>
+            <div class="content-section" id="section3">
+              <h2>Optimize resource allocation</h2>
+              <p>Our AI analyzes maintenance patterns to help you allocate resources more effectively. Identify recurring issues, predict maintenance needs, and make data-driven decisions that reduce costs and improve tenant satisfaction.</p>
+            </div>
+          </div>
+          
+          <div class="about-image">
+            <div class="image-section" id="image1">
+              <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/redwoodhome.webp?alt=media&token=5f60bba5-2b4b-4fe1-988f-ded4e4d6cc61" alt="Redwood Home" />
+            </div>
+            <div class="image-section" id="image2">
+              <img src="https://mads.media/wp-content/uploads/2017/04/mora_exterior.jpg" alt="Modern Home" />
+            </div>
+            <div class="image-section" id="image3">
+              <img src="https://static.dezeen.com/uploads/2020/01/pam-and-pauls-house-craig-steely-architecture-cupertino-california-usa_dezeen_2364_sq2.jpg" alt="Smart Home" />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
+    
+    <!-- Add a spacer div to create separation -->
+    <div class="section-spacer"></div>
   </section>
   
   <!-- New Full-Width Image Section -->
-<div class="full-width-image-container">
+  <div class="full-width-image-container">
     <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/AdobeStock_home.jpg?alt=media&token=5ce4aa3a-bc2b-47fd-bda8-1c9c3e748561" alt="Adobe Stock Home" />
   </div>
   <!-- Footer Section -->
-<div class="footer">
+  <div class="footer">
     <div class="footer-content">
       <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/puul-logo.svg?alt=media&token=b0ff0719-0b4d-4837-939c-f4fc1f24fcab" alt="Puul Logo" class="footer-logo" />
       <span class="footer-title">Puul</span>
@@ -617,7 +767,88 @@
       header.style.width = `${widthPercent}%`;
       header.style.borderRadius = `${borderRadius}px`;
       header.style.boxShadow = `0px 0px ${boxShadowSize}px rgba(0,0,0,${boxShadowOpacity})`;
+      
+      // Handle content section fade effects
+      handleScrollFade();
+      
+      // Update vertical progress bar
+      updateProgressBar();
     });
+    
+    // Initialize the first sections as active
+    document.addEventListener("DOMContentLoaded", function() {
+      document.getElementById("section1").classList.add("active");
+      document.getElementById("image1").classList.add("active");
+    });
+    
+    // Function to handle the fade effect on scroll
+    function handleScrollFade() {
+      const aboutFlex = document.querySelector(".about-flex");
+      const aboutFlexTop = aboutFlex.offsetTop;
+      const aboutFlexHeight = aboutFlex.offsetHeight;
+      const scrollPosition = window.scrollY;
+      
+      // Calculate relative scroll position within the about-flex section
+      const relativeScroll = scrollPosition - aboutFlexTop;
+      const sectionHeight = aboutFlexHeight / 3; // Divide into 3 sections
+      
+      // Get all content and image sections
+      const contentSections = document.querySelectorAll(".content-section");
+      const imageSections = document.querySelectorAll(".image-section");
+      
+      // Remove active class from all sections
+      contentSections.forEach(section => section.classList.remove("active"));
+      imageSections.forEach(image => image.classList.remove("active"));
+      
+      // Determine which section should be active based on scroll position
+      if (relativeScroll < sectionHeight) {
+        document.getElementById("section1").classList.add("active");
+        document.getElementById("image1").classList.add("active");
+      } else if (relativeScroll < sectionHeight * 2) {
+        document.getElementById("section2").classList.add("active");
+        document.getElementById("image2").classList.add("active");
+      } else {
+        document.getElementById("section3").classList.add("active");
+        document.getElementById("image3").classList.add("active");
+      }
+    }
+    
+    // Function to update the vertical progress bar
+    function updateProgressBar() {
+      const aboutFlex = document.querySelector(".about-flex");
+      const progressBar = document.getElementById("verticalProgressBar");
+      
+      // Get positions and dimensions
+      const aboutFlexTop = aboutFlex.offsetTop;
+      const aboutFlexHeight = aboutFlex.offsetHeight;
+      const scrollPosition = window.scrollY;
+      const viewportHeight = window.innerHeight;
+      
+      // Calculate when content becomes sticky (when it reaches top position)
+      const stickyStart = aboutFlexTop - 150; // 150px is the sticky top value
+      
+      // Calculate progress percentage
+      let progress = 0;
+      
+      // Only start progress after sticky position is reached
+      if (scrollPosition >= stickyStart) {
+        // Calculate available scroll distance (from sticky start to end of about-flex)
+        const availableScroll = aboutFlexHeight - (viewportHeight - 150);
+        
+        // Calculate current progress within that range
+        const currentProgress = scrollPosition - stickyStart;
+        
+        // Convert to percentage (capped at 100%)
+        progress = Math.min(100, (currentProgress / availableScroll) * 100);
+      }
+      
+      // Update progress bar height or width based on screen size
+      if (window.innerWidth <= 600) {
+        progressBar.style.width = `${progress}%`;
+      } else {
+        progressBar.style.height = `${progress}%`;
+      }
+    }
   </script>
 </body>
 </html>
