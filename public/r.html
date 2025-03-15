@@ -177,7 +177,8 @@
       .get-started-btn { top: 15%; }
       .header-buttons { display: none; }
       #mobileMenuBtn { display: block; margin-left: auto; }
-      .image-container { aspect-ratio: 1 / 1; }
+      .image-container { aspect-ratio: 1 / 2; }
+      .full-width-image-container { aspect-ratio: 1 / 2; }
     }
     
     .mobile-menu {
@@ -517,15 +518,35 @@
         align-items: center;
         max-width: 90%;
         margin: 5rem auto;
-        min-height: 150vh; /* Adjusted for mobile */
+        min-height: 300vh; /* Significantly increased for more scroll distance on mobile */
       }
       
       /* Adjust sticky container for mobile */
       .sticky-container {
-        flex-direction: column;
-        top: 100px; /* Match mobile sticky position */
+        flex-direction: row; /* Keep row to have progress bar on left */
         gap: 1rem;
-        min-height: auto; /* Allow natural height on mobile */
+        min-height: 80vh; /* Increased height for better vertical centering */
+        align-items: center; /* Center items vertically */
+      }
+      
+      /* Keep progress bar vertical on mobile */
+      .progress-bar-container {
+        height: 50vh; /* Keep vertical height */
+        width: 3px; /* Keep thin width */
+        margin: 0 1rem 0 0; /* Adjust margins */
+        align-self: center; /* Center vertically */
+      }
+      
+      .progress-bar {
+        height: 0%; /* Start at 0% height */
+        width: 100%; /* Full width */
+      }
+      
+      /* Content wrapper for mobile - stack image above content */
+      .content-wrapper {
+        flex-direction: column; /* Stack elements vertically */
+        width: 90%; /* Slightly narrower for better appearance */
+        gap: 3rem; /* Increased gap between elements */
       }
       
       /* Adjust content sections for mobile */
@@ -541,24 +562,13 @@
         top: 0; /* Reset positioning for mobile */
         transform: none; /* Remove transform for mobile */
       }
-      
-      /* Adjust progress bar for mobile */
-      .progress-bar-container {
-        height: 3px; /* Horizontal on mobile */
-        width: 90%; /* Width of container */
-        margin: 0 auto 1rem;
-      }
-      
-      .progress-bar {
-        height: 100%; /* Full height */
-        width: 0%; /* Start at 0% width */
-      }
 
       .about-flex .about-content {
         padding: 1rem;
         width: 100%;
         max-width: 100%;
         min-height: 200px; /* Smaller minimum height for mobile */
+        order: 2; /* Content comes second */
       }
 
       .about-flex .about-content h2 {
@@ -578,6 +588,8 @@
         justify-content: center;
         padding: 0;
         min-height: 200px; /* Smaller minimum height for mobile */
+        order: 1; /* Image comes first */
+        margin-bottom: 5rem; /* Increased margin between image and content */
       }
 
       .about-flex .about-image img {
@@ -585,9 +597,8 @@
         max-width: 350px;
         aspect-ratio: 1;
         border-radius: 12px;
-        margin: 1rem auto;
+        margin: 1rem auto 2rem; /* Added bottom margin to the image itself */
       }
-      
     }
   </style>
 </head>
@@ -828,7 +839,8 @@
       const viewportHeight = window.innerHeight;
       
       // Calculate when content becomes sticky (when it reaches top position)
-      const stickyStart = aboutFlexTop - 150; // 150px is the sticky top value
+      const stickyTop = window.innerWidth <= 600 ? 150 : 240; // Different sticky top values for mobile/desktop
+      const stickyStart = aboutFlexTop - stickyTop; // Use the appropriate sticky top value
       
       // Calculate progress percentage
       let progress = 0;
@@ -836,7 +848,7 @@
       // Only start progress after sticky position is reached
       if (scrollPosition >= stickyStart) {
         // Calculate available scroll distance (from sticky start to end of about-flex)
-        const availableScroll = aboutFlexHeight - (viewportHeight - 150);
+        const availableScroll = aboutFlexHeight - (viewportHeight - stickyTop);
         
         // Calculate current progress within that range
         const currentProgress = scrollPosition - stickyStart;
@@ -845,12 +857,8 @@
         progress = Math.min(100, (currentProgress / availableScroll) * 100);
       }
       
-      // Update progress bar height or width based on screen size
-      if (window.innerWidth <= 600) {
-        progressBar.style.width = `${progress}%`;
-      } else {
-        progressBar.style.height = `${progress}%`;
-      }
+      // Always update height for both mobile and desktop
+      progressBar.style.height = `${progress}%`;
     }
   </script>
 </body>
