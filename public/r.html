@@ -480,6 +480,196 @@
       border-bottom-left-radius: 6rem;
       border-bottom-right-radius: 6rem;
     }
+    
+    /* Form overlay styling */
+    .form-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 90%;
+      max-width: 600px;
+      background-color: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 2.5rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      z-index: 10;
+      animation: fadeIn 0.8s ease forwards;
+    }
+    
+    .form-overlay h3 {
+      font-size: 1.8rem;
+      margin-top: 0;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      font-weight: 600;
+      color: #000;
+    }
+    
+    .grid-container {
+      width: 100%;
+    }
+    
+    .grid-x {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .cell {
+      flex: 1 0 calc(50% - 0.5rem);
+      min-width: 200px;
+    }
+    
+    .BaseInput-module_container__zxe0D {
+      position: relative;
+      margin-bottom: 1.5rem;
+      width: 100%;
+    }
+    
+    .BaseInput-module_input__At1nr {
+      width: 100%;
+      padding: 1.2rem 1rem 0.5rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
+      background-color: white;
+      transition: border-color 0.3s ease;
+      height: 56px;
+      box-sizing: border-box;
+    }
+    
+    .BaseInput-module_input__At1nr:focus {
+      border-color: #000;
+      outline: none;
+    }
+    
+    .BaseInput-module_label__NlOdR {
+      position: absolute;
+      left: 1rem;
+      top: 1.1rem;
+      font-size: 0.9rem;
+      color: #666;
+      transition: all 0.3s ease;
+      pointer-events: none;
+    }
+    
+    .BaseInput-module_input__At1nr:focus + .BaseInput-module_label__NlOdR,
+    .BaseInput-module_input__At1nr:not(:placeholder-shown) + .BaseInput-module_label__NlOdR {
+      top: 0.5rem;
+      font-size: 0.75rem;
+      color: #000;
+    }
+    
+    .BaseInput-module_label__NlOdR.active {
+      font-size: 0.75rem;
+      color: #000;
+    }
+    
+    .BaseInput-module_input__At1nr::placeholder {
+      color: transparent;
+    }
+    
+    /* Form validation */
+    .BaseInput-module_input__At1nr.error {
+      border-color: #e53935;
+    }
+    
+    .error-container::after {
+      content: "This field is required";
+      position: absolute;
+      bottom: -1.2rem;
+      left: 0;
+      font-size: 0.75rem;
+      color: #e53935;
+    }
+    
+    /* Submit button styling */
+    .base-Button-root {
+      width: 100%;
+      padding: 1rem;
+      background-color: #000;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .base-Button-root:hover {
+      background-color: #333;
+    }
+    
+    .css-cmnm65 {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    
+    .movingText {
+      position: relative;
+      transition: transform 0.3s ease;
+    }
+    
+    .base-Button-root:hover .movingText {
+      transform: translateX(-5px);
+    }
+    
+    .base-Button-root svg {
+      transition: transform 0.3s ease;
+    }
+    
+    .base-Button-root:hover svg {
+      transform: translateX(5px);
+    }
+    
+    /* Privacy text */
+    .form-overlay p {
+      font-size: 0.8rem;
+      color: #666;
+      text-align: center;
+      margin-top: 0.5rem;
+    }
+    
+    .form-overlay a {
+      color: #000;
+      text-decoration: underline;
+    }
+    
+    .form-overlay a:hover {
+      color: #333;
+    }
+    
+    @media (max-width: 600px) {
+      .form-overlay {
+        width: 95%;
+        padding: 1.5rem;
+      }
+      
+      .cell {
+        flex: 1 0 100%;
+      }
+      
+      .form-overlay h3 {
+        font-size: 1.5rem;
+      }
+      
+      .BaseInput-module_input__At1nr {
+        height: 50px;
+      }
+    }
+    
     .footer {
       position: fixed;
       bottom: 0;
@@ -722,6 +912,75 @@
   <!-- New Full-Width Image Section -->
   <div class="full-width-image-container">
     <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/AdobeStock_home.jpg?alt=media&token=5ce4aa3a-bc2b-47fd-bda8-1c9c3e748561" alt="Adobe Stock Home" />
+    
+    <!-- Form Overlay -->
+    <div class="form-overlay">
+      <h3>Talk to our property management team</h3>
+      <form data-testid="marketo-form" novalidate="">
+        <div class="grid-container full">
+          <div class="grid-x form-group">
+            <div class="cell small-12 medium-6">
+              <div class="BaseInput-module_container__zxe0D TextInput_textInput__ONCJy BaseInput-module_hidePwIcon__q-G8B">
+                <input type="text" class="BaseInput-module_input__At1nr BaseInput-module_size48__OHWCP" 
+                  autocomplete="given-name" data-1p-ignore="true" name="FirstName" value="" 
+                  id="FirstName-Ye6vzrA7pPtmo4oYCxKdX" spellcheck="false" placeholder=" ">
+                <label class="BaseInput-module_label__NlOdR" for="FirstName-Ye6vzrA7pPtmo4oYCxKdX">First name</label>
+              </div>
+            </div>
+            <div class="cell small-12 medium-6">
+              <div class="BaseInput-module_container__zxe0D TextInput_textInput__ONCJy BaseInput-module_hidePwIcon__q-G8B">
+                <input type="text" class="BaseInput-module_input__At1nr BaseInput-module_size48__OHWCP" 
+                  autocomplete="family-name" data-1p-ignore="true" name="LastName" value="" 
+                  id="LastName-nBxo8TSW8GiBjK8B_lDUl" spellcheck="false" placeholder=" ">
+                <label class="BaseInput-module_label__NlOdR" for="LastName-nBxo8TSW8GiBjK8B_lDUl">Last name</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="BaseInput-module_container__zxe0D TextInput_textInput__ONCJy BaseInput-module_hidePwIcon__q-G8B">
+          <input type="text" class="BaseInput-module_input__At1nr BaseInput-module_size48__OHWCP" 
+            autocomplete="email" data-1p-ignore="true" name="Email" value="" 
+            id="Email-HppsMjymc1yD8DS7J9UeW" spellcheck="false" placeholder=" ">
+          <label class="BaseInput-module_label__NlOdR" for="Email-HppsMjymc1yD8DS7J9UeW">Company email</label>
+        </div>
+        
+        <div class="BaseInput-module_container__zxe0D TextInput_textInput__ONCJy BaseInput-module_hidePwIcon__q-G8B">
+          <input type="text" class="BaseInput-module_input__At1nr BaseInput-module_size48__OHWCP" 
+            autocomplete="organization" data-1p-ignore="true" name="Company" value="" 
+            id="Company-grzkJNtHFjlY9gm8BjGwS" spellcheck="false" placeholder=" ">
+          <label class="BaseInput-module_label__NlOdR" for="Company-grzkJNtHFjlY9gm8BjGwS">Company name</label>
+        </div>
+        
+        <div class="BaseInput-module_container__zxe0D TextInput_textInput__ONCJy BaseInput-module_hidePwIcon__q-G8B">
+          <input type="text" class="BaseInput-module_input__At1nr BaseInput-module_size48__OHWCP" 
+            autocomplete="tel" data-1p-ignore="true" name="Phone" value="" 
+            id="Phone-VZYjGvf_M2I75Jx7-WT4O" spellcheck="false" placeholder=" ">
+          <label class="BaseInput-module_label__NlOdR" for="Phone-VZYjGvf_M2I75Jx7-WT4O">Phone number (optional)</label>
+        </div>
+        
+        <input type="hidden" name="Is_Request_in_EEA_or_Unknown__c" value="false">
+        
+        <div class="Grid-module_gridContainer__6UGne Grid-module_noPadding__gmVwp" data-testid="threads-grid-container">
+          <div class="Grid_threadsGrid__apmGR Grid-module_grid__qkVbd Grid-module_noMarginRightMedium__TVkj1 Grid-module_noMarginRightLarge__1MDp6">
+            <div class="Column-module_column__pOLxR Column-module_medium12__Z2MBQ Column-module_allowOverflow__eFO7a" data-testid="threads-column">
+              <button type="submit" value="Talk to our team" variant="primary" class="base-Button-root">
+                <span class="css-cmnm65">
+                  <span class="movingText" style="left:0px">Talk to our team</span>
+                  <svg aria-hidden="false" role="img" aria-label="arrow right" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="Icon-module_icon__3vKVT">
+                    <path d="M15.0605 8.00003L9.38732 2.32684L8.32666 3.3875L12.1892 7.25L1 7.25V8.75L12.1892 8.75L8.32666 12.6126L9.38732 13.6732L15.0605 8.00003Z" fill="currentColor"></path>
+                  </svg>
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div>
+          <p>By submitting this form, I confirm that I have read and understood <a class="Link_default__VeNAl" target="_blank" href="/legal/#privacy-statement">Puul's Privacy Statement</a>.</p>
+        </div>
+      </form>
+    </div>
   </div>
   <!-- Footer Section -->
   <div class="footer">
@@ -860,6 +1119,81 @@
       // Always update height for both mobile and desktop
       progressBar.style.height = `${progress}%`;
     }
+    
+    // Form input animation
+    document.addEventListener("DOMContentLoaded", function() {
+      // Add focus and blur event listeners to all form inputs
+      const formInputs = document.querySelectorAll('.BaseInput-module_input__At1nr, .customSelect__input');
+      
+      formInputs.forEach(input => {
+        // Check if input already has value on page load
+        if (input.value.trim() !== '') {
+          const label = input.parentElement.querySelector('.BaseInput-module_label__NlOdR');
+          if (label) {
+            label.classList.add('active');
+          }
+        }
+        
+        // Add focus event
+        input.addEventListener('focus', function() {
+          const label = this.parentElement.querySelector('.BaseInput-module_label__NlOdR') || 
+                        this.closest('.css-1jlacyh-container').querySelector('.BaseInput-module_label__NlOdR');
+          if (label) {
+            label.classList.add('active');
+          }
+        });
+        
+        // Add blur event
+        input.addEventListener('blur', function() {
+          if (this.value.trim() === '') {
+            const label = this.parentElement.querySelector('.BaseInput-module_label__NlOdR') || 
+                          this.closest('.css-1jlacyh-container').querySelector('.BaseInput-module_label__NlOdR');
+            if (label) {
+              label.classList.remove('active');
+            }
+          }
+        });
+      });
+      
+      // Form submission
+      const contactForm = document.querySelector('[data-testid="marketo-form"]');
+      if (contactForm) {
+        contactForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          
+          // Simple validation
+          let isValid = true;
+          const requiredInputs = contactForm.querySelectorAll('input[name="FirstName"], input[name="LastName"], input[name="Email"], input[name="Company"]');
+          
+          requiredInputs.forEach(input => {
+            if (input.value.trim() === '') {
+              isValid = false;
+              input.classList.add('error');
+              
+              // Add error class to parent container
+              const container = input.closest('.BaseInput-module_container__zxe0D');
+              if (container) {
+                container.classList.add('error-container');
+              }
+            } else {
+              input.classList.remove('error');
+              
+              // Remove error class from parent container
+              const container = input.closest('.BaseInput-module_container__zxe0D');
+              if (container) {
+                container.classList.remove('error-container');
+              }
+            }
+          });
+          
+          if (isValid) {
+            // Here you would normally submit the form data to your backend
+            alert('Thank you for your interest! We will contact you soon.');
+            contactForm.reset();
+          }
+        });
+      }
+    });
   </script>
 </body>
 </html>
