@@ -150,7 +150,7 @@
       color: white;
       border-radius: 4rem;
       padding: 12px 36px;
-      font-size: 2.1rem;
+      font-size: 1.8rem;
       font-weight: 500;
       transition: all 0.3s ease;
       z-index: 10;
@@ -491,12 +491,12 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 50%;
-      max-width: 550px;
-      background-color: rgba(255, 255, 255, 0.9);
+      width: 600px;
+      max-width: 80%;
+      background-color: rgba(255, 255, 255, 0.6);
       backdrop-filter: blur(10px);
       border-radius: 20px;
-      padding: 2.5rem;
+      padding: 1.5rem;
       box-shadow: 0 10px 30px rgba(246, 153, 153, 0.15);
       z-index: 10;
       animation: fadeIn 0.8s ease forwards;
@@ -504,11 +504,11 @@
     }
     
     .form-overlay h3 {
-      font-size: 1.8rem;
+      font-size: 2.1rem;
       margin-top: 0;
       margin-bottom: 1.5rem;
       text-align: center;
-      font-weight: 600;
+      font-weight: 500;
       color: #000;
     }
     
@@ -597,10 +597,9 @@
       padding: 1rem;
       background-color: #000;
       color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 1rem;
-      font-weight: 600;
+      border-radius: 3rem;
+      font-size: 1.5rem;
+      font-weight: 500;
       cursor: pointer;
       transition: all 0.3s ease;
       display: flex;
@@ -612,7 +611,8 @@
     }
     
     .base-Button-root:hover {
-      background-color: #333;
+      color: #000;
+      background-color: #fff;
     }
     
     .css-cmnm65 {
@@ -657,10 +657,6 @@
     }
     
     @media (max-width: 600px) {
-      .form-overlay {
-        width: 80%;
-        padding: 1.5rem 2rem;
-      }
       
       .cell {
         flex: 1 0 100%;
@@ -961,9 +957,6 @@
         
         <input type="hidden" name="Is_Request_in_EEA_or_Unknown__c" value="false">
         
-        <div class="Grid-module_gridContainer__6UGne Grid-module_noPadding__gmVwp" data-testid="threads-grid-container">
-          <div class="Grid_threadsGrid__apmGR Grid-module_grid__qkVbd Grid-module_noMarginRightMedium__TVkj1 Grid-module_noMarginRightLarge__1MDp6">
-            <div class="Column-module_column__pOLxR Column-module_medium12__Z2MBQ Column-module_allowOverflow__eFO7a" data-testid="threads-column">
               <button type="submit" value="Talk to our team" variant="primary" class="base-Button-root">
                 <span class="css-cmnm65">
                   <span class="movingText" style="left:0px">Talk to our team</span>
@@ -972,9 +965,6 @@
                   </svg>
                 </span>
               </button>
-            </div>
-          </div>
-        </div>
         
         <div>
           <p>By submitting this form, I confirm that I have read and understood <a class="Link_default__VeNAl" target="_blank" href="/legal/#privacy-statement">Puul's Privacy Statement</a>.</p>
