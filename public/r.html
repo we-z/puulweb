@@ -178,7 +178,6 @@
       .header-buttons { display: none; }
       #mobileMenuBtn { display: block; margin-left: auto; }
       .image-container { aspect-ratio: 1 / 2; }
-      .full-width-image-container { aspect-ratio: 1 / 2; }
     }
     
     .mobile-menu {
@@ -464,13 +463,16 @@
       font-size: 1.1rem;
     }
     .full-width-image-container {
-      width: 100%;
+      width: 100vw;
+      height: 110vh;
       background-color: white; /* Set the background to white */
       display: flex;
       justify-content: center;
       align-items: center;
       margin-bottom: 30vh;
       position: relative; /* Add position */
+      overflow: hidden; /* Prevent image overflow */
+      margin-left: calc(-50vw + 50%); /* Compensate for any parent padding */
     }
 
     .full-width-image-container img {
@@ -479,6 +481,8 @@
       object-fit: cover;
       border-bottom-left-radius: 6rem;
       border-bottom-right-radius: 6rem;
+      min-width: 100%;
+      min-height: 100%;
     }
     
     /* Form overlay styling */
@@ -725,11 +729,6 @@
       .progress-bar-container {
         margin: 0 1rem 0 0; /* Adjust margins */
         align-self: center; /* Center vertically */
-      }
-      
-      .progress-bar {
-        height: 0%; /* Start at 0% height */
-        width: 100%; /* Full width */
       }
       
       /* Content wrapper for mobile - stack image above content */
