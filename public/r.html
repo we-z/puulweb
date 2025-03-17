@@ -793,8 +793,10 @@
 <body>
   <header>
     <!-- Site logo placed to the left of the title -->
-    <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/puul-logo.svg?alt=media&token=b0ff0719-0b4d-4837-939c-f4fc1f24fcab" alt="Puul Logo" class="site-logo" />
-    <h1>Puul</h1>
+    <a href="#" id="logo-link" style="display: flex; align-items: center; text-decoration: none; color: inherit;">
+      <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/puul-logo.svg?alt=media&token=b0ff0719-0b4d-4837-939c-f4fc1f24fcab" alt="Puul Logo" class="site-logo" />
+      <h1>Puul</h1>
+    </a>
     <div class="header-buttons">
       <button class="secondary-btn" data-scroll-to="contact-section">Contact</button>
       <button class="secondary-btn" data-scroll-to="about-flex">About</button>
@@ -1008,6 +1010,15 @@
       if (event.target === mobileMenu) {
         mobileMenu.classList.remove("active");
       }
+    });
+    
+    // Add scroll to top functionality for logo
+    document.getElementById("logo-link").addEventListener("click", function(e) {
+      e.preventDefault();
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
     });
     
     // Add scroll functionality for the buttons
