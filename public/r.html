@@ -7,6 +7,7 @@
   <link rel="icon" type="image/svg+xml" href="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/puul-logo.svg?alt=media&token=b0ff0719-0b4d-4837-939c-f4fc1f24fcab" />
   <title>Puul - Automate Property Maintenance</title>
   <style>
+    /* Base Styles */
     body {
       margin: 0;
       padding: 0;
@@ -18,8 +19,6 @@
       align-items: center;
       min-height: 100vh;
     }
-    
-    /* Original header styling values */
     header {
       position: absolute;
       top: 0;
@@ -31,39 +30,22 @@
       backdrop-filter: blur(8px);
       z-index: 100;
     }
-    
     .site-logo {
       height: 3.2rem;
       width: auto;
     }
-    
     header h1 {
       font-size: 2rem;
       margin: 0;
       font-weight: 600;
     }
-    
     .header-buttons {
       margin-left: auto;
       display: flex;
       align-items: center;
       gap: 30px;
     }
-    
-    header .get-started-btn {
-      font-size: 1.2rem;
-      position: static;
-      transform: none;
-      margin-left: auto;
-      top: auto;
-      z-index: auto;
-    }
-    
-    .header-buttons .get-started-btn {
-      margin-left: 0;
-      padding: 9px 20px;
-    }
-    
+    /* Secondary button with hover underline */
     .secondary-btn {
       background: none;
       border: none;
@@ -74,7 +56,6 @@
       padding: 0;
       position: relative;
     }
-    
     .secondary-btn::after {
       content: "";
       position: absolute;
@@ -87,18 +68,15 @@
       opacity: 0;
       transition: transform 0.3s ease, opacity 0.3s ease;
     }
-    
     .secondary-btn:hover::after {
       transform: translateY(0);
       opacity: 1;
     }
-    
     main {
       margin-top: 8rem;
       text-align: center;
       width: 90%;
     }
-    
     main h1 {
       font-size: clamp(2rem, 10vw, 6rem);
       margin-bottom: 2rem;
@@ -110,22 +88,18 @@
       background-clip: text;
       animation: shimmer 9s linear infinite;
     }
-    
     @keyframes shimmer {
       0% { background-position: 200% center; }
       100% { background-position: -200% center; }
     }
-    
     main p {
       font-size: 1.5rem;
       margin: 1rem 0;
       color: gray;
     }
-    
     main p strong {
       color: black;
     }
-    
     .image-container {
       width: 100%;
       position: relative;
@@ -135,14 +109,13 @@
       align-items: center;
       justify-content: center;
     }
-    
     .image-container img {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
-    
-    .get-started-btn {
+    /* Main Button styling */
+    .main-btn {
       position: absolute;
       top: 10%;
       transform: translateY(-50%);
@@ -157,30 +130,28 @@
       z-index: 10;
       outline: none;
     }
-    
-    .get-started-btn:hover {
+    .main-btn:hover {
       background-color: transparent;
       color: black;
     }
-    
-    .image-container .get-started-btn {
-      overflow: hidden;
+    /* Override main-btn styling for header buttons */
+    header .main-btn {
+      position: static;
+      transform: none;
+      padding: 9px 20px;
+      font-size: 1.4rem;
     }
-    
     #mobileMenuBtn {
       display: none;
     }
-    
-    /* Mobile styles for main elements and navigation */
     @media (max-width: 600px) {
       main { margin-top: 5rem; }
       main p { font-size: 1.2rem; margin: 0; }
-      .get-started-btn { top: 15%; }
+      .main-btn { top: 15%; }
       .header-buttons { display: none; }
       #mobileMenuBtn { display: block; margin-left: auto; }
       .image-container { aspect-ratio: 1 / 2; }
     }
-    
     .mobile-menu {
       position: fixed;
       top: 0;
@@ -208,19 +179,12 @@
       font-size: 2rem;
       width: 80%;
       padding: 15px;
-      transition: background-color 0.3s ease, transform 0.3s ease;
       border: none;
       cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.3s ease;
       display: block;
     }
-    .mobile-menu .get-started-btn,
-    .mobile-menu .secondary-btn {
-      position: static;
-      transform: none;
-    }
-    .mobile-menu .secondary-btn { background: none; }
     .mobile-menu button:hover { transform: scale(1.05); }
-    
     .close-menu {
       position: absolute;
       top: 0;
@@ -231,8 +195,6 @@
       cursor: pointer;
       transform: translate(30%, 0%);
     }
-    
-    /* Base styling for About Section */
     .about-section {
       width: 100%;
       background-color: black;
@@ -240,8 +202,6 @@
       text-align: center;
       padding-bottom: 6rem;
     }
-    
-    /* Carousel Styles */
     .logo-carousel {
       width: 100%;
       overflow: hidden;
@@ -262,9 +222,6 @@
       0% { transform: translateX(0); }
       100% { transform: translateX(-50%); }
     }
-    
-    
-    /* New Flex Container for About Content and Image */
     .about-flex {
       display: flex;
       align-items: flex-start;
@@ -274,32 +231,27 @@
       margin: 12rem auto;
       max-width: 80%;
       position: relative;
-      min-height: 750vh; /* Taller container to allow for scrolling */
-      scroll-margin-top: 80px; /* Add some margin for header when scrolled to */
+      min-height: 750vh;
+      scroll-margin-top: 80px;
     }
-    
-    /* Unified sticky container for all elements */
     .sticky-container {
       display: flex;
       width: 100%;
       position: sticky;
       top: 180px;
       gap: 2rem;
-      align-items: center; /* Center all elements vertically */
-      min-height: 60vh; /* Ensure container has enough height for centering */
+      align-items: center;
+      min-height: 60vh;
     }
-    
-    /* Vertical progress bar */
     .progress-bar-container {
       height: 70vh;
       width: 6px;
       background-color: rgba(255, 255, 255, 0.2);
       z-index: 10;
       margin-right: 2rem;
-      align-self: center; /* Ensure vertical centering */
+      align-self: center;
       border-radius: 12px;
     }
-    
     .progress-bar {
       width: 100%;
       background-color: white;
@@ -307,28 +259,23 @@
       transition: height 0.1s ease;
       border-radius: 12px;
     }
-    
-    /* Content container */
     .content-wrapper {
       display: flex;
       width: 100%;
       justify-content: space-between;
       gap: 4rem;
-      align-items: center; /* Center content and image vertically */
+      align-items: center;
     }
-    
     .about-flex .about-content {
       flex: 1;
       padding: 1rem;
       text-align: left;
-      margin: 0;
-      height: fit-content;
       display: flex;
       flex-direction: column;
-      justify-content: center; /* Center content vertically */
-      max-width: 45%; /* Ensure it takes roughly half the space */
-      position: relative; /* For absolute positioning of content sections */
-      min-height: 300px; /* Ensure minimum height for content */
+      justify-content: center;
+      max-width: 45%;
+      position: relative;
+      min-height: 300px;
     }
     .about-flex .about-content h2 {
       font-size: 2.7rem;
@@ -343,53 +290,44 @@
     .about-flex .about-image {
       flex: 1;
       padding: 1rem;
-      max-width: 45%; /* Ensure it takes roughly half the space */
-      position: relative; /* For absolute positioning of image sections */
-      min-height: 300px; /* Ensure minimum height for images */
-      display: flex; /* Enable flexbox for centering */
-      align-items: center; /* Center image vertically */
-      justify-content: center; /* Center image horizontally */
+      max-width: 45%;
+      position: relative;
+      min-height: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .about-flex .about-image img {
       width: 100%;
       aspect-ratio: 1;
       border-radius: 12px;
-      margin: 0;
       object-fit: cover;
     }
-    
-    /* Content sections that will fade in/out */
     .content-section {
       position: absolute;
       opacity: 0;
       transition: opacity 0.5s ease;
       left: 0;
       width: 100%;
-      top: 50%; /* Position at middle */
-      transform: translateY(-50%); /* Center vertically */
-      overflow: hidden; /* Prevent content from overflowing */
+      top: 50%;
+      transform: translateY(-50%);
+      overflow: hidden;
     }
-    
     .content-section.active {
       opacity: 1;
     }
-    
-    /* Multiple images for the scroll effect */
     .image-section {
       position: absolute;
       opacity: 0;
       transition: opacity 0.5s ease;
       width: 100%;
-      top: 50%; /* Position at middle */
-      transform: translateY(-50%); /* Center vertically */
-      overflow: hidden; /* Prevent images from overflowing */
+      top: 50%;
+      transform: translateY(-50%);
+      overflow: hidden;
     }
-    
     .image-section.active {
       opacity: 1;
     }
-    
-    /* Cards Container and Cards Styling */
     .cards-container {
       display: flex;
       justify-content: space-evenly;
@@ -454,8 +392,7 @@
       text-align: left;
     }
     .card-content h3 {
-      margin-top: 0;
-      margin-bottom: 0.8rem;
+      margin: 0 0 0.8rem;
       font-size: 1.6rem;
     }
     .card-content p {
@@ -465,17 +402,16 @@
     .full-width-image-container {
       width: 100vw;
       height: 110vh;
-      background-color: white; /* Set the background to white */
+      background-color: white;
       display: flex;
       justify-content: center;
       align-items: center;
       margin-bottom: 30vh;
-      position: relative; /* Add position */
-      overflow: hidden; /* Prevent image overflow */
-      margin-left: calc(-50vw + 50%); /* Compensate for any parent padding */
-      scroll-margin-top: 0; /* Ensure the top aligns perfectly with viewport when scrolled to */
+      position: relative;
+      overflow: hidden;
+      margin-left: calc(-50vw + 50%);
+      scroll-margin-top: 0;
     }
-
     .full-width-image-container img {
       width: 100%;
       height: 100%;
@@ -485,8 +421,6 @@
       min-width: 100%;
       min-height: 100%;
     }
-    
-    /* Form overlay styling */
     .form-overlay {
       position: absolute;
       top: 50%;
@@ -503,38 +437,31 @@
       animation: fadeIn 0.8s ease forwards;
       margin: 0 auto;
     }
-    
     .form-overlay h3 {
       font-size: 2.1rem;
-      margin-top: 0;
-      margin-bottom: 1.5rem;
+      margin: 0 0 1.5rem;
       text-align: center;
       font-weight: 500;
       color: #000;
     }
-    
     .grid-container {
       width: 100%;
     }
-    
     .grid-x {
       display: flex;
       flex-wrap: wrap;
       gap: 1rem;
       margin-bottom: 1rem;
     }
-    
     .cell {
       flex: 1 0 calc(50% - 0.5rem);
       min-width: 200px;
     }
-    
     .BaseInput-module_container__zxe0D {
       position: relative;
       margin-bottom: 1.5rem;
       width: 100%;
     }
-    
     .BaseInput-module_input__At1nr {
       width: 100%;
       padding: 1.2rem 1rem 0.5rem;
@@ -546,12 +473,10 @@
       height: 56px;
       box-sizing: border-box;
     }
-    
     .BaseInput-module_input__At1nr:focus {
       border-color: #000;
       outline: none;
     }
-    
     .BaseInput-module_label__NlOdR {
       position: absolute;
       left: 1rem;
@@ -561,28 +486,22 @@
       transition: all 0.3s ease;
       pointer-events: none;
     }
-    
     .BaseInput-module_input__At1nr:focus + .BaseInput-module_label__NlOdR,
     .BaseInput-module_input__At1nr:not(:placeholder-shown) + .BaseInput-module_label__NlOdR {
       top: 0.5rem;
       font-size: 0.75rem;
       color: #000;
     }
-    
     .BaseInput-module_label__NlOdR.active {
       font-size: 0.75rem;
       color: #000;
     }
-    
     .BaseInput-module_input__At1nr::placeholder {
       color: transparent;
     }
-    
-    /* Form validation */
     .BaseInput-module_input__At1nr.error {
       border-color: #e53935;
     }
-    
     .error-container::after {
       content: "This field is required";
       position: absolute;
@@ -591,8 +510,6 @@
       font-size: 0.75rem;
       color: #e53935;
     }
-    
-    /* Submit button styling */
     .base-Button-root {
       width: 100%;
       padding: 1rem;
@@ -611,82 +528,130 @@
       position: relative;
       overflow: hidden;
     }
-    
     .base-Button-root:hover {
       color: #000;
       background-color: transparent;
     }
-    
     .css-cmnm65 {
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 0.5rem;
     }
-    
     .movingText {
       position: relative;
       transition: transform 0.3s ease;
     }
-    
     .base-Button-root:hover .movingText {
       transform: translateX(-5px);
     }
-    
     .base-Button-root svg {
       transition: transform 0.3s ease;
     }
-    
     .base-Button-root:hover svg {
       transform: translateX(5px);
     }
-    
-    /* Privacy text */
     .form-overlay p {
       font-size: 0.8rem;
       color: #666;
       text-align: center;
       margin-top: 0.5rem;
     }
-    
     .form-overlay a {
       color: #000;
       text-decoration: underline;
     }
-    
     .form-overlay a:hover {
       color: #333;
     }
-    
     @media (max-width: 600px) {
-      
       .cell {
         flex: 1 0 100%;
       }
-      
       .form-overlay h3 {
         font-size: 1.5rem;
       }
-      
       .BaseInput-module_input__At1nr {
         height: 50px;
       }
+      .about-flex {
+        align-items: flex-start;
+        top: 0;
+        max-width: 90%;
+        margin: 0 auto;
+      }
+      .sticky-container {
+        flex-direction: row;
+        gap: 1rem;
+        top: 10vh;
+        min-height: 80vh;
+        align-items: center;
+      }
+      .progress-bar-container {
+        margin: 0 1rem 0 0;
+        align-self: center;
+      }
+      .content-wrapper {
+        flex-direction: column;
+        width: 90%;
+        gap: 3rem;
+      }
+      .content-section {
+        position: absolute;
+        top: 0;
+        transform: none;
+      }
+      .image-section {
+        position: absolute;
+        top: 0;
+        transform: none;
+      }
+      .about-flex .about-content {
+        padding: 1rem;
+        width: 100%;
+        max-width: 100%;
+        min-height: 200px;
+        order: 2;
+      }
+      .about-flex .about-content h2 {
+        font-size: 1.8rem;
+        margin-bottom: 0.8rem;
+      }
+      .about-flex .about-content p {
+        font-size: 1.2rem;
+        margin: 0;
+      }
+      .about-flex .about-image {
+        width: 100%;
+        max-width: 100%;
+        display: flex;
+        justify-content: center;
+        padding: 0;
+        min-height: 200px;
+        order: 1;
+        margin-bottom: 5rem;
+      }
+      .about-flex .about-image img {
+        width: 90%;
+        max-width: 350px;
+        aspect-ratio: 1;
+        border-radius: 12px;
+        margin: 1rem auto 2rem;
+      }
     }
-    
     .footer {
       position: fixed;
       bottom: 0;
       left: 0;
       width: 100%;
-      height: 20vh; /* Adjust the height dynamically based on viewport */
+      height: 20vh;
       display: flex;
       align-items: center;
       justify-content: center;
       background: white;
-      z-index: -1; /* Layer it behind all content */
+      z-index: -1;
       padding: 2rem 0;
     }
-
     .footer-content {
       display: flex;
       align-items: center;
@@ -694,105 +659,20 @@
       width: 100%;
       max-width: 90%;
     }
-
     .footer-logo {
-      height: 36vw; /* Dynamic height */
+      height: 36vw;
       width: auto;
     }
-
     .footer-title {
-      font-size: 24vw; /* Scale dynamically */
+      font-size: 24vw;
       font-weight: bold;
       margin-left: 2vw;
       white-space: nowrap;
-    }
-
-    @media (max-width: 600px) {
-      .about-flex {
-        align-items: flex-start;
-        top: 0;
-        max-width: 90%;
-        margin: 0rem auto;
-      }
-      
-      /* Adjust sticky container for mobile */
-      .sticky-container {
-        flex-direction: row; /* Keep row to have progress bar on left */
-        gap: 1rem;
-        top: 10vh;
-        min-height: 80vh; /* Increased height for better vertical centering */
-        align-items: center; /* Center items vertically */
-      }
-      
-      /* Keep progress bar vertical on mobile */
-      .progress-bar-container {
-        margin: 0 1rem 0 0; /* Adjust margins */
-        align-self: center; /* Center vertically */
-      }
-      
-      /* Content wrapper for mobile - stack image above content */
-      .content-wrapper {
-        flex-direction: column; /* Stack elements vertically */
-        width: 90%; /* Slightly narrower for better appearance */
-        gap: 3rem; /* Increased gap between elements */
-      }
-      
-      /* Adjust content sections for mobile */
-      .content-section {
-        position: absolute;
-        top: 0; /* Reset positioning for mobile */
-        transform: none; /* Remove transform for mobile */
-      }
-      
-      /* Adjust image sections for mobile */
-      .image-section {
-        position: absolute;
-        top: 0; /* Reset positioning for mobile */
-        transform: none; /* Remove transform for mobile */
-      }
-
-      .about-flex .about-content {
-        padding: 1rem;
-        width: 100%;
-        max-width: 100%;
-        min-height: 200px; /* Smaller minimum height for mobile */
-        order: 2; /* Content comes second */
-      }
-
-      .about-flex .about-content h2 {
-        font-size: 1.8rem;
-        margin-bottom: 0.8rem;
-      }
-
-      .about-flex .about-content p {
-        font-size: 1.2rem;
-        margin: 0;
-      }
-
-      .about-flex .about-image {
-        width: 100%;
-        max-width: 100%;
-        display: flex;
-        justify-content: center;
-        padding: 0;
-        min-height: 200px; /* Smaller minimum height for mobile */
-        order: 1; /* Image comes first */
-        margin-bottom: 5rem; /* Increased margin between image and content */
-      }
-
-      .about-flex .about-image img {
-        width: 90%;
-        max-width: 350px;
-        aspect-ratio: 1;
-        border-radius: 12px;
-        margin: 1rem auto 2rem; /* Added bottom margin to the image itself */
-      }
     }
   </style>
 </head>
 <body>
   <header>
-    <!-- Site logo placed to the left of the title -->
     <a href="#" id="logo-link" style="display: flex; align-items: center; text-decoration: none; color: inherit;">
       <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/puul-logo.svg?alt=media&token=b0ff0719-0b4d-4837-939c-f4fc1f24fcab" alt="Puul Logo" class="site-logo" />
       <h1>Puul</h1>
@@ -800,25 +680,21 @@
     <div class="header-buttons">
       <button class="secondary-btn" data-scroll-to="contact-section">Contact</button>
       <button class="secondary-btn" data-scroll-to="about-flex">About</button>
-      <button class="get-started-btn" data-scroll-to="contact-section">Book a Call</button>
+      <button class="main-btn" data-scroll-to="contact-section">Book a Call</button>
     </div>
-    <button id="mobileMenuBtn" class="get-started-btn">Menu</button>
+    <button id="mobileMenuBtn" class="main-btn">Menu</button>
   </header>
   <main>
     <h1>Automate Property Maintenance</h1>
     <p>
-      Puul is the <strong>AI Platform</strong> streamlining operations for
-      <strong>Property Managers</strong>, and enhancing tenant satisfaction and <strong>Retention</strong>.
+      Puul is the <strong>AI Platform</strong> streamlining operations for <strong>Property Managers</strong>, and enhancing tenant satisfaction and <strong>Retention</strong>.
     </p>
   </main>
   <div class="image-container">
-    <button class="get-started-btn" data-scroll-to="contact-section">Book a Free Demo</button>
+    <button class="main-btn" data-scroll-to="contact-section">Book a Free Demo</button>
     <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/price-solar-desktop.png?alt=media&token=b4933d35-41a6-4f96-961a-5ca710ed093c" alt="Price Solar Desktop" />
   </div>
-  
-  <!-- About Section with Logo Carousel, Cards, and New Flex Container -->
   <section class="about-section">
-    <!-- Logo Carousel placed above the About Puul text -->
     <div class="logo-carousel">
       <div class="carousel-track">
         <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/wb-primary-logo-primary-colorway-rgb-6.png?alt=media&token=223a94d5-1f28-4201-b7b9-f86516b859c7" alt="Logo 1" class="carousel-logo" />
@@ -836,7 +712,6 @@
         <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/Greystar-Corporate-Logo-White-No-Tagline.png?alt=media&token=20cf7a52-4a1f-407a-8ea4-fb2015ce5cad" alt="Logo 6 Duplicate" class="carousel-logo" />
       </div>
     </div>
-    
     <div class="cards-container">
       <div class="card">
         <div class="card-image">
@@ -866,17 +741,11 @@
         </div>
       </div>
     </div>
-    
-    <!-- New Flex Container with About Content and Image -->
     <div class="about-flex" id="about-flex">
-      <!-- Unified sticky container for all elements -->
       <div class="sticky-container">
-        <!-- Progress bar -->
         <div class="progress-bar-container">
           <div class="progress-bar" id="verticalProgressBar"></div>
         </div>
-        
-        <!-- Content wrapper -->
         <div class="content-wrapper">
           <div class="about-content">
             <div class="content-section" id="section1">
@@ -892,250 +761,144 @@
               <p>Our AI analyzes maintenance patterns to help you allocate resources more effectively. Identify recurring issues, predict maintenance needs, and make data-driven decisions that reduce costs and improve tenant satisfaction.</p>
             </div>
           </div>
-          
           <div class="about-image">
             <div class="image-section" id="image1">
-              <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/redwoodhome.webp?alt=media&token=5f60bba5-2b4b-4fe1-988f-ded4e4d6cc61" alt="Redwood Home" />
+              <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/redwoodhome.webp?alt=media&token=5f60bba5-2b4b-4fe1-988f-ded4e4d6cc61" alt="Redwood Home">
             </div>
             <div class="image-section" id="image2">
-              <img src="https://mads.media/wp-content/uploads/2017/04/mora_exterior.jpg" alt="Modern Home" />
+              <img src="https://mads.media/wp-content/uploads/2017/04/mora_exterior.jpg" alt="Modern Home">
             </div>
             <div class="image-section" id="image3">
-              <img src="https://static.dezeen.com/uploads/2020/01/pam-and-pauls-house-craig-steely-architecture-cupertino-california-usa_dezeen_2364_sq2.jpg" alt="Smart Home" />
+              <img src="https://static.dezeen.com/uploads/2020/01/pam-and-pauls-house-craig-steely-architecture-cupertino-california-usa_dezeen_2364_sq2.jpg" alt="Smart Home">
             </div>
           </div>
         </div>
       </div>
     </div>
   </section>
-  
-  <!-- New Full-Width Image Section -->
   <div class="full-width-image-container" id="contact-section">
-    <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/AdobeStock_home.jpg?alt=media&token=5ce4aa3a-bc2b-47fd-bda8-1c9c3e748561" alt="Adobe Stock Home" />
-    
-    <!-- Form Overlay -->
+    <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/AdobeStock_home.jpg?alt=media&token=5ce4aa3a-bc2b-47fd-bda8-1c9c3e748561" alt="Adobe Stock Home">
     <div class="form-overlay">
       <h3>Talk to our property management team</h3>
-      <form data-testid="marketo-form" novalidate="">
-        <div class="grid-container full">
+      <form data-testid="marketo-form" novalidate>
+        <div class="grid-container">
           <div class="grid-x form-group">
             <div class="cell small-12 medium-6">
-              <div class="BaseInput-module_container__zxe0D TextInput_textInput__ONCJy BaseInput-module_hidePwIcon__q-G8B">
-                <input type="text" class="BaseInput-module_input__At1nr BaseInput-module_size48__OHWCP" 
-                  autocomplete="given-name" data-1p-ignore="true" name="FirstName" value="" 
-                  id="FirstName-Ye6vzrA7pPtmo4oYCxKdX" spellcheck="false" placeholder=" ">
+              <div class="BaseInput-module_container__zxe0D">
+                <input type="text" class="BaseInput-module_input__At1nr" autocomplete="given-name" name="FirstName" id="FirstName-Ye6vzrA7pPtmo4oYCxKdX" spellcheck="false" placeholder=" ">
                 <label class="BaseInput-module_label__NlOdR" for="FirstName-Ye6vzrA7pPtmo4oYCxKdX">First name</label>
               </div>
             </div>
             <div class="cell small-12 medium-6">
-              <div class="BaseInput-module_container__zxe0D TextInput_textInput__ONCJy BaseInput-module_hidePwIcon__q-G8B">
-                <input type="text" class="BaseInput-module_input__At1nr BaseInput-module_size48__OHWCP" 
-                  autocomplete="family-name" data-1p-ignore="true" name="LastName" value="" 
-                  id="LastName-nBxo8TSW8GiBjK8B_lDUl" spellcheck="false" placeholder=" ">
+              <div class="BaseInput-module_container__zxe0D">
+                <input type="text" class="BaseInput-module_input__At1nr" autocomplete="family-name" name="LastName" id="LastName-nBxo8TSW8GiBjK8B_lDUl" spellcheck="false" placeholder=" ">
                 <label class="BaseInput-module_label__NlOdR" for="LastName-nBxo8TSW8GiBjK8B_lDUl">Last name</label>
               </div>
             </div>
           </div>
         </div>
-        
-        <div class="BaseInput-module_container__zxe0D TextInput_textInput__ONCJy BaseInput-module_hidePwIcon__q-G8B">
-          <input type="text" class="BaseInput-module_input__At1nr BaseInput-module_size48__OHWCP" 
-            autocomplete="email" data-1p-ignore="true" name="Email" value="" 
-            id="Email-HppsMjymc1yD8DS7J9UeW" spellcheck="false" placeholder=" ">
+        <div class="BaseInput-module_container__zxe0D">
+          <input type="text" class="BaseInput-module_input__At1nr" autocomplete="email" name="Email" id="Email-HppsMjymc1yD8DS7J9UeW" spellcheck="false" placeholder=" ">
           <label class="BaseInput-module_label__NlOdR" for="Email-HppsMjymc1yD8DS7J9UeW">Company email</label>
         </div>
-        
-        <div class="BaseInput-module_container__zxe0D TextInput_textInput__ONCJy BaseInput-module_hidePwIcon__q-G8B">
-          <input type="text" class="BaseInput-module_input__At1nr BaseInput-module_size48__OHWCP" 
-            autocomplete="organization" data-1p-ignore="true" name="Company" value="" 
-            id="Company-grzkJNtHFjlY9gm8BjGwS" spellcheck="false" placeholder=" ">
+        <div class="BaseInput-module_container__zxe0D">
+          <input type="text" class="BaseInput-module_input__At1nr" autocomplete="organization" name="Company" id="Company-grzkJNtHFjlY9gm8BjGwS" spellcheck="false" placeholder=" ">
           <label class="BaseInput-module_label__NlOdR" for="Company-grzkJNtHFjlY9gm8BjGwS">Company name</label>
         </div>
-        
-        <div class="BaseInput-module_container__zxe0D TextInput_textInput__ONCJy BaseInput-module_hidePwIcon__q-G8B">
-          <input type="text" class="BaseInput-module_input__At1nr BaseInput-module_size48__OHWCP" 
-            autocomplete="tel" data-1p-ignore="true" name="Phone" value="" 
-            id="Phone-VZYjGvf_M2I75Jx7-WT4O" spellcheck="false" placeholder=" ">
+        <div class="BaseInput-module_container__zxe0D">
+          <input type="text" class="BaseInput-module_input__At1nr" autocomplete="tel" name="Phone" id="Phone-VZYjGvf_M2I75Jx7-WT4O" spellcheck="false" placeholder=" ">
           <label class="BaseInput-module_label__NlOdR" for="Phone-VZYjGvf_M2I75Jx7-WT4O">Phone number (optional)</label>
         </div>
-        
         <input type="hidden" name="Is_Request_in_EEA_or_Unknown__c" value="false">
-        
-              <button type="submit" value="Talk to our team" variant="primary" class="base-Button-root">
-                <span class="css-cmnm65">
-                  <span class="movingText" style="left:0px">Talk to our team</span>
-                  <svg aria-hidden="false" role="img" aria-label="arrow right" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="Icon-module_icon__3vKVT">
-                    <path d="M15.0605 8.00003L9.38732 2.32684L8.32666 3.3875L12.1892 7.25L1 7.25V8.75L12.1892 8.75L8.32666 12.6126L9.38732 13.6732L15.0605 8.00003Z" fill="currentColor"></path>
-                  </svg>
-                </span>
-              </button>
-        
+        <button type="submit" class="base-Button-root">
+          <span class="css-cmnm65">
+            <span class="movingText" style="left:0px">Talk to our team</span>
+            <svg aria-hidden="false" role="img" aria-label="arrow right" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="Icon-module_icon__3vKVT">
+              <path d="M15.0605 8.00003L9.38732 2.32684L8.32666 3.3875L12.1892 7.25L1 7.25V8.75L12.1892 8.75L8.32666 12.6126L9.38732 13.6732L15.0605 8.00003Z" fill="currentColor"></path>
+            </svg>
+          </span>
+        </button>
         <div>
           <p>By submitting this form, I confirm that I have read and understood <a class="Link_default__VeNAl" target="_blank" href="/legal/#privacy-statement">Puul's Privacy Statement</a>.</p>
         </div>
       </form>
     </div>
   </div>
-  <!-- Footer Section -->
   <div class="footer">
     <div class="footer-content">
       <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/puul-logo.svg?alt=media&token=b0ff0719-0b4d-4837-939c-f4fc1f24fcab" alt="Puul Logo" class="footer-logo" />
       <span class="footer-title">Puul</span>
     </div>
   </div>
-  
-  <!-- Mobile Popup Menu -->
   <div id="mobileMenu" class="mobile-menu">
     <button id="closeMenuBtn" class="close-menu">&times;</button>
     <button class="secondary-btn" data-scroll-to="contact-section">Contact</button>
     <button class="secondary-btn" data-scroll-to="about-flex">About</button>
-    <button class="get-started-btn">Book a Call</button>
+    <button class="main-btn">Book a Call</button>
   </div>
-  
   <script>
-    // Toggle mobile menu visibility
+    // Mobile Menu Toggle
     const mobileMenuBtn = document.getElementById("mobileMenuBtn");
     const mobileMenu = document.getElementById("mobileMenu");
     const closeMenuBtn = document.getElementById("closeMenuBtn");
-    
-    mobileMenuBtn.addEventListener("click", function () {
-      mobileMenu.classList.add("active");
+    mobileMenuBtn.addEventListener("click", () => mobileMenu.classList.add("active"));
+    closeMenuBtn.addEventListener("click", () => mobileMenu.classList.remove("active"));
+    window.addEventListener("click", (event) => {
+      if (event.target === mobileMenu) mobileMenu.classList.remove("active");
     });
-    
-    closeMenuBtn.addEventListener("click", function () {
-      mobileMenu.classList.remove("active");
-    });
-    
-    window.addEventListener("click", function (event) {
-      if (event.target === mobileMenu) {
-        mobileMenu.classList.remove("active");
-      }
-    });
-    
-    // Add scroll to top functionality for logo
-    document.getElementById("logo-link").addEventListener("click", function(e) {
+
+    // Scroll to Top on Logo Click
+    document.getElementById("logo-link").addEventListener("click", (e) => {
       e.preventDefault();
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     });
-    
-    // Add scroll functionality for the buttons
-    document.addEventListener("DOMContentLoaded", function() {
-      // Get all elements with data-scroll-to attribute
-      const scrollButtons = document.querySelectorAll('[data-scroll-to]');
-      
-      // Function to handle smooth scrolling to a specific element
-      function scrollToElement(elementId) {
-        const element = document.getElementById(elementId);
-        
-        if (element) {
-          // Close mobile menu if it's open
-          mobileMenu.classList.remove("active");
-          
-          // Get header height and viewport height
-          const header = document.querySelector('header');
-          const headerHeight = header.offsetHeight;
-          const isMobile = window.innerWidth <= 600;
-          
-          // Calculate the element's position relative to the document
-          const elementRect = element.getBoundingClientRect();
-          const absoluteElementTop = elementRect.top + window.pageYOffset;
-          
-          // Adjust scroll position based on element
-          let scrollPosition;
-          
-          // Special handling for contact section to make it fill the screen
-          if (elementId === 'contact-section') {
-            // For contact section, align at very top of viewport
-            scrollPosition = absoluteElementTop;
-            
-            // On small screens, may need additional adjustment
-            if (isMobile) {
-              scrollPosition = absoluteElementTop - 10; // Small adjustment for mobile
-            }
-          } else if (elementId === 'about-flex') {
-            // For about section, consider header height and give some breathing room
-            scrollPosition = absoluteElementTop - headerHeight - 20;
-          } else {
-            // Default behavior for other elements
-            scrollPosition = absoluteElementTop - headerHeight;
-          }
-          
-          // Smooth scroll to the calculated position
-          window.scrollTo({
-            top: scrollPosition,
-            behavior: 'smooth'
-          });
+
+    // Smooth Scroll Function
+    function scrollToElement(elementId) {
+      const element = document.getElementById(elementId);
+      if (element) {
+        mobileMenu.classList.remove("active");
+        const header = document.querySelector('header');
+        const headerHeight = header.offsetHeight;
+        const isMobile = window.innerWidth <= 600;
+        const absoluteElementTop = element.getBoundingClientRect().top + window.pageYOffset;
+        let scrollPosition;
+        if (elementId === 'contact-section') {
+          scrollPosition = isMobile ? absoluteElementTop - 10 : absoluteElementTop;
+        } else if (elementId === 'about-flex') {
+          scrollPosition = absoluteElementTop - headerHeight - 20;
+        } else {
+          scrollPosition = absoluteElementTop - headerHeight;
         }
+        window.scrollTo({ top: scrollPosition, behavior: 'smooth' });
       }
-      
-      // Add event listeners to all scroll buttons
-      scrollButtons.forEach(button => {
-        button.addEventListener('click', () => {
-          const targetSection = button.getAttribute('data-scroll-to');
-          scrollToElement(targetSection);
-        });
-      });
-    });
-    
-    // Smoothly interpolate header styles over a short scroll distance (0-100px)
-    window.addEventListener("scroll", function() {
+    }
+
+    // Header Style Interpolation and Scroll Effects
+    window.addEventListener("scroll", () => {
       const header = document.querySelector("header");
       const threshold = 100;
-      let scrollY = window.pageYOffset;
-      let t = Math.min(scrollY / threshold, 1);
-    
-      header.style.position = (scrollY === 0) ? "absolute" : "fixed";
-    
-      let paddingY = 30 - 20 * t;
-      let paddingX = 30 - 10 * t;
-      let marginTop = 16 * t;
-      let widthPercent = 95 - 15 * t;
-      let borderRadius = 48 * t;
-      let boxShadowSize = 9 * t;
-      let boxShadowOpacity = 0.3 * t;
-    
-      header.style.padding = `${paddingY}px ${paddingX}px`;
-      header.style.marginTop = `${marginTop}px`;
-      header.style.width = `${widthPercent}%`;
-      header.style.borderRadius = `${borderRadius}px`;
-      header.style.boxShadow = `0px 0px ${boxShadowSize}px rgba(0,0,0,${boxShadowOpacity})`;
-      
-      // Handle content section fade effects
+      const scrollY = window.pageYOffset;
+      const t = Math.min(scrollY / threshold, 1);
+      header.style.position = scrollY === 0 ? "absolute" : "fixed";
+      header.style.padding = `${30 - 20 * t}px ${30 - 10 * t}px`;
+      header.style.marginTop = `${16 * t}px`;
+      header.style.width = `${95 - 15 * t}%`;
+      header.style.borderRadius = `${48 * t}px`;
+      header.style.boxShadow = `0px 0px ${9 * t}px rgba(0,0,0,${0.3 * t})`;
       handleScrollFade();
-      
-      // Update vertical progress bar
       updateProgressBar();
     });
-    
-    // Initialize the first sections as active
-    document.addEventListener("DOMContentLoaded", function() {
-      document.getElementById("section1").classList.add("active");
-      document.getElementById("image1").classList.add("active");
-    });
-    
-    // Function to handle the fade effect on scroll
+
+    // Fade in/out content and image sections in the About area
     function handleScrollFade() {
       const aboutFlex = document.querySelector(".about-flex");
       const aboutFlexTop = aboutFlex.offsetTop;
       const aboutFlexHeight = aboutFlex.offsetHeight;
-      const scrollPosition = window.scrollY;
-      
-      // Calculate relative scroll position within the about-flex section
-      const relativeScroll = scrollPosition - aboutFlexTop;
-      const sectionHeight = aboutFlexHeight / 3; // Divide into 3 sections
-      
-      // Get all content and image sections
-      const contentSections = document.querySelectorAll(".content-section");
-      const imageSections = document.querySelectorAll(".image-section");
-      
-      // Remove active class from all sections
-      contentSections.forEach(section => section.classList.remove("active"));
-      imageSections.forEach(image => image.classList.remove("active"));
-      
-      // Determine which section should be active based on scroll position
+      const relativeScroll = window.pageYOffset - aboutFlexTop;
+      const sectionHeight = aboutFlexHeight / 3;
+      document.querySelectorAll(".content-section").forEach(section => section.classList.remove("active"));
+      document.querySelectorAll(".image-section").forEach(image => image.classList.remove("active"));
       if (relativeScroll < sectionHeight) {
         document.getElementById("section1").classList.add("active");
         document.getElementById("image1").classList.add("active");
@@ -1147,109 +910,71 @@
         document.getElementById("image3").classList.add("active");
       }
     }
-    
-    // Function to update the vertical progress bar
+
+    // Update the vertical progress bar in the About area
     function updateProgressBar() {
       const aboutFlex = document.querySelector(".about-flex");
       const progressBar = document.getElementById("verticalProgressBar");
-      
-      // Get positions and dimensions
-      const aboutFlexTop = aboutFlex.offsetTop;
-      const aboutFlexHeight = aboutFlex.offsetHeight;
-      const scrollPosition = window.scrollY;
-      const viewportHeight = window.innerHeight;
-      
-      // Calculate when content becomes sticky (when it reaches top position)
-      const stickyTop = window.innerWidth <= 600 ? 150 : 240; // Different sticky top values for mobile/desktop
-      const stickyStart = aboutFlexTop - stickyTop; // Use the appropriate sticky top value
-      
-      // Calculate progress percentage
+      const stickyTop = window.innerWidth <= 600 ? 150 : 240;
+      const stickyStart = aboutFlex.offsetTop - stickyTop;
       let progress = 0;
-      
-      // Only start progress after sticky position is reached
-      if (scrollPosition >= stickyStart) {
-        // Calculate available scroll distance (from sticky start to end of about-flex)
-        const availableScroll = aboutFlexHeight - (viewportHeight - stickyTop);
-        
-        // Calculate current progress within that range
-        const currentProgress = scrollPosition - stickyStart;
-        
-        // Convert to percentage (capped at 100%)
+      if (window.pageYOffset >= stickyStart) {
+        const availableScroll = aboutFlex.offsetHeight - (window.innerHeight - stickyTop);
+        const currentProgress = window.pageYOffset - stickyStart;
         progress = Math.min(100, (currentProgress / availableScroll) * 100);
       }
-      
-      // Always update height for both mobile and desktop
       progressBar.style.height = `${progress}%`;
     }
-    
-    // Form input animation
-    document.addEventListener("DOMContentLoaded", function() {
-      // Add focus and blur event listeners to all form inputs
-      const formInputs = document.querySelectorAll('.BaseInput-module_input__At1nr, .customSelect__input');
-      
-      formInputs.forEach(input => {
-        // Check if input already has value on page load
+
+    // Merge DOMContentLoaded events: set initial states, attach scroll buttons and form events
+    document.addEventListener("DOMContentLoaded", () => {
+      // Activate initial About sections
+      document.getElementById("section1").classList.add("active");
+      document.getElementById("image1").classList.add("active");
+
+      // Attach smooth scroll to all buttons with data-scroll-to
+      document.querySelectorAll('[data-scroll-to]').forEach(button => {
+        button.addEventListener('click', () => scrollToElement(button.getAttribute('data-scroll-to')));
+      });
+
+      // Form Input Focus/Blur & Validation
+      document.querySelectorAll('.BaseInput-module_input__At1nr, .customSelect__input').forEach(input => {
         if (input.value.trim() !== '') {
           const label = input.parentElement.querySelector('.BaseInput-module_label__NlOdR');
-          if (label) {
-            label.classList.add('active');
-          }
+          if (label) label.classList.add('active');
         }
-        
-        // Add focus event
         input.addEventListener('focus', function() {
-          const label = this.parentElement.querySelector('.BaseInput-module_label__NlOdR') || 
-                        this.closest('.css-1jlacyh-container').querySelector('.BaseInput-module_label__NlOdR');
-          if (label) {
-            label.classList.add('active');
-          }
+          const label = this.parentElement.querySelector('.BaseInput-module_label__NlOdR') ||
+                        (this.closest('.css-1jlacyh-container') && this.closest('.css-1jlacyh-container').querySelector('.BaseInput-module_label__NlOdR'));
+          if (label) label.classList.add('active');
         });
-        
-        // Add blur event
         input.addEventListener('blur', function() {
           if (this.value.trim() === '') {
-            const label = this.parentElement.querySelector('.BaseInput-module_label__NlOdR') || 
-                          this.closest('.css-1jlacyh-container').querySelector('.BaseInput-module_label__NlOdR');
-            if (label) {
-              label.classList.remove('active');
-            }
+            const label = this.parentElement.querySelector('.BaseInput-module_label__NlOdR') ||
+                          (this.closest('.css-1jlacyh-container') && this.closest('.css-1jlacyh-container').querySelector('.BaseInput-module_label__NlOdR'));
+            if (label) label.classList.remove('active');
           }
         });
       });
-      
-      // Form submission
+
       const contactForm = document.querySelector('[data-testid="marketo-form"]');
       if (contactForm) {
         contactForm.addEventListener('submit', function(e) {
           e.preventDefault();
-          
-          // Simple validation
           let isValid = true;
-          const requiredInputs = contactForm.querySelectorAll('input[name="FirstName"], input[name="LastName"], input[name="Email"], input[name="Company"]');
-          
-          requiredInputs.forEach(input => {
+          contactForm.querySelectorAll('input[name="FirstName"], input[name="LastName"], input[name="Email"], input[name="Company"]').forEach(input => {
             if (input.value.trim() === '') {
               isValid = false;
               input.classList.add('error');
-              
-              // Add error class to parent container
               const container = input.closest('.BaseInput-module_container__zxe0D');
-              if (container) {
-                container.classList.add('error-container');
-              }
+              if (container) container.classList.add('error-container');
             } else {
               input.classList.remove('error');
-              
-              // Remove error class from parent container
               const container = input.closest('.BaseInput-module_container__zxe0D');
-              if (container) {
-                container.classList.remove('error-container');
-              }
+              if (container) container.classList.remove('error-container');
             }
           });
-          
           if (isValid) {
-            // Here you would normally submit the form data to your backend
             alert('Thank you for your interest! We will contact you soon.');
             contactForm.reset();
           }
