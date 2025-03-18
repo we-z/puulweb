@@ -849,6 +849,28 @@
     <button class="secondary-btn" data-scroll-to="about-flex">About</button>
     <button class="main-btn">Book a Call</button>
   </div>
+
+  <!-- Firebase Libraries and Configuration moved to the bottom -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+  <script>
+    // Replace the following configuration with your actual Firebase project details.
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      databaseURL: "YOUR_DATABASE_URL",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+  </script>
+
+  <!-- Custom JavaScript -->
   <script>
     // Mobile Menu Toggle
     const mobileMenuBtn = document.getElementById("mobileMenuBtn");
@@ -975,6 +997,7 @@
         contactForm.addEventListener('submit', function(e) {
           e.preventDefault();
           let isValid = true;
+          // Validate mandatory fields: FirstName, LastName, Email, Company
           contactForm.querySelectorAll('input[name="FirstName"], input[name="LastName"], input[name="Email"], input[name="Company"]').forEach(input => {
             if (input.value.trim() === '') {
               isValid = false;
@@ -988,8 +1011,23 @@
             }
           });
           if (isValid) {
-            alert('Thank you for your interest! We will contact you soon.');
-            contactForm.reset();
+            // Build form data object
+            const formData = {
+              firstName: contactForm.querySelector('input[name="FirstName"]').value.trim(),
+              lastName: contactForm.querySelector('input[name="LastName"]').value.trim(),
+              email: contactForm.querySelector('input[name="Email"]').value.trim(),
+              company: contactForm.querySelector('input[name="Company"]').value.trim(),
+              phone: contactForm.querySelector('input[name="Phone"]').value.trim() || null
+            };
+            // Push the data to the Firebase Realtime Database under "submissions"
+            database.ref('submissions').push(formData, function(error) {
+              if (error) {
+                alert('There was an error submitting the form. Please try again later.');
+              } else {
+                alert('Thank you for your interest! We will contact you soon.');
+                contactForm.reset();
+              }
+            });
           }
         });
       }
