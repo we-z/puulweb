@@ -846,26 +846,6 @@
     <button class="main-btn">Book a Call</button>
   </div>
 
-  <!-- Firebase Libraries and Configuration moved to the bottom -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-  <script>
-    // Replace the following configuration with your actual Firebase project details.
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_AUTH_DOMAIN",
-      databaseURL: "YOUR_DATABASE_URL",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_STORAGE_BUCKET",
-      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-      appId: "YOUR_APP_ID"
-    };
-
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
-  </script>
-
   <!-- Custom JavaScript -->
   <script>
     // Mobile Menu Toggle
@@ -993,7 +973,6 @@
         contactForm.addEventListener('submit', function(e) {
           e.preventDefault();
           let isValid = true;
-          // Validate mandatory fields: FirstName, LastName, Email, Company
           contactForm.querySelectorAll('input[name="FirstName"], input[name="LastName"], input[name="Email"], input[name="Company"]').forEach(input => {
             if (input.value.trim() === '') {
               isValid = false;
@@ -1007,27 +986,84 @@
             }
           });
           if (isValid) {
-            // Build form data object
-            const formData = {
-              firstName: contactForm.querySelector('input[name="FirstName"]').value.trim(),
-              lastName: contactForm.querySelector('input[name="LastName"]').value.trim(),
-              email: contactForm.querySelector('input[name="Email"]').value.trim(),
-              company: contactForm.querySelector('input[name="Company"]').value.trim(),
-              phone: contactForm.querySelector('input[name="Phone"]').value.trim() || null
-            };
-            // Push the data to the Firebase Realtime Database under "submissions"
-            database.ref('submissions').push(formData, function(error) {
-              if (error) {
-                alert('There was an error submitting the form. Please try again later.');
-              } else {
-                alert('Thank you for your interest! We will contact you soon.');
-                contactForm.reset();
-              }
+            // Load Firebase scripts dynamically and handle form submission
+            loadFirebase().then(() => {
+              // Build form data object
+              const formData = {
+                firstName: contactForm.querySelector('input[name="FirstName"]').value.trim(),
+                lastName: contactForm.querySelector('input[name="LastName"]').value.trim(),
+                email: contactForm.querySelector('input[name="Email"]').value.trim(),
+                company: contactForm.querySelector('input[name="Company"]').value.trim(),
+                phone: contactForm.querySelector('input[name="Phone"]').value.trim() || null
+              };
+              // Push the data to the Firebase Realtime Database under "submissions"
+              firebase.database().ref('submissions').push(formData, function(error) {
+                if (error) {
+                  alert('There was an error submitting the form. Please try again later.');
+                } else {
+                  alert('Thank you for your interest! We will contact you soon.');
+                  contactForm.reset();
+                }
+              });
+            }).catch(error => {
+              console.error('Error loading Firebase:', error);
+              alert('There was an error with our submission system. Please try again later.');
             });
           }
         });
       }
     });
+
+    // Dynamic Firebase loading function
+    function loadFirebase() {
+      return new Promise((resolve, reject) => {
+        // Check if Firebase is already loaded
+        if (window.firebase && window.firebase.database) {
+          resolve(firebase);
+          return;
+        }
+
+        // Load Firebase App
+        const appScript = document.createElement('script');
+        appScript.src = 'https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js';
+        appScript.async = true;
+        
+        appScript.onload = () => {
+          // Load Firebase Database after App is loaded
+          const dbScript = document.createElement('script');
+          dbScript.src = 'https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js';
+          dbScript.async = true;
+          
+          dbScript.onload = () => {
+            // Initialize Firebase
+            const firebaseConfig = {
+              apiKey: "YOUR_API_KEY",
+              authDomain: "YOUR_AUTH_DOMAIN",
+              databaseURL: "YOUR_DATABASE_URL",
+              projectId: "YOUR_PROJECT_ID",
+              storageBucket: "YOUR_STORAGE_BUCKET",
+              messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+              appId: "YOUR_APP_ID"
+            };
+            
+            firebase.initializeApp(firebaseConfig);
+            resolve(firebase);
+          };
+          
+          dbScript.onerror = () => {
+            reject(new Error("Failed to load Firebase Database"));
+          };
+          
+          document.body.appendChild(dbScript);
+        };
+        
+        appScript.onerror = () => {
+          reject(new Error("Failed to load Firebase App"));
+        };
+        
+        document.body.appendChild(appScript);
+      });
+    }
   </script>
 </body>
 </html>
