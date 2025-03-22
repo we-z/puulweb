@@ -1016,8 +1016,36 @@
                 submissionsRef.push(formData)
                   .then(() => {
                     console.log("Form submitted successfully");
-                    alert('Thank you for your interest! We will contact you soon.');
-                    contactForm.reset();
+                    
+                    // Get the form overlay element
+                    const formOverlay = document.querySelector('.form-overlay');
+                    
+                    // Store the original content to allow for future form resets if needed
+                    if (!formOverlay.getAttribute('data-original-content')) {
+                      formOverlay.setAttribute('data-original-content', formOverlay.innerHTML);
+                    }
+                    
+                    // Create the thank you content
+                    const thankYouContent = `
+                      <div class="thank-you-container" style="opacity: 0; filter: blur(10px); transition: opacity 0.8s ease, filter 0.8s ease;">
+                        <h3>Thank you!</h3>
+                        <p style="font-size: 1.2rem; color: #333; text-align: center; margin-top: 1rem;">
+                          Your message has been sent, and a member of our team will be in touch soon.
+                        </p>
+                      </div>
+                    `;
+                    
+                    // Replace the form with thank you message
+                    formOverlay.innerHTML = thankYouContent;
+                    
+                    // Trigger animation after a small delay to ensure DOM update
+                    setTimeout(() => {
+                      const thankYouContainer = document.querySelector('.thank-you-container');
+                      if (thankYouContainer) {
+                        thankYouContainer.style.opacity = '1';
+                        thankYouContainer.style.filter = 'blur(0)';
+                      }
+                    }, 50);
                   })
                   .catch((error) => {
                     console.error("Error in push operation:", error);
