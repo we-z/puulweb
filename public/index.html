@@ -149,7 +149,7 @@
       .header-buttons { display: none; }
       #mobileMenuBtn { display: block; margin-left: auto; }
       main h1 {
-        font-size: clamp(2.2rem, 8vw, 3.5rem);
+        font-size: clamp(2.4rem, 8vw, 3.5rem);
         line-height: 1.2;
         max-width: 100%;
         margin-bottom: 1.5rem;
@@ -174,6 +174,7 @@
       visibility: hidden;
       transform: translateY(-20px);
       transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+      padding-top: 100px;
     }
     .mobile-menu.active {
       opacity: 1;
@@ -191,6 +192,12 @@
       display: block;
     }
     .mobile-menu button:hover { transform: scale(1.05); }
+    .mobile-menu button.secondary-btn:first-of-type {
+      margin-top: 60px;
+    }
+    .mobile-menu button.main-btn {
+      margin-top: 40px;
+    }
     .close-menu {
       position: absolute;
       top: 0;
@@ -200,6 +207,9 @@
       border: none;
       cursor: pointer;
       transform: translate(30%, 0%);
+      color: black;
+      z-index: 101;
+      padding: 20px;
     }
     .about-section {
       width: 100%;
