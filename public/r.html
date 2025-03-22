@@ -93,7 +93,7 @@
       100% { background-position: -200% center; }
     }
     main p {
-      font-size: 1.5rem;
+      font-size: clamp(1rem, 5vw, 1.5rem);
       margin: 1rem 0;
       color: gray;
     }
@@ -611,6 +611,7 @@
       }
       .about-flex .about-content {
         padding: 1rem;
+        padding-top: 1rem;
         width: 100%;
         max-width: 100%;
         min-height: 200px;
