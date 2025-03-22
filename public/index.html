@@ -254,7 +254,7 @@
       margin: 12rem auto;
       max-width: 80%;
       position: relative;
-      min-height: 750vh;
+      min-height: 150vh;
       scroll-margin-top: 80px;
     }
     .sticky-container {
@@ -925,15 +925,24 @@
     function handleScrollFade() {
       const aboutFlex = document.querySelector(".about-flex");
       const aboutFlexTop = aboutFlex.offsetTop;
-      const aboutFlexHeight = aboutFlex.offsetHeight;
-      const relativeScroll = window.pageYOffset - aboutFlexTop;
-      const sectionHeight = aboutFlexHeight / 3;
+      const windowHeight = window.innerHeight;
+      const relativeScroll = window.pageYOffset - aboutFlexTop + windowHeight/2;
+      
+      // Create shorter transition points - only need about 50vh of scrolling per section
+      const section1End = 50;  // vh units
+      const section2End = 100; // vh units
+      
+      // Convert vh to pixels
+      const section1EndPx = (section1End * windowHeight) / 100;
+      const section2EndPx = (section2End * windowHeight) / 100;
+      
       document.querySelectorAll(".content-section").forEach(section => section.classList.remove("active"));
       document.querySelectorAll(".image-section").forEach(image => image.classList.remove("active"));
-      if (relativeScroll < sectionHeight) {
+      
+      if (relativeScroll < section1EndPx) {
         document.getElementById("section1").classList.add("active");
         document.getElementById("image1").classList.add("active");
-      } else if (relativeScroll < sectionHeight * 2) {
+      } else if (relativeScroll < section2EndPx) {
         document.getElementById("section2").classList.add("active");
         document.getElementById("image2").classList.add("active");
       } else {
@@ -946,13 +955,17 @@
     function updateProgressBar() {
       const aboutFlex = document.querySelector(".about-flex");
       const progressBar = document.getElementById("verticalProgressBar");
+      const windowHeight = window.innerHeight;
       const stickyTop = window.innerWidth <= 600 ? 150 : 240;
       const stickyStart = aboutFlex.offsetTop - stickyTop;
+      
+      // We only want ~150vh of scrolling for the entire section (shorter)
+      const totalScrollDistance = windowHeight * 1.5;
+      
       let progress = 0;
       if (window.pageYOffset >= stickyStart) {
-        const availableScroll = aboutFlex.offsetHeight - (window.innerHeight - stickyTop);
         const currentProgress = window.pageYOffset - stickyStart;
-        progress = Math.min(100, (currentProgress / availableScroll) * 100);
+        progress = Math.min(100, (currentProgress / totalScrollDistance) * 100);
       }
       progressBar.style.height = `${progress}%`;
     }
