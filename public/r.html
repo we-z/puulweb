@@ -987,24 +987,46 @@
           });
           if (isValid) {
             // Load Firebase scripts dynamically and handle form submission
-            loadFirebase().then(() => {
+            loadFirebase().then((firebase) => {
+              // Add console logging to help debug
+              console.log("Firebase loaded successfully");
+              
               // Build form data object
               const formData = {
                 firstName: contactForm.querySelector('input[name="FirstName"]').value.trim(),
                 lastName: contactForm.querySelector('input[name="LastName"]').value.trim(),
                 email: contactForm.querySelector('input[name="Email"]').value.trim(),
                 company: contactForm.querySelector('input[name="Company"]').value.trim(),
-                phone: contactForm.querySelector('input[name="Phone"]').value.trim() || null
+                phone: contactForm.querySelector('input[name="Phone"]').value.trim() || null,
+                timestamp: new Date().toISOString()
               };
+              
+              console.log("Attempting to submit form data:", formData);
+              
+              // Check if database is available
+              if (!firebase.database) {
+                console.error("Firebase database is not available");
+                alert('Database connection error. Please try again later.');
+                return;
+              }
+              
               // Push the data to the Firebase Realtime Database under "submissions"
-              firebase.database().ref('submissions').push(formData, function(error) {
-                if (error) {
-                  alert('There was an error submitting the form. Please try again later.');
-                } else {
-                  alert('Thank you for your interest! We will contact you soon.');
-                  contactForm.reset();
-                }
-              });
+              try {
+                const submissionsRef = firebase.database().ref('submissions');
+                submissionsRef.push(formData)
+                  .then(() => {
+                    console.log("Form submitted successfully");
+                    alert('Thank you for your interest! We will contact you soon.');
+                    contactForm.reset();
+                  })
+                  .catch((error) => {
+                    console.error("Error in push operation:", error);
+                    alert('There was an error submitting the form. Please try again later.');
+                  });
+              } catch (e) {
+                console.error("Exception during database operation:", e);
+                alert('An unexpected error occurred. Please try again later.');
+              }
             }).catch(error => {
               console.error('Error loading Firebase:', error);
               alert('There was an error with our submission system. Please try again later.');
@@ -1035,22 +1057,41 @@
           dbScript.async = true;
           
           dbScript.onload = () => {
-            // Initialize Firebase
-            require('dotenv').config();
-
+            // Initialize Firebase with direct configuration
+            // For production sites, these values should be restricted in Firebase Console
             const firebaseConfig = {
-              apiKey: process.env.API_KEY,
-              authDomain: process.env.AUTH_DOMAIN,
-              databaseURL: process.env.DATABASE_URL,
-              projectId: process.env.PROJECT_ID,
-              storageBucket: process.env.STORAGE_BUCKET,
-              messagingSenderId: process.env.MESSAGING_SENDER_ID,
-              appId: process.env.APP_ID
+              apiKey: "AIzaSyCTJnqW7xH0TpvDUEv73HWaVWp46bpIV9k",
+              authDomain: "puul-app.firebaseapp.com",
+              databaseURL: "https://puul-app-default-rtdb.firebaseio.com",
+              projectId: "puul-app",
+              storageBucket: "puul-app.appspot.com",
+              messagingSenderId: "155293676322",
+              appId: "1:155293676322:web:100962810832e88305ab7b"
             };
             
-            console.log(firebaseConfig); // Verify it loads correctly
-            firebase.initializeApp(firebaseConfig);
-            resolve(firebase);
+            try {
+              // Check if Firebase is already initialized
+              if (!firebase.apps || !firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+              }
+              
+              // Test database connection
+              const dbRef = firebase.database().ref();
+              dbRef.child('.info/connected').once('value')
+                .then(snap => {
+                  const connected = snap.val();
+                  console.log("Firebase database connection status:", connected ? "connected" : "disconnected");
+                  if (!connected) {
+                    console.warn("Firebase database appears to be disconnected");
+                  }
+                })
+                .catch(err => console.error("Error checking database connection:", err));
+                
+              resolve(firebase);
+            } catch (error) {
+              console.error("Firebase initialization error:", error);
+              reject(error);
+            }
           };
           
           dbScript.onerror = () => {
