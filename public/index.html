@@ -507,6 +507,17 @@
       min-width: 100%;
       min-height: 100%;
     }
+    @media (max-width: 600px) {
+      .full-width-image-container {
+        margin-bottom: 10vh;
+        scroll-margin-top: 60px; /* Add scroll margin for mobile */
+      }
+      .form-overlay {
+        max-width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+      }
+    }
     .form-overlay {
       position: absolute;
       top: 50%;
@@ -970,13 +981,33 @@
         const isMobile = window.innerWidth <= 600;
         const absoluteElementTop = element.getBoundingClientRect().top + window.pageYOffset;
         let scrollPosition;
+        
         if (elementId === 'contact-section') {
-          scrollPosition = isMobile ? absoluteElementTop - 10 : absoluteElementTop;
+          if (isMobile) {
+            // On mobile, ensure the form is fully visible in viewport
+            // Get the form overlay for more precise positioning
+            const formOverlay = element.querySelector('.form-overlay');
+            if (formOverlay) {
+              // Calculate position to center the form in the viewport
+              const viewportHeight = window.innerHeight;
+              const formHeight = formOverlay.offsetHeight;
+              const elementOffset = element.offsetTop;
+              // Position form to be centered in viewport
+              scrollPosition = elementOffset - ((viewportHeight - formHeight) / 2);
+              // Ensure we don't scroll above the section
+              scrollPosition = Math.max(elementOffset, scrollPosition);
+            } else {
+              scrollPosition = absoluteElementTop;
+            }
+          } else {
+            scrollPosition = absoluteElementTop;
+          }
         } else if (elementId === 'about-flex') {
           scrollPosition = absoluteElementTop - headerHeight - 20;
         } else {
           scrollPosition = absoluteElementTop - headerHeight;
         }
+        
         window.scrollTo({ top: scrollPosition, behavior: 'smooth' });
       }
     }
