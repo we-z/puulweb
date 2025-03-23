@@ -33,12 +33,13 @@
       z-index: 100;
     }
     .site-logo {
-      height: 3.2rem;
+      height: 3rem;
       width: auto;
     }
     header h1 {
       font-size: 2rem;
       margin: 0;
+      margin-left: 0.5rem;
       font-weight: 600;
     }
     .header-buttons {
@@ -146,7 +147,10 @@
       font-size: 1.4rem;
     }
     #mobileMenuBtn {
+      color: black;
+      background-color: transparent;
       display: none;
+      border: 2px solid black;
     }
     @media (max-width: 600px) {
       .header-buttons { display: none; }
@@ -195,8 +199,6 @@
       display: block;
     }
     .mobile-menu button:hover { transform: scale(1.05); }
-
-
     .close-menu {
       position: absolute;
       top: 0;
@@ -696,7 +698,7 @@
 <body>
   <header>
     <a href="#" id="logo-link" style="display: flex; align-items: center; text-decoration: none; color: inherit;">
-      <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/puul-logo.svg?alt=media&token=b0ff0719-0b4d-4837-939c-f4fc1f24fcab" alt="Puul Logo" class="site-logo" width="40" height="40" />
+      <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/puul-logo.svg?alt=media&token=aac48fcb-cc8d-4af8-9744-c7eca1e7cf04" alt="Puul Logo" class="site-logo" width="40" height="40" />
       <h1>Puul</h1>
     </a>
     <div class="header-buttons">
@@ -854,7 +856,7 @@
   </div>
   <div class="footer">
     <div class="footer-content">
-      <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/puul-logo.svg?alt=media&token=b0ff0719-0b4d-4837-939c-f4fc1f24fcab" alt="Puul Logo" class="footer-logo" width="100" height="100" loading="lazy" />
+      <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/puul-logo.svg?alt=media&token=aac48fcb-cc8d-4af8-9744-c7eca1e7cf04" alt="Puul Logo" class="footer-logo" width="100" height="100" loading="lazy" />
       <span class="footer-title">Puul</span>
     </div>
   </div>
@@ -911,9 +913,9 @@
       const scrollY = window.pageYOffset;
       const t = Math.min(scrollY / threshold, 1);
       header.style.position = scrollY === 0 ? "absolute" : "fixed";
-      header.style.padding = `${30 - 20 * t}px ${30 - 10 * t}px`;
+      header.style.padding = `${30 - 20 * t}px ${25 - 10 * t}px`;
       header.style.marginTop = `${16 * t}px`;
-      header.style.width = `${95 - 15 * t}%`;
+      header.style.width = `${90 - 10 * t}%`;
       header.style.borderRadius = `${48 * t}px`;
       header.style.boxShadow = `0px 0px ${9 * t}px rgba(0,0,0,${0.3 * t})`;
       handleScrollFade();
