@@ -27,7 +27,7 @@
       display: flex;
       align-items: center;
       padding: 30px;
-      width: 95%;
+      width: 90%;
       background: rgba(255, 255, 255, 0.8);
       backdrop-filter: blur(8px);
       z-index: 100;
@@ -150,11 +150,66 @@
       color: black;
       background-color: transparent;
       display: none;
-      border: 2px solid black;
+      border: none;
+      cursor: pointer;
+      margin-left: auto;
+      position: relative;
+      width: 40px;
+      height: 40px;
+      z-index: 102;
+      padding: 0;
+    }
+    
+    /* Hamburger icon bars */
+    .menu-icon {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .menu-icon span {
+      display: block;
+      position: absolute;
+      height: 3px;
+      width: 70%;
+      background: black;
+      border-radius: 3px;
+      opacity: 1;
+      left: 15%;
+      transform: rotate(0deg);
+      transition: .25s ease-in-out;
+    }
+    
+    .menu-icon span:nth-child(1) {
+      top: 20%;
+    }
+    
+    .menu-icon span:nth-child(2) {
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    
+    .menu-icon span:nth-child(3) {
+      bottom: 20%;
+    }
+    
+    /* X state for the hamburger icon */
+    .menu-icon.open span:nth-child(1) {
+      top: 50%;
+      transform: rotate(45deg);
+    }
+    
+    .menu-icon.open span:nth-child(2) {
+      opacity: 0;
+    }
+    
+    .menu-icon.open span:nth-child(3) {
+      top: 50%;
+      transform: rotate(-45deg);
     }
     @media (max-width: 600px) {
       .header-buttons { display: none; }
-      #mobileMenuBtn { display: block; margin-left: auto; }
+      #mobileMenuBtn { display: block; }
       main h1 {
         font-size: clamp(2.4rem, 8vw, 3.5rem);
         line-height: 1.2;
@@ -166,37 +221,40 @@
       }
     }
     .mobile-menu {
-      position: fixed;
-      top: 0;
-      left: 0;
+      position: absolute;
+      top: 100%;
+      right: 0;
       width: 100%;
-      height: 100%;
-      background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(240,240,240,0.95));
+      background: white;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       z-index: 100;
+      max-height: 0;
+      overflow: hidden;
       opacity: 0;
-      visibility: hidden;
-      transform: translateY(-20px);
-      transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
-      padding-top: 100px;
+      box-shadow: 0 15px 20px rgba(0,0,0,0.1);
+      border-bottom-left-radius: 10px;
+      border-bottom-right-radius: 10px;
+      transition: max-height 0.4s ease, opacity 0.3s ease;
+      padding: 0;
     }
     .mobile-menu.active {
+      max-height: 300px;
       opacity: 1;
-      visibility: visible;
-      transform: translateY(0);
+      padding: 20px 0;
     }
     .mobile-menu button {
       margin: 10px 0;
-      font-size: 2rem;
+      font-size: 1.2rem;
       width: 80%;
-      padding: 15px;
+      padding: 12px;
       border: none;
       cursor: pointer;
       transition: background-color 0.3s ease, transform 0.3s ease;
       display: block;
+      text-align: center;
     }
     .mobile-menu button:hover { transform: scale(1.05); }
     .close-menu {
@@ -706,7 +764,18 @@
       <button class="secondary-btn" data-scroll-to="about-flex">About</button>
       <button class="main-btn" data-scroll-to="contact-section">Book a Call</button>
     </div>
-    <button id="mobileMenuBtn" class="main-btn">Menu</button>
+    <button id="mobileMenuBtn" aria-label="Toggle menu">
+      <div class="menu-icon">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </button>
+    <div id="mobileMenu" class="mobile-menu">
+      <button class="secondary-btn" data-scroll-to="contact-section">Contact</button>
+      <button class="secondary-btn" data-scroll-to="about-flex">About</button>
+      <button class="main-btn" data-scroll-to="contact-section">Book a Call</button>
+    </div>
   </header>
   <main>
     <h1>Automate Property Management</h1>
@@ -860,23 +929,25 @@
       <span class="footer-title">Puul</span>
     </div>
   </div>
-  <div id="mobileMenu" class="mobile-menu">
-    <button id="closeMenuBtn" class="close-menu">&times;</button>
-    <button class="secondary-btn" data-scroll-to="contact-section">Contact</button>
-    <button class="secondary-btn" data-scroll-to="about-flex">About</button>
-    <button class="main-btn" data-scroll-to="contact-section">Book a Call</button>
-  </div>
 
   <!-- Custom JavaScript -->
   <script>
     // Mobile Menu Toggle
     const mobileMenuBtn = document.getElementById("mobileMenuBtn");
     const mobileMenu = document.getElementById("mobileMenu");
-    const closeMenuBtn = document.getElementById("closeMenuBtn");
-    mobileMenuBtn.addEventListener("click", () => mobileMenu.classList.add("active"));
-    closeMenuBtn.addEventListener("click", () => mobileMenu.classList.remove("active"));
-    window.addEventListener("click", (event) => {
-      if (event.target === mobileMenu) mobileMenu.classList.remove("active");
+    const menuIcon = document.querySelector(".menu-icon");
+    
+    mobileMenuBtn.addEventListener("click", () => {
+      mobileMenu.classList.toggle("active");
+      menuIcon.classList.toggle("open");
+    });
+    
+    // Close mobile menu when clicking outside
+    document.addEventListener("click", (event) => {
+      if (!mobileMenuBtn.contains(event.target) && !mobileMenu.contains(event.target) && mobileMenu.classList.contains("active")) {
+        mobileMenu.classList.remove("active");
+        menuIcon.classList.remove("open");
+      }
     });
 
     // Scroll to Top on Logo Click
@@ -890,6 +961,7 @@
       const element = document.getElementById(elementId);
       if (element) {
         mobileMenu.classList.remove("active");
+        menuIcon.classList.remove("open");
         const header = document.querySelector('header');
         const headerHeight = header.offsetHeight;
         const isMobile = window.innerWidth <= 600;
