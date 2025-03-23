@@ -223,8 +223,9 @@
     .mobile-menu {
       position: absolute;
       top: 120%;
-      right: 0;
-      width: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
       background: rgba(255, 255, 255, 1);
       backdrop-filter: blur(38px);
       display: flex;
@@ -239,6 +240,8 @@
       border-radius: 30px;
       transition: max-height 0.4s ease, opacity 0.3s ease;
       padding: 0;
+      margin-left: auto;
+      margin-right: auto;
     }
     .mobile-menu.active {
       max-height: 300px;
