@@ -316,7 +316,7 @@
       margin: 12rem auto;
       max-width: 80%;
       position: relative;
-      min-height: 250vh;
+      min-height: 200vh;
       scroll-margin-top: 80px;
     }
     .sticky-container {
@@ -1062,7 +1062,9 @@
       const aboutFlex = document.querySelector(".about-flex");
       const progressBar = document.getElementById("verticalProgressBar");
       const windowHeight = window.innerHeight;
-      const stickyTop = window.innerWidth <= 600 ? 150 : 240;
+      const stickyTop = window.innerWidth <= 600 ? 10 : 180; // The top position in the CSS
+      
+      // Get the exact position where the sticky container should become sticky
       const stickyStart = aboutFlex.offsetTop - stickyTop;
       
       // We only want ~150vh of scrolling for the entire section (shorter)
