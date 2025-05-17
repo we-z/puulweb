@@ -799,7 +799,7 @@
     <div class="header-buttons">
       <button class="secondary-btn" data-scroll-to="contact-section">Contact</button>
       <button class="secondary-btn" data-scroll-to="about-flex">About</button>
-      <button class="main-btn" data-scroll-to="contact-section">Sign Up</button>
+      <button class="main-btn" data-scroll-to="contact-section">Sign In</button>
     </div>
     <button id="mobileMenuBtn" aria-label="Toggle menu">
       <div class="menu-icon">
@@ -811,7 +811,7 @@
     <div id="mobileMenu" class="mobile-menu">
       <button class="secondary-btn" data-scroll-to="contact-section">Contact</button>
       <button class="secondary-btn" data-scroll-to="about-flex">About</button>
-      <button class="secondary-btn" data-scroll-to="contact-section">Sign Up</button>
+      <button class="secondary-btn" data-scroll-to="contact-section">Sign In</button>
     </div>
   </header>
   <main>
@@ -1346,6 +1346,87 @@
         document.body.appendChild(appScript);
       });
     }
+  </script>
+  <!-- Add Firebase Auth script before the closing body tag -->
+  <script type="module">
+    // Import Firebase modules
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+
+    // Your Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyCTJnqW7xH0TpvDUEv73HWaVWp46bpIV9k",
+        authDomain: "puul-app.firebaseapp.com",
+        databaseURL: "https://puul-app-default-rtdb.firebaseio.com",
+        projectId: "puul-app",
+        storageBucket: "puul-app.appspot.com",
+        messagingSenderId: "155293676322",
+        appId: "1:155293676322:web:100962810832e88305ab7b"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    
+    // Configure Google Auth Provider
+    const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({
+        prompt: 'select_account'
+    });
+
+    // Function to redirect to platform page
+    function redirectToPlatform() {
+        console.log('Redirecting to platform page...');
+        window.location.replace('/platform.html');
+    }
+
+    // Check if user is already signed in
+    onAuthStateChanged(auth, (user) => {
+        console.log('Auth state changed:', user ? 'User is signed in' : 'No user');
+        if (user) {
+            console.log('User is already signed in, redirecting...');
+            redirectToPlatform();
+        }
+    });
+
+    // Function to handle Google Sign-In
+    async function handleGoogleSignIn(e) {
+        e.preventDefault(); // Prevent default button behavior
+        e.stopPropagation(); // Stop event propagation
+        
+        console.log('Starting Google Sign-In...');
+        
+        try {
+            const result = await signInWithPopup(auth, provider);
+            console.log('Sign-in successful:', result.user);
+            redirectToPlatform();
+        } catch (error) {
+            console.error('Detailed error:', error);
+            
+            // Show more specific error message
+            let errorMessage = 'Error signing in with Google. ';
+            if (error.code === 'auth/popup-blocked') {
+                errorMessage += 'Please allow popups for this website.';
+            } else if (error.code === 'auth/popup-closed-by-user') {
+                errorMessage += 'Sign-in was cancelled.';
+            } else if (error.code === 'auth/cancelled-popup-request') {
+                errorMessage += 'Please try again.';
+            } else if (error.code === 'auth/unauthorized-domain') {
+                errorMessage += 'This domain is not authorized for Firebase Authentication.';
+            } else {
+                errorMessage += 'Please try again later.';
+            }
+            alert(errorMessage);
+        }
+    }
+
+    // Remove the data-scroll-to attribute from Sign In buttons and add click handler
+    document.querySelectorAll('[data-scroll-to="contact-section"]').forEach(button => {
+        if (button.textContent.trim() === 'Sign In') {
+            button.removeAttribute('data-scroll-to');
+            button.addEventListener('click', handleGoogleSignIn);
+        }
+    });
   </script>
 </body>
 </html>
