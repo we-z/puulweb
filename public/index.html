@@ -137,7 +137,7 @@
       color: white;
       border: 2px solid #000;
       border-radius: 4rem;
-      padding: 12px 36px;
+      padding: 12px 24px;
       font-size: 1.8rem;
       font-weight: 500;
       transition: all 0.3s ease;
@@ -148,6 +148,28 @@
       background-color: transparent;
       color: black;
       scale: 1.1;
+    }
+    /* Styling for the Get Started button specifically, if needed for arrow */
+    .image-container .main-btn .css-cmnm65 {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    .image-container .main-btn .movingText {
+      position: relative;
+      transition: transform 0.3s ease;
+    }
+    .image-container .main-btn:hover .movingText {
+      transform: translateX(-5px);
+    }
+    .image-container .main-btn svg {
+      transition: transform 0.3s ease;
+      width: 24px; /* Adjust size as needed */
+      height: 24px; /* Adjust size as needed */
+    }
+    .image-container .main-btn:hover svg {
+      transform: translateX(5px);
     }
     /* Override main-btn styling for header buttons */
     header .main-btn {
@@ -824,7 +846,14 @@
     </p>
   </main>
   <div class="image-container">
-    <button class="main-btn" data-scroll-to="contact-section">Book a Free Demo</button>
+    <button class="main-btn">
+      <span class="css-cmnm65">
+        <span class="movingText" style="left:0px">Get Started</span>
+        <svg aria-hidden="false" role="img" aria-label="arrow right" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15.0605 8.00003L9.38732 2.32684L8.32666 3.3875L12.1892 7.25L1 7.25V8.75L12.1892 8.75L8.32666 12.6126L9.38732 13.6732L15.0605 8.00003Z" fill="currentColor"></path>
+        </svg>
+      </span>
+    </button>
     <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/price-solar-desktop.png?alt=media&token=b4933d35-41a6-4f96-961a-5ca710ed093c" alt="Price Solar Desktop" width="1200" height="675" />
   </div>
   
@@ -1399,10 +1428,10 @@
         
         console.log('Starting Google Sign-In...');
 
-        // Disable all sign-in buttons
+        // Disable all sign-in buttons and the Get Started button
         document.querySelectorAll('button').forEach(button => {
-            // Check both textContent and if it's a sign-in button by presence of click handler
-            if (button.textContent.trim() === 'Sign In') {
+            const buttonText = button.textContent.trim();
+            if (buttonText === 'Sign In' || buttonText.includes('Get Started')) {
                 button.disabled = true;
             }
         });
@@ -1415,9 +1444,10 @@
         } catch (error) {
             console.error('Detailed error:', error);
             
-            // Re-enable all sign-in buttons on error
+            // Re-enable all sign-in buttons and the Get Started button on error
             document.querySelectorAll('button').forEach(button => {
-                if (button.textContent.trim() === 'Sign In') {
+                const buttonText = button.textContent.trim();
+                if (buttonText === 'Sign In' || buttonText.includes('Get Started')) {
                     button.disabled = false;
                 }
             });
@@ -1439,11 +1469,21 @@
         }
     }
 
-    // Remove the data-scroll-to attribute from Sign In buttons and add click handler
-    document.querySelectorAll('[data-scroll-to="contact-section"]').forEach(button => {
-        if (button.textContent.trim() === 'Sign In') {
-            button.removeAttribute('data-scroll-to');
-            button.addEventListener('click', handleGoogleSignIn);
+    // Attach event listeners after the DOM is fully loaded
+    document.addEventListener('DOMContentLoaded', () => {
+        // Attach to "Sign In" buttons
+        document.querySelectorAll('button').forEach(button => {
+            if (button.textContent.trim() === 'Sign In') {
+                button.removeAttribute('data-scroll-to'); // Remove scroll behavior
+                button.addEventListener('click', handleGoogleSignIn);
+            }
+        });
+
+        // Attach to "Get Started" button
+        const getStartedButton = document.querySelector('.image-container .main-btn');
+        if (getStartedButton && getStartedButton.textContent.trim().includes('Get Started')) {
+            // It already doesn't have data-scroll-to from previous step
+            getStartedButton.addEventListener('click', handleGoogleSignIn);
         }
     });
   </script>
