@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Work Orders - Puul Platform</title>
+    <link rel="stylesheet" href="/css/platform_common.css">
+    <!-- Add any page-specific CSS here if needed -->
+</head>
+<body>
+    <div class="sidebar">
+        <a href="/platform_work_orders.html" class="logo">
+            <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/puul-logo.svg?alt=media&token=aac48fcb-cc8d-4af8-9744-c7eca1e7cf04" alt="Puul Logo">
+            <h1>Puul</h1>
+        </a>
+        <ul class="nav-menu">
+            <li><a href="/platform_work_orders.html" class="active"><span class="icon"></span>Work Orders</a></li>
+            <li><a href="/platform_properties.html"><span class="icon"></span>Properties</a></li>
+            <li><a href="/platform_dashboard.html"><span class="icon"></span>Dashboard</a></li>
+            <li><a href="/platform_settings.html"><span class="icon"></span>Settings</a></li>
+        </ul>
+        <div class="user-profile">
+            <div class="welcome-message" id="welcomeMessage">Loading user...</div>
+            <button class="sign-out-btn" id="signOutBtn">Sign Out</button>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div id="workOrdersView">
+            <div class="content-header">
+                <h2>Work Orders</h2>
+            </div>
+            <div class="page-container">
+                <div class="data-table-container work-order-table-container">
+                    <table class="data-table" id="workOrderTable">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Property</th>
+                                <th>Status</th>
+                                <th>Priority</th>
+                                <th>Created At</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="workOrderTableBody">
+                        </tbody>
+                    </table>
+                    <div id="noWorkOrdersMessage" class="no-data-message" style="display: none;">
+                        <div class="icon">📝</div>
+                        <p>No work orders yet.</p>
+                        <span>Click the '+' button to add your first one!</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button class="fab" id="addItemBtn" aria-label="Add new work order">
+        +
+    </button>
+
+    <!-- Modal for Adding/Editing Work Orders (Common Structure) -->
+    <div id="workOrderModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="workOrderModalTitle">Add New Work Order</h3>
+                <button class="close-btn" data-modal-id="workOrderModal">&times;</button>
+            </div>
+            <form id="workOrderForm">
+                <input type="hidden" id="workOrderId" name="workOrderId">
+                <div class="form-group">
+                    <label for="workOrderTitleInput">Title</label>
+                    <input type="text" id="workOrderTitleInput" name="title" required placeholder="e.g., Leaky faucet in master bathroom">
+                </div>
+                <div class="form-group">
+                    <label for="workOrderPropertySelect">Property</label>
+                    <select id="workOrderPropertySelect" name="propertyId">
+                        <option value="">Select Property (Optional)</option>
+                        <!-- Property options will be populated here by JS -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="workOrderDescription">Description</label>
+                    <textarea id="workOrderDescription" name="description" rows="3" required placeholder="Details about the work order..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="workOrderStatus">Status</label>
+                    <select id="workOrderStatus" name="status">
+                        <option value="Open">Open</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Closed">Closed</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="workOrderPriority">Priority</label>
+                    <select id="workOrderPriority" name="priority">
+                        <option value="Low">Low</option>
+                        <option value="Medium">Medium</option>
+                        <option value="High">High</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="cancel-btn" data-modal-id="workOrderModal">Cancel</button>
+                    <button type="submit" class="submit-btn">Save Work Order</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Common Alert and Confirm Modals (markup from original platform.html) -->
+    <div id="customAlertModal" class="modal">
+        <div class="modal-content alert-modal-content">
+            <div class="modal-header">
+                <h3 id="customAlertTitle">Notification</h3>
+                <button class="close-btn" data-modal-id="customAlertModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="customAlertMessage">This is an alert message.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="ok-btn" data-modal-id="customAlertModal">OK</button>
+            </div>
+        </div>
+    </div>
+    <div id="customConfirmModal" class="modal">
+        <div class="modal-content confirm-modal-content">
+            <div class="modal-header">
+                <h3 id="customConfirmTitle">Confirm Action</h3>
+                 <button class="close-btn" data-modal-id="customConfirmModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="customConfirmMessage">Are you sure?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-btn-confirm" id="customConfirmCancel">Cancel</button>
+                <button class="confirm-btn" id="customConfirmOk">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeAuth, showAlert, showConfirm, editIconSVG, deleteIconSVG, getDbData, updateDbData } from './js/platform_common.js';
+        import { getDatabase, ref, push, onValue, set, remove, serverTimestamp, query, orderByChild, equalTo } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
+
+        // Page-specific DOM Elements
+        const pageDOMElements = {
+            addItemBtn: document.getElementById('addItemBtn'),
+            workOrderModal: document.getElementById('workOrderModal'),
+            workOrderModalTitle: document.getElementById('workOrderModalTitle'),
+            workOrderForm: document.getElementById('workOrderForm'),
+            workOrderIdInput: document.getElementById('workOrderId'),
+            workOrderTitleInput: document.getElementById('workOrderTitleInput'),
+            workOrderPropertySelect: document.getElementById('workOrderPropertySelect'),
+            workOrderDescription: document.getElementById('workOrderDescription'), 
+            workOrderStatus: document.getElementById('workOrderStatus'),
+            workOrderPriority: document.getElementById('workOrderPriority'),
+            workOrderTableBody: document.getElementById('workOrderTableBody'),
+            noWorkOrdersMessage: document.getElementById('noWorkOrdersMessage')
+        };
+
+        let pageCurrentUserId;
+        let pageDatabase;
+        let localPropertiesMap = {}; // For mapping property IDs to names for this page
+
+        function pageInit(userId, db, fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbData, fbUpdateDbData, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon) {
+            pageCurrentUserId = userId;
+            pageDatabase = db;
+            const databaseRef = fbRef;
+
+            initializePropertiesListener(); 
+            loadWorkOrders(fbQuery, fbOrderByChild, commonEditIcon, commonDeleteIcon); // Renamed back & direct call
+
+            if (pageDOMElements.addItemBtn) {
+                pageDOMElements.addItemBtn.addEventListener('click', () => {
+                    openWorkOrderModal(); // Open for new work order
+                });
+            }
+
+            if (pageDOMElements.workOrderForm) {
+                pageDOMElements.workOrderForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    if (!pageCurrentUserId) {
+                        commonShowAlert('User not authenticated. Please sign in again.', 'Authentication Error');
+                        return;
+                    }
+                    const title = pageDOMElements.workOrderTitleInput.value.trim();
+                    const propertyId = pageDOMElements.workOrderPropertySelect.value;
+                    const description = pageDOMElements.workOrderDescription.value.trim();
+                    const status = pageDOMElements.workOrderStatus.value;
+                    const priority = pageDOMElements.workOrderPriority.value;
+                    const workOrderId = pageDOMElements.workOrderIdInput.value;
+
+                    if (!title || !description) {
+                        commonShowAlert('Title and Description are required for work orders.', 'Validation Error');
+                        return;
+                    }
+
+                    const workOrderData = {
+                        title,
+                        description,
+                        status,
+                        priority,
+                        userId: pageCurrentUserId,
+                        propertyId: propertyId || null,
+                        updatedAt: fbServerTimestamp()
+                    };
+
+                    try {
+                        if (workOrderId) { 
+                            const workOrderRef = databaseRef(pageDatabase, `workOrders/${pageCurrentUserId}/${workOrderId}`);
+                            const snapshot = await fbGetDbData(workOrderRef); // Use passed-in fbGetDbData
+                            const existingData = snapshot.val() || {};                           
+                            await fbSet(workOrderRef, {...existingData, ...workOrderData, createdAt: existingData.createdAt || fbServerTimestamp() });
+                            commonShowAlert('Work order updated successfully!');
+                        } else { 
+                            workOrderData.createdAt = fbServerTimestamp();
+                            const workOrdersRef = databaseRef(pageDatabase, `workOrders/${pageCurrentUserId}`);
+                            await fbPush(workOrdersRef, workOrderData);
+                            commonShowAlert('Work order added successfully!');
+                        }
+                        if(pageDOMElements.workOrderModal) pageDOMElements.workOrderModal.style.display = 'none';
+                    } catch (error) {
+                        console.error('Error saving work order:', error);
+                        commonShowAlert(`Error saving work order: ${error.message}`, 'Save Error');
+                    }
+                });
+            }
+        }
+        
+        function initializePropertiesListener() {
+            if (!pageCurrentUserId || !pageDatabase) return;
+            const propertiesRef = ref(pageDatabase, `properties/${pageCurrentUserId}`);
+            onValue(query(propertiesRef, orderByChild('address')), (snapshot) => {
+                localPropertiesMap = {};
+                if(pageDOMElements.workOrderPropertySelect) pageDOMElements.workOrderPropertySelect.innerHTML = '<option value="">Select Property (Optional)</option>';
+                
+                if (snapshot.exists()) {
+                    snapshot.forEach(childSnapshot => {
+                        const key = childSnapshot.key;
+                        const prop = childSnapshot.val();
+                        if (prop && prop.address) {
+                           localPropertiesMap[key] = prop.address;
+                           if(pageDOMElements.workOrderPropertySelect){
+                                const option = document.createElement('option');
+                                option.value = key;
+                                option.textContent = prop.address;
+                                pageDOMElements.workOrderPropertySelect.appendChild(option);
+                           }
+                        }
+                    });
+                }
+            });
+        }
+
+        function loadWorkOrders(fbQuery, fbOrderByChild, editIcon, deleteIcon) { // Renamed back from loadWorkOrdersRealtime
+            if (!pageCurrentUserId || !pageDatabase) return;
+            const workOrdersRef = ref(pageDatabase, `workOrders/${pageCurrentUserId}`);
+            
+            onValue(fbQuery(workOrdersRef, fbOrderByChild('createdAt')), (snapshot) => {
+                console.log("WorkOrdersPage: Firebase onValue triggered for work orders.");
+                
+                if(pageDOMElements.workOrderTableBody) pageDOMElements.workOrderTableBody.innerHTML = '';
+                const data = snapshot.val();
+                
+                if (data && Object.keys(data).length > 0) {
+                    if(pageDOMElements.noWorkOrdersMessage) pageDOMElements.noWorkOrdersMessage.style.display = 'none';
+                    
+                    const sortedKeys = Object.keys(data).sort((a, b) => {
+                        const woA = data[a];
+                        const woB = data[b];
+                        return (woB.createdAt || 0) - (woA.createdAt || 0);
+                    });
+
+                    sortedKeys.forEach(key => {
+                        const wo = data[key];
+                        if (!wo) return;
+
+                        const row = pageDOMElements.workOrderTableBody.insertRow();
+                        row.setAttribute('data-id', key);
+    
+                        row.insertCell().textContent = wo.title || 'N/A';
+                        row.insertCell().textContent = wo.propertyId ? (localPropertiesMap[wo.propertyId] || 'Property ID: ' + wo.propertyId.substring(0,6) + '...') : 'N/A';
+                        row.insertCell().innerHTML = `<span class="status-badge status-${(wo.status || 'N/A').toLowerCase().replace(' ', '-')}">${wo.status || 'N/A'}</span>`;
+                        row.insertCell().innerHTML = `<span class="priority-badge priority-${(wo.priority || 'N/A').toLowerCase()}">${wo.priority || 'N/A'}</span>`;
+                        row.insertCell().textContent = wo.createdAt ? new Date(wo.createdAt).toLocaleDateString() : 'N/A';
+    
+                        const actionsCell = row.insertCell();
+                        actionsCell.classList.add('actions-cell');
+                        actionsCell.innerHTML = `<button class="edit-btn" title="Edit">${editIcon}</button><button class="delete-btn" title="Delete">${deleteIcon}</button>`;
+                        actionsCell.querySelector('.edit-btn').addEventListener('click', () => openWorkOrderModal(key, wo));
+                        actionsCell.querySelector('.delete-btn').addEventListener('click', () => handleDeleteWorkOrder(key));
+                    });
+                } else {
+                    if(pageDOMElements.noWorkOrdersMessage) pageDOMElements.noWorkOrdersMessage.style.display = 'block';
+                }
+            });
+        }
+
+        function openWorkOrderModal(id = null, data = {}) {
+            if(!pageDOMElements.workOrderForm || !pageDOMElements.workOrderModal) return;
+            pageDOMElements.workOrderForm.reset();
+            pageDOMElements.workOrderIdInput.value = id || '';
+            pageDOMElements.workOrderModalTitle.textContent = id ? 'Edit Work Order' : 'Add New Work Order';
+            pageDOMElements.workOrderTitleInput.value = data.title || '';
+            pageDOMElements.workOrderPropertySelect.value = data.propertyId || '';
+            pageDOMElements.workOrderDescription.value = data.description || '';
+            pageDOMElements.workOrderStatus.value = data.status || 'Open';
+            pageDOMElements.workOrderPriority.value = data.priority || 'Medium';
+            pageDOMElements.workOrderModal.style.display = 'flex';
+        }
+
+        async function handleDeleteWorkOrder(id) {
+            if (!pageCurrentUserId || !pageDatabase) return;
+            const confirmed = await showConfirm('Are you sure you want to delete this work order?', 'Delete Work Order');
+            if (confirmed) {
+                try {
+                    const workOrderRef = ref(pageDatabase, `workOrders/${pageCurrentUserId}/${id}`);
+                    await remove(workOrderRef);
+                    showAlert('Work order deleted successfully!');
+                } catch (error) {
+                    console.error('Error deleting work order:', error);
+                    showAlert(`Error deleting work order: ${error.message}`, 'Delete Error');
+                }
+            }
+        }
+
+        // Initialize common auth and pass page-specific initializer
+        initializeAuth(pageInit);
+    </script>
+</body>
+</html> 

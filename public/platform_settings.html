@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Puul Platform</title>
+    <link rel="stylesheet" href="/css/platform_common.css">
+</head>
+<body>
+    <div class="sidebar">
+        <a href="/platform_work_orders.html" class="logo">
+            <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/puul-logo.svg?alt=media&token=aac48fcb-cc8d-4af8-9744-c7eca1e7cf04" alt="Puul Logo">
+            <h1>Puul</h1>
+        </a>
+        <ul class="nav-menu">
+            <li><a href="/platform_work_orders.html"><span class="icon"></span>Work Orders</a></li>
+            <li><a href="/platform_properties.html"><span class="icon"></span>Properties</a></li>
+            <li><a href="/platform_dashboard.html"><span class="icon"></span>Dashboard</a></li>
+            <li><a href="/platform_settings.html" class="active"><span class="icon"></span>Settings</a></li>
+        </ul>
+        <div class="user-profile">
+            <div class="welcome-message" id="welcomeMessage">Loading user...</div>
+            <button class="sign-out-btn" id="signOutBtn">Sign Out</button>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="content-header">
+            <h2>Settings</h2>
+        </div>
+        <div class="page-container">
+            <p>Settings content will be implemented here. Users will be able to configure their preferences and application settings.</p>
+            <!-- Add settings forms and options here -->
+        </div>
+    </div>
+
+    <!-- Common Modals if needed -->
+    <div id="customAlertModal" class="modal">
+        <div class="modal-content alert-modal-content">
+            <div class="modal-header"><h3 id="customAlertTitle">Notification</h3><button class="close-btn" data-modal-id="customAlertModal">&times;</button></div>
+            <div class="modal-body"><p id="customAlertMessage"></p></div>
+            <div class="modal-footer"><button class="ok-btn" data-modal-id="customAlertModal">OK</button></div>
+        </div>
+    </div>
+    
+    <script type="module">
+        import { initializeAuth } from './js/platform_common.js';
+        function pageInit(userId, database) {
+            // Settings specific JS, if any, can go here
+            console.log("Settings page initialized for user:", userId);
+        }
+        initializeAuth(pageInit);
+    </script>
+</body>
+</html> 
