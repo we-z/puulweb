@@ -88,7 +88,7 @@
       background-color: white;
     }
     main h1 {
-      font-size: clamp(2rem, 10vw, 8rem);
+      font-size: clamp(2rem, 10vw, 9rem);
       margin-bottom: 2rem;
       font-weight: 550;
       background: linear-gradient(90deg, #cacaca, black, black, black, #cacaca);
@@ -97,6 +97,9 @@
       -webkit-background-clip: text;
       background-clip: text;
       animation: shimmer 9s linear infinite;
+    }
+    .fix-r-kerning {
+      margin-right: 4px; /* Adjusts space after 'r' in Property */
     }
     @keyframes shimmer {
       0% { background-position: 200% center; }
@@ -136,7 +139,7 @@
       border-radius: 4rem;
       padding: 12px 36px;
       font-size: 1.8rem;
-      font-weight: 600;
+      font-weight: 500;
       transition: all 0.3s ease;
       z-index: 10;
       outline: none;
@@ -815,7 +818,7 @@
     </div>
   </header>
   <main>
-    <h1>Automate Maintenance</h1>
+    <h1>AI Prope<span class="fix-r-kerning">r</span><span class="fix-r-kerning">t</span>y Manager</h1>
     <p>
       Puul is the <strong>AI Platform</strong> streamlining operations for <strong>Property Managers</strong>, and enhancing tenant satisfaction and <strong>Retention</strong>.
     </p>
