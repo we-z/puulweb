@@ -1395,14 +1395,30 @@
         e.stopPropagation(); // Stop event propagation
         
         console.log('Starting Google Sign-In...');
+
+        // Disable all sign-in buttons
+        document.querySelectorAll('button').forEach(button => {
+            // Check both textContent and if it's a sign-in button by presence of click handler
+            if (button.textContent.trim() === 'Sign In') {
+                button.disabled = true;
+            }
+        });
         
         try {
             const result = await signInWithPopup(auth, provider);
             console.log('Sign-in successful:', result.user);
-            redirectToPlatform();
+            // Successful sign-in will trigger onAuthStateChanged, which calls redirectToPlatform
+            // Buttons will remain disabled as the page redirects.
         } catch (error) {
             console.error('Detailed error:', error);
             
+            // Re-enable all sign-in buttons on error
+            document.querySelectorAll('button').forEach(button => {
+                if (button.textContent.trim() === 'Sign In') {
+                    button.disabled = false;
+                }
+            });
+
             // Show more specific error message
             let errorMessage = 'Error signing in with Google. ';
             if (error.code === 'auth/popup-blocked') {
@@ -1410,7 +1426,7 @@
             } else if (error.code === 'auth/popup-closed-by-user') {
                 errorMessage += 'Sign-in was cancelled.';
             } else if (error.code === 'auth/cancelled-popup-request') {
-                errorMessage += 'Please try again.';
+                errorMessage += 'Please try again.'; // Or 'Another sign-in attempt is in progress.'
             } else if (error.code === 'auth/unauthorized-domain') {
                 errorMessage += 'This domain is not authorized for Firebase Authentication.';
             } else {
