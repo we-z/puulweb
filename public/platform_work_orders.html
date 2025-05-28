@@ -16,8 +16,14 @@
                 <h2>Work Orders</h2>
             </div>
             <div class="page-container">
+                <button class="controls-toggle-btn" id="controlsToggleBtn">
+                    <span>Filters & Sort</span>
+                    <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
+                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                </button>
                 <div class="controls-container" style="margin-bottom: 20px; padding: 15px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
-                    <div class="filter-group" style="display: flex; align-items: center; gap: 8px;">
+                    <div class="filter-group">
                         <label for="filterProperty" style="font-size: 0.9rem; color: #4a5568; font-weight: 500;">Property:</label>
                         <!-- <select id="filterProperty" name="filterProperty" style="padding: 8px 12px; border: 1px solid #ced4da; border-radius: 6px; font-size: 0.9rem;">
                             <option value="">All Properties</option>
@@ -33,7 +39,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="filter-group" style="display: flex; align-items: center; gap: 8px;">
+                    <div class="filter-group">
                         <label for="filterPriority" style="font-size: 0.9rem; color: #4a5568; font-weight: 500;">Priority:</label>
                         <!-- <select id="filterPriority" name="filterPriority" style="padding: 8px 12px; border: 1px solid #ced4da; border-radius: 6px; font-size: 0.9rem;">
                             <option value="">All Priorities</option>
@@ -54,7 +60,7 @@
                             </div>
                         </div>
                     </div>
-                     <div class="filter-group" style="display: flex; align-items: center; gap: 8px;">
+                     <div class="filter-group">
                         <label for="filterStatus" style="font-size: 0.9rem; color: #4a5568; font-weight: 500;">Status:</label>
                         <!-- <select id="filterStatus" name="filterStatus" style="padding: 8px 12px; border: 1px solid #ced4da; border-radius: 6px; font-size: 0.9rem;">
                             <option value="">All Statuses</option>
@@ -75,7 +81,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="sort-group" style="display: flex; align-items: center; gap: 8px; margin-left: auto;">
+                    <div class="sort-group">
                         <label for="sortBy" style="font-size: 0.9rem; color: #4a5568; font-weight: 500;">Sort by:</label>
                         <!-- <select id="sortBy" name="sortBy" style="padding: 8px 12px; border: 1px solid #ced4da; border-radius: 6px; font-size: 0.9rem;">
                             <option value="createdAt">Date Created</option>
@@ -236,7 +242,9 @@
             filterPriority: document.getElementById('customFilterPriority'),
             filterStatus: document.getElementById('customFilterStatus'),
             sortBy: document.getElementById('customSortBy'),
-            sortOrder: document.getElementById('customSortOrder')
+            sortOrder: document.getElementById('customSortOrder'),
+            controlsToggleBtn: document.getElementById('controlsToggleBtn'),
+            controlsContainer: document.querySelector('.controls-container')
         };
 
         let pageCurrentUserId;
@@ -258,6 +266,14 @@
             initializeCustomDropdown(pageDOMElements.filterStatus, commonOnChange);
             initializeCustomDropdown(pageDOMElements.sortBy, commonOnChange);
             initializeCustomDropdown(pageDOMElements.sortOrder, commonOnChange);
+
+            // Initialize controls toggle button
+            if (pageDOMElements.controlsToggleBtn && pageDOMElements.controlsContainer) {
+                pageDOMElements.controlsToggleBtn.addEventListener('click', () => {
+                    pageDOMElements.controlsContainer.classList.toggle('expanded');
+                    pageDOMElements.controlsToggleBtn.classList.toggle('expanded');
+                });
+            }
 
             if (pageDOMElements.addItemBtn) {
                 pageDOMElements.addItemBtn.addEventListener('click', () => {

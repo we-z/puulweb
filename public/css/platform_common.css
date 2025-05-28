@@ -712,6 +712,37 @@ table.data-table tr:hover {
     box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
 }
 
+/* Controls Toggle Button for Mobile */
+.controls-toggle-btn {
+    display: none; /* Hidden by default, shown on mobile */
+    width: 100%;
+    padding: 10px 15px;
+    background-color: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    text-align: left;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #374151;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.03);
+}
+
+.controls-toggle-btn:hover {
+    background-color: #f9fafb;
+}
+
+.controls-toggle-btn .arrow-icon {
+    float: right;
+    transition: transform 0.3s ease;
+}
+
+.controls-toggle-btn.expanded .arrow-icon {
+    transform: rotate(180deg);
+}
+
 /* Ensure sort group aligns to the right */
 .sort-group {
     margin-left: auto; /* Pushes this group to the far right if space allows */
@@ -918,5 +949,49 @@ table.data-table tr:hover {
     /* Icon color for when button is "inside" the open sidebar (chevron) */
     .sidebar-toggle-btn:not(.open) .menu-icon span {
         background: #000000; /* Default black for chevron */
+    }
+
+    /* Mobile specific styles for controls container */
+    .controls-toggle-btn {
+        display: flex; /* Show the button on mobile */
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .controls-container {
+        max-height: 0;
+        overflow: hidden;
+        padding-top: 0;
+        padding-bottom: 0;
+        margin-bottom: 0;
+        border-width: 0; /* Hide border when collapsed */
+        opacity: 0;
+        /* transition for all properties including max-height, padding, margin, opacity */
+        transition: max-height 0.35s ease-in-out, padding-top 0.35s ease-in-out, padding-bottom 0.35s ease-in-out, margin-bottom 0.35s ease-in-out, opacity 0.3s ease-in-out, border-width 0.35s ease-in-out;
+    }
+
+    .controls-container.expanded {
+        max-height: 500px; /* Adjust as needed, should be enough for content */
+        padding-top: 12px;
+        padding-bottom: 12px;
+        margin-bottom: 25px; /* Restore original margin */
+        border: 1px solid #e5e7eb; /* Restore border */
+        opacity: 1;
+        overflow: visible; /* Allow dropdowns to overflow */
+    }
+
+    .controls-container .filter-group,
+    .controls-container .sort-group {
+        width: 100%; /* Stack filter/sort groups on mobile */
+        margin-left: 0; /* Reset margin-left for sort-group */
+        flex-direction: column; /* Stack items vertically */
+        align-items: flex-start; /* Align items (label, select) to the left */
+    }
+    .controls-container .sort-group {
+         margin-left: 0; /* Ensure it doesn't float right on mobile */
+    }
+    .controls-container select,
+    .controls-container .custom-dropdown {
+        width: 100%; /* Make dropdowns full width */
     }
 } 
