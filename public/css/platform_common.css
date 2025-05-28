@@ -13,10 +13,12 @@ body {
     /* This container itself doesn't need much styling, the .sidebar inside it is key */
     position: relative; /* If needed for z-index stacking with main-content */
     z-index: 100; /* Ensure sidebar is above main content if overlap occurs */
+    background-color: #ffffff; /* White sidebar */
 }
 
 .sidebar {
     width: 240px;
+    height: 100%; /* Ensure sidebar takes full height of its container */
     background-color: #ffffff; /* White sidebar */
     /* padding: 20px; Removed to control precisely with collapsed state */
     box-shadow: 2px 0 5px rgba(0,0,0,0.05);
@@ -149,6 +151,7 @@ body {
 .user-profile {
     margin-top: auto; /* Pushes to the bottom */
     padding-top: 15px; 
+    padding-bottom: 20px; /* Added bottom padding */
     border-top: 1px solid #e0e0e0;
     text-align: center;
     /* overflow: hidden; Already handled by .sidebar.collapsed > * or specific targeting */
