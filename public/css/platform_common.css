@@ -532,7 +532,7 @@ table.data-table tr:hover {
     background-color: transparent;
     border: none;
     cursor: pointer;
-    padding: 10px; /* Reduced padding to match index.html closer */
+    padding: 0px; /* Reduced padding to match index.html closer */
     margin-right: 15px; 
     /* display: flex; flex-direction: column; justify-content: space-around; */ /* No longer needed for this structure */
     width: 40px; /* Match index.html */
