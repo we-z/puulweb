@@ -9,15 +9,81 @@ body {
     overflow: hidden; /* Prevent body scroll, sidebar/content will scroll */
 }
 
+#sidebar-container {
+    /* This container itself doesn't need much styling, the .sidebar inside it is key */
+    position: relative; /* If needed for z-index stacking with main-content */
+    z-index: 100; /* Ensure sidebar is above main content if overlap occurs */
+}
+
 .sidebar {
     width: 240px;
     background-color: #ffffff; /* White sidebar */
-    padding: 20px;
+    /* padding: 20px; Removed to control precisely with collapsed state */
     box-shadow: 2px 0 5px rgba(0,0,0,0.05);
     display: flex;
     flex-direction: column;
-    z-index: 100;
+    /* z-index: 100; Moved to #sidebar-container if needed */
     border-right: 1px solid #e0e0e0;
+    transition: width 0.3s ease, padding-left 0.3s ease, padding-right 0.3s ease; /* Smooth transition for collapse */
+    overflow-x: hidden; /* Important: Prevent content spill during collapse */
+    padding-left: 20px;
+    padding-right: 20px;
+    box-sizing: border-box; /* Ensure padding is included in width calculation */
+}
+
+.sidebar.collapsed {
+    width: 0;
+    padding-left: 0;
+    padding-right: 0;
+    border-right: none;
+}
+
+/* Hide elements within the sidebar when collapsed */
+.sidebar.collapsed > * {
+    opacity: 0;
+    visibility: hidden; /* Better for accessibility than display:none if transitions are desired */
+    transition: opacity 0.1s ease, visibility 0s linear 0.1s; /* Delay visibility to allow fade */
+}
+
+/* Specifically target elements that need to shrink or hide their text */
+.sidebar .sidebar-header,
+.sidebar .logo,
+.sidebar .nav-menu,
+.sidebar .user-profile {
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    min-width: 200px; /* Original content width before collapse */
+}
+
+.sidebar.collapsed .sidebar-header,
+.sidebar.collapsed .logo,
+.sidebar.collapsed .nav-menu,
+.sidebar.collapsed .user-profile {
+    opacity: 0;
+    visibility: hidden;
+    overflow: hidden;
+}
+
+.sidebar .logo h1.logo-text,
+.sidebar .nav-menu li a .link-text,
+.sidebar .user-profile .welcome-message,
+.sidebar .user-profile .sign-out-btn {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Optional: show ... if text is too long before full hide */
+    opacity: 1;
+    transition: opacity 0.2s ease 0.1s; /* Fade out text slightly delayed */
+}
+
+.sidebar.collapsed .logo h1.logo-text,
+.sidebar.collapsed .nav-menu li a .link-text,
+.sidebar.collapsed .user-profile .welcome-message,
+.sidebar.collapsed .user-profile .sign-out-btn {
+    opacity: 0;
+}
+
+.sidebar-header {
+    margin-bottom: 30px;
+    margin-top: 15px; /* Added margin above the logo and title */
 }
 
 .logo {
@@ -25,8 +91,6 @@ body {
     align-items: center;
     text-decoration: none;
     color: #1a202c; /* Darker Gray/Black */
-    margin-bottom: 30px;
-    padding-left: 10px; /* Align with nav items */
 }
 
 .logo img {
@@ -34,9 +98,10 @@ body {
     width: 35px; /* Explicit width to match height, assuming square SVG aspect */
     margin-right: 10px;
     display: block; /* Can help stabilize layout */
+    transition: margin 0.3s ease;
 }
 
-.logo h1 {
+.logo h1.logo-text {
     margin: 0;
     font-size: 1.5rem;
     font-weight: 600;
@@ -61,10 +126,18 @@ body {
     transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.nav-menu li a .icon { /* For future icons */
+.nav-menu li a .icon {
     margin-right: 10px;
     width: 20px;
     height: 20px;
+    transition: margin 0.3s ease;
+    /* Icons can remain visible if desired when collapsed */
+    /* Ensure they are not affected by the opacity:0 of their parent containers if so */
+    /* For now, they will be hidden by .sidebar.collapsed > * */
+}
+
+.nav-menu li a .link-text {
+    /* Styles for link text, if any specific ones needed beyond global .sidebar.collapsed handling */
 }
 
 .nav-menu li a:hover,
@@ -75,9 +148,14 @@ body {
 
 .user-profile {
     margin-top: auto; /* Pushes to the bottom */
-    padding: 15px;
+    padding-top: 15px; 
     border-top: 1px solid #e0e0e0;
     text-align: center;
+    /* overflow: hidden; Already handled by .sidebar.collapsed > * or specific targeting */
+}
+
+.user-profile .user-info {
+    /* Styles for user info, if any specific ones needed beyond global .sidebar.collapsed handling */
 }
 
 .user-profile .welcome-message {
@@ -110,6 +188,7 @@ body {
     flex-direction: column;
     overflow-y: auto; 
     background-color: #f7f8fc; 
+    transition: margin-left 0.3s ease; /* Should not be needed if sidebar width is 0 */
 }
 
 .content-header {
@@ -117,12 +196,12 @@ body {
     background-color: #ffffff;
     border-bottom: 1px solid #e0e0e0;
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    position: relative; /* For positioning the toggle button */
 }
 
 .content-header h2 {
-    margin: 0;
+    margin: 0 0 0 15px; /* Add some margin if toggle button is present */
     font-size: 1.8rem;
     font-weight: 600;
     color: #1a202c;
@@ -446,4 +525,91 @@ table.data-table tr:hover {
 /* Hidden class for views (used in single-page version) */
 .hidden-view {
     display: none !important;
+}
+
+/* Sidebar Toggle Button */
+.sidebar-toggle-btn {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 10px; /* Reduced padding to match index.html closer */
+    margin-right: 15px; 
+    /* display: flex; flex-direction: column; justify-content: space-around; */ /* No longer needed for this structure */
+    width: 40px; /* Match index.html */
+    height: 40px; /* Match index.html */
+    outline: none;
+    z-index: 105; 
+    position: relative; /* For positioning spans absolutely if needed by menu-icon styles */
+}
+
+/* Hamburger icon bars from index.html, adapted for sidebar toggle */
+.sidebar-toggle-btn .menu-icon {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+/* Styles for .sidebar-toggle-btn .menu-icon spans */
+.sidebar-toggle-btn .menu-icon span {
+    display: block;
+    position: absolute;
+    background: #000000;
+    border-radius: 1px; /* Thinner radius for thinner lines */
+    transition: transform 0.25s ease-in-out, opacity 0.25s ease-in-out, top 0.25s ease-in-out, width 0.25s ease-in-out, height 0.25s ease-in-out, left 0.25s ease-in-out;
+}
+
+/* DEFAULT STATE: Sidebar is OPEN (button does NOT have .open class) -> CHEVRON LEFT */
+.sidebar-toggle-btn .menu-icon span:nth-child(1) {
+    height: 2px;
+    width: 40%; /* Controls arm length of chevron */
+    left: 30%; /* Position for chevron */
+    top: 50%;
+    transform: translateY(-50%) translateX(0px) rotate(45deg);
+    transform-origin: center left; /* Rotate around the left point of the bar */
+}
+
+.sidebar-toggle-btn .menu-icon span:nth-child(2) {
+    opacity: 0; /* Middle bar hidden for chevron */
+    height: 2px;
+    width: 0%; /* Effectively hidden */
+    left: 50%;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.sidebar-toggle-btn .menu-icon span:nth-child(3) {
+    height: 2px;
+    width: 40%; /* Controls arm length of chevron */
+    left: 30%; /* Position for chevron */
+    top: 50%;
+    transform: translateY(-50%) translateX(0px) rotate(-45deg);
+    transform-origin: center left; /* Rotate around the left point of the bar */
+}
+
+/* ALTERNATE STATE: Sidebar is COLLAPSED (button HAS .open class) -> 3 LINES */
+.sidebar-toggle-btn.open .menu-icon span {
+    height: 2px;  /* Thinner lines */
+    width: 80%;   /* Longer lines */
+    left: 10%;    /* Centering longer lines */
+    opacity: 1;   /* Ensure visible */
+    transform: rotate(0deg) translateY(0) translateX(0); /* Reset transforms from chevron */
+    transform-origin: center; /* Reset transform origin */
+}
+
+.sidebar-toggle-btn.open .menu-icon span:nth-child(1) {
+    top: 25%;
+    transform: translateY(-50%); /* Center the line itself */
+}
+
+.sidebar-toggle-btn.open .menu-icon span:nth-child(2) {
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 1; /* Ensure middle line is visible */
+    width: 80%; /* Ensure it has full width for 3-line state */
+}
+
+.sidebar-toggle-btn.open .menu-icon span:nth-child(3) {
+    top: 75%;
+    bottom: auto;
+    transform: translateY(-50%); /* Center the line itself */
 } 

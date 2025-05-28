@@ -7,22 +7,7 @@
     <link rel="stylesheet" href="/css/platform_common.css">
 </head>
 <body>
-    <div class="sidebar">
-        <a href="/platform_work_orders.html" class="logo">
-            <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/puul-logo.svg?alt=media&token=aac48fcb-cc8d-4af8-9744-c7eca1e7cf04" alt="Puul Logo">
-            <h1>Puul</h1>
-        </a>
-        <ul class="nav-menu">
-            <li><a href="/platform_work_orders.html"><span class="icon"></span>Work Orders</a></li>
-            <li><a href="/platform_properties.html" class="active"><span class="icon"></span>Properties</a></li>
-            <li><a href="/platform_dashboard.html"><span class="icon"></span>Dashboard</a></li>
-            <li><a href="/platform_settings.html"><span class="icon"></span>Settings</a></li>
-        </ul>
-        <div class="user-profile">
-            <div class="welcome-message" id="welcomeMessage">Loading user...</div>
-            <button class="sign-out-btn" id="signOutBtn">Sign Out</button>
-        </div>
-    </div>
+    <div id="sidebar-container"></div>
 
     <div class="main-content">
         <div id="propertiesView">
@@ -154,7 +139,6 @@
             pageCurrentUserId = userId;
             pageDatabase = db;
             
-            // Store common dependencies for use in other functions on this page
             commonDependencies = {
                 fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, 
                 fbOrderByChild, fbEqualTo, fbGetDbData, fbUpdateDbData, 
@@ -173,7 +157,7 @@
                 pageDOMElements.propertyForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
                     if (!pageCurrentUserId) {
-                        commonShowAlert('User not authenticated. Please sign in again.', 'Authentication Error');
+                        commonDependencies.commonShowAlert('User not authenticated. Please sign in again.', 'Authentication Error');
                         return;
                     }
                     const address = pageDOMElements.propertyAddress.value.trim();
@@ -182,7 +166,7 @@
                     const propertyId = pageDOMElements.propertyIdInput.value;
 
                     if (!address) {
-                        commonShowAlert('Address is required for properties.', 'Validation Error');
+                        commonDependencies.commonShowAlert('Address is required for properties.', 'Validation Error');
                         return;
                     }
 
@@ -191,26 +175,26 @@
                         type,
                         notes,
                         userId: pageCurrentUserId,
-                        updatedAt: fbServerTimestamp()
+                        updatedAt: commonDependencies.fbServerTimestamp()
                     };
 
                     try {
                         if (propertyId) {
-                            const propertyRef = fbRef(pageDatabase, `properties/${pageCurrentUserId}/${propertyId}`);
-                            const snapshot = await fbGetDbData(propertyRef);
+                            const propertyRef = commonDependencies.fbRef(pageDatabase, `properties/${pageCurrentUserId}/${propertyId}`);
+                            const snapshot = await commonDependencies.fbGetDbData(propertyRef);
                             const existingData = snapshot.val() || {};
-                            await fbSet(propertyRef, {...existingData, ...propertyData, createdAt: existingData.createdAt || fbServerTimestamp()});
-                            commonShowAlert('Property updated successfully!');
+                            await commonDependencies.fbSet(propertyRef, {...existingData, ...propertyData, createdAt: existingData.createdAt || commonDependencies.fbServerTimestamp()});
+                            commonDependencies.commonShowAlert('Property updated successfully!');
                         } else {
-                            propertyData.createdAt = fbServerTimestamp();
-                            const propertiesRef = fbRef(pageDatabase, `properties/${pageCurrentUserId}`);
-                            await fbPush(propertiesRef, propertyData);
-                            commonShowAlert('Property added successfully!');
+                            propertyData.createdAt = commonDependencies.fbServerTimestamp();
+                            const propertiesRef = commonDependencies.fbRef(pageDatabase, `properties/${pageCurrentUserId}`);
+                            await commonDependencies.fbPush(propertiesRef, propertyData);
+                            commonDependencies.commonShowAlert('Property added successfully!');
                         }
                         if(pageDOMElements.propertyModal) pageDOMElements.propertyModal.style.display = 'none';
                     } catch (error) {
                         console.error('Error saving property:', error);
-                        commonShowAlert(`Error saving property: ${error.message}`, 'Save Error');
+                        commonDependencies.commonShowAlert(`Error saving property: ${error.message}`, 'Save Error');
                     }
                 });
             }
@@ -223,13 +207,13 @@
             }
             console.log(`PropertiesPage: loadProperties - Initializing for user ${pageCurrentUserId}`);
 
-            const propertiesRef = ref(pageDatabase, `properties/${pageCurrentUserId}`);
-            const workOrdersRef = ref(pageDatabase, `workOrders/${pageCurrentUserId}`);
+            const propertiesRef = commonDependencies.fbRef(pageDatabase, `properties/${pageCurrentUserId}`);
+            const workOrdersRef = commonDependencies.fbRef(pageDatabase, `workOrders/${pageCurrentUserId}`);
 
-            onValue(query(propertiesRef, orderByChild('address')), async (propSnapshot) => {
+            onValue(commonDependencies.fbQuery(propertiesRef, commonDependencies.fbOrderByChild('address')), async (propSnapshot) => {
                 console.log("PropertiesPage: onValue triggered for propertiesRef.");
-                const tableBody = document.getElementById('propertiesTableBody'); 
-                const noMessage = document.getElementById('noPropertiesMessage'); 
+                const tableBody = pageDOMElements.propertiesTableBody; 
+                const noMessage = pageDOMElements.noPropertiesMessage; 
                 
                 if (!tableBody || !noMessage) {
                     console.error("PropertiesPage: Table body or no message element not found in DOM.");
@@ -241,9 +225,8 @@
                     console.log("PropertiesPage: propSnapshot EXISTS. Data:", propSnapshot.val());
                     noMessage.style.display = 'none';
                     let propertyPromises = [];
-                    const propertiesData = propSnapshot.val(); // Get data once
+                    const propertiesData = propSnapshot.val(); 
 
-                    // Sort properties by address client-side for consistent rendering
                     const sortedPropertyKeys = Object.keys(propertiesData).sort((a,b) => {
                         const propA = propertiesData[a];
                         const propB = propertiesData[b];
@@ -288,11 +271,21 @@
 
                     Promise.all(propertyPromises).then(resolvedProperties => {
                         console.log("PropertiesPage: All property promises resolved. Data:", resolvedProperties);
-                        if (resolvedProperties.length === 0) {
-                             console.log("PropertiesPage: No properties to render after promises resolved.");
+                        if (resolvedProperties.length === 0 && Object.keys(propertiesData).length > 0 ) { // Check if original snapshot had data but promises are empty
+                             console.log("PropertiesPage: No valid properties to render after promises resolved, though initial data existed.");
                              noMessage.style.display = 'block';
+                             tableBody.innerHTML = ''; // Ensure table is clear
                              return;
+                        } else if (resolvedProperties.length === 0) {
+                            console.log("PropertiesPage: No properties to render after promises resolved (initial data was also empty or all filtered).");
+                            noMessage.style.display = 'block';
+                            tableBody.innerHTML = ''; // Ensure table is clear
+                            return;
                         }
+                        
+                        tableBody.innerHTML = ''; // Clear before adding new rows
+                        noMessage.style.display = 'none'; // Hide no message if we have properties to show
+
                         resolvedProperties.forEach(({ key, prop, openCount, totalCount, error }) => {
                             if (error) {
                                 console.warn(`PropertiesPage: Skipping rendering for property key: ${key} due to an error during WO count.`);
@@ -318,32 +311,26 @@
                     }).catch(err => {
                         console.error("PropertiesPage: Error in Promise.all for properties:", err);
                         noMessage.style.display = 'block'; 
+                        tableBody.innerHTML = '';
                     });
 
                 } else {
                     console.log("PropertiesPage: propSnapshot does NOT exist. No properties found for this user.");
                     noMessage.style.display = 'block';
+                    tableBody.innerHTML = '';
                 }
             });
         }
 
         function openPropertyModal(id = null, data = {}) {
-            const propertyModal = document.getElementById('propertyModal');
-            const propertyForm = document.getElementById('propertyForm');
-            const propertyIdInput = document.getElementById('propertyIdInput');
-            const propertyModalTitle = document.getElementById('propertyModalTitle');
-            const propertyAddress = document.getElementById('propertyAddress');
-            const propertyType = document.getElementById('propertyType');
-            const propertyNotes = document.getElementById('propertyNotes');
-
-            if(!propertyForm || !propertyModal) return;
-            propertyForm.reset();
-            propertyIdInput.value = id || '';
-            propertyModalTitle.textContent = id ? 'Edit Property' : 'Add New Property';
-            propertyAddress.value = data.address || '';
-            propertyType.value = data.type || 'Single Family Home';
-            propertyNotes.value = data.notes || '';
-            propertyModal.style.display = 'flex';
+            if(!pageDOMElements.propertyForm || !pageDOMElements.propertyModal) return;
+            pageDOMElements.propertyForm.reset();
+            pageDOMElements.propertyIdInput.value = id || '';
+            pageDOMElements.propertyModalTitle.textContent = id ? 'Edit Property' : 'Add New Property';
+            pageDOMElements.propertyAddress.value = data.address || '';
+            pageDOMElements.propertyType.value = data.type || 'Single Family Home';
+            pageDOMElements.propertyNotes.value = data.notes || '';
+            pageDOMElements.propertyModal.style.display = 'flex';
         }
 
         async function handleDeleteProperty(id) {
@@ -352,12 +339,11 @@
                 return;
             }
             
-            const workOrdersQueryRef = commonDependencies.fbQuery(ref(pageDatabase, `workOrders/${pageCurrentUserId}`), commonDependencies.fbOrderByChild('propertyId'), commonDependencies.fbEqualTo(id));
+            const workOrdersQueryRef = commonDependencies.fbQuery(commonDependencies.fbRef(pageDatabase, `workOrders/${pageCurrentUserId}`), commonDependencies.fbOrderByChild('propertyId'), commonDependencies.fbEqualTo(id));
             const linkedWorkOrdersSnapshot = await commonDependencies.fbGetDbData(workOrdersQueryRef);
             let confirmMessage = 'Are you sure you want to delete this property?';
             let numLinked = 0;
             if (linkedWorkOrdersSnapshot.exists()) {
-                 // Correctly count children in RTDB snapshot
                 linkedWorkOrdersSnapshot.forEach(() => numLinked++);
                 if (numLinked > 0) {
                     confirmMessage = `This property is linked to ${numLinked} work order(s). Deleting it will unlink them. Are you sure you want to delete this property?`;
@@ -372,10 +358,10 @@
                         linkedWorkOrdersSnapshot.forEach(woSnapshot => {
                             updates[`workOrders/${pageCurrentUserId}/${woSnapshot.key}/propertyId`] = null;
                         });
-                        await commonDependencies.fbUpdateDbData(ref(pageDatabase), updates);
+                        await commonDependencies.fbUpdateDbData(commonDependencies.fbRef(pageDatabase), updates);
                     }
                     
-                    const propertyRefToDelete = ref(pageDatabase, `properties/${pageCurrentUserId}/${id}`);
+                    const propertyRefToDelete = commonDependencies.fbRef(pageDatabase, `properties/${pageCurrentUserId}/${id}`);
                     await commonDependencies.fbRemove(propertyRefToDelete);
                     commonDependencies.commonShowAlert('Property deleted successfully!');
                 } catch (error) {
