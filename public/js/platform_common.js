@@ -112,6 +112,11 @@ function setupPageLayoutAndInteractivity() {
         menuToggleBtn.classList.toggle('open', isCollapsed);
         menuToggleBtn.setAttribute('aria-expanded', !isCollapsed);
         localStorage.setItem('sidebarCollapsed', isCollapsed);
+
+        // On mobile, when sidebar is open (not collapsed), ensure it has transform: translateX(0)
+        // and when it is collapsed, it has transform: translateX(-100%)
+        // The CSS handles this via :not(.collapsed) and .collapsed selectors within the media query.
+        // No explicit JS style change for transform is needed here due to the CSS setup.
     });
 
     if (localStorage.getItem('sidebarCollapsed') === 'true') {
@@ -119,6 +124,8 @@ function setupPageLayoutAndInteractivity() {
         menuToggleBtn.classList.add('open');
         menuToggleBtn.setAttribute('aria-expanded', 'false');
     } else {
+        sidebar.classList.remove('collapsed'); // Ensure it's not collapsed by default if no local storage state
+        menuToggleBtn.classList.remove('open');
         menuToggleBtn.setAttribute('aria-expanded', 'true');
     }
 

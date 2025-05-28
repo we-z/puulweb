@@ -218,6 +218,7 @@ body {
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     overflow: hidden; 
+    overflow-x: auto; /* Allow horizontal scrolling for the table */
 }
 
 table.data-table {
@@ -612,4 +613,112 @@ table.data-table tr:hover {
     top: 75%;
     bottom: auto;
     transform: translateY(-50%); /* Center the line itself */
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 240px; /* Retain original width */
+        padding-left: 20px; /* Retain original padding */
+        padding-right: 20px;
+        border-right: 1px solid #e0e0e0; /* Retain original border */
+        background-color: #ffffff;
+        z-index: 1000; /* Ensure it's on top of main-content */
+        transform: translateX(-100%); /* Collapsed by default, slides out of view */
+        transition: transform 0.3s ease;
+        box-shadow: 2px 0 5px rgba(0,0,0,0.1); /* Add shadow when overlaying */
+    }
+
+    /* When sidebar is NOT collapsed (i.e., open), slide it into view */
+    .sidebar:not(.collapsed) {
+        transform: translateX(0);
+    }
+
+    /* Override desktop collapse styles that hide content or shrink width */
+    .sidebar.collapsed {
+        width: 240px; /* Keep full width, transform hides it */
+        padding-left: 20px; /* Keep full padding */
+        padding-right: 20px;
+        border-right: 1px solid #e0e0e0; /* Keep border */
+        /* transform: translateX(-100%) is implicitly handled by the base .sidebar style for mobile */
+    }
+
+    /* Ensure content inside is visible when sidebar is open on mobile */
+    .sidebar:not(.collapsed) > * {
+        opacity: 1 !important;
+        visibility: visible !important;
+        transition: opacity 0.2s ease 0.1s, visibility 0s linear; /* Smooth fade-in of content */
+    }
+
+    .sidebar:not(.collapsed) .sidebar-header,
+    .sidebar:not(.collapsed) .logo,
+    .sidebar:not(.collapsed) .nav-menu,
+    .sidebar:not(.collapsed) .user-profile {
+        opacity: 1 !important;
+        visibility: visible !important;
+        min-width: 200px; /* Restore original min-width */
+        overflow: visible !important;
+    }
+
+    .sidebar:not(.collapsed) .logo h1.logo-text,
+    .sidebar:not(.collapsed) .nav-menu li a .link-text,
+    .sidebar:not(.collapsed) .user-profile .welcome-message,
+    .sidebar:not(.collapsed) .user-profile .sign-out-btn {
+        opacity: 1 !important;
+        white-space: nowrap; /* Ensure text isn't wrapped if it was part of collapse */
+    }
+
+    .main-content {
+        margin-left: 0 !important; /* Main content takes full width */
+        transition: none !important; /* No transition for margin */
+    }
+
+    /* Adjust content header for the fixed toggle button */
+    .content-header {
+        padding-left: 60px; /* Space for the toggle button when sidebar is closed */
+        position: relative; /* Ensure stacking context for its children if needed, but button is fixed */
+    }
+
+    .sidebar-toggle-btn {
+        position: fixed;
+        top: 15px;
+        z-index: 1010; /* Above sidebar */
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(5px);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        /* box-shadow: 0 2px 8px rgba(0,0,0,0.15); */ /* Removed as per request */
+        padding: 0; /* Reset padding if any was inherited */
+        margin-right: 0; /* Reset margin */
+    }
+
+    /* State 1: Sidebar is COLLAPSED. Button has '.open' class (hamburger icon). Position to OPEN the sidebar. */
+    .sidebar-toggle-btn.open {
+        left: 15px; /* Positioned at the left edge of the screen */
+    }
+
+    /* State 2: Sidebar is OPEN. Button does NOT have '.open' class (chevron icon). Position IN the sidebar. */
+    .sidebar-toggle-btn:not(.open) {
+        /* Position it near the top-right of the open sidebar (width 240px) */
+        /* left = sidebar_width - button_width - desired_padding_from_right_edge_of_sidebar */
+        left: calc(240px - 40px - 15px); /* = 185px from left of screen */
+        background: transparent; /* Blend into the sidebar */
+        box-shadow: none; /* No shadow when "inside" the sidebar - this was correctly none already */
+    }
+
+    /* Ensure icon spans are visible against potentially varied backgrounds */
+    .sidebar-toggle-btn .menu-icon span {
+         background: #333333; /* Darker icon lines for visibility */
+    }
+    /* Icon color for when button is "inside" the open sidebar (chevron) */
+    .sidebar-toggle-btn:not(.open) .menu-icon span {
+        background: #000000; /* Default black for chevron */
+    }
 } 
