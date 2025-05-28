@@ -15,6 +15,53 @@
                 <h2>Properties</h2>
             </div>
             <div class="page-container">
+                <div class="controls-container">
+                    <div class="filter-group">
+                        <label for="customFilterPropertyType">Type:</label>
+                        <div class="custom-dropdown" id="customFilterPropertyType">
+                            <div class="dropdown-selected" tabindex="0">
+                                <span class="selected-value">All Types</span>
+                                <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                            </div>
+                            <div class="dropdown-options">
+                                <div class="dropdown-option selected" data-value="">All Types</div>
+                                <div class="dropdown-option" data-value="Single Family Home">Single Family Home</div>
+                                <div class="dropdown-option" data-value="Apartment Unit">Apartment Unit</div>
+                                <div class="dropdown-option" data-value="Multi-Family Building">Multi-Family Building</div>
+                                <div class="dropdown-option" data-value="Condominium">Condominium</div>
+                                <div class="dropdown-option" data-value="Townhouse">Townhouse</div>
+                                <div class="dropdown-option" data-value="Commercial Storefront">Commercial Storefront</div>
+                                <div class="dropdown-option" data-value="Office Space">Office Space</div>
+                                <div class="dropdown-option" data-value="Industrial Warehouse">Industrial Warehouse</div>
+                                <div class="dropdown-option" data-value="Vacant Land">Vacant Land</div>
+                                <div class="dropdown-option" data-value="Other">Other</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sort-group">
+                        <label for="customSortPropertiesBy">Sort by:</label>
+                        <div class="custom-dropdown" id="customSortPropertiesBy">
+                            <div class="dropdown-selected" tabindex="0">
+                                <span class="selected-value">Address</span>
+                                <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                            </div>
+                            <div class="dropdown-options">
+                                <div class="dropdown-option selected" data-value="address">Address</div>
+                                <div class="dropdown-option" data-value="type">Type</div>
+                            </div>
+                        </div>
+                        <div class="custom-dropdown" id="customSortPropertiesOrder">
+                            <div class="dropdown-selected" tabindex="0">
+                                <span class="selected-value">Ascending</span>
+                                <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                            </div>
+                            <div class="dropdown-options">
+                                <div class="dropdown-option selected" data-value="asc">Ascending</div>
+                                <div class="dropdown-option" data-value="desc">Descending</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="data-table-container properties-table-container">
                     <table class="data-table" id="propertiesTable">
                         <thead>
@@ -128,7 +175,10 @@
             propertyType: document.getElementById('propertyType'),
             propertyNotes: document.getElementById('propertyNotes'),
             propertiesTableBody: document.getElementById('propertiesTableBody'),
-            noPropertiesMessage: document.getElementById('noPropertiesMessage')
+            noPropertiesMessage: document.getElementById('noPropertiesMessage'),
+            filterPropertyType: document.getElementById('customFilterPropertyType'),
+            sortPropertiesBy: document.getElementById('customSortPropertiesBy'),
+            sortPropertiesOrder: document.getElementById('customSortPropertiesOrder')
         };
 
         let pageCurrentUserId;
@@ -146,6 +196,12 @@
             };
 
             loadProperties();
+
+            // Initialize custom dropdowns for properties page
+            const propertiesCommonOnChange = () => loadProperties();
+            initializeCustomDropdown(pageDOMElements.filterPropertyType, propertiesCommonOnChange);
+            initializeCustomDropdown(pageDOMElements.sortPropertiesBy, propertiesCommonOnChange);
+            initializeCustomDropdown(pageDOMElements.sortPropertiesOrder, propertiesCommonOnChange);
 
             if (pageDOMElements.addItemBtn) {
                 pageDOMElements.addItemBtn.addEventListener('click', () => {
@@ -207,10 +263,19 @@
             }
             console.log(`PropertiesPage: loadProperties - Initializing for user ${pageCurrentUserId}`);
 
+            // Get filter and sort values
+            const filterTypeValue = pageDOMElements.filterPropertyType ? pageDOMElements.filterPropertyType.dataset.value : '';
+            const sortByValue = pageDOMElements.sortPropertiesBy ? pageDOMElements.sortPropertiesBy.dataset.value : 'address';
+            const sortOrderValue = pageDOMElements.sortPropertiesOrder ? pageDOMElements.sortPropertiesOrder.dataset.value : 'asc';
+
             const propertiesRef = commonDependencies.fbRef(pageDatabase, `properties/${pageCurrentUserId}`);
             const workOrdersRef = commonDependencies.fbRef(pageDatabase, `workOrders/${pageCurrentUserId}`);
 
-            onValue(commonDependencies.fbQuery(propertiesRef, commonDependencies.fbOrderByChild('address')), async (propSnapshot) => {
+            // Note: Firebase Realtime DB doesn't support multiple orderByChild or complex server-side filtering combined with sorting on different fields easily.
+            // We will fetch all properties and then filter/sort client-side for simplicity with current structure.
+            // For larger datasets, consider denormalizing data or using Firestore for more powerful queries.
+
+            onValue(propertiesRef, async (propSnapshot) => { // Changed from query to just ref to get all for client-side sort/filter
                 console.log("PropertiesPage: onValue triggered for propertiesRef.");
                 const tableBody = pageDOMElements.propertiesTableBody; 
                 const noMessage = pageDOMElements.noPropertiesMessage; 
@@ -221,104 +286,87 @@
                 }
                 tableBody.innerHTML = '';
 
+                let propertiesArray = [];
                 if (propSnapshot.exists()) {
-                    console.log("PropertiesPage: propSnapshot EXISTS. Data:", propSnapshot.val());
-                    noMessage.style.display = 'none';
-                    let propertyPromises = [];
-                    const propertiesData = propSnapshot.val(); 
+                    propSnapshot.forEach(childSnapshot => {
+                        propertiesArray.push({ id: childSnapshot.key, ...childSnapshot.val() });
+                    });
+                }
 
-                    const sortedPropertyKeys = Object.keys(propertiesData).sort((a,b) => {
-                        const propA = propertiesData[a];
-                        const propB = propertiesData[b];
-                        return (propA.address || '').localeCompare(propB.address || '');
+                // 1. Filter properties client-side
+                if (filterTypeValue) {
+                    propertiesArray = propertiesArray.filter(p => p.type === filterTypeValue);
+                }
+
+                // 2. Fetch work order counts (this part remains asynchronous per property)
+                let propertyPromises = propertiesArray.map(prop => {
+                    if (!prop || !prop.address) { // Basic sanity check
+                        return Promise.resolve({ ...prop, openCount: 0, totalCount: 0, error: true, message: "Missing address" });
+                    }
+                    return commonDependencies.fbGetDbData(commonDependencies.fbQuery(workOrdersRef, commonDependencies.fbOrderByChild('propertyId'), commonDependencies.fbEqualTo(prop.id)))
+                        .then(woSnapshot => {
+                            let openCount = 0;
+                            let totalCount = 0;
+                            if(woSnapshot.exists()){
+                                woSnapshot.forEach(woChild => {
+                                    totalCount++;
+                                    if(woChild.val() && woChild.val().status === 'Open') openCount++;
+                                });
+                            }
+                            return { ...prop, openCount, totalCount };
+                        }).catch(err => {
+                            console.error(`PropertiesPage: Error fetching work order count for property ${prop.id}:`, err);
+                            return { ...prop, openCount: 0, totalCount: 0, error: true, message: err.message }; 
+                        });
+                });
+
+                Promise.all(propertyPromises).then(resolvedPropertiesWithCounts => {
+                    let finalPropertiesToRender = resolvedPropertiesWithCounts.filter(p => !(p.error && p.message === "Missing address")); // Filter out ones that had no address initially
+
+                    // 3. Sort properties client-side (after getting counts, if sorting by counts was needed - not currently an option)
+                    finalPropertiesToRender.sort((a, b) => {
+                        let valA = a[sortByValue];
+                        let valB = b[sortByValue];
+
+                        if (typeof valA === 'string') valA = valA.toLowerCase();
+                        if (typeof valB === 'string') valB = valB.toLowerCase();
+
+                        let comparison = 0;
+                        if (valA > valB) comparison = 1;
+                        else if (valA < valB) comparison = -1;
+                        
+                        return sortOrderValue === 'desc' ? comparison * -1 : comparison;
                     });
 
-                    for (const key of sortedPropertyKeys) {
-                        const prop = propertiesData[key];
-                        console.log(`PropertiesPage: Processing property key: ${key}`, prop);
-                        
-                        if (!prop || !prop.address) {
-                            console.warn(`PropertiesPage: Skipping property key: ${key} due to missing data or address.`, prop);
-                            continue; 
-                        }
-
-                        const workOrderCountPromise = commonDependencies.fbGetDbData(commonDependencies.fbQuery(workOrdersRef, commonDependencies.fbOrderByChild('propertyId'), commonDependencies.fbEqualTo(key)))
-                            .then(woSnapshot => {
-                                let openCount = 0;
-                                let totalCount = 0;
-                                if(woSnapshot.exists()){
-                                    console.log(`PropertiesPage: Work orders found for property ${key}:`, woSnapshot.val());
-                                    woSnapshot.forEach(woChild => {
-                                        totalCount++;
-                                        if(woChild.val() && woChild.val().status === 'Open') openCount++;
-                                    });
-                                } else {
-                                    console.log(`PropertiesPage: No work orders found for property ${key}`);
-                                }
-                                return { key, prop, openCount, totalCount };
-                            }).catch(err => {
-                                console.error(`PropertiesPage: Error fetching work order count for property ${key}:`, err);
-                                return { key, prop, openCount: 0, totalCount: 0, error: true }; 
-                            });
-                        propertyPromises.push(workOrderCountPromise);
-                    }
-
-                    console.log(`PropertiesPage: Number of property promises created: ${propertyPromises.length}`);
-
-                    if (propertyPromises.length === 0 && Object.keys(propertiesData).length > 0) {
-                        console.warn("PropertiesPage: Snapshot has children, but no promises were created. This might indicate all properties were skipped in forEach.");
-                    }
-
-                    Promise.all(propertyPromises).then(resolvedProperties => {
-                        console.log("PropertiesPage: All property promises resolved. Data:", resolvedProperties);
-                        if (resolvedProperties.length === 0 && Object.keys(propertiesData).length > 0 ) { // Check if original snapshot had data but promises are empty
-                             console.log("PropertiesPage: No valid properties to render after promises resolved, though initial data existed.");
-                             noMessage.style.display = 'block';
-                             tableBody.innerHTML = ''; // Ensure table is clear
-                             return;
-                        } else if (resolvedProperties.length === 0) {
-                            console.log("PropertiesPage: No properties to render after promises resolved (initial data was also empty or all filtered).");
-                            noMessage.style.display = 'block';
-                            tableBody.innerHTML = ''; // Ensure table is clear
-                            return;
-                        }
-                        
-                        tableBody.innerHTML = ''; // Clear before adding new rows
-                        noMessage.style.display = 'none'; // Hide no message if we have properties to show
-
-                        resolvedProperties.forEach(({ key, prop, openCount, totalCount, error }) => {
-                            if (error) {
-                                console.warn(`PropertiesPage: Skipping rendering for property key: ${key} due to an error during WO count.`);
-                                return;
+                    tableBody.innerHTML = ''; // Clear again before rendering sorted/filtered
+                    if (finalPropertiesToRender.length > 0) {
+                        noMessage.style.display = 'none';
+                        finalPropertiesToRender.forEach(propData => {
+                            if (propData.error && propData.message !== "Missing address") { // Log other errors but don't break row rendering
+                                console.warn(`PropertiesPage: Skipping rendering for property ID: ${propData.id} due to WO count error: ${propData.message}`);
+                                // Optionally render a row with an error message or skip
                             }
-                            if (!prop || !prop.address) { 
-                                console.warn(`PropertiesPage: Skipping rendering for property key: ${key} due to missing prop or address in resolved data.`);
-                                return; 
-                            }
-                            
-                            console.log(`PropertiesPage: Rendering row for property ${key}:`, prop.address);
+                            if (!propData.address) return; // Final check
+
                             const row = tableBody.insertRow();
-                            row.setAttribute('data-id', key);
-                            row.insertCell().textContent = prop.address;
-                            row.insertCell().textContent = prop.type || 'N/A';
-                            row.insertCell().textContent = `${openCount} / ${totalCount}`;
+                            row.setAttribute('data-id', propData.id);
+                            row.insertCell().textContent = propData.address;
+                            row.insertCell().textContent = propData.type || 'N/A';
+                            row.insertCell().textContent = `${propData.openCount || 0} / ${propData.totalCount || 0}`;
                             const actionsCell = row.insertCell();
                             actionsCell.classList.add('actions-cell');
                             actionsCell.innerHTML = `<button class="edit-btn" title="Edit">${commonDependencies.commonEditIcon}</button><button class="delete-btn" title="Delete">${commonDependencies.commonDeleteIcon}</button>`;
-                            actionsCell.querySelector('.edit-btn').addEventListener('click', () => openPropertyModal(key, prop));
-                            actionsCell.querySelector('.delete-btn').addEventListener('click', () => handleDeleteProperty(key)); 
+                            actionsCell.querySelector('.edit-btn').addEventListener('click', () => openPropertyModal(propData.id, propData));
+                            actionsCell.querySelector('.delete-btn').addEventListener('click', () => handleDeleteProperty(propData.id)); 
                         });
-                    }).catch(err => {
-                        console.error("PropertiesPage: Error in Promise.all for properties:", err);
-                        noMessage.style.display = 'block'; 
-                        tableBody.innerHTML = '';
-                    });
-
-                } else {
-                    console.log("PropertiesPage: propSnapshot does NOT exist. No properties found for this user.");
-                    noMessage.style.display = 'block';
+                    } else {
+                        noMessage.style.display = 'block';
+                    }
+                }).catch(err => {
+                    console.error("PropertiesPage: Error in Promise.all for property WO counts:", err);
+                    noMessage.style.display = 'block'; 
                     tableBody.innerHTML = '';
-                }
+                });
             });
         }
 
@@ -369,6 +417,70 @@
                     commonDependencies.commonShowAlert(`Error deleting property: ${error.message}`, 'Delete Error');
                 }
             }
+        }
+
+        // Helper function to initialize custom dropdowns (copied from platform_work_orders.html)
+        function initializeCustomDropdown(dropdownElement, onChangeCallback, isDynamic = false) {
+            if (!dropdownElement) return;
+
+            const selectedDisplay = dropdownElement.querySelector('.dropdown-selected');
+            const optionsContainer = dropdownElement.querySelector('.dropdown-options');
+            const selectedValueSpan = selectedDisplay.querySelector('.selected-value');
+
+            let initialSelectedOption = optionsContainer.querySelector('.dropdown-option.selected');
+            if (initialSelectedOption) {
+                selectedValueSpan.textContent = initialSelectedOption.textContent;
+                dropdownElement.dataset.value = initialSelectedOption.dataset.value;
+            } else {
+                const firstOption = optionsContainer.querySelector('.dropdown-option');
+                if (firstOption) {
+                    selectedValueSpan.textContent = firstOption.textContent;
+                    dropdownElement.dataset.value = firstOption.dataset.value;
+                    firstOption.classList.add('selected');
+                } else {
+                    selectedValueSpan.textContent = '---';
+                    dropdownElement.dataset.value = '';
+                }
+            }
+
+            selectedDisplay.addEventListener('click', (e) => {
+                e.stopPropagation();
+                document.querySelectorAll('.custom-dropdown.open').forEach(openDropdown => {
+                    if (openDropdown !== dropdownElement) {
+                        openDropdown.classList.remove('open');
+                    }
+                });
+                dropdownElement.classList.toggle('open');
+            });
+            
+            selectedDisplay.addEventListener('keydown', (e) => {
+                 if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    dropdownElement.classList.toggle('open');
+                } else if (e.key === 'Escape') {
+                    dropdownElement.classList.remove('open');
+                }
+            });
+
+            optionsContainer.addEventListener('click', (e) => {
+                if (e.target.classList.contains('dropdown-option')) {
+                    const option = e.target;
+                    selectedValueSpan.textContent = option.textContent;
+                    dropdownElement.dataset.value = option.dataset.value;
+                    
+                    optionsContainer.querySelectorAll('.dropdown-option').forEach(opt => opt.classList.remove('selected'));
+                    option.classList.add('selected');
+
+                    dropdownElement.classList.remove('open');
+                    if (onChangeCallback) onChangeCallback();
+                }
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!dropdownElement.contains(e.target)) {
+                    dropdownElement.classList.remove('open');
+                }
+            });
         }
 
         initializeAuth(pageInit);

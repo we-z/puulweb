@@ -711,8 +711,8 @@ table.data-table tr:hover {
 }
 
 .custom-dropdown.open .dropdown-selected {
-    border-color: #007bff;
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+    border-color: #adb5bd; /* Adjusted focus border to a gray */
+    box-shadow: 0 0 0 3px rgba(173, 181, 189, 0.15); /* Adjusted focus shadow to a gray */
 }
 
 .dropdown-selected .selected-value {
@@ -772,13 +772,13 @@ table.data-table tr:hover {
 }
 
 .dropdown-option:hover {
-    background-color: #f0f4ff; /* Lighter blue for hover */
-    color: #0056b3; /* Darker blue text for hover */
+    background-color: #f8f9fa; /* Very light gray for hover */
+    color: #212529; /* Darker text for hover */
 }
 
 .dropdown-option.selected {
-    background-color: #e2eafc; /* Slightly darker blue for selected */
-    color: #003d80;
+    background-color: #e9ecef; /* Slightly darker light gray for selected */
+    color: #000; /* Black text for selected */
     font-weight: 500;
 }
 
