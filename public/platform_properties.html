@@ -129,21 +129,14 @@
         </div>
     </div>
 
-    <!-- Common Alert and Confirm Modals -->
-    <div id="customAlertModal" class="modal">
-        <div class="modal-content alert-modal-content">
-            <div class="modal-header">
-                <h3 id="customAlertTitle">Notification</h3>
-                <button class="close-btn" data-modal-id="customAlertModal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <p id="customAlertMessage">This is an alert message.</p>
-            </div>
-            <div class="modal-footer">
-                <button class="ok-btn" data-modal-id="customAlertModal">OK</button>
-            </div>
+    <!-- New Custom Alert Toast Structure -->
+    <div id="customAlertModal">
+        <div class="custom-alert">
+            <p>This is an alert message.</p>
         </div>
     </div>
+
+    <!-- Common Confirm Modal -->
     <div id="customConfirmModal" class="modal">
         <div class="modal-content confirm-modal-content">
             <div class="modal-header">
@@ -387,103 +380,53 @@
                 return;
             }
             
-            const workOrdersQueryRef = commonDependencies.fbQuery(commonDependencies.fbRef(pageDatabase, `workOrders/${pageCurrentUserId}`), commonDependencies.fbOrderByChild('propertyId'), commonDependencies.fbEqualTo(id));
-            const linkedWorkOrdersSnapshot = await commonDependencies.fbGetDbData(workOrdersQueryRef);
-            let confirmMessage = 'Are you sure you want to delete this property?';
-            let numLinked = 0;
-            if (linkedWorkOrdersSnapshot.exists()) {
-                linkedWorkOrdersSnapshot.forEach(() => numLinked++);
-                if (numLinked > 0) {
-                    confirmMessage = `This property is linked to ${numLinked} work order(s). Deleting it will unlink them. Are you sure you want to delete this property?`;
-                }
-            }
+            const workOrdersQueryRef = commonDependencies.fbQuery(commonDependencies.fbRef(pageDatabase, `workOrders/${pageCurrentUserId}/`));
+            const propertyRef = commonDependencies.fbRef(pageDatabase, `properties/${pageCurrentUserId}/${id}`);
 
-            const confirmed = await commonDependencies.commonShowConfirm(confirmMessage, 'Delete Property');
-            if (confirmed) {
+            const confirmModal = document.getElementById('customConfirmModal');
+            const confirmTitle = confirmModal.querySelector('#customConfirmTitle');
+            const confirmMessage = confirmModal.querySelector('#customConfirmMessage');
+            const confirmCancel = confirmModal.querySelector('#customConfirmCancel');
+            const confirmOk = confirmModal.querySelector('#customConfirmOk');
+
+            confirmTitle.textContent = 'Confirm Delete';
+            confirmMessage.textContent = 'Are you sure you want to delete this property?';
+
+            confirmCancel.addEventListener('click', () => {
+                confirmModal.style.display = 'none';
+            });
+
+            confirmOk.addEventListener('click', async () => {
                 try {
-                    if (numLinked > 0) {
-                        const updates = {};
-                        linkedWorkOrdersSnapshot.forEach(woSnapshot => {
-                            updates[`workOrders/${pageCurrentUserId}/${woSnapshot.key}/propertyId`] = null;
-                        });
-                        await commonDependencies.fbUpdateDbData(commonDependencies.fbRef(pageDatabase), updates);
+                    // Delete work orders associated with the property
+                    const workOrdersSnapshot = await commonDependencies.fbGetDbData(workOrdersQueryRef);
+                    if (workOrdersSnapshot.exists()) {
+                        const workOrders = workOrdersSnapshot.val();
+                        if (workOrders) {
+                            const workOrdersKeys = Object.keys(workOrders);
+                            const deletePromises = workOrdersKeys.map(key => {
+                                return commonDependencies.fbRemove(commonDependencies.fbRef(pageDatabase, `workOrders/${pageCurrentUserId}/${key}`));
+                            });
+                            await Promise.all(deletePromises);
+                        }
                     }
-                    
-                    const propertyRefToDelete = commonDependencies.fbRef(pageDatabase, `properties/${pageCurrentUserId}/${id}`);
-                    await commonDependencies.fbRemove(propertyRefToDelete);
+
+                    // Delete the property
+                    await commonDependencies.fbRemove(propertyRef);
                     commonDependencies.commonShowAlert('Property deleted successfully!');
+
+                    // Refresh properties
+                    loadProperties();
+
+                    if (confirmModal) confirmModal.style.display = 'none';
                 } catch (error) {
                     console.error('Error deleting property:', error);
                     commonDependencies.commonShowAlert(`Error deleting property: ${error.message}`, 'Delete Error');
                 }
-            }
+            });
+
+            confirmModal.style.display = 'flex';
         }
-
-        // Helper function to initialize custom dropdowns (copied from platform_work_orders.html)
-        function initializeCustomDropdown(dropdownElement, onChangeCallback, isDynamic = false) {
-            if (!dropdownElement) return;
-
-            const selectedDisplay = dropdownElement.querySelector('.dropdown-selected');
-            const optionsContainer = dropdownElement.querySelector('.dropdown-options');
-            const selectedValueSpan = selectedDisplay.querySelector('.selected-value');
-
-            let initialSelectedOption = optionsContainer.querySelector('.dropdown-option.selected');
-            if (initialSelectedOption) {
-                selectedValueSpan.textContent = initialSelectedOption.textContent;
-                dropdownElement.dataset.value = initialSelectedOption.dataset.value;
-            } else {
-                const firstOption = optionsContainer.querySelector('.dropdown-option');
-                if (firstOption) {
-                    selectedValueSpan.textContent = firstOption.textContent;
-                    dropdownElement.dataset.value = firstOption.dataset.value;
-                    firstOption.classList.add('selected');
-                } else {
-                    selectedValueSpan.textContent = '---';
-                    dropdownElement.dataset.value = '';
-                }
-            }
-
-            selectedDisplay.addEventListener('click', (e) => {
-                e.stopPropagation();
-                document.querySelectorAll('.custom-dropdown.open').forEach(openDropdown => {
-                    if (openDropdown !== dropdownElement) {
-                        openDropdown.classList.remove('open');
-                    }
-                });
-                dropdownElement.classList.toggle('open');
-            });
-            
-            selectedDisplay.addEventListener('keydown', (e) => {
-                 if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    dropdownElement.classList.toggle('open');
-                } else if (e.key === 'Escape') {
-                    dropdownElement.classList.remove('open');
-                }
-            });
-
-            optionsContainer.addEventListener('click', (e) => {
-                if (e.target.classList.contains('dropdown-option')) {
-                    const option = e.target;
-                    selectedValueSpan.textContent = option.textContent;
-                    dropdownElement.dataset.value = option.dataset.value;
-                    
-                    optionsContainer.querySelectorAll('.dropdown-option').forEach(opt => opt.classList.remove('selected'));
-                    option.classList.add('selected');
-
-                    dropdownElement.classList.remove('open');
-                    if (onChangeCallback) onChangeCallback();
-                }
-            });
-
-            document.addEventListener('click', (e) => {
-                if (!dropdownElement.contains(e.target)) {
-                    dropdownElement.classList.remove('open');
-                }
-            });
-        }
-
-        initializeAuth(pageInit);
     </script>
 </body>
-</html> 
+</html>

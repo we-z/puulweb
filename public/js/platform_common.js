@@ -20,9 +20,8 @@ let cachedUserDisplayName = sessionStorage.getItem('puulUserDisplayName');
 
 // DOM Elements Cache (Common) - some will be populated by initializeSidebar
 const DOMElements = {
-    customAlertModal: null, // Will be populated in initializeCommonDOMContent
-    customAlertTitle: null,
-    customAlertMessage: null,
+    customAlertModal: null, // This is the container, will be #customAlertModal
+    customAlertMessage: null, // This will be the <p> tag inside .custom-alert
     customConfirmModal: null,
     customConfirmTitle: null,
     customConfirmMessage: null,
@@ -150,8 +149,12 @@ function setupPageLayoutAndInteractivity() {
     
     // Initialize common modal elements after sidebar is definitely there
     DOMElements.customAlertModal = document.getElementById('customAlertModal');
-    DOMElements.customAlertTitle = document.getElementById('customAlertTitle');
-    DOMElements.customAlertMessage = document.getElementById('customAlertMessage');
+    // Adjust to find the message paragraph within the new structure
+    if (DOMElements.customAlertModal) {
+        DOMElements.customAlertMessage = DOMElements.customAlertModal.querySelector('.custom-alert p'); 
+    }
+    DOMElements.customAlertTitle = null; // Title is no longer used for alerts
+
     DOMElements.customConfirmModal = document.getElementById('customConfirmModal');
     DOMElements.customConfirmTitle = document.getElementById('customConfirmTitle');
     DOMElements.customConfirmMessage = document.getElementById('customConfirmMessage');
@@ -179,15 +182,47 @@ function setupPageLayoutAndInteractivity() {
 const editIconSVG = `<svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path></svg>`;
 const deleteIconSVG = `<svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>`;
 
-// --- Custom Alert & Confirm --- 
-function showAlert(message, title = "Notification") {
-    if (!DOMElements.customAlertModal) {
-        console.warn('Custom alert modal not found in DOMElements. DOM not ready or element missing?');
+// --- Custom Alert & Confirm ---
+let alertTimeout = null; // Keep track of the timeout
+
+function showAlert(message, title = "Notification") { // title argument is now ignored and will be removed in usage
+    if (!DOMElements.customAlertModal || !DOMElements.customAlertMessage) {
+        console.warn('Custom alert elements not found. DOM not ready or element missing?');
+        window.alert(message); // Fallback to browser alert
         return;
     }
-    DOMElements.customAlertTitle.textContent = title;
+
+    // Clear any existing timeout to prevent premature hiding if showAlert is called multiple times
+    if (alertTimeout) {
+        clearTimeout(alertTimeout);
+    }
+
+    const alertBox = DOMElements.customAlertModal.querySelector('.custom-alert');
+    if (!alertBox) {
+        console.warn('.custom-alert box not found within #customAlertModal');
+        window.alert(message); // Fallback
+        return;
+    }
+
     DOMElements.customAlertMessage.textContent = message;
-    DOMElements.customAlertModal.style.display = 'flex';
+    
+    // Make sure it's initially not shown by class, then trigger show
+    alertBox.classList.remove('show');
+    alertBox.style.display = 'block'; // Or 'flex' if your .custom-alert needs it
+
+    // Timeout to allow display property to take effect before adding class for transition
+    setTimeout(() => {
+        alertBox.classList.add('show');
+    }, 20); // Small delay
+
+    // Set a timeout to hide the modal by removing the .show class
+    alertTimeout = setTimeout(() => {
+        alertBox.classList.remove('show');
+        // After the transition out (0.25s), set display to none
+        setTimeout(() => {
+            alertBox.style.display = 'none';
+        }, 250); // Matches CSS transition duration
+    }, 3000); // Total visible time before starting to fade out
 }
 
 function showConfirm(message, title = "Confirm Action") {

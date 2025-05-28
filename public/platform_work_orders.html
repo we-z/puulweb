@@ -189,21 +189,14 @@
         </div>
     </div>
 
-    <!-- Common Alert and Confirm Modals (markup from original platform.html) -->
-    <div id="customAlertModal" class="modal">
-        <div class="modal-content alert-modal-content">
-            <div class="modal-header">
-                <h3 id="customAlertTitle">Notification</h3>
-                <button class="close-btn" data-modal-id="customAlertModal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <p id="customAlertMessage">This is an alert message.</p>
-            </div>
-            <div class="modal-footer">
-                <button class="ok-btn" data-modal-id="customAlertModal">OK</button>
-            </div>
+    <!-- New Custom Alert Toast Structure -->
+    <div id="customAlertModal"> <!-- This outer div might not need the class="modal" if it's handled purely by CSS for positioning -->
+        <div class="custom-alert"> <!-- This is the actual toast message box -->
+            <p>This is an alert message.</p>
         </div>
     </div>
+
+    <!-- Common Confirm Modal (structure remains similar) -->
     <div id="customConfirmModal" class="modal">
         <div class="modal-content confirm-modal-content">
             <div class="modal-header">

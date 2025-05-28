@@ -457,19 +457,51 @@ table.data-table tr:hover {
     border-color: #adb5bd;
 }
 
-/* Custom Alert/Confirm Modal Styles */
-.alert-modal-content .modal-body, 
+/* --- New Custom Alert (Toast Notification) Styles --- */
+/* Container for the toast - should not interfere with layout */
+#customAlertModal {
+    position: fixed; /* Allows child .custom-alert to be positioned relative to viewport */
+    bottom: 0; /* Aligns to bottom for child positioning convenience if needed, but child is fixed */
+    right: 0;  /* Aligns to right for child positioning convenience if needed */
+    width: 0; /* No effective size */
+    height: 0; /* No effective size */
+    z-index: 1004; /* Below confirm modals, above most other things */
+    pointer-events: none; /* Allow clicks to pass through */
+}
+
+.custom-alert {
+    position: fixed;
+    top: 20px; /* Changed from bottom to top */
+    right: 20px;
+    background-color: #f7f7f7; /* Dark, modern blue/grey */
+    color: #000000; /* Light text */
+    padding: 12px 18px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    z-index: 1005; /* Above its container, ensure visibility */
+    width: auto;
+    max-width: 320px;
+    display: none; /* Initially hidden */
+    opacity: 0;
+    transform: translateX(20px); /* Start slightly off-screen to the right and faded */
+    transition: opacity 0.25s ease-out, transform 0.25s ease-out;
+    pointer-events: auto; /* Toast itself should be interactive if it had buttons, but not needed here */
+}
+
+.custom-alert.show {
+    display: block; /* Or 'flex' if content requires it */
+    opacity: 1;
+    transform: translateX(0);
+}
+/* --- End New Custom Alert Styles --- */
+
+/* --- Custom Confirm Modal Styles (Largely Unchanged) --- */
+/* Ensure .confirm-modal-content styles are distinct and not affected by alert changes */
 .confirm-modal-content .modal-body {
     padding: 20px 0;
     font-size: 1.1rem;
     color: #343a40;
     text-align: center;
-}
-.alert-modal-content .modal-footer {
-    display: flex;
-    justify-content: center; 
-    padding-top: 20px;
-    border-top: 1px solid #e9ecef;
 }
 .confirm-modal-content .modal-footer {
     display: flex;
@@ -478,7 +510,7 @@ table.data-table tr:hover {
     border-top: 1px solid #e9ecef;
 }
 
-.alert-modal-content .modal-footer button,
+/* Styles for buttons ONLY within .confirm-modal-content */
 .confirm-modal-content .modal-footer button {
     padding: 10px 25px;
     border-radius: 8px;
@@ -489,18 +521,16 @@ table.data-table tr:hover {
     min-width: 100px;
     margin: 0 5px;
 }
-.alert-modal-content .ok-btn,
-.confirm-modal-content .confirm-btn {
+.confirm-modal-content .confirm-btn { /* Specific to confirm modal */
     background-color: #28a745; 
     color: white;
     border: 1px solid #28a745;
 }
-.alert-modal-content .ok-btn:hover,
 .confirm-modal-content .confirm-btn:hover {
     background-color: #218838;
     border-color: #1e7e34;
 }
-.confirm-modal-content .cancel-btn-confirm {
+.confirm-modal-content .cancel-btn-confirm { /* Specific to confirm modal */
     background-color: #dc3545; 
     color: white;
     border: 1px solid #dc3545;
@@ -509,6 +539,7 @@ table.data-table tr:hover {
     background-color: #c82333;
     border-color: #bd2130;
 }
+/* --- End Custom Confirm Modal Styles --- */
 
 /* No data message */
 .no-data-message {
