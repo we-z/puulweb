@@ -618,6 +618,170 @@ table.data-table tr:hover {
     transform: translateY(-50%); /* Center the line itself */
 }
 
+/* Styles for Filter/Sort Controls Container */
+.controls-container {
+    display: flex;
+    gap: 20px; /* Increased gap for more breathing room */
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 25px; /* Increased margin */
+    padding: 12px 15px; /* Adjusted padding */
+    background-color: #ffffff;
+    border-radius: 8px;
+    /* Softer shadow */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.03);
+    border: 1px solid #e5e7eb; /* Subtle border */
+}
+
+.filter-group, .sort-group {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Increased gap between label and select */
+}
+
+.controls-container label {
+    font-size: 0.875rem; /* Slightly smaller */
+    color: #4b5563; /* Adjusted color - a bit softer */
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.controls-container .filter-group:hover label,
+.controls-container .sort-group:hover label {
+    color: #1f2937; /* Darker on hover of group */
+}
+
+.controls-container select {
+    appearance: none; /* Remove default appearance */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-color: #fff;
+    border: 1px solid #d1d5db; /* Slightly softer border */
+    border-radius: 6px;
+    padding: 8px 40px 8px 12px; /* Further Increased right padding for custom arrow */
+    font-size: 0.875rem;
+    color: #374151;
+    line-height: 1.5;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%236b7280'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd' /%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    background-size: 1.25em 1.25em;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.controls-container select:hover {
+    border-color: #a1a1aa; /* Slightly darker border on hover */
+    background-color: #f9fafb; /* Subtle background change on hover */
+}
+
+.controls-container select:focus {
+    outline: none;
+    border-color: #007bff; /* Highlight color for focus, adjust to your theme if needed */
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+}
+
+/* Ensure sort group aligns to the right */
+.sort-group {
+    margin-left: auto; /* Pushes this group to the far right if space allows */
+}
+
+/* Custom Dropdown Styles */
+.custom-dropdown {
+    position: relative;
+    min-width: 180px; /* Adjust as needed */
+    font-size: 0.875rem;
+    color: #374151;
+}
+
+.dropdown-selected {
+    background-color: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dropdown-selected:hover {
+    border-color: #a1a1aa;
+}
+
+.custom-dropdown.open .dropdown-selected {
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+}
+
+.dropdown-selected .selected-value {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: 8px; /* Space for the arrow */
+}
+
+.dropdown-arrow {
+    width: 1.25em;
+    height: 1.25em;
+    color: #6b7280;
+    transition: transform 0.2s ease;
+}
+
+.custom-dropdown.open .dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+.dropdown-options {
+    /* display: none; */ /* Replaced by visibility */
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(-10px);
+    pointer-events: none; 
+    transition: opacity 0.15s ease-out, transform 0.15s ease-out, visibility 0s linear 0.15s; /* Delay hiding visibility until other transitions finish */
+    position: absolute;
+    top: calc(100% + 8px); /* Increased space between field and menu */
+    left: 0;
+    right: 0;
+    background-color: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    z-index: 10;
+    max-height: 200px; /* Prevent overly long dropdowns */
+    overflow-y: auto;
+}
+
+.custom-dropdown.open .dropdown-options {
+    /* display: block; */ /* Replaced by visibility */
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto; 
+    transition-delay: 0s; /* Ensure visibility shows immediately, and other transitions start */
+}
+
+.dropdown-option {
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dropdown-option:hover {
+    background-color: #f0f4ff; /* Lighter blue for hover */
+    color: #0056b3; /* Darker blue text for hover */
+}
+
+.dropdown-option.selected {
+    background-color: #e2eafc; /* Slightly darker blue for selected */
+    color: #003d80;
+    font-weight: 500;
+}
+
 @media (max-width: 768px) {
     .sidebar {
         position: fixed;

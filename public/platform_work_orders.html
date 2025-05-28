@@ -16,6 +16,102 @@
                 <h2>Work Orders</h2>
             </div>
             <div class="page-container">
+                <div class="controls-container" style="margin-bottom: 20px; padding: 15px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
+                    <div class="filter-group" style="display: flex; align-items: center; gap: 8px;">
+                        <label for="filterProperty" style="font-size: 0.9rem; color: #4a5568; font-weight: 500;">Property:</label>
+                        <!-- <select id="filterProperty" name="filterProperty" style="padding: 8px 12px; border: 1px solid #ced4da; border-radius: 6px; font-size: 0.9rem;">
+                            <option value="">All Properties</option>
+                        </select> -->
+                        <div class="custom-dropdown" id="customFilterProperty">
+                            <div class="dropdown-selected" tabindex="0">
+                                <span class="selected-value">All Properties</span>
+                                <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                            </div>
+                            <div class="dropdown-options">
+                                <div class="dropdown-option" data-value="">All Properties</div>
+                                <!-- Property options will be populated here by JS -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="filter-group" style="display: flex; align-items: center; gap: 8px;">
+                        <label for="filterPriority" style="font-size: 0.9rem; color: #4a5568; font-weight: 500;">Priority:</label>
+                        <!-- <select id="filterPriority" name="filterPriority" style="padding: 8px 12px; border: 1px solid #ced4da; border-radius: 6px; font-size: 0.9rem;">
+                            <option value="">All Priorities</option>
+                            <option value="Low">Low</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                        </select> -->
+                        <div class="custom-dropdown" id="customFilterPriority">
+                            <div class="dropdown-selected" tabindex="0">
+                                <span class="selected-value">All Priorities</span>
+                                <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                            </div>
+                            <div class="dropdown-options">
+                                <div class="dropdown-option" data-value="">All Priorities</div>
+                                <div class="dropdown-option" data-value="Low">Low</div>
+                                <div class="dropdown-option" data-value="Medium">Medium</div>
+                                <div class="dropdown-option" data-value="High">High</div>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="filter-group" style="display: flex; align-items: center; gap: 8px;">
+                        <label for="filterStatus" style="font-size: 0.9rem; color: #4a5568; font-weight: 500;">Status:</label>
+                        <!-- <select id="filterStatus" name="filterStatus" style="padding: 8px 12px; border: 1px solid #ced4da; border-radius: 6px; font-size: 0.9rem;">
+                            <option value="">All Statuses</option>
+                            <option value="Open">Open</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Closed">Closed</option>
+                        </select> -->
+                        <div class="custom-dropdown" id="customFilterStatus">
+                            <div class="dropdown-selected" tabindex="0">
+                                <span class="selected-value">All Statuses</span>
+                                <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                            </div>
+                            <div class="dropdown-options">
+                                <div class="dropdown-option" data-value="">All Statuses</div>
+                                <div class="dropdown-option" data-value="Open">Open</div>
+                                <div class="dropdown-option" data-value="In Progress">In Progress</div>
+                                <div class="dropdown-option" data-value="Closed">Closed</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sort-group" style="display: flex; align-items: center; gap: 8px; margin-left: auto;">
+                        <label for="sortBy" style="font-size: 0.9rem; color: #4a5568; font-weight: 500;">Sort by:</label>
+                        <!-- <select id="sortBy" name="sortBy" style="padding: 8px 12px; border: 1px solid #ced4da; border-radius: 6px; font-size: 0.9rem;">
+                            <option value="createdAt">Date Created</option>
+                            <option value="title">Title</option>
+                            <option value="status">Status</option>
+                            <option value="priority">Priority</option>
+                        </select> -->
+                        <div class="custom-dropdown" id="customSortBy">
+                            <div class="dropdown-selected" tabindex="0">
+                                <span class="selected-value">Date Created</span>
+                                <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                            </div>
+                            <div class="dropdown-options">
+                                <div class="dropdown-option selected" data-value="createdAt">Date Created</div>
+                                <div class="dropdown-option" data-value="title">Title</div>
+                                <div class="dropdown-option" data-value="status">Status</div>
+                                <div class="dropdown-option" data-value="priority">Priority</div>
+                            </div>
+                        </div>
+
+                        <!-- <select id="sortOrder" name="sortOrder" style="padding: 8px 12px; border: 1px solid #ced4da; border-radius: 6px; font-size: 0.9rem;">
+                            <option value="desc">Descending</option>
+                            <option value="asc">Ascending</option>
+                        </select> -->
+                        <div class="custom-dropdown" id="customSortOrder">
+                            <div class="dropdown-selected" tabindex="0">
+                                <span class="selected-value">Descending</span>
+                                <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                            </div>
+                            <div class="dropdown-options">
+                                <div class="dropdown-option selected" data-value="desc">Descending</div>
+                                <div class="dropdown-option" data-value="asc">Ascending</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="data-table-container work-order-table-container">
                     <table class="data-table" id="workOrderTable">
                         <thead>
@@ -141,7 +237,13 @@
             workOrderStatus: document.getElementById('workOrderStatus'),
             workOrderPriority: document.getElementById('workOrderPriority'),
             workOrderTableBody: document.getElementById('workOrderTableBody'),
-            noWorkOrdersMessage: document.getElementById('noWorkOrdersMessage')
+            noWorkOrdersMessage: document.getElementById('noWorkOrdersMessage'),
+            // New controls
+            filterProperty: document.getElementById('customFilterProperty'),
+            filterPriority: document.getElementById('customFilterPriority'),
+            filterStatus: document.getElementById('customFilterStatus'),
+            sortBy: document.getElementById('customSortBy'),
+            sortOrder: document.getElementById('customSortOrder')
         };
 
         let pageCurrentUserId;
@@ -154,7 +256,15 @@
             const databaseRef = fbRef;
 
             initializePropertiesListener(); 
-            loadWorkOrders(fbQuery, fbOrderByChild, commonEditIcon, commonDeleteIcon); // Renamed back & direct call
+            loadWorkOrders(fbQuery, fbOrderByChild, commonEditIcon, commonDeleteIcon);
+
+            // Initialize custom dropdowns
+            const commonOnChange = () => loadWorkOrders(fbQuery, fbOrderByChild, commonEditIcon, commonDeleteIcon);
+            initializeCustomDropdown(pageDOMElements.filterProperty, commonOnChange, true);
+            initializeCustomDropdown(pageDOMElements.filterPriority, commonOnChange);
+            initializeCustomDropdown(pageDOMElements.filterStatus, commonOnChange);
+            initializeCustomDropdown(pageDOMElements.sortBy, commonOnChange);
+            initializeCustomDropdown(pageDOMElements.sortOrder, commonOnChange);
 
             if (pageDOMElements.addItemBtn) {
                 pageDOMElements.addItemBtn.addEventListener('click', () => {
@@ -218,51 +328,139 @@
             const propertiesRef = ref(pageDatabase, `properties/${pageCurrentUserId}`);
             onValue(query(propertiesRef, orderByChild('address')), (snapshot) => {
                 localPropertiesMap = {};
-                if(pageDOMElements.workOrderPropertySelect) pageDOMElements.workOrderPropertySelect.innerHTML = '<option value="">Select Property (Optional)</option>';
                 
-                if (snapshot.exists()) {
-                    snapshot.forEach(childSnapshot => {
-                        const key = childSnapshot.key;
-                        const prop = childSnapshot.val();
-                        if (prop && prop.address) {
-                           localPropertiesMap[key] = prop.address;
-                           if(pageDOMElements.workOrderPropertySelect){
-                                const option = document.createElement('option');
-                                option.value = key;
-                                option.textContent = prop.address;
-                                pageDOMElements.workOrderPropertySelect.appendChild(option);
-                           }
+                if (pageDOMElements.workOrderPropertySelect) {
+                    pageDOMElements.workOrderPropertySelect.innerHTML = '<option value=\"\">Select Property (Optional)</option>';
+                }
+
+                const filterPropertyDropdown = pageDOMElements.filterProperty;
+                if (filterPropertyDropdown) {
+                    const optionsContainer = filterPropertyDropdown.querySelector('.dropdown-options');
+                    const selectedValueSpan = filterPropertyDropdown.querySelector('.selected-value');
+                    const currentValue = filterPropertyDropdown.dataset.value;
+                    optionsContainer.innerHTML = ''; 
+
+                    // Add "All Properties" option
+                    const allOptionEl = document.createElement('div');
+                    allOptionEl.classList.add('dropdown-option');
+                    allOptionEl.dataset.value = '';
+                    allOptionEl.textContent = 'All Properties';
+                    optionsContainer.appendChild(allOptionEl);
+
+                    if (snapshot.exists()) {
+                        snapshot.forEach(childSnapshot => {
+                            const key = childSnapshot.key;
+                            const prop = childSnapshot.val();
+                            if (prop && prop.address) {
+                                localPropertiesMap[key] = prop.address;
+
+                                if (pageDOMElements.workOrderPropertySelect){
+                                    const modalOption = document.createElement('option');
+                                    modalOption.value = key;
+                                    modalOption.textContent = prop.address;
+                                    pageDOMElements.workOrderPropertySelect.appendChild(modalOption);
+                                }
+
+                                const filterOptionEl = document.createElement('div');
+                                filterOptionEl.classList.add('dropdown-option');
+                                filterOptionEl.dataset.value = key;
+                                filterOptionEl.textContent = prop.address;
+                                optionsContainer.appendChild(filterOptionEl);
+                            }
+                        });
+                    }
+                    
+                    // Reset selection after populating
+                    let newSelectedText = 'All Properties';
+                    let newSelectedValue = '';
+                    let foundCurrent = false;
+
+                    optionsContainer.querySelectorAll('.dropdown-option').forEach(opt => {
+                         opt.classList.remove('selected');
+                        if (opt.dataset.value === currentValue) {
+                            newSelectedText = opt.textContent;
+                            newSelectedValue = opt.dataset.value;
+                            opt.classList.add('selected');
+                            foundCurrent = true;
                         }
                     });
+
+                    if (!foundCurrent) {
+                        const defaultOpt = optionsContainer.querySelector('.dropdown-option[data-value=""]');
+                        if (defaultOpt) {
+                            defaultOpt.classList.add('selected');
+                        }
+                    }
+                    selectedValueSpan.textContent = newSelectedText;
+                    filterPropertyDropdown.dataset.value = newSelectedValue;
                 }
             });
         }
 
-        function loadWorkOrders(fbQuery, fbOrderByChild, editIcon, deleteIcon) { // Renamed back from loadWorkOrdersRealtime
+        function loadWorkOrders(fbQuery, fbOrderByChild, editIcon, deleteIcon) { 
             if (!pageCurrentUserId || !pageDatabase) return;
-            const workOrdersRef = ref(pageDatabase, `workOrders/${pageCurrentUserId}`);
             
-            onValue(fbQuery(workOrdersRef, fbOrderByChild('createdAt')), (snapshot) => {
+            const filterPropertyValue = pageDOMElements.filterProperty ? pageDOMElements.filterProperty.dataset.value : '';
+            const filterPriorityValue = pageDOMElements.filterPriority ? pageDOMElements.filterPriority.dataset.value : ''; 
+            const filterStatusValue = pageDOMElements.filterStatus ? pageDOMElements.filterStatus.dataset.value : '';
+            const sortByValue = pageDOMElements.sortBy ? pageDOMElements.sortBy.dataset.value : 'createdAt';
+            const sortOrderValue = pageDOMElements.sortOrder ? pageDOMElements.sortOrder.dataset.value : 'desc';
+
+            const workOrdersRef = ref(pageDatabase, `workOrders/${pageCurrentUserId}`);
+            onValue(query(workOrdersRef, orderByChild('createdAt')), (snapshot) => {
                 console.log("WorkOrdersPage: Firebase onValue triggered for work orders.");
                 
                 if(pageDOMElements.workOrderTableBody) pageDOMElements.workOrderTableBody.innerHTML = '';
+                let workOrdersArray = [];
                 const data = snapshot.val();
                 
-                if (data && Object.keys(data).length > 0) {
+                if (data) {
+                    for (const key in data) {
+                        workOrdersArray.push({ id: key, ...data[key] });
+                    }
+                }
+
+                // Apply filters
+                if (filterPropertyValue) {
+                    workOrdersArray = workOrdersArray.filter(wo => wo.propertyId === filterPropertyValue);
+                }
+                if (filterPriorityValue) {
+                    workOrdersArray = workOrdersArray.filter(wo => wo.priority === filterPriorityValue);
+                }
+                 if (filterStatusValue) {
+                    workOrdersArray = workOrdersArray.filter(wo => wo.status === filterStatusValue);
+                }
+
+                // Apply sorting
+                workOrdersArray.sort((a, b) => {
+                    let valA = a[sortByValue];
+                    let valB = b[sortByValue];
+
+                    // Special handling for priority sorting (High > Medium > Low)
+                    if (sortByValue === 'priority') {
+                        const priorityOrder = { 'High': 3, 'Medium': 2, 'Low': 1 };
+                        valA = priorityOrder[valA] || 0;
+                        valB = priorityOrder[valB] || 0;
+                    } else if (typeof valA === 'string') {
+                        valA = valA.toLowerCase();
+                        valB = valB.toLowerCase();
+                    }
+
+                    let comparison = 0;
+                    if (valA > valB) {
+                        comparison = 1;
+                    } else if (valA < valB) {
+                        comparison = -1;
+                    }
+                    return sortOrderValue === 'desc' ? comparison * -1 : comparison;
+                });
+                
+                if (workOrdersArray.length > 0) {
                     if(pageDOMElements.noWorkOrdersMessage) pageDOMElements.noWorkOrdersMessage.style.display = 'none';
                     
-                    const sortedKeys = Object.keys(data).sort((a, b) => {
-                        const woA = data[a];
-                        const woB = data[b];
-                        return (woB.createdAt || 0) - (woA.createdAt || 0);
-                    });
-
-                    sortedKeys.forEach(key => {
-                        const wo = data[key];
-                        if (!wo) return;
-
+                    workOrdersArray.forEach(wo => {
                         const row = pageDOMElements.workOrderTableBody.insertRow();
-                        row.setAttribute('data-id', key);
+                        row.setAttribute('data-id', wo.id);
     
                         row.insertCell().textContent = wo.title || 'N/A';
                         row.insertCell().textContent = wo.propertyId ? (localPropertiesMap[wo.propertyId] || 'Property ID: ' + wo.propertyId.substring(0,6) + '...') : 'N/A';
@@ -273,8 +471,8 @@
                         const actionsCell = row.insertCell();
                         actionsCell.classList.add('actions-cell');
                         actionsCell.innerHTML = `<button class="edit-btn" title="Edit">${editIcon}</button><button class="delete-btn" title="Delete">${deleteIcon}</button>`;
-                        actionsCell.querySelector('.edit-btn').addEventListener('click', () => openWorkOrderModal(key, wo));
-                        actionsCell.querySelector('.delete-btn').addEventListener('click', () => handleDeleteWorkOrder(key));
+                        actionsCell.querySelector('.edit-btn').addEventListener('click', () => openWorkOrderModal(wo.id, wo));
+                        actionsCell.querySelector('.delete-btn').addEventListener('click', () => handleDeleteWorkOrder(wo.id));
                     });
                 } else {
                     if(pageDOMElements.noWorkOrdersMessage) pageDOMElements.noWorkOrdersMessage.style.display = 'block';
@@ -308,6 +506,78 @@
                     showAlert(`Error deleting work order: ${error.message}`, 'Delete Error');
                 }
             }
+        }
+
+        // Helper function to initialize custom dropdowns
+        function initializeCustomDropdown(dropdownElement, onChangeCallback, isDynamic = false) {
+            if (!dropdownElement) return;
+
+            const selectedDisplay = dropdownElement.querySelector('.dropdown-selected');
+            const optionsContainer = dropdownElement.querySelector('.dropdown-options');
+            const selectedValueSpan = selectedDisplay.querySelector('.selected-value');
+
+            // Set initial selected value and text from HTML (if .selected class is present on an option)
+            let initialSelectedOption = optionsContainer.querySelector('.dropdown-option.selected');
+            if (initialSelectedOption) {
+                selectedValueSpan.textContent = initialSelectedOption.textContent;
+                dropdownElement.dataset.value = initialSelectedOption.dataset.value;
+            } else {
+                // If no .selected class, try to pick the first option as default
+                const firstOption = optionsContainer.querySelector('.dropdown-option');
+                if (firstOption) {
+                    selectedValueSpan.textContent = firstOption.textContent;
+                    dropdownElement.dataset.value = firstOption.dataset.value;
+                    firstOption.classList.add('selected'); // Mark it as selected
+                } else {
+                    // Fallback if no options at all (e.g. dynamic one before population)
+                    selectedValueSpan.textContent = '---'; // Placeholder
+                    dropdownElement.dataset.value = '';
+                }
+            }
+
+            selectedDisplay.addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevent click from immediately closing due to document listener
+                // Close other open dropdowns
+                document.querySelectorAll('.custom-dropdown.open').forEach(openDropdown => {
+                    if (openDropdown !== dropdownElement) {
+                        openDropdown.classList.remove('open');
+                    }
+                });
+                dropdownElement.classList.toggle('open');
+            });
+            
+            selectedDisplay.addEventListener('keydown', (e) => {
+                 if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    dropdownElement.classList.toggle('open');
+                } else if (e.key === 'Escape') {
+                    dropdownElement.classList.remove('open');
+                }
+            });
+
+            // Use event delegation for options if it's dynamic or just generally good practice
+            optionsContainer.addEventListener('click', (e) => {
+                if (e.target.classList.contains('dropdown-option')) {
+                    const option = e.target;
+                    selectedValueSpan.textContent = option.textContent;
+                    dropdownElement.dataset.value = option.dataset.value;
+                    
+                    optionsContainer.querySelectorAll('.dropdown-option').forEach(opt => opt.classList.remove('selected'));
+                    option.classList.add('selected');
+
+                    dropdownElement.classList.remove('open');
+                    if (onChangeCallback) onChangeCallback();
+                }
+            });
+
+            // Global click listener to close dropdown when clicking outside
+            // Ensure this is only added once per page, or manage it carefully
+            // For simplicity, we add it here. If performance issues, consider a single global listener.
+            document.addEventListener('click', (e) => {
+                if (!dropdownElement.contains(e.target)) {
+                    dropdownElement.classList.remove('open');
+                }
+            });
         }
 
         // Initialize common auth and pass page-specific initializer
