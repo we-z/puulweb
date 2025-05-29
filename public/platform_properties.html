@@ -368,8 +368,26 @@
                             const actionsCell = row.insertCell();
                             actionsCell.classList.add('actions-cell');
                             actionsCell.innerHTML = `<button class="edit-btn" title="Edit">${commonDependencies.commonEditIcon}</button><button class="delete-btn" title="Delete">${commonDependencies.commonDeleteIcon}</button>`;
-                            actionsCell.querySelector('.edit-btn').addEventListener('click', () => openPropertyModal(propData.id, propData));
-                            actionsCell.querySelector('.delete-btn').addEventListener('click', () => handleDeleteProperty(propData.id)); 
+                            
+                            const editButton = actionsCell.querySelector('.edit-btn');
+                            editButton.addEventListener('click', (e) => {
+                                e.stopPropagation(); 
+                                openPropertyModal(propData.id, propData);
+                            });
+                            
+                            const deleteButton = actionsCell.querySelector('.delete-btn');
+                            deleteButton.addEventListener('click', (e) => {
+                                e.stopPropagation(); 
+                                handleDeleteProperty(propData.id);
+                            }); 
+
+                            // Make the entire row clickable to edit
+                            row.addEventListener('click', () => {
+                                // Check if the click target is not the delete button or its children
+                                if (editButton) {
+                                    editButton.click();
+                                }
+                            });
                         });
                     } else {
                         noMessage.style.display = 'block';
