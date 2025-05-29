@@ -220,7 +220,7 @@
     </div>
 
     <script type="module">
-        import { initializeAuth, showAlert, showConfirm, editIconSVG, deleteIconSVG, getDbData, updateDbData } from './js/platform_common.js';
+        import { initializeAuth, showAlert, showConfirm, editIconSVG, deleteIconSVG, getDbData, updateDbData, initializeCustomDropdown } from './js/platform_common.js';
         import { getDatabase, ref, push, onValue, set, remove, serverTimestamp, query, orderByChild, equalTo } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
 
         // Page-specific DOM Elements
@@ -515,78 +515,6 @@
                     showAlert(`Error deleting work order: ${error.message}`, 'Delete Error');
                 }
             }
-        }
-
-        // Helper function to initialize custom dropdowns
-        function initializeCustomDropdown(dropdownElement, onChangeCallback, isDynamic = false) {
-            if (!dropdownElement) return;
-
-            const selectedDisplay = dropdownElement.querySelector('.dropdown-selected');
-            const optionsContainer = dropdownElement.querySelector('.dropdown-options');
-            const selectedValueSpan = selectedDisplay.querySelector('.selected-value');
-
-            // Set initial selected value and text from HTML (if .selected class is present on an option)
-            let initialSelectedOption = optionsContainer.querySelector('.dropdown-option.selected');
-            if (initialSelectedOption) {
-                selectedValueSpan.textContent = initialSelectedOption.textContent;
-                dropdownElement.dataset.value = initialSelectedOption.dataset.value;
-            } else {
-                // If no .selected class, try to pick the first option as default
-                const firstOption = optionsContainer.querySelector('.dropdown-option');
-                if (firstOption) {
-                    selectedValueSpan.textContent = firstOption.textContent;
-                    dropdownElement.dataset.value = firstOption.dataset.value;
-                    firstOption.classList.add('selected'); // Mark it as selected
-                } else {
-                    // Fallback if no options at all (e.g. dynamic one before population)
-                    selectedValueSpan.textContent = '---'; // Placeholder
-                    dropdownElement.dataset.value = '';
-                }
-            }
-
-            selectedDisplay.addEventListener('click', (e) => {
-                e.stopPropagation(); // Prevent click from immediately closing due to document listener
-                // Close other open dropdowns
-                document.querySelectorAll('.custom-dropdown.open').forEach(openDropdown => {
-                    if (openDropdown !== dropdownElement) {
-                        openDropdown.classList.remove('open');
-                    }
-                });
-                dropdownElement.classList.toggle('open');
-            });
-            
-            selectedDisplay.addEventListener('keydown', (e) => {
-                 if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    dropdownElement.classList.toggle('open');
-                } else if (e.key === 'Escape') {
-                    dropdownElement.classList.remove('open');
-                }
-            });
-
-            // Use event delegation for options if it's dynamic or just generally good practice
-            optionsContainer.addEventListener('click', (e) => {
-                if (e.target.classList.contains('dropdown-option')) {
-                    const option = e.target;
-                    selectedValueSpan.textContent = option.textContent;
-                    dropdownElement.dataset.value = option.dataset.value;
-                    
-                    optionsContainer.querySelectorAll('.dropdown-option').forEach(opt => opt.classList.remove('selected'));
-                    option.classList.add('selected');
-
-                    dropdownElement.classList.remove('open');
-                    if (onChangeCallback) onChangeCallback();
-                }
-            });
-
-            // Global click listener to close dropdown when clicking outside
-            // Ensure this is only added once per page, or manage it carefully
-            // For simplicity, we add it here. If performance issues, consider a single global listener.
-            document.addEventListener('click', (e) => {
-                if (!dropdownElement.contains(e.target)) {
-                    dropdownElement.classList.remove('open');
-                }
-            });
         }
 
         // Initialize common auth and pass page-specific initializer

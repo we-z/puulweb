@@ -179,6 +179,120 @@ function setupPageLayoutAndInteractivity() {
     });
 }
 
+// Helper function to initialize custom dropdowns
+function initializeCustomDropdown(dropdownElement, onChangeCallback, isDynamic = false) {
+    if (!dropdownElement) return;
+
+    const selectedDisplay = dropdownElement.querySelector('.dropdown-selected');
+    const optionsContainer = dropdownElement.querySelector('.dropdown-options');
+    const selectedValueSpan = selectedDisplay.querySelector('.selected-value');
+
+    // Set initial selected value and text from HTML (if .selected class is present on an option)
+    // Wait for options to potentially be populated dynamically
+    const setupInitialSelection = () => {
+        optionsContainer.querySelectorAll('.dropdown-option').forEach(opt => opt.classList.remove('selected')); // Clear previous selections
+
+        let initialSelectedOption = optionsContainer.querySelector(`.dropdown-option[data-value="${dropdownElement.dataset.value}"]`);
+
+        if (!initialSelectedOption) { // If a value was previously set but option no longer exists, or no value was set
+             initialSelectedOption = optionsContainer.querySelector('.dropdown-option.selected'); // Check for pre-selected in HTML
+        }
+        if (!initialSelectedOption && !isDynamic) { // Fallback to first option if not dynamic and nothing else found
+            initialSelectedOption = optionsContainer.querySelector('.dropdown-option');
+        }
+
+
+        if (initialSelectedOption) {
+            selectedValueSpan.textContent = initialSelectedOption.textContent;
+            dropdownElement.dataset.value = initialSelectedOption.dataset.value;
+            initialSelectedOption.classList.add('selected');
+        } else if (!isDynamic) { // Only set placeholder if not dynamic and truly no options
+            selectedValueSpan.textContent = '---'; // Placeholder
+            dropdownElement.dataset.value = '';
+        } else if (isDynamic && !dropdownElement.dataset.value) {
+            // For dynamic dropdowns, if no value is set yet, default to the "All" or first option if available after population
+            const firstOpt = optionsContainer.querySelector('.dropdown-option');
+            if (firstOpt) {
+                selectedValueSpan.textContent = firstOpt.textContent;
+                dropdownElement.dataset.value = firstOpt.dataset.value;
+                firstOpt.classList.add('selected');
+            } else {
+                selectedValueSpan.textContent = 'Loading...'; // Or some other appropriate text
+                dropdownElement.dataset.value = '';
+            }
+        }
+         // If isDynamic and dropdownElement.dataset.value is already set, assume it's correct or will be corrected by population logic
+    };
+
+
+    if (isDynamic) {
+        // For dynamic dropdowns, we might need to observe changes or re-run setup
+        // A simple approach: setup initial selection, it will be re-evaluated if options change externally
+        // and the calling code ensures `dropdownElement.dataset.value` is updated.
+        // More robust: MutationObserver on optionsContainer. For now, simple setup.
+        // The calling code for dynamic dropdowns (like properties filter in work_orders) should handle repopulating and then
+        // ensuring the correct value is selected, potentially by calling a refresh/reset on the dropdown.
+        // For now, call it once. If optionsContainer is empty initially, this might not pick the right one until options are added.
+        // The `initializePropertiesListener` in work_orders.html handles resetting selection after populating.
+        // This common function will set initial state based on current DOM.
+        setupInitialSelection();
+    } else {
+        setupInitialSelection();
+    }
+
+
+    selectedDisplay.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const DOMElements = window.DOMElements || {}; // Access global DOMElements if available
+
+        // Close other open dropdowns
+        document.querySelectorAll('.custom-dropdown.open').forEach(openDropdown => {
+            if (openDropdown !== dropdownElement) {
+                openDropdown.classList.remove('open');
+            }
+        });
+        dropdownElement.classList.toggle('open');
+    });
+    
+    selectedDisplay.addEventListener('keydown', (e) => {
+         if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            dropdownElement.classList.toggle('open');
+        } else if (e.key === 'Escape') {
+            dropdownElement.classList.remove('open');
+        }
+    });
+
+    optionsContainer.addEventListener('click', (e) => {
+        if (e.target.classList.contains('dropdown-option')) {
+            const option = e.target;
+            selectedValueSpan.textContent = option.textContent;
+            dropdownElement.dataset.value = option.dataset.value;
+            
+            optionsContainer.querySelectorAll('.dropdown-option').forEach(opt => opt.classList.remove('selected'));
+            option.classList.add('selected');
+
+            dropdownElement.classList.remove('open');
+            if (onChangeCallback && typeof onChangeCallback === 'function') {
+                onChangeCallback();
+            }
+        }
+    });
+
+    // Add a global click listener to close dropdowns if it hasn't been added yet.
+    // This is a bit of a workaround to prevent multiple identical listeners.
+    if (!document.body.hasAttribute('data-global-dropdown-listener')) {
+        document.addEventListener('click', (e) => {
+            document.querySelectorAll('.custom-dropdown.open').forEach(openDropdown => {
+                if (!openDropdown.contains(e.target)) {
+                    openDropdown.classList.remove('open');
+                }
+            });
+        });
+        document.body.setAttribute('data-global-dropdown-listener', 'true');
+    }
+}
+
 const editIconSVG = `<svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path></svg>`;
 const deleteIconSVG = `<svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>`;
 
@@ -297,5 +411,6 @@ export {
     editIconSVG, deleteIconSVG,
     getDbData, updateDbData,
     initializeAuth,
-    ref, push, set, remove, serverTimestamp, query, orderByChild, equalTo
+    ref, push, set, remove, serverTimestamp, query, orderByChild, equalTo,
+    initializeCustomDropdown
 }; 
