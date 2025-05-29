@@ -160,6 +160,8 @@
     </div>
 
     <script type="module">
+        console.log('[platform_properties.html] Script module started.');
+
         import { initializeAuth, showAlert, showConfirm, editIconSVG, deleteIconSVG, getDbData, updateDbData } from './js/platform_common.js';
         import { getDatabase, ref, push, onValue, set, remove, serverTimestamp, query, orderByChild, equalTo } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
 
@@ -443,6 +445,9 @@
 
             confirmModal.style.display = 'flex';
         }
+
+        console.log('[platform_properties.html] About to call initializeAuth.');
+        initializeAuth(pageInit);
     </script>
 </body>
 </html>
