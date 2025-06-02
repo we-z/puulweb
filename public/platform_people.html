@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>People - Puul Platform</title>
+    <link rel="stylesheet" href="/css/platform_common.css">
+    <style>
+        .sub-nav { display: flex; border-bottom: 1px solid #e0e0e0; margin-bottom: 20px; }
+        .sub-nav-item { padding: 10px 20px; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -1px; font-weight: 500; color: #555; transition: color 0.2s ease, border-bottom-color 0.2s ease; }
+        .sub-nav-item:hover { color: #000; }
+        .sub-nav-item.active { color: #000; border-bottom-color: #000; }
+        .subsection-content { display: none; }
+        .subsection-content.active { display: block; }
+    </style>
+</head>
+<body>
+    <div id="sidebar-container"></div>
+
+    <div class="main-content">
+        <div id="peopleView">
+            <div class="content-header"><h2>People</h2></div>
+            <div class="page-container">
+                <div class="sub-nav" id="peopleSubNav">
+                    <div class="sub-nav-item active" data-subsection="tenants">Tenants</div>
+                    <div class="sub-nav-item" data-subsection="owners">Owners</div>
+                    <div class="sub-nav-item" data-subsection="vendors">Vendors</div>
+                </div>
+
+                <!-- Tenants Subsection -->
+                <div class="subsection-content active" id="tenantsContent">
+                    <h4>Tenants</h4>
+                    <div class="data-table-container">
+                        <table class="data-table" id="tenantsTable">
+                            <thead><tr><th>Name</th><th>Primary Email</th><th>Primary Phone</th><th>Property/Unit</th><th>Lease End Date</th><th>Actions</th></tr></thead>
+                            <tbody id="tenantsTableBody"></tbody>
+                        </table>
+                        <div id="noTenantsMessage" class="no-data-message"><div class="icon">🧑</div><p>No tenants recorded.</p></div>
+                    </div>
+                </div>
+
+                <!-- Owners Subsection -->
+                <div class="subsection-content" id="ownersContent">
+                    <h4>Owners</h4>
+                    <div class="data-table-container">
+                        <table class="data-table" id="ownersTable">
+                            <thead><tr><th>Name</th><th>Primary Email</th><th>Primary Phone</th><th>Properties Owned</th><th>Actions</th></tr></thead>
+                            <tbody id="ownersTableBody"></tbody>
+                        </table>
+                        <div id="noOwnersMessage" class="no-data-message"><div class="icon">🕴️</div><p>No owners recorded.</p></div>
+                    </div>
+                </div>
+
+                <!-- Vendors Subsection -->
+                <div class="subsection-content" id="vendorsContent">
+                    <h4>Vendors</h4>
+                    <div class="data-table-container">
+                        <table class="data-table" id="vendorsTable">
+                            <thead><tr><th>Company Name</th><th>Contact Name</th><th>Service Type</th><th>Primary Email</th><th>Primary Phone</th><th>Actions</th></tr></thead>
+                            <tbody id="vendorsTableBody"></tbody>
+                        </table>
+                        <div id="noVendorsMessage" class="no-data-message"><div class="icon">🔧</div><p>No vendors recorded.</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button class="fab" id="addItemBtn" aria-label="Add new person">+</button>
+
+    <!-- Modals -->
+    <div id="tenantModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>Add/Edit Tenant</h3><button class="close-btn" data-modal-id="tenantModal">&times;</button></div><form id="tenantForm"><input type="hidden" id="tenantId"><div class="form-group"><label>Full Name</label><input type="text" name="fullName" required></div><div class="form-group"><label>Primary Email</label><input type="email" name="email"></div><div class="form-group"><label>Primary Phone</label><input type="tel" name="phone"></div><div class="form-group"><label>Associated Property/Unit</label><select name="propertyId"></select></div><div class="form-group"><label>Lease ID (Optional)</label><input type="text" name="leaseId"></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="tenantModal">Cancel</button><button type="submit" class="submit-btn">Save</button></div></form></div></div>
+    <div id="ownerModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>Add/Edit Owner</h3><button class="close-btn" data-modal-id="ownerModal">&times;</button></div><form id="ownerForm"><input type="hidden" id="ownerId"><div class="form-group"><label>Full Name</label><input type="text" name="fullName" required></div><div class="form-group"><label>Primary Email</label><input type="email" name="email"></div><div class="form-group"><label>Primary Phone</label><input type="tel" name="phone"></div><div class="form-group"><label>Mailing Address</label><textarea name="mailingAddress"></textarea></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="ownerModal">Cancel</button><button type="submit" class="submit-btn">Save</button></div></form></div></div>
+    <div id="vendorModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>Add/Edit Vendor</h3><button class="close-btn" data-modal-id="vendorModal">&times;</button></div><form id="vendorForm"><input type="hidden" id="vendorId"><div class="form-group"><label>Company Name</label><input type="text" name="companyName" required></div><div class="form-group"><label>Contact Name</label><input type="text" name="contactName"></div><div class="form-group"><label>Service Type</label><input type="text" name="serviceType" placeholder="e.g., Plumbing, Electrical"></div><div class="form-group"><label>Primary Email</label><input type="email" name="email"></div><div class="form-group"><label>Primary Phone</label><input type="tel" name="phone"></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="vendorModal">Cancel</button><button type="submit" class="submit-btn">Save</button></div></form></div></div>
+
+    <div id="customAlertModal"><div class="custom-alert"><p></p></div></div>
+    <div id="customConfirmModal" class="modal"><div class="modal-content confirm-modal-content"><div class="modal-header"><h3 id="customConfirmTitle"></h3><button class="close-btn" data-modal-id="customConfirmModal">&times;</button></div><div class="modal-body"><p id="customConfirmMessage"></p></div><div class="modal-footer"><button class="cancel-btn-confirm" id="customConfirmCancel">Cancel</button><button class="confirm-btn" id="customConfirmOk">OK</button></div></div></div>
+
+    <script type="module">
+        import { initializeAuth, showAlert, showConfirm, editIconSVG, deleteIconSVG, getDbData, initializeCustomDropdown } from './js/platform_common.js';
+        import { getDatabase, ref, push, onValue, set, remove, serverTimestamp, query, orderByChild, equalTo } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
+
+        let pageCurrentUserId, pageDatabase;
+        let commonDependencies = {};
+        let localPropertiesMap = {}; // For displaying property addresses
+        let localLeasesMap = {}; // For tenant lease end dates
+
+        const DOMElements = {
+            addItemBtn: document.getElementById('addItemBtn'),
+            tenantModal: document.getElementById('tenantModal'), tenantForm: document.getElementById('tenantForm'),
+            ownerModal: document.getElementById('ownerModal'), ownerForm: document.getElementById('ownerForm'),
+            vendorModal: document.getElementById('vendorModal'), vendorForm: document.getElementById('vendorForm'),
+            tenantsTableBody: document.getElementById('tenantsTableBody'), noTenantsMessage: document.getElementById('noTenantsMessage'),
+            ownersTableBody: document.getElementById('ownersTableBody'), noOwnersMessage: document.getElementById('noOwnersMessage'),
+            vendorsTableBody: document.getElementById('vendorsTableBody'), noVendorsMessage: document.getElementById('noVendorsMessage'),
+        };
+
+        function pageInit(userId, db, ...allCommonDeps) {
+            pageCurrentUserId = userId; pageDatabase = db;
+            const [ fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbData, fbUpdateDbData, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon, commonInitializeCustomDropdown ] = allCommonDeps;
+            commonDependencies = { fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbData, fbUpdateDbData, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon, commonInitializeCustomDropdown };
+
+            initializeSubNav();
+            initializePropertiesListener(); // For property dropdown in tenant modal
+            initializeLeasesListener(); // For tenant lease end dates
+            loadDataForActiveSubsection();
+            setupEventListeners();
+            
+            DOMElements.addItemBtn.addEventListener('click', () => {
+                const activeSubSection = document.querySelector('#peopleSubNav .sub-nav-item.active').dataset.subsection;
+                openModalForSubsection(activeSubSection);
+            });
+        }
+
+        function initializeSubNav() {
+            const subNavContainer = document.getElementById('peopleSubNav');
+            const subsections = document.querySelectorAll('#peopleView .subsection-content');
+            const subNavItems = subNavContainer.querySelectorAll('.sub-nav-item');
+            subNavItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    subNavItems.forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                    const targetId = item.dataset.subsection + "Content";
+                    subsections.forEach(content => {
+                        content.classList.remove('active');
+                        if (content.id === targetId) content.classList.add('active');
+                    });
+                    loadDataForActiveSubsection();
+                });
+            });
+        }
+        
+        function initializePropertiesListener() {
+            if (!pageCurrentUserId || !pageDatabase) return;
+            const propertiesRef = commonDependencies.fbRef(pageDatabase, `properties/${pageCurrentUserId}`);
+            onValue(commonDependencies.fbQuery(propertiesRef, commonDependencies.fbOrderByChild('address')), (snapshot) => {
+                localPropertiesMap = {};
+                snapshot.forEach(propSnapshot => { localPropertiesMap[propSnapshot.key] = propSnapshot.val().address; });
+                
+                const tenantPropertySelect = DOMElements.tenantForm?.elements.propertyId;
+                if(tenantPropertySelect){
+                    const currentVal = tenantPropertySelect.value;
+                    tenantPropertySelect.innerHTML = '<option value="">Select Property/Unit</option>';
+                    snapshot.forEach(propSnapshot => {
+                        const option = document.createElement('option');
+                        option.value = propSnapshot.key;
+                        option.textContent = propSnapshot.val().address;
+                        tenantPropertySelect.appendChild(option);
+                    });
+                    tenantPropertySelect.value = currentVal;
+                }
+                // If Owners can be linked to properties, populate their dropdowns here too
+            });
+        }
+
+        function initializeLeasesListener() {
+            if (!pageCurrentUserId || !pageDatabase) return;
+            const leasesRef = commonDependencies.fbRef(pageDatabase, `leases/${pageCurrentUserId}`);
+            onValue(commonDependencies.fbQuery(leasesRef, commonDependencies.fbOrderByChild('endDate')), (snapshot) => {
+                localLeasesMap = {};
+                snapshot.forEach(leaseSnapshot => {
+                    localLeasesMap[leaseSnapshot.key] = leaseSnapshot.val();
+                });
+                // If tenants table is already loaded, re-render to show updated lease end dates
+                if(document.querySelector('#peopleSubNav .sub-nav-item[data-subsection="tenants"].active')){
+                    loadTenants();
+                }
+            });
+        }
+
+        function loadDataForActiveSubsection() {
+            const activeSubSection = document.querySelector('#peopleSubNav .sub-nav-item.active').dataset.subsection;
+            switch (activeSubSection) {
+                case 'tenants': loadTenants(); break;
+                case 'owners': loadOwners(); break;
+                case 'vendors': loadVendors(); break;
+            }
+        }
+
+        function setupEventListeners() {
+            const forms = [
+                {form: DOMElements.tenantForm, path: 'tenants', name: 'Tenant'},
+                {form: DOMElements.ownerForm, path: 'owners', name: 'Owner'},
+                {form: DOMElements.vendorForm, path: 'vendors', name: 'Vendor'}
+            ];
+            forms.forEach(f => {
+                if (f.form) {
+                    f.form.addEventListener('submit', (e) => handleGenericFormSubmit(e, f.path, f.name, f.form.id.replace('Form','Modal')));
+                }
+            });
+        }
+
+        async function handleGenericFormSubmit(e, firebasePath, itemName, modalId) {
+            e.preventDefault();
+            if (!pageCurrentUserId) { commonDependencies.commonShowAlert('User not authenticated.'); return; }
+            const form = e.target;
+            const idInputName = Object.keys(form.elements).find(key => key.toLowerCase().includes('id') && form.elements[key].type === 'hidden');
+            const id = idInputName ? form.elements[idInputName].value : null;
+            const data = {};
+            for (let element of form.elements) {
+                if (element.name && element.type !== 'submit' && element.type !== 'button') data[element.name] = element.value;
+            }
+            delete data[idInputName];
+            data.userId = pageCurrentUserId;
+            data.updatedAt = commonDependencies.fbServerTimestamp();
+            try {
+                const path = `${firebasePath}/${pageCurrentUserId}`;
+                if (id) {
+                    const itemRef = commonDependencies.fbRef(pageDatabase, `${path}/${id}`);
+                    const snapshot = await commonDependencies.fbGetDbData(itemRef);
+                    const existingData = snapshot.val() || {};
+                    await commonDependencies.fbSet(itemRef, {...existingData, ...data, createdAt: existingData.createdAt || commonDependencies.fbServerTimestamp()});
+                    commonDependencies.commonShowAlert(`${itemName} updated.`);
+                } else {
+                    data.createdAt = commonDependencies.fbServerTimestamp();
+                    await commonDependencies.fbPush(commonDependencies.fbRef(pageDatabase, path), data);
+                    commonDependencies.commonShowAlert(`${itemName} added.`);
+                }
+                document.getElementById(modalId).style.display = 'none';
+            } catch (error) { commonDependencies.commonShowAlert(`Error: ${error.message}`); }
+        }
+
+        function openModalForSubsection(subsection, id = null, data = {}) {
+            let modal, form;
+            switch (subsection) {
+                case 'tenants': modal = DOMElements.tenantModal; form = DOMElements.tenantForm; break;
+                case 'owners': modal = DOMElements.ownerModal; form = DOMElements.ownerForm; break;
+                case 'vendors': modal = DOMElements.vendorModal; form = DOMElements.vendorForm; break;
+                default: return;
+            }
+            if (form) {
+                form.reset();
+                const idInputName = Object.keys(form.elements).find(key => key.toLowerCase().includes('id') && form.elements[key].type === 'hidden');
+                if(idInputName) form.elements[idInputName].value = id || '';
+                for (const key in data) { if (form.elements[key]) form.elements[key].value = data[key]; }
+            }
+            if (modal) modal.style.display = 'flex';
+        }
+
+        async function handleDeleteGeneric(firebasePath, itemId, itemName) {
+            if (!pageCurrentUserId || !pageDatabase) return;
+            const confirmed = await commonDependencies.commonShowConfirm(`Delete this ${itemName}?`);
+            if (confirmed) {
+                try {
+                    await commonDependencies.fbRemove(commonDependencies.fbRef(pageDatabase, `${firebasePath}/${pageCurrentUserId}/${itemId}`));
+                    commonDependencies.commonShowAlert(`${itemName} deleted.`);
+                } catch (error) { commonDependencies.commonShowAlert(`Error: ${error.message}`); }
+            }
+        }
+
+        // Tenants
+        function loadTenants() {
+            const dataRef = commonDependencies.fbRef(pageDatabase, `tenants/${pageCurrentUserId}`);
+            onValue(commonDependencies.fbQuery(dataRef, commonDependencies.fbOrderByChild('fullName')), (snapshot) => {
+                DOMElements.tenantsTableBody.innerHTML = '';
+                let hasData = false;
+                snapshot.forEach(child => { hasData = true; populateTenantRow({id: child.key, ...child.val()}); });
+                DOMElements.noTenantsMessage.style.display = hasData ? 'none' : 'block';
+            });
+        }
+        function populateTenantRow(data) {
+            const row = DOMElements.tenantsTableBody.insertRow();
+            row.insertCell().textContent = data.fullName;
+            row.insertCell().textContent = data.email || 'N/A';
+            row.insertCell().textContent = data.phone || 'N/A';
+            row.insertCell().textContent = localPropertiesMap[data.propertyId] || 'N/A';
+            const lease = data.leaseId && localLeasesMap[data.leaseId] ? localLeasesMap[data.leaseId] : null;
+            row.insertCell().textContent = lease && lease.endDate ? new Date(lease.endDate).toLocaleDateString() : 'N/A';
+            const actionsCell = row.insertCell();
+            actionsCell.innerHTML = `<button class="edit-btn">${commonDependencies.commonEditIcon}</button><button class="delete-btn">${commonDependencies.commonDeleteIcon}</button>`;
+            actionsCell.querySelector('.edit-btn').addEventListener('click', () => openModalForSubsection('tenants', data.id, data));
+            actionsCell.querySelector('.delete-btn').addEventListener('click', () => handleDeleteGeneric('tenants', data.id, 'Tenant'));
+            row.addEventListener('click', () => openModalForSubsection('tenants', data.id, data));
+        }
+
+        // Owners
+        function loadOwners() {
+            const dataRef = commonDependencies.fbRef(pageDatabase, `owners/${pageCurrentUserId}`);
+            onValue(commonDependencies.fbQuery(dataRef, commonDependencies.fbOrderByChild('fullName')), (snapshot) => {
+                DOMElements.ownersTableBody.innerHTML = '';
+                let hasData = false;
+                snapshot.forEach(child => { hasData = true; populateOwnerRow({id: child.key, ...child.val()}); });
+                DOMElements.noOwnersMessage.style.display = hasData ? 'none' : 'block';
+            });
+        }
+        function populateOwnerRow(data) {
+            const row = DOMElements.ownersTableBody.insertRow();
+            row.insertCell().textContent = data.fullName;
+            row.insertCell().textContent = data.email || 'N/A';
+            row.insertCell().textContent = data.phone || 'N/A';
+            // Placeholder for properties owned - would require more complex data fetching/linking
+            row.insertCell().textContent = 'N/A'; 
+            const actionsCell = row.insertCell();
+            actionsCell.innerHTML = `<button class="edit-btn">${commonDependencies.commonEditIcon}</button><button class="delete-btn">${commonDependencies.commonDeleteIcon}</button>`;
+            actionsCell.querySelector('.edit-btn').addEventListener('click', () => openModalForSubsection('owners', data.id, data));
+            actionsCell.querySelector('.delete-btn').addEventListener('click', () => handleDeleteGeneric('owners', data.id, 'Owner'));
+            row.addEventListener('click', () => openModalForSubsection('owners', data.id, data));
+        }
+
+        // Vendors
+        function loadVendors() {
+            const dataRef = commonDependencies.fbRef(pageDatabase, `vendors/${pageCurrentUserId}`);
+            onValue(commonDependencies.fbQuery(dataRef, commonDependencies.fbOrderByChild('companyName')), (snapshot) => {
+                DOMElements.vendorsTableBody.innerHTML = '';
+                let hasData = false;
+                snapshot.forEach(child => { hasData = true; populateVendorRow({id: child.key, ...child.val()}); });
+                DOMElements.noVendorsMessage.style.display = hasData ? 'none' : 'block';
+            });
+        }
+        function populateVendorRow(data) {
+            const row = DOMElements.vendorsTableBody.insertRow();
+            row.insertCell().textContent = data.companyName;
+            row.insertCell().textContent = data.contactName || 'N/A';
+            row.insertCell().textContent = data.serviceType || 'N/A';
+            row.insertCell().textContent = data.email || 'N/A';
+            row.insertCell().textContent = data.phone || 'N/A';
+            const actionsCell = row.insertCell();
+            actionsCell.innerHTML = `<button class="edit-btn">${commonDependencies.commonEditIcon}</button><button class="delete-btn">${commonDependencies.commonDeleteIcon}</button>`;
+            actionsCell.querySelector('.edit-btn').addEventListener('click', () => openModalForSubsection('vendors', data.id, data));
+            actionsCell.querySelector('.delete-btn').addEventListener('click', () => handleDeleteGeneric('vendors', data.id, 'Vendor'));
+            row.addEventListener('click', () => openModalForSubsection('vendors', data.id, data));
+        }
+
+        initializeAuth(pageInit);
+    </script>
+</body>
+</html> 

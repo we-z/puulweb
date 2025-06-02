@@ -32,7 +32,7 @@
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 // User is signed in, redirect to the default platform page (e.g., work orders)
-                window.location.replace('/platform_work_orders.html');
+                window.location.replace('/platform_dashboard.html');
             } else {
                 // No user is signed in, redirect to the login page (index.html)
                 window.location.replace('/');

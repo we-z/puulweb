@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Communication - Puul Platform</title>
+    <link rel="stylesheet" href="/css/platform_common.css">
+    <style>
+        .sub-nav { display: flex; border-bottom: 1px solid #e0e0e0; margin-bottom: 20px; }
+        .sub-nav-item { padding: 10px 20px; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -1px; font-weight: 500; color: #555; transition: color 0.2s ease, border-bottom-color 0.2s ease; }
+        .sub-nav-item:hover { color: #000; }
+        .sub-nav-item.active { color: #000; border-bottom-color: #000; }
+        .subsection-content { display: none; }
+        .subsection-content.active { display: block; }
+        .communication-placeholder { padding: 20px; background-color: #f8f9fa; border: 1px dashed #ced4da; border-radius: 8px; text-align: center; color: #6c757d; margin-top: 15px;}
+    </style>
+</head>
+<body>
+    <div id="sidebar-container"></div>
+
+    <div class="main-content">
+        <div id="communicationView">
+            <div class="content-header"><h2>Communication</h2></div>
+            <div class="page-container">
+                <div class="sub-nav" id="communicationSubNav">
+                    <div class="sub-nav-item active" data-subsection="letters">Letters & Notices</div>
+                    <div class="sub-nav-item" data-subsection="forms">Forms & Templates</div>
+                    <div class="sub-nav-item" data-subsection="messages">Messages</div>
+                </div>
+
+                <div class="subsection-content active" id="lettersContent">
+                    <h4>Letters & Notices</h4>
+                    <div class="data-table-container">
+                        <table class="data-table" id="lettersTable">
+                            <thead><tr><th>Title/Subject</th><th>Recipient(s)</th><th>Date Sent</th><th>Status</th><th>Actions</th></tr></thead>
+                            <tbody id="lettersTableBody"></tbody>
+                        </table>
+                        <div id="noLettersMessage" class="no-data-message"><div class="icon">✉️</div><p>No letters or notices found.</p></div>
+                    </div>
+                </div>
+
+                <div class="subsection-content" id="formsContent">
+                    <h4>Forms & Templates</h4>
+                     <div class="data-table-container">
+                        <table class="data-table" id="formsTable">
+                            <thead><tr><th>Form/Template Name</th><th>Category</th><th>Last Updated</th><th>Usage Count</th><th>Actions</th></tr></thead>
+                            <tbody id="formsTableBody"></tbody>
+                        </table>
+                        <div id="noFormsMessage" class="no-data-message"><div class="icon">📄</div><p>No forms or templates created.</p></div>
+                    </div>
+                </div>
+
+                <div class="subsection-content" id="messagesContent">
+                    <h4>Messages</h4>
+                    <p>Direct and group messaging with tenants, owners, and vendors.</p>
+                    <div class="communication-placeholder">Messaging interface (e.g., chat channels, direct messages list, message composer) will be implemented here.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button class="fab" id="addItemBtn" aria-label="Add new communication item">+</button>
+
+    <!-- Modals -->
+    <div id="letterModal" class="modal"><div class="modal-content" style="max-width: 700px;"><div class="modal-header"><h3>Create/Edit Letter/Notice</h3><button class="close-btn" data-modal-id="letterModal">&times;</button></div><form id="letterForm"><input type="hidden" name="letterId"><div class="form-group"><label>Title/Subject</label><input type="text" name="subject" required></div><div class="form-group"><label>Recipient Type</label><select name="recipientType"><option>Tenant</option><option>Owner</option><option>Vendor</option><option>Group</option></select></div><div class="form-group"><label>Recipients</label><input type="text" name="recipients" placeholder="Enter names, emails, or group name"></div><div class="form-group"><label>Body</label><textarea name="bodyContent" rows="10" placeholder="Compose letter content here..."></textarea></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="letterModal">Cancel</button><button type="submit" class="submit-btn">Save/Send</button></div></form></div></div>
+    <div id="formModal" class="modal"><div class="modal-content" style="max-width: 700px;"><div class="modal-header"><h3>Create/Edit Form/Template</h3><button class="close-btn" data-modal-id="formModal">&times;</button></div><form id="formTemplateForm"><input type="hidden" name="formId"><div class="form-group"><label>Form/Template Name</label><input type="text" name="formName" required></div><div class="form-group"><label>Category</label><input type="text" name="category" placeholder="e.g., Leasing, Maintenance, Legal"></div><div class="form-group"><label>Content/Structure</label><textarea name="formContent" rows="10" placeholder="Define form fields or template content here (e.g., using markdown or a simple DSL)"></textarea></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="formModal">Cancel</button><button type="submit" class="submit-btn">Save Template</button></div></form></div></div>
+
+    <div id="customAlertModal"><div class="custom-alert"><p></p></div></div>
+    <div id="customConfirmModal" class="modal"><div class="modal-content confirm-modal-content"><div class="modal-header"><h3 id="customConfirmTitle"></h3><button class="close-btn" data-modal-id="customConfirmModal">&times;</button></div><div class="modal-body"><p id="customConfirmMessage"></p></div><div class="modal-footer"><button class="cancel-btn-confirm" id="customConfirmCancel">Cancel</button><button class="confirm-btn" id="customConfirmOk">OK</button></div></div></div>
+
+    <script type="module">
+        import { initializeAuth, showAlert, showConfirm, editIconSVG, deleteIconSVG, getDbData, initializeCustomDropdown } from './js/platform_common.js';
+        import { getDatabase, ref, push, onValue, set, remove, serverTimestamp, query, orderByChild, equalTo } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
+
+        let pageCurrentUserId, pageDatabase; let commonDependencies = {};
+
+        const DOMElements = {
+            addItemBtn: document.getElementById('addItemBtn'),
+            letterModal: document.getElementById('letterModal'), letterForm: document.getElementById('letterForm'),
+            formModal: document.getElementById('formModal'), formTemplateForm: document.getElementById('formTemplateForm'),
+            lettersTableBody: document.getElementById('lettersTableBody'), noLettersMessage: document.getElementById('noLettersMessage'),
+            formsTableBody: document.getElementById('formsTableBody'), noFormsMessage: document.getElementById('noFormsMessage'),
+        };
+
+        function pageInit(userId, db, ...allCommonDeps) {
+            pageCurrentUserId = userId; pageDatabase = db;
+            const [ fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbData, fbUpdateDbData, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon, commonInitializeCustomDropdown ] = allCommonDeps;
+            commonDependencies = { fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbData, fbUpdateDbData, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon, commonInitializeCustomDropdown };
+
+            initializeSubNav();
+            loadDataForActiveSubsection();
+            setupEventListeners();
+            
+            DOMElements.addItemBtn.addEventListener('click', () => {
+                const activeSubSection = document.querySelector('#communicationSubNav .sub-nav-item.active').dataset.subsection;
+                openModalForSubsection(activeSubSection);
+            });
+        }
+
+        function initializeSubNav() {
+            const subNavContainer = document.getElementById('communicationSubNav');
+            const subsections = document.querySelectorAll('#communicationView .subsection-content');
+            const subNavItems = subNavContainer.querySelectorAll('.sub-nav-item');
+            let fab = DOMElements.addItemBtn;
+            subNavItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    subNavItems.forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                    const targetId = item.dataset.subsection + "Content";
+                    subsections.forEach(content => {
+                        content.classList.remove('active');
+                        if (content.id === targetId) content.classList.add('active');
+                    });
+                    loadDataForActiveSubsection();
+                    fab.style.display = item.dataset.subsection === 'messages' ? 'none' : 'flex';
+                });
+            });
+             const defaultActive = subNavContainer.querySelector('.sub-nav-item.active').dataset.subsection;
+            if (defaultActive === 'messages') fab.style.display = 'none'; else fab.style.display = 'flex';
+        }
+
+        function loadDataForActiveSubsection() {
+            const activeSubSection = document.querySelector('#communicationSubNav .sub-nav-item.active').dataset.subsection;
+            switch (activeSubSection) {
+                case 'letters': loadLetters(); break;
+                case 'forms': loadForms(); break;
+            }
+        }
+
+        function setupEventListeners() {
+            const forms = [
+                {form: DOMElements.letterForm, path: 'letters', name: 'Letter/Notice'},
+                {form: DOMElements.formTemplateForm, path: 'forms', name: 'Form/Template'}
+            ];
+            forms.forEach(f => {
+                if (f.form) f.form.addEventListener('submit', (e) => handleGenericFormSubmit(e, f.path, f.name, f.form.id.replace('Form','Modal').replace('TemplateForm','Modal')));
+            });
+        }
+
+        async function handleGenericFormSubmit(e, firebasePath, itemName, modalId) {
+            e.preventDefault();
+            if (!pageCurrentUserId) { commonDependencies.commonShowAlert('User not authenticated.'); return; }
+            const form = e.target;
+            const idInputName = Object.keys(form.elements).find(key => key.name && key.name.toLowerCase().includes('id') && form.elements[key].type === 'hidden');
+            const id = idInputName ? form.elements[idInputName].value : null;
+            const data = {};
+            for (let element of form.elements) {
+                if (element.name && element.type !== 'submit' && element.type !== 'button') data[element.name] = element.value;
+            }
+            if(idInputName) delete data[idInputName];
+            data.userId = pageCurrentUserId; data.updatedAt = commonDependencies.fbServerTimestamp();
+
+            try {
+                const path = `${firebasePath}/${pageCurrentUserId}`;
+                if (id) {
+                    const itemRef = commonDependencies.fbRef(pageDatabase, `${path}/${id}`);
+                    const snapshot = await commonDependencies.fbGetDbData(itemRef);
+                    const existingData = snapshot.val() || {};
+                    await commonDependencies.fbSet(itemRef, {...existingData, ...data, createdAt: existingData.createdAt || commonDependencies.fbServerTimestamp()});
+                    commonDependencies.commonShowAlert(`${itemName} updated.`);
+                } else {
+                    data.createdAt = commonDependencies.fbServerTimestamp();
+                    await commonDependencies.fbPush(commonDependencies.fbRef(pageDatabase, path), data);
+                    commonDependencies.commonShowAlert(`${itemName} added.`);
+                }
+                document.getElementById(modalId).style.display = 'none';
+            } catch (error) { commonDependencies.commonShowAlert(`Error: ${error.message}`); }
+        }
+
+        function openModalForSubsection(subsection, id = null, data = {}) {
+            let modal, form;
+            switch (subsection) {
+                case 'letters': modal = DOMElements.letterModal; form = DOMElements.letterForm; break;
+                case 'forms': modal = DOMElements.formModal; form = DOMElements.formTemplateForm; break;
+                default: return;
+            }
+            if (form) {
+                form.reset();
+                const idInputName = Object.keys(form.elements).find(key => key.name && key.name.toLowerCase().includes('id') && form.elements[key].type === 'hidden');
+                if(idInputName) form.elements[idInputName].value = id || '';
+                for (const key in data) { if (form.elements[key]) form.elements[key].value = data[key]; }
+            }
+            if (modal) modal.style.display = 'flex';
+        }
+
+        async function handleDeleteGeneric(firebasePath, itemId, itemName) {
+            if (!pageCurrentUserId || !pageDatabase) return;
+            const confirmed = await commonDependencies.commonShowConfirm(`Delete this ${itemName}?`);
+            if (confirmed) {
+                try {
+                    await commonDependencies.fbRemove(commonDependencies.fbRef(pageDatabase, `${firebasePath}/${pageCurrentUserId}/${itemId}`));
+                    commonDependencies.commonShowAlert(`${itemName} deleted.`);
+                } catch (error) { commonDependencies.commonShowAlert(`Error: ${error.message}`); }
+            }
+        }
+
+        // Letters & Notices
+        function loadLetters() {
+            const dataRef = commonDependencies.fbRef(pageDatabase, `letters/${pageCurrentUserId}`);
+            onValue(commonDependencies.fbQuery(dataRef, commonDependencies.fbOrderByChild('updatedAt')), (snapshot) => {
+                DOMElements.lettersTableBody.innerHTML = ''; let hasData = false;
+                snapshot.forEach(child => { hasData = true; populateLetterRow({id: child.key, ...child.val()}); });
+                DOMElements.noLettersMessage.style.display = hasData ? 'none' : 'block';
+            });
+        }
+        function populateLetterRow(data) {
+            const row = DOMElements.lettersTableBody.insertRow();
+            row.insertCell().textContent = data.subject;
+            row.insertCell().textContent = data.recipients || 'N/A';
+            row.insertCell().textContent = data.updatedAt ? new Date(data.updatedAt).toLocaleDateString() : 'N/A';
+            row.insertCell().innerHTML = `<span class="status-badge status-sent">${data.status || 'Sent'}</span>`; // Placeholder
+            const actionsCell = row.insertCell();
+            actionsCell.innerHTML = `<button class="edit-btn">${commonDependencies.commonEditIcon}</button><button class="delete-btn">${commonDependencies.commonDeleteIcon}</button>`;
+            actionsCell.querySelector('.edit-btn').addEventListener('click', () => openModalForSubsection('letters', data.id, data));
+            actionsCell.querySelector('.delete-btn').addEventListener('click', () => handleDeleteGeneric('letters', data.id, 'Letter/Notice'));
+            row.addEventListener('click', () => openModalForSubsection('letters', data.id, data));
+        }
+
+        // Forms & Templates
+        function loadForms() {
+            const dataRef = commonDependencies.fbRef(pageDatabase, `forms/${pageCurrentUserId}`);
+            onValue(commonDependencies.fbQuery(dataRef, commonDependencies.fbOrderByChild('formName')), (snapshot) => {
+                DOMElements.formsTableBody.innerHTML = ''; let hasData = false;
+                snapshot.forEach(child => { hasData = true; populateFormRow({id: child.key, ...child.val()}); });
+                DOMElements.noFormsMessage.style.display = hasData ? 'none' : 'block';
+            });
+        }
+        function populateFormRow(data) {
+            const row = DOMElements.formsTableBody.insertRow();
+            row.insertCell().textContent = data.formName;
+            row.insertCell().textContent = data.category || 'N/A';
+            row.insertCell().textContent = data.updatedAt ? new Date(data.updatedAt).toLocaleDateString() : 'N/A';
+            row.insertCell().textContent = data.usageCount || 0; // Placeholder
+            const actionsCell = row.insertCell();
+            actionsCell.innerHTML = `<button class="edit-btn">${commonDependencies.commonEditIcon}</button><button class="delete-btn">${commonDependencies.commonDeleteIcon}</button>`;
+            actionsCell.querySelector('.edit-btn').addEventListener('click', () => openModalForSubsection('forms', data.id, data));
+            actionsCell.querySelector('.delete-btn').addEventListener('click', () => handleDeleteGeneric('forms', data.id, 'Form/Template'));
+            row.addEventListener('click', () => openModalForSubsection('forms', data.id, data));
+        }
+
+        initializeAuth(pageInit);
+    </script>
+</body>
+</html> 

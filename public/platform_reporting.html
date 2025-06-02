@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporting - Puul Platform</title>
+    <link rel="stylesheet" href="/css/platform_common.css">
+    <style>
+        .sub-nav { display: flex; border-bottom: 1px solid #e0e0e0; margin-bottom: 20px; }
+        .sub-nav-item { padding: 10px 20px; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -1px; font-weight: 500; color: #555; transition: color 0.2s ease, border-bottom-color 0.2s ease; }
+        .sub-nav-item:hover { color: #000; }
+        .sub-nav-item.active { color: #000; border-bottom-color: #000; }
+        .subsection-content { display: none; }
+        .subsection-content.active { display: block; }
+        .report-placeholder { padding: 20px; background-color: #f8f9fa; border: 1px dashed #ced4da; border-radius: 8px; text-align: center; color: #6c757d; margin-top: 15px;}
+    </style>
+</head>
+<body>
+    <div id="sidebar-container"></div>
+
+    <div class="main-content">
+        <div id="reportingView">
+            <div class="content-header"><h2>Reporting</h2></div>
+            <div class="page-container">
+                <div class="sub-nav" id="reportingSubNav">
+                    <div class="sub-nav-item active" data-subsection="reports">Reports</div>
+                    <div class="sub-nav-item" data-subsection="scheduledReports">Scheduled Reports</div>
+                    <div class="sub-nav-item" data-subsection="metrics">Metrics</div>
+                    <div class="sub-nav-item" data-subsection="surveys">Surveys</div>
+                </div>
+
+                <div class="subsection-content active" id="reportsContent">
+                    <h4>Reports</h4>
+                    <p>Generate and view various financial, operational, and leasing reports.</p>
+                    <div class="report-placeholder">Report generation and viewing interface will be here. (e.g., list of standard reports, custom report builder)</div>
+                    <!-- Future: Filters for report types, date ranges, export options -->
+                </div>
+
+                <div class="subsection-content" id="scheduledReportsContent">
+                    <h4>Scheduled Reports</h4>
+                     <div class="data-table-container">
+                        <table class="data-table" id="scheduledReportsTable">
+                            <thead><tr><th>Report Name</th><th>Frequency</th><th>Next Run Date</th><th>Recipients</th><th>Status</th><th>Actions</th></tr></thead>
+                            <tbody id="scheduledReportsTableBody"></tbody>
+                        </table>
+                        <div id="noScheduledReportsMessage" class="no-data-message"><div class="icon">🗓️</div><p>No reports currently scheduled.</p></div>
+                    </div>
+                </div>
+
+                <div class="subsection-content" id="metricsContent">
+                    <h4>Metrics & Analytics</h4>
+                    <p>Visualize key performance indicators (KPIs) and trends across your portfolio.</p>
+                    <div class="report-placeholder">Dashboard with charts and graphs for key metrics (e.g., occupancy, delinquency, maintenance costs) will be here.</div>
+                </div>
+
+                <div class="subsection-content" id="surveysContent">
+                    <h4>Surveys</h4>
+                    <div class="data-table-container">
+                        <table class="data-table" id="surveysTable">
+                            <thead><tr><th>Survey Title</th><th>Target Audience</th><th>Date Created</th><th>Responses</th><th>Status</th><th>Actions</th></tr></thead>
+                            <tbody id="surveysTableBody"></tbody>
+                        </table>
+                        <div id="noSurveysMessage" class="no-data-message"><div class="icon">❓</div><p>No surveys created yet.</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button class="fab" id="addItemBtn" aria-label="Add new report/survey">+</button>
+
+    <!-- Modals -->
+    <div id="scheduledReportModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>Schedule New Report</h3><button class="close-btn" data-modal-id="scheduledReportModal">&times;</button></div><form id="scheduledReportForm"><input type="hidden" name="scheduledReportId"><div class="form-group"><label>Report Type</label><select name="reportType"><option>Occupancy Summary</option><option>Rent Roll</option><option>Delinquency Report</option></select></div><div class="form-group"><label>Frequency</label><select name="frequency"><option>Daily</option><option>Weekly</option><option>Monthly</option></select></div><div class="form-group"><label>Recipients (comma-separated emails)</label><input type="text" name="recipients"></div><div class="form-group"><label>Status</label><select name="status"><option>Active</option><option>Paused</option></select></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="scheduledReportModal">Cancel</button><button type="submit" class="submit-btn">Save Schedule</button></div></form></div></div>
+    <div id="surveyModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>Create/Edit Survey</h3><button class="close-btn" data-modal-id="surveyModal">&times;</button></div><form id="surveyForm"><input type="hidden" name="surveyId"><div class="form-group"><label>Survey Title</label><input type="text" name="surveyTitle" required></div><div class="form-group"><label>Target Audience</label><select name="targetAudience"><option>Tenants</option><option>Owners</option><option>All</option></select></div><div class="form-group"><label>Description/Questions</label><textarea name="description" rows="5" placeholder="Enter survey questions here..."></textarea></div><div class="form-group"><label>Status</label><select name="status"><option>Draft</option><option>Active</option><option>Closed</option></select></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="surveyModal">Cancel</button><button type="submit" class="submit-btn">Save Survey</button></div></form></div></div>
+
+    <div id="customAlertModal"><div class="custom-alert"><p></p></div></div>
+    <div id="customConfirmModal" class="modal"><div class="modal-content confirm-modal-content"><div class="modal-header"><h3 id="customConfirmTitle"></h3><button class="close-btn" data-modal-id="customConfirmModal">&times;</button></div><div class="modal-body"><p id="customConfirmMessage"></p></div><div class="modal-footer"><button class="cancel-btn-confirm" id="customConfirmCancel">Cancel</button><button class="confirm-btn" id="customConfirmOk">OK</button></div></div></div>
+
+    <script type="module">
+        import { initializeAuth, showAlert, showConfirm, editIconSVG, deleteIconSVG, getDbData, initializeCustomDropdown } from './js/platform_common.js';
+        import { getDatabase, ref, push, onValue, set, remove, serverTimestamp, query, orderByChild, equalTo } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
+
+        let pageCurrentUserId, pageDatabase; let commonDependencies = {};
+
+        const DOMElements = {
+            addItemBtn: document.getElementById('addItemBtn'),
+            scheduledReportModal: document.getElementById('scheduledReportModal'), scheduledReportForm: document.getElementById('scheduledReportForm'),
+            surveyModal: document.getElementById('surveyModal'), surveyForm: document.getElementById('surveyForm'),
+            scheduledReportsTableBody: document.getElementById('scheduledReportsTableBody'), noScheduledReportsMessage: document.getElementById('noScheduledReportsMessage'),
+            surveysTableBody: document.getElementById('surveysTableBody'), noSurveysMessage: document.getElementById('noSurveysMessage'),
+        };
+
+        function pageInit(userId, db, ...allCommonDeps) {
+            pageCurrentUserId = userId; pageDatabase = db;
+            const [ fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbData, fbUpdateDbData, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon, commonInitializeCustomDropdown ] = allCommonDeps;
+            commonDependencies = { fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbData, fbUpdateDbData, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon, commonInitializeCustomDropdown };
+
+            initializeSubNav();
+            loadDataForActiveSubsection();
+            setupEventListeners();
+            
+            DOMElements.addItemBtn.addEventListener('click', () => {
+                const activeSubSection = document.querySelector('#reportingSubNav .sub-nav-item.active').dataset.subsection;
+                openModalForSubsection(activeSubSection);
+            });
+        }
+
+        function initializeSubNav() {
+            const subNavContainer = document.getElementById('reportingSubNav');
+            const subsections = document.querySelectorAll('#reportingView .subsection-content');
+            const subNavItems = subNavContainer.querySelectorAll('.sub-nav-item');
+            let fab = DOMElements.addItemBtn;
+            subNavItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    subNavItems.forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                    const targetId = item.dataset.subsection + "Content";
+                    subsections.forEach(content => {
+                        content.classList.remove('active');
+                        if (content.id === targetId) content.classList.add('active');
+                    });
+                    loadDataForActiveSubsection();
+                    // Show FAB only for sections where adding makes sense
+                    if (item.dataset.subsection === 'reports' || item.dataset.subsection === 'metrics') {
+                        fab.style.display = 'none';
+                    } else {
+                        fab.style.display = 'flex';
+                    }
+                });
+            });
+            // Initial FAB state based on default active tab
+            const defaultActive = subNavContainer.querySelector('.sub-nav-item.active').dataset.subsection;
+            if (defaultActive === 'reports' || defaultActive === 'metrics') fab.style.display = 'none'; else fab.style.display = 'flex';
+        }
+
+        function loadDataForActiveSubsection() {
+            const activeSubSection = document.querySelector('#reportingSubNav .sub-nav-item.active').dataset.subsection;
+            switch (activeSubSection) {
+                case 'scheduledReports': loadScheduledReports(); break;
+                case 'surveys': loadSurveys(); break;
+            }
+        }
+
+        function setupEventListeners() {
+            const forms = [
+                {form: DOMElements.scheduledReportForm, path: 'scheduledReports', name: 'Scheduled Report'},
+                {form: DOMElements.surveyForm, path: 'surveys', name: 'Survey'}
+            ];
+            forms.forEach(f => {
+                if (f.form) f.form.addEventListener('submit', (e) => handleGenericFormSubmit(e, f.path, f.name, f.form.id.replace('Form','Modal')));
+            });
+        }
+
+        async function handleGenericFormSubmit(e, firebasePath, itemName, modalId) {
+            e.preventDefault();
+            if (!pageCurrentUserId) { commonDependencies.commonShowAlert('User not authenticated.'); return; }
+            const form = e.target;
+            const idInputName = Object.keys(form.elements).find(key => key.name && key.name.toLowerCase().includes('id') && form.elements[key].type === 'hidden');
+            const id = idInputName ? form.elements[idInputName].value : null;
+            const data = {};
+            for (let element of form.elements) {
+                if (element.name && element.type !== 'submit' && element.type !== 'button') data[element.name] = element.value;
+            }
+            if(idInputName) delete data[idInputName];
+            data.userId = pageCurrentUserId; data.updatedAt = commonDependencies.fbServerTimestamp();
+
+            try {
+                const path = `${firebasePath}/${pageCurrentUserId}`;
+                if (id) {
+                    const itemRef = commonDependencies.fbRef(pageDatabase, `${path}/${id}`);
+                    const snapshot = await commonDependencies.fbGetDbData(itemRef);
+                    const existingData = snapshot.val() || {};
+                    await commonDependencies.fbSet(itemRef, {...existingData, ...data, createdAt: existingData.createdAt || commonDependencies.fbServerTimestamp()});
+                    commonDependencies.commonShowAlert(`${itemName} updated.`);
+                } else {
+                    data.createdAt = commonDependencies.fbServerTimestamp();
+                    await commonDependencies.fbPush(commonDependencies.fbRef(pageDatabase, path), data);
+                    commonDependencies.commonShowAlert(`${itemName} added.`);
+                }
+                document.getElementById(modalId).style.display = 'none';
+            } catch (error) { commonDependencies.commonShowAlert(`Error: ${error.message}`); }
+        }
+
+        function openModalForSubsection(subsection, id = null, data = {}) {
+            let modal, form;
+            switch (subsection) {
+                case 'scheduledReports': modal = DOMElements.scheduledReportModal; form = DOMElements.scheduledReportForm; break;
+                case 'surveys': modal = DOMElements.surveyModal; form = DOMElements.surveyForm; break;
+                default: return;
+            }
+            if (form) {
+                form.reset();
+                const idInputName = Object.keys(form.elements).find(key => key.name && key.name.toLowerCase().includes('id') && form.elements[key].type === 'hidden');
+                if(idInputName) form.elements[idInputName].value = id || '';
+                for (const key in data) { if (form.elements[key]) form.elements[key].value = data[key]; }
+            }
+            if (modal) modal.style.display = 'flex';
+        }
+
+        async function handleDeleteGeneric(firebasePath, itemId, itemName) {
+            if (!pageCurrentUserId || !pageDatabase) return;
+            const confirmed = await commonDependencies.commonShowConfirm(`Delete this ${itemName}?`);
+            if (confirmed) {
+                try {
+                    await commonDependencies.fbRemove(commonDependencies.fbRef(pageDatabase, `${firebasePath}/${pageCurrentUserId}/${itemId}`));
+                    commonDependencies.commonShowAlert(`${itemName} deleted.`);
+                } catch (error) { commonDependencies.commonShowAlert(`Error: ${error.message}`); }
+            }
+        }
+
+        // Scheduled Reports
+        function loadScheduledReports() {
+            const dataRef = commonDependencies.fbRef(pageDatabase, `scheduledReports/${pageCurrentUserId}`);
+            onValue(commonDependencies.fbQuery(dataRef, commonDependencies.fbOrderByChild('reportType')), (snapshot) => {
+                DOMElements.scheduledReportsTableBody.innerHTML = ''; let hasData = false;
+                snapshot.forEach(child => { hasData = true; populateScheduledReportRow({id: child.key, ...child.val()}); });
+                DOMElements.noScheduledReportsMessage.style.display = hasData ? 'none' : 'block';
+            });
+        }
+        function populateScheduledReportRow(data) {
+            const row = DOMElements.scheduledReportsTableBody.insertRow();
+            row.insertCell().textContent = data.reportType;
+            row.insertCell().textContent = data.frequency;
+            row.insertCell().textContent = 'N/A'; // Placeholder for Next Run Date
+            row.insertCell().textContent = data.recipients;
+            row.insertCell().innerHTML = `<span class="status-badge status-${(data.status || 'active').toLowerCase()}">${data.status || 'Active'}</span>`;
+            const actionsCell = row.insertCell();
+            actionsCell.innerHTML = `<button class="edit-btn">${commonDependencies.commonEditIcon}</button><button class="delete-btn">${commonDependencies.commonDeleteIcon}</button>`;
+            actionsCell.querySelector('.edit-btn').addEventListener('click', () => openModalForSubsection('scheduledReports', data.id, data));
+            actionsCell.querySelector('.delete-btn').addEventListener('click', () => handleDeleteGeneric('scheduledReports', data.id, 'Scheduled Report'));
+            row.addEventListener('click', () => openModalForSubsection('scheduledReports', data.id, data));
+        }
+
+        // Surveys
+        function loadSurveys() {
+            const dataRef = commonDependencies.fbRef(pageDatabase, `surveys/${pageCurrentUserId}`);
+            onValue(commonDependencies.fbQuery(dataRef, commonDependencies.fbOrderByChild('surveyTitle')), (snapshot) => {
+                DOMElements.surveysTableBody.innerHTML = ''; let hasData = false;
+                snapshot.forEach(child => { hasData = true; populateSurveyRow({id: child.key, ...child.val()}); });
+                DOMElements.noSurveysMessage.style.display = hasData ? 'none' : 'block';
+            });
+        }
+        function populateSurveyRow(data) {
+            const row = DOMElements.surveysTableBody.insertRow();
+            row.insertCell().textContent = data.surveyTitle;
+            row.insertCell().textContent = data.targetAudience;
+            row.insertCell().textContent = data.createdAt ? new Date(data.createdAt).toLocaleDateString() : 'N/A';
+            row.insertCell().textContent = data.responseCount || 0; // Placeholder
+            row.insertCell().innerHTML = `<span class="status-badge status-${(data.status || 'draft').toLowerCase()}">${data.status || 'Draft'}</span>`;
+            const actionsCell = row.insertCell();
+            actionsCell.innerHTML = `<button class="edit-btn">${commonDependencies.commonEditIcon}</button><button class="delete-btn">${commonDependencies.commonDeleteIcon}</button>`;
+            actionsCell.querySelector('.edit-btn').addEventListener('click', () => openModalForSubsection('surveys', data.id, data));
+            actionsCell.querySelector('.delete-btn').addEventListener('click', () => handleDeleteGeneric('surveys', data.id, 'Survey'));
+            row.addEventListener('click', () => openModalForSubsection('surveys', data.id, data));
+        }
+
+        initializeAuth(pageInit);
+    </script>
+</body>
+</html> 

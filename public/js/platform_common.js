@@ -35,9 +35,15 @@ const DOMElements = {
 // --- Sidebar Generation & Toggle ---
 function generateSidebarHTML(activePage) {
     const pages = [
-        { name: 'Work Orders', href: '/platform_work_orders.html', icon: '📝' },
-        { name: 'Properties', href: '/platform_properties.html', icon: '🏠' },
         { name: 'Dashboard', href: '/platform_dashboard.html', icon: '📊' },
+        { name: 'Calendar', href: '/platform_calendar.html', icon: '📅' },
+        { name: 'Leasing', href: '/platform_leasing.html', icon: '🔑' },
+        { name: 'Properties', href: '/platform_properties.html', icon: '🏠' },
+        { name: 'People', href: '/platform_people.html', icon: '👥' },
+        { name: 'Accounting', href: '/platform_accounting.html', icon: '💰' },
+        { name: 'Maintenance', href: '/platform_maintenance.html', icon: '🛠️' },
+        { name: 'Reporting', href: '/platform_reporting.html', icon: '📄' },
+        { name: 'Communication', href: '/platform_communication.html', icon: '💬' },
         { name: 'Settings', href: '/platform_settings.html', icon: '⚙️' }
     ];
 
@@ -50,7 +56,7 @@ function generateSidebarHTML(activePage) {
     return `
         <div class="sidebar">
             <div class="sidebar-header">
-                <a href="/platform_work_orders.html" class="logo">
+                <a href="/platform_dashboard.html" class="logo">
                     <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/puul-logo.svg?alt=media&token=aac48fcb-cc8d-4af8-9744-c7eca1e7cf04" alt="Puul Logo">
                     <h1 class="logo-text">Puul</h1>
                 </a>
@@ -70,19 +76,18 @@ function generateSidebarHTML(activePage) {
 
 // Wrapped in a function to be called on DOMContentLoaded
 function setupPageLayoutAndInteractivity() {
-    console.log('[platform_common.js] Attempting to run setupPageLayoutAndInteractivity.');
-    console.log('[platform_common.js] Document body:', document.body.innerHTML.substring(0, 500)); // Log first 500 chars of body HTML
+    console.log('[platform_common.js] Executing setupPageLayoutAndInteractivity for page:', window.location.pathname);
     const sidebarContainer = document.getElementById('sidebar-container');
-    console.log('[platform_common.js] sidebarContainer element:', sidebarContainer);
+    console.log('[platform_common.js] Found #sidebar-container:', sidebarContainer);
     const contentHeader = document.querySelector('.content-header');
-    console.log('[platform_common.js] contentHeader element:', contentHeader);
+    console.log('[platform_common.js] Found .content-header:', contentHeader);
 
     if (!sidebarContainer) {
-        console.error('[platform_common.js] Sidebar container #sidebar-container not found. Current DOM might not be fully ready or element is missing.');
+        console.error('[platform_common.js] CRITICAL: Sidebar container #sidebar-container not found in the DOM for page:', window.location.pathname);
         return;
     }
     if (!contentHeader) {
-        console.error('[platform_common.js] Content header .content-header not found. Current DOM might not be fully ready or element is missing.');
+        console.error('[platform_common.js] CRITICAL: Content header .content-header not found in the DOM for page:', window.location.pathname);
         return;
     }
 
@@ -383,7 +388,7 @@ function initializeAuth(pageSpecificInitCallback) {
             }
 
             if (pageSpecificInitCallback && typeof pageSpecificInitCallback === 'function') {
-                pageSpecificInitCallback(currentUserId, database, ref, push, set, remove, serverTimestamp, query, orderByChild, equalTo, getDbData, updateDbData, showAlert, showConfirm, editIconSVG, deleteIconSVG);
+                pageSpecificInitCallback(currentUserId, database, ref, push, set, remove, serverTimestamp, query, orderByChild, equalTo, getDbData, updateDbData, showAlert, showConfirm, editIconSVG, deleteIconSVG, initializeCustomDropdown);
             }
         } else {
             currentUserId = null;
@@ -402,6 +407,11 @@ async function getDbData(dataRef) {
 async function updateDbData(dataRef, values) {
     const { update: fbUpdate } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js');
     return fbUpdate(dataRef, values);
+}
+
+// Ensure DOMElements is globally accessible for initializeCustomDropdown if it's not already
+if (typeof window.DOMElements === 'undefined') {
+    window.DOMElements = DOMElements;
 }
 
 export { 

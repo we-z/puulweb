@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leasing - Puul Platform</title>
+    <link rel="stylesheet" href="/css/platform_common.css">
+    <style>
+        .sub-nav {
+            display: flex;
+            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 20px;
+        }
+        .sub-nav-item {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -1px;
+            font-weight: 500;
+            color: #555;
+            transition: color 0.2s ease, border-bottom-color 0.2s ease;
+        }
+        .sub-nav-item:hover { color: #000; }
+        .sub-nav-item.active { color: #000; border-bottom-color: #000; }
+        .subsection-content { display: none; }
+        .subsection-content.active { display: block; }
+    </style>
+</head>
+<body>
+    <div id="sidebar-container"></div>
+
+    <div class="main-content">
+        <div id="leasingView">
+            <div class="content-header"><h2>Leasing</h2></div>
+            <div class="page-container">
+                <div class="sub-nav" id="leasingSubNav">
+                    <div class="sub-nav-item active" data-subsection="vacancies">Vacancies</div>
+                    <div class="sub-nav-item" data-subsection="guestCards">Guest Cards</div>
+                    <div class="sub-nav-item" data-subsection="rentalApplications">Rental Applications</div>
+                    <div class="sub-nav-item" data-subsection="leases">Leases</div>
+                    <div class="sub-nav-item" data-subsection="renewals">Renewals</div>
+                    <div class="sub-nav-item" data-subsection="signals">Signals</div>
+                </div>
+
+                <!-- Vacancies Subsection -->
+                <div class="subsection-content active" id="vacanciesContent">
+                    <h4>Vacancies</h4>
+                    <div class="data-table-container">
+                        <table class="data-table" id="vacanciesTable">
+                            <thead><tr><th>Property/Unit</th><th>Address</th><th>Status</th><th>Available Date</th><th>Market Rent</th><th>Actions</th></tr></thead>
+                            <tbody id="vacanciesTableBody"></tbody>
+                        </table>
+                        <div id="noVacanciesMessage" class="no-data-message"><div class="icon">🚪</div><p>No current vacancies.</p></div>
+                    </div>
+                </div>
+
+                <!-- Guest Cards Subsection -->
+                <div class="subsection-content" id="guestCardsContent">
+                    <h4>Guest Cards</h4>
+                    <div class="data-table-container">
+                        <table class="data-table" id="guestCardsTable">
+                            <thead><tr><th>Name</th><th>Phone</th><th>Email</th><th>Property Interested In</th><th>Date Created</th><th>Status</th><th>Actions</th></tr></thead>
+                            <tbody id="guestCardsTableBody"></tbody>
+                        </table>
+                        <div id="noGuestCardsMessage" class="no-data-message"><div class="icon">📇</div><p>No guest cards recorded.</p></div>
+                    </div>
+                </div>
+
+                <!-- Rental Applications Subsection -->
+                <div class="subsection-content" id="rentalApplicationsContent">
+                    <h4>Rental Applications</h4>
+                    <div class="data-table-container">
+                        <table class="data-table" id="rentalApplicationsTable">
+                            <thead><tr><th>Applicant Name</th><th>Property Applied For</th><th>Submission Date</th><th>Status</th><th>Credit Score</th><th>Actions</th></tr></thead>
+                            <tbody id="rentalApplicationsTableBody"></tbody>
+                        </table>
+                        <div id="noRentalApplicationsMessage" class="no-data-message"><div class="icon">📋</div><p>No rental applications found.</p></div>
+                    </div>
+                </div>
+
+                <!-- Leases Subsection -->
+                <div class="subsection-content" id="leasesContent">
+                    <h4>Leases</h4>
+                    <div class="data-table-container">
+                        <table class="data-table" id="leasesTable">
+                            <thead><tr><th>Lease ID</th><th>Tenant(s)</th><th>Property/Unit</th><th>Start Date</th><th>End Date</th><th>Rent Amount</th><th>Status</th><th>Actions</th></tr></thead>
+                            <tbody id="leasesTableBody"></tbody>
+                        </table>
+                        <div id="noLeasesMessage" class="no-data-message"><div class="icon">📜</div><p>No leases recorded.</p></div>
+                    </div>
+                </div>
+
+                 <!-- Renewals Subsection -->
+                <div class="subsection-content" id="renewalsContent">
+                    <h4>Renewals</h4>
+                    <div class="data-table-container">
+                        <table class="data-table" id="renewalsTable">
+                            <thead><tr><th>Lease ID</th><th>Tenant(s)</th><th>Property/Unit</th><th>Current End Date</th><th>Renewal Offer Date</th><th>Status</th><th>Actions</th></tr></thead>
+                            <tbody id="renewalsTableBody"></tbody>
+                        </table>
+                        <div id="noRenewalsMessage" class="no-data-message"><div class="icon">🔁</div><p>No pending or processed renewals.</p></div>
+                    </div>
+                </div>
+
+                <!-- Signals Subsection -->
+                <div class="subsection-content" id="signalsContent">
+                    <h4>Signals</h4>
+                     <div class="no-data-message"><div class="icon">📡</div><p>Leasing Signals features coming soon.</p><span>This section will provide insights based on market data and prospect activity.</span></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <button class="fab" id="addItemBtn" aria-label="Add new item">+</button>
+
+    <!-- Modals -->
+    <div id="vacancyModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>Add/Edit Vacancy</h3><button class="close-btn" data-modal-id="vacancyModal">&times;</button></div><form id="vacancyForm"><input type="hidden" id="vacancyId"><div class="form-group"><label>Property/Unit</label><select name="propertyId" required></select></div><div class="form-group"><label>Available Date</label><input type="date" name="availableDate"></div><div class="form-group"><label>Market Rent ($)</label><input type="number" name="marketRent" step="0.01"></div><div class="form-group"><label>Status</label><select name="status"><option>Available</option><option>Pending</option><option>Rented</option></select></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="vacancyModal">Cancel</button><button type="submit" class="submit-btn">Save</button></div></form></div></div>
+    <div id="guestCardModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>Add/Edit Guest Card</h3><button class="close-btn" data-modal-id="guestCardModal">&times;</button></div><form id="guestCardForm"><input type="hidden" id="guestCardId"><div class="form-group"><label>Full Name</label><input type="text" name="fullName" required></div><div class="form-group"><label>Phone</label><input type="tel" name="phone"></div><div class="form-group"><label>Email</label><input type="email" name="email"></div><div class="form-group"><label>Property Interested In</label><select name="propertyId"></select></div><div class="form-group"><label>Status</label><select name="status"><option>New</option><option>Contacted</option><option>Showing Scheduled</option><option>Applied</option><option>Inactive</option></select></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="guestCardModal">Cancel</button><button type="submit" class="submit-btn">Save</button></div></form></div></div>
+    <div id="rentalApplicationModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>Add/Edit Rental Application</h3><button class="close-btn" data-modal-id="rentalApplicationModal">&times;</button></div><form id="rentalApplicationForm"><input type="hidden" id="rentalApplicationId"><div class="form-group"><label>Applicant Name</label><input type="text" name="applicantName" required></div><div class="form-group"><label>Property Applied For</label><select name="propertyId" required></select></div><div class="form-group"><label>Submission Date</label><input type="date" name="submissionDate" required></div><div class="form-group"><label>Status</label><select name="status"><option>Submitted</option><option>Processing</option><option>Approved</option><option>Denied</option><option>Withdrawn</option></select></div><div class="form-group"><label>Notes</label><textarea name="notes"></textarea></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="rentalApplicationModal">Cancel</button><button type="submit" class="submit-btn">Save</button></div></form></div></div>
+    <div id="leaseModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>Add/Edit Lease</h3><button class="close-btn" data-modal-id="leaseModal">&times;</button></div><form id="leaseForm"><input type="hidden" id="leaseId"><div class="form-group"><label>Tenant(s)</label><input type="text" name="tenants" required placeholder="Comma-separated names"></div><div class="form-group"><label>Property/Unit</label><select name="propertyId" required></select></div><div class="form-group"><label>Start Date</label><input type="date" name="startDate" required></div><div class="form-group"><label>End Date</label><input type="date" name="endDate" required></div><div class="form-group"><label>Rent Amount ($)</label><input type="number" name="rentAmount" step="0.01" required></div><div class="form-group"><label>Status</label><select name="status"><option>Active</option><option>Expired</option><option>Terminated</option><option>Future</option></select></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="leaseModal">Cancel</button><button type="submit" class="submit-btn">Save</button></div></form></div></div>
+    <div id="renewalModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>Process Renewal</h3><button class="close-btn" data-modal-id="renewalModal">&times;</button></div><form id="renewalForm"><input type="hidden" id="renewalLeaseId"><div class="form-group"><label>Lease ID</label><input type="text" name="leaseDisplayId" readonly></div><div class="form-group"><label>Tenant(s)</label><input type="text" name="renewalTenants" readonly></div><div class="form-group"><label>Property/Unit</label><input type="text" name="renewalProperty" readonly></div><div class="form-group"><label>New End Date</label><input type="date" name="newEndDate" required></div><div class="form-group"><label>New Rent Amount ($)</label><input type="number" name="newRentAmount" step="0.01"></div><div class="form-group"><label>Status</label><select name="renewalStatus"><option>Offered</option><option>Accepted</option><option>Declined</option><option>Processing</option></select></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="renewalModal">Cancel</button><button type="submit" class="submit-btn">Save Renewal</button></div></form></div></div>
+
+    <div id="customAlertModal"><div class="custom-alert"><p></p></div></div>
+    <div id="customConfirmModal" class="modal"><div class="modal-content confirm-modal-content"><div class="modal-header"><h3 id="customConfirmTitle"></h3><button class="close-btn" data-modal-id="customConfirmModal">&times;</button></div><div class="modal-body"><p id="customConfirmMessage"></p></div><div class="modal-footer"><button class="cancel-btn-confirm" id="customConfirmCancel">Cancel</button><button class="confirm-btn" id="customConfirmOk">OK</button></div></div></div>
+
+    <script type="module">
+        import { initializeAuth, showAlert, showConfirm, editIconSVG, deleteIconSVG, getDbData, initializeCustomDropdown } from './js/platform_common.js';
+        import { getDatabase, ref, push, onValue, set, remove, serverTimestamp, query, orderByChild, equalTo } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
+
+        let pageCurrentUserId, pageDatabase;
+        let commonDependencies = {};
+        let localPropertiesMap = {};
+
+        const DOMElements = {
+            addItemBtn: document.getElementById('addItemBtn'),
+            // Subsection Modals & Forms
+            vacancyModal: document.getElementById('vacancyModal'), vacancyForm: document.getElementById('vacancyForm'),
+            guestCardModal: document.getElementById('guestCardModal'), guestCardForm: document.getElementById('guestCardForm'),
+            rentalApplicationModal: document.getElementById('rentalApplicationModal'), rentalApplicationForm: document.getElementById('rentalApplicationForm'),
+            leaseModal: document.getElementById('leaseModal'), leaseForm: document.getElementById('leaseForm'),
+            renewalModal: document.getElementById('renewalModal'), renewalForm: document.getElementById('renewalForm'),
+            // Subsection Table Bodies & No Data Messages
+            vacanciesTableBody: document.getElementById('vacanciesTableBody'), noVacanciesMessage: document.getElementById('noVacanciesMessage'),
+            guestCardsTableBody: document.getElementById('guestCardsTableBody'), noGuestCardsMessage: document.getElementById('noGuestCardsMessage'),
+            rentalApplicationsTableBody: document.getElementById('rentalApplicationsTableBody'), noRentalApplicationsMessage: document.getElementById('noRentalApplicationsMessage'),
+            leasesTableBody: document.getElementById('leasesTableBody'), noLeasesMessage: document.getElementById('noLeasesMessage'),
+            renewalsTableBody: document.getElementById('renewalsTableBody'), noRenewalsMessage: document.getElementById('noRenewalsMessage'),
+        };
+
+        function pageInit(userId, db, ...allCommonDeps) {
+            pageCurrentUserId = userId; pageDatabase = db;
+            const [ fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbData, fbUpdateDbData, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon, commonInitializeCustomDropdown ] = allCommonDeps;
+            commonDependencies = { fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbData, fbUpdateDbData, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon, commonInitializeCustomDropdown };
+
+            initializeSubNav();
+            initializePropertiesListener();
+
+            loadDataForActiveSubsection(); // Load data for default active tab (Vacancies)
+            setupEventListeners();
+            
+            DOMElements.addItemBtn.addEventListener('click', () => {
+                const activeSubSection = document.querySelector('#leasingSubNav .sub-nav-item.active').dataset.subsection;
+                openModalForSubsection(activeSubSection);
+            });
+        }
+
+        function initializeSubNav() {
+            const subNavContainer = document.getElementById('leasingSubNav');
+            const subsections = document.querySelectorAll('#leasingView .subsection-content');
+            const subNavItems = subNavContainer.querySelectorAll('.sub-nav-item');
+
+            subNavItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    subNavItems.forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                    const targetId = item.dataset.subsection + "Content";
+                    subsections.forEach(content => {
+                        content.classList.remove('active');
+                        if (content.id === targetId) content.classList.add('active');
+                    });
+                    loadDataForActiveSubsection();
+                    DOMElements.addItemBtn.style.display = item.dataset.subsection === 'signals' ? 'none' : 'flex';
+                });
+            });
+        }
+        
+        function initializePropertiesListener() {
+            if (!pageCurrentUserId || !pageDatabase) return;
+            const propertiesRef = commonDependencies.fbRef(pageDatabase, `properties/${pageCurrentUserId}`);
+            onValue(commonDependencies.fbQuery(propertiesRef, commonDependencies.fbOrderByChild('address')), (snapshot) => {
+                localPropertiesMap = {};
+                const propertySelects = [
+                    DOMElements.vacancyForm?.elements.propertyId,
+                    DOMElements.guestCardForm?.elements.propertyId,
+                    DOMElements.rentalApplicationForm?.elements.propertyId,
+                    DOMElements.leaseForm?.elements.propertyId,
+                    // DOMElements.renewalForm.elements.propertyId, // Renewal property is usually read-only from lease
+                ];
+                snapshot.forEach(propSnapshot => {
+                    localPropertiesMap[propSnapshot.key] = propSnapshot.val().address;
+                });
+                propertySelects.forEach(select => {
+                    if(select) {
+                        const currentVal = select.value;
+                        select.innerHTML = '<option value="">Select Property</option>';
+                        snapshot.forEach(propSnapshot => {
+                            const option = document.createElement('option');
+                            option.value = propSnapshot.key;
+                            option.textContent = propSnapshot.val().address;
+                            select.appendChild(option);
+                        });
+                        select.value = currentVal;
+                    }
+                });
+            });
+        }
+
+        function loadDataForActiveSubsection() {
+            const activeSubSection = document.querySelector('#leasingSubNav .sub-nav-item.active').dataset.subsection;
+            switch (activeSubSection) {
+                case 'vacancies': loadVacancies(); break;
+                case 'guestCards': loadGuestCards(); break;
+                case 'rentalApplications': loadRentalApplications(); break;
+                case 'leases': loadLeases(); break;
+                case 'renewals': loadRenewals(); break;
+            }
+        }
+        
+        function setupEventListeners() {
+            // Simplified: Generic submit handler setup. Individual handlers can be more specific.
+            const forms = [
+                {form: DOMElements.vacancyForm, path: 'vacancies', name: 'Vacancy'},
+                {form: DOMElements.guestCardForm, path: 'guestCards', name: 'Guest Card'},
+                {form: DOMElements.rentalApplicationForm, path: 'rentalApplications', name: 'Rental Application'},
+                {form: DOMElements.leaseForm, path: 'leases', name: 'Lease'},
+                {form: DOMElements.renewalForm, path: 'leases', name: 'Renewal'} // Renewals update leases
+            ];
+            forms.forEach(f => {
+                if (f.form) {
+                    f.form.addEventListener('submit', (e) => handleGenericFormSubmit(e, f.path, f.name, f.form.id.replace('Form','Modal')));
+                }
+            });
+        }
+
+        async function handleGenericFormSubmit(e, firebasePath, itemName, modalId) {
+            e.preventDefault();
+            if (!pageCurrentUserId) { commonDependencies.commonShowAlert('User not authenticated.'); return; }
+            const form = e.target;
+            const idInputName = Object.keys(form.elements).find(key => key.toLowerCase().includes('id') && form.elements[key].type === 'hidden');
+            const id = idInputName ? form.elements[idInputName].value : null;
+            
+            const data = {};
+            for (let element of form.elements) {
+                if (element.name && element.type !== 'submit' && element.type !== 'button') {
+                    data[element.name] = element.value;
+                }
+            }
+            delete data[idInputName]; // Don't save the ID field itself in the data object
+            data.userId = pageCurrentUserId;
+            data.updatedAt = commonDependencies.fbServerTimestamp();
+
+            // Specific logic for renewal - it updates an existing lease
+            if (itemName === 'Renewal') {
+                const leaseIdToRenew = form.renewalLeaseId.value;
+                if (!leaseIdToRenew) { commonDependencies.commonShowAlert('No lease selected for renewal.'); return; }
+                const leaseRef = commonDependencies.fbRef(pageDatabase, `leases/${pageCurrentUserId}/${leaseIdToRenew}`);
+                try {
+                    const updateData = {
+                        endDate: data.newEndDate,
+                        rentAmount: data.newRentAmount,
+                        status: 'Active', // Or based on renewalStatus from form
+                        renewalProcessedAt: commonDependencies.fbServerTimestamp()
+                        // Potentially log renewal details under a sub-object or separate path
+                    };
+                    await commonDependencies.fbUpdateDbData(leaseRef, updateData);
+                    commonDependencies.commonShowAlert('Lease renewed successfully!');
+                    document.getElementById(modalId).style.display = 'none';
+                    loadLeases(); // Refresh leases and renewals list
+                    loadRenewals();
+                } catch (error) { commonDependencies.commonShowAlert(`Error renewing lease: ${error.message}`); }
+                return;
+            }
+
+            try {
+                const path = `${firebasePath}/${pageCurrentUserId}`;
+                if (id) {
+                    const itemRef = commonDependencies.fbRef(pageDatabase, `${path}/${id}`);
+                    const snapshot = await commonDependencies.fbGetDbData(itemRef);
+                    const existingData = snapshot.val() || {};
+                    await commonDependencies.fbSet(itemRef, {...existingData, ...data, createdAt: existingData.createdAt || commonDependencies.fbServerTimestamp()});
+                    commonDependencies.commonShowAlert(`${itemName} updated.`);
+                } else {
+                    data.createdAt = commonDependencies.fbServerTimestamp();
+                    await commonDependencies.fbPush(commonDependencies.fbRef(pageDatabase, path), data);
+                    commonDependencies.commonShowAlert(`${itemName} added.`);
+                }
+                document.getElementById(modalId).style.display = 'none';
+            } catch (error) { commonDependencies.commonShowAlert(`Error: ${error.message}`); }
+        }
+
+        function openModalForSubsection(subsection, id = null, data = {}) {
+            let modal, form;
+            switch (subsection) {
+                case 'vacancies': modal = DOMElements.vacancyModal; form = DOMElements.vacancyForm; break;
+                case 'guestCards': modal = DOMElements.guestCardModal; form = DOMElements.guestCardForm; break;
+                case 'rentalApplications': modal = DOMElements.rentalApplicationModal; form = DOMElements.rentalApplicationForm; break;
+                case 'leases': modal = DOMElements.leaseModal; form = DOMElements.leaseForm; break;
+                case 'renewals': // Renewals are special, usually triggered from a lease
+                    if (!id || !data.id) { commonDependencies.commonShowAlert('Select a lease to process renewal.'); return; }
+                    modal = DOMElements.renewalModal; form = DOMElements.renewalForm;
+                    form.renewalLeaseId.value = data.id;
+                    form.leaseDisplayId.value = data.id.substring(0,8) + '...'; // Show shortened ID
+                    form.renewalTenants.value = data.tenants || 'N/A';
+                    form.renewalProperty.value = localPropertiesMap[data.propertyId] || 'N/A';
+                    break;
+                default: return;
+            }
+            if (form) {
+                form.reset();
+                const idInputName = Object.keys(form.elements).find(key => key.toLowerCase().includes('id') && form.elements[key].type === 'hidden');
+                if(idInputName) form.elements[idInputName].value = id || '';
+                for (const key in data) { if (form.elements[key]) form.elements[key].value = data[key]; }
+            }
+            if (modal) modal.style.display = 'flex';
+        }
+
+        async function handleDeleteGeneric(firebasePath, itemId, itemName) {
+            if (!pageCurrentUserId || !pageDatabase) return;
+            const confirmed = await commonDependencies.commonShowConfirm(`Delete this ${itemName}?`);
+            if (confirmed) {
+                try {
+                    await commonDependencies.fbRemove(commonDependencies.fbRef(pageDatabase, `${firebasePath}/${pageCurrentUserId}/${itemId}`));
+                    commonDependencies.commonShowAlert(`${itemName} deleted.`);
+                } catch (error) { commonDependencies.commonShowAlert(`Error: ${error.message}`); }
+            }
+        }
+
+        // --- Specific Load & Populate Functions ---
+        // Vacancies
+        function loadVacancies() {
+            const dataRef = commonDependencies.fbRef(pageDatabase, `properties/${pageCurrentUserId}`); // Vacancies are derived from properties
+            onValue(commonDependencies.fbQuery(dataRef, commonDependencies.fbOrderByChild('address')), (snapshot) => {
+                DOMElements.vacanciesTableBody.innerHTML = '';
+                let hasVacancies = false;
+                snapshot.forEach(child => {
+                    const prop = {id: child.key, ...child.val()};
+                    // Basic vacancy logic: if not explicitly marked as 'Rented' or has no active lease covering today
+                    // This is a simplified placeholder. Real vacancy tracking is more complex.
+                    if (prop.status !== 'Rented') { // Assume a 'status' field on property for simplicity
+                        hasVacancies = true;
+                        populateVacancyRow(prop);
+                    }
+                });
+                DOMElements.noVacanciesMessage.style.display = hasVacancies ? 'none' : 'block';
+            });
+        }
+        function populateVacancyRow(data) {
+            const row = DOMElements.vacanciesTableBody.insertRow();
+            row.insertCell().textContent = localPropertiesMap[data.id] || data.address; // Property/Unit
+            row.insertCell().textContent = data.address || 'N/A'; // Full Address for clarity
+            row.insertCell().innerHTML = `<span class="status-badge status-open">${data.status || 'Available'}</span>`;
+            row.insertCell().textContent = data.availableDate ? new Date(data.availableDate).toLocaleDateString() : 'N/A';
+            row.insertCell().textContent = data.marketRent ? `$${parseFloat(data.marketRent).toFixed(2)}` : 'N/A';
+            const actionsCell = row.insertCell();
+            actionsCell.innerHTML = `<button class="edit-btn" title="Edit Vacancy Details">${commonDependencies.commonEditIcon}</button>`;
+            // Edit vacancy might open property modal, or a specific vacancy modal if fields differ significantly
+            actionsCell.querySelector('.edit-btn').addEventListener('click', () => openModalForSubsection('vacancies', data.id, data));
+             row.addEventListener('click', () => openModalForSubsection('vacancies', data.id, data));
+        }
+
+        // Guest Cards
+        function loadGuestCards() {
+            const dataRef = commonDependencies.fbRef(pageDatabase, `guestCards/${pageCurrentUserId}`);
+            onValue(commonDependencies.fbQuery(dataRef, commonDependencies.fbOrderByChild('createdAt')), (snapshot) => {
+                DOMElements.guestCardsTableBody.innerHTML = '';
+                let hasData = false;
+                snapshot.forEach(child => { hasData = true; populateGuestCardRow({id: child.key, ...child.val()}); });
+                DOMElements.noGuestCardsMessage.style.display = hasData ? 'none' : 'block';
+            });
+        }
+        function populateGuestCardRow(data) {
+            const row = DOMElements.guestCardsTableBody.insertRow();
+            row.insertCell().textContent = data.fullName;
+            row.insertCell().textContent = data.phone || 'N/A';
+            row.insertCell().textContent = data.email || 'N/A';
+            row.insertCell().textContent = localPropertiesMap[data.propertyId] || 'Any';
+            row.insertCell().textContent = data.createdAt ? new Date(data.createdAt).toLocaleDateString() : 'N/A';
+            row.insertCell().innerHTML = `<span class="status-badge status-${(data.status || 'new').toLowerCase().replace(' ','-')}">${data.status || 'New'}</span>`;
+            const actionsCell = row.insertCell();
+            actionsCell.innerHTML = `<button class="edit-btn">${commonDependencies.commonEditIcon}</button><button class="delete-btn">${commonDependencies.commonDeleteIcon}</button>`;
+            actionsCell.querySelector('.edit-btn').addEventListener('click', () => openModalForSubsection('guestCards', data.id, data));
+            actionsCell.querySelector('.delete-btn').addEventListener('click', () => handleDeleteGeneric('guestCards', data.id, 'Guest Card'));
+             row.addEventListener('click', () => openModalForSubsection('guestCards', data.id, data));
+        }
+
+        // Rental Applications
+        function loadRentalApplications() {
+            const dataRef = commonDependencies.fbRef(pageDatabase, `rentalApplications/${pageCurrentUserId}`);
+            onValue(commonDependencies.fbQuery(dataRef, commonDependencies.fbOrderByChild('submissionDate')), (snapshot) => {
+                DOMElements.rentalApplicationsTableBody.innerHTML = '';
+                let hasData = false;
+                snapshot.forEach(child => { hasData = true; populateRentalApplicationRow({id: child.key, ...child.val()}); });
+                DOMElements.noRentalApplicationsMessage.style.display = hasData ? 'none' : 'block';
+            });
+        }
+        function populateRentalApplicationRow(data) {
+            const row = DOMElements.rentalApplicationsTableBody.insertRow();
+            row.insertCell().textContent = data.applicantName;
+            row.insertCell().textContent = localPropertiesMap[data.propertyId] || 'N/A';
+            row.insertCell().textContent = data.submissionDate ? new Date(data.submissionDate).toLocaleDateString() : 'N/A';
+            row.insertCell().innerHTML = `<span class="status-badge status-${(data.status || 'submitted').toLowerCase().replace(' ','-')}">${data.status || 'Submitted'}</span>`;
+            row.insertCell().textContent = data.creditScore || 'N/A'; // Placeholder
+            const actionsCell = row.insertCell();
+            actionsCell.innerHTML = `<button class="edit-btn">${commonDependencies.commonEditIcon}</button><button class="delete-btn">${commonDependencies.commonDeleteIcon}</button>`;
+            actionsCell.querySelector('.edit-btn').addEventListener('click', () => openModalForSubsection('rentalApplications', data.id, data));
+            actionsCell.querySelector('.delete-btn').addEventListener('click', () => handleDeleteGeneric('rentalApplications', data.id, 'Rental Application'));
+            row.addEventListener('click', () => openModalForSubsection('rentalApplications', data.id, data));
+        }
+
+        // Leases
+        function loadLeases() {
+            const dataRef = commonDependencies.fbRef(pageDatabase, `leases/${pageCurrentUserId}`);
+            onValue(commonDependencies.fbQuery(dataRef, commonDependencies.fbOrderByChild('startDate')), (snapshot) => {
+                DOMElements.leasesTableBody.innerHTML = '';
+                let hasData = false;
+                snapshot.forEach(child => { hasData = true; populateLeaseRow({id: child.key, ...child.val()}); });
+                DOMElements.noLeasesMessage.style.display = hasData ? 'none' : 'block';
+                loadRenewals(); // Refresh renewals based on new lease data
+            });
+        }
+        function populateLeaseRow(data) {
+            const row = DOMElements.leasesTableBody.insertRow();
+            row.insertCell().textContent = data.id.substring(0,8) + '...';
+            row.insertCell().textContent = data.tenants;
+            row.insertCell().textContent = localPropertiesMap[data.propertyId] || 'N/A';
+            row.insertCell().textContent = data.startDate ? new Date(data.startDate).toLocaleDateString() : 'N/A';
+            row.insertCell().textContent = data.endDate ? new Date(data.endDate).toLocaleDateString() : 'N/A';
+            row.insertCell().textContent = data.rentAmount ? `$${parseFloat(data.rentAmount).toFixed(2)}` : 'N/A';
+            row.insertCell().innerHTML = `<span class="status-badge status-${(data.status || 'active').toLowerCase().replace(' ','-')}">${data.status || 'Active'}</span>`;
+            const actionsCell = row.insertCell();
+            // Add a specific "Renew" button for leases
+            actionsCell.innerHTML = `<button class="edit-btn">${commonDependencies.commonEditIcon}</button><button class="renew-btn" title="Process Renewal">🔁</button><button class="delete-btn">${commonDependencies.commonDeleteIcon}</button>`;
+            actionsCell.querySelector('.edit-btn').addEventListener('click', () => openModalForSubsection('leases', data.id, data));
+            actionsCell.querySelector('.renew-btn').addEventListener('click', (e) => { e.stopPropagation(); openModalForSubsection('renewals', data.id, data); });
+            actionsCell.querySelector('.delete-btn').addEventListener('click', () => handleDeleteGeneric('leases', data.id, 'Lease'));
+            row.addEventListener('click', () => openModalForSubsection('leases', data.id, data));
+        }
+
+        // Renewals (derived from Leases that are nearing expiration)
+        function loadRenewals() {
+            const dataRef = commonDependencies.fbRef(pageDatabase, `leases/${pageCurrentUserId}`);
+            onValue(commonDependencies.fbQuery(dataRef, commonDependencies.fbOrderByChild('endDate')), (snapshot) => {
+                DOMElements.renewalsTableBody.innerHTML = '';
+                let hasRenewals = false;
+                const today = new Date();
+                const renewalWindowDays = 90; // Leases ending in next 90 days
+
+                snapshot.forEach(child => {
+                    const lease = {id: child.key, ...child.val()};
+                    if (lease.status === 'Active' && lease.endDate) {
+                        const endDate = new Date(lease.endDate);
+                        const diffTime = endDate - today;
+                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                        if (diffDays <= renewalWindowDays && diffDays >= 0) { // Within renewal window and not past
+                             hasRenewals = true;
+                             populateRenewalRow(lease);
+                        }
+                    }
+                });
+                DOMElements.noRenewalsMessage.style.display = hasRenewals ? 'none' : 'block';
+            });
+        }
+        function populateRenewalRow(data) {
+            const row = DOMElements.renewalsTableBody.insertRow();
+            row.insertCell().textContent = data.id.substring(0,8) + '...';
+            row.insertCell().textContent = data.tenants;
+            row.insertCell().textContent = localPropertiesMap[data.propertyId] || 'N/A';
+            row.insertCell().textContent = data.endDate ? new Date(data.endDate).toLocaleDateString() : 'N/A';
+            row.insertCell().textContent = data.renewalOfferDate ? new Date(data.renewalOfferDate).toLocaleDateString() : 'Pending'; // Placeholder
+            row.insertCell().innerHTML = `<span class="status-badge status-pending">Pending Review</span>`; // Placeholder status
+            const actionsCell = row.insertCell();
+            actionsCell.innerHTML = `<button class="process-renewal-btn" title="Process Renewal">Process</button>`;
+            actionsCell.querySelector('.process-renewal-btn').addEventListener('click', () => openModalForSubsection('renewals', data.id, data));
+             row.addEventListener('click', () => openModalForSubsection('renewals', data.id, data));
+        }
+
+        initializeAuth(pageInit);
+    </script>
+</body>
+</html> 

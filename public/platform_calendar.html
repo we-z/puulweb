@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar - Puul Platform</title>
+    <link rel="stylesheet" href="/css/platform_common.css">
+    <style>
+        .calendar-placeholder {
+            width: 100%;
+            height: 600px; /* Adjust as needed */
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-size: 1.5rem;
+            color: #6c757d;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="sidebar-container"></div>
+
+    <div class="main-content">
+        <div id="calendarView">
+            <div class="content-header">
+                <h2>Calendar</h2>
+            </div>
+            <div class="page-container">
+                <p>This section will display events, reminders, and important dates related to property management, such as lease expirations, maintenance schedules, and move-in/move-out dates.</p>
+                <br>
+                <div class="calendar-placeholder">
+                    Full Calendar Component Coming Soon
+                    <br>
+                    (e.g., FullCalendar.io integration)
+                </div>
+                <!-- Future: Add event list, filters, add event button -->
+            </div>
+        </div>
+    </div>
+
+    <button class="fab" id="addItemBtn" aria-label="Add new calendar event" style="display:none;"> <!-- Hidden for now -->
+        +
+    </button>
+
+    <!-- Modal for Adding/Editing Calendar Events (Placeholder) -->
+    <div id="eventModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="eventModalTitle">Add New Event</h3>
+                <button class="close-btn" data-modal-id="eventModal">&times;</button>
+            </div>
+            <form id="eventForm">
+                <input type="hidden" id="eventId" name="eventId">
+                <div class="form-group">
+                    <label for="eventTitle">Event Title</label>
+                    <input type="text" id="eventTitle" name="title" required placeholder="e.g., Unit 5 Inspection">
+                </div>
+                <div class="form-group">
+                    <label for="eventStartDate">Start Date & Time</label>
+                    <input type="datetime-local" id="eventStartDate" name="startDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="eventEndDate">End Date & Time</label>
+                    <input type="datetime-local" id="eventEndDate" name="endDate">
+                </div>
+                <div class="form-group">
+                    <label for="eventDescription">Description</label>
+                    <textarea id="eventDescription" name="description" rows="3"></textarea>
+                </div>
+                 <div class="form-group">
+                    <label for="eventProperty">Related Property (Optional)</label>
+                    <select id="eventProperty" name="propertyId">
+                        <option value="">None</option>
+                        <!-- Property options will be populated here by JS -->
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="cancel-btn" data-modal-id="eventModal">Cancel</button>
+                    <button type="submit" class="submit-btn">Save Event</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="customAlertModal">
+        <div class="custom-alert">
+            <p>Alert message.</p>
+        </div>
+    </div>
+    <div id="customConfirmModal" class="modal">
+        <div class="modal-content confirm-modal-content">
+            <div class="modal-header"><h3 id="customConfirmTitle">Confirm</h3><button class="close-btn" data-modal-id="customConfirmModal">&times;</button></div>
+            <div class="modal-body"><p id="customConfirmMessage"></p></div>
+            <div class="modal-footer"><button class="cancel-btn-confirm" id="customConfirmCancel">Cancel</button><button class="confirm-btn" id="customConfirmOk">OK</button></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeAuth, showAlert, showConfirm, editIconSVG, deleteIconSVG, getDbData, updateDbData, initializeCustomDropdown } from './js/platform_common.js';
+        import { getDatabase, ref, push, onValue, set, remove, serverTimestamp, query, orderByChild, equalTo } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
+
+        let pageCurrentUserId;
+        let pageDatabase;
+        let commonDependencies = {};
+
+        const pageDOMElements = {
+            addItemBtn: document.getElementById('addItemBtn'),
+            eventModal: document.getElementById('eventModal'),
+            eventForm: document.getElementById('eventForm'),
+            eventPropertySelect: document.getElementById('eventProperty')
+            // Add more elements as calendar functionality is built
+        };
+
+        function pageInit(userId, db, ...allCommonDeps) {
+            pageCurrentUserId = userId;
+            pageDatabase = db;
+            const [ fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbData, fbUpdateDbData, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon, commonInitializeCustomDropdown ] = allCommonDeps;
+            commonDependencies = { fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbData, fbUpdateDbData, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon, commonInitializeCustomDropdown };
+
+            console.log("Calendar page initialized for user:", userId);
+            initializePropertiesListener(); // For property dropdown in event modal
+            
+            // Placeholder: Add FAB functionality if/when it's enabled for this page
+            // if (pageDOMElements.addItemBtn) {
+            //     pageDOMElements.addItemBtn.addEventListener('click', () => {
+            //         openEventModal(); 
+            //     });
+            // }
+
+            // Placeholder: Add form submission logic
+            // if (pageDOMElements.eventForm) {
+            //     pageDOMElements.eventForm.addEventListener('submit', handleEventFormSubmit);
+            // }
+        }
+
+        function initializePropertiesListener() {
+            if (!pageCurrentUserId || !pageDatabase || !pageDOMElements.eventPropertySelect) return;
+            const propertiesRef = commonDependencies.fbRef(pageDatabase, `properties/${pageCurrentUserId}`);
+            onValue(commonDependencies.fbQuery(propertiesRef, commonDependencies.fbOrderByChild('address')), (snapshot) => {
+                const currentVal = pageDOMElements.eventPropertySelect.value;
+                pageDOMElements.eventPropertySelect.innerHTML = '<option value="">None</option>';
+                snapshot.forEach(childSnapshot => {
+                    const key = childSnapshot.key;
+                    const prop = childSnapshot.val();
+                    if (prop && prop.address) {
+                        const option = document.createElement('option');
+                        option.value = key;
+                        option.textContent = prop.address;
+                        pageDOMElements.eventPropertySelect.appendChild(option);
+                    }
+                });
+                pageDOMElements.eventPropertySelect.value = currentVal; // Restore selection
+            });
+        }
+        
+        // Placeholder functions for event management - to be fully implemented
+        // function openEventModal(id = null, data = {}) {
+        //     pageDOMElements.eventForm.reset();
+        //     pageDOMElements.eventForm.eventId.value = id || '';
+        //     // Populate other form fields from data
+        //     pageDOMElements.eventModal.style.display = 'flex';
+        // }
+
+        // async function handleEventFormSubmit(e) {
+        //     e.preventDefault();
+        //     // ... get form data ...
+        //     // ... save to Firebase ...
+        // }
+
+        initializeAuth(pageInit);
+    </script>
+</body>
+</html> 

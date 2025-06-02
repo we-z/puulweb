@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accounting - Puul Platform</title>
+    <link rel="stylesheet" href="/css/platform_common.css">
+    <style>
+        .sub-nav { display: flex; border-bottom: 1px solid #e0e0e0; margin-bottom: 20px; }
+        .sub-nav-item { padding: 10px 15px; /* Adjusted padding */ cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -1px; font-weight: 500; color: #555; transition: color 0.2s ease, border-bottom-color 0.2s ease; font-size: 0.9rem; /* Slightly smaller font for more tabs */}
+        .sub-nav-item:hover { color: #000; }
+        .sub-nav-item.active { color: #000; border-bottom-color: #000; }
+        .subsection-content { display: none; }
+        .subsection-content.active { display: block; }
+    </style>
+</head>
+<body>
+    <div id="sidebar-container"></div>
+
+    <div class="main-content">
+        <div id="accountingView">
+            <div class="content-header"><h2>Accounting</h2></div>
+            <div class="page-container">
+                <div class="sub-nav" id="accountingSubNav">
+                    <div class="sub-nav-item active" data-subsection="receivables">Receivables</div>
+                    <div class="sub-nav-item" data-subsection="payables">Payables</div>
+                    <div class="sub-nav-item" data-subsection="bankAccounts">Bank Accounts</div>
+                    <div class="sub-nav-item" data-subsection="journalEntries">Journal Entries</div>
+                    <div class="sub-nav-item" data-subsection="bankTransfers">Bank Transfers</div>
+                    <div class="sub-nav-item" data-subsection="glAccounts">GL Accounts</div>
+                    <div class="sub-nav-item" data-subsection="diagnostics">Diagnostics</div>
+                </div>
+
+                <div class="subsection-content active" id="receivablesContent"><h4>Receivables</h4><div class="data-table-container"><table class="data-table" id="receivablesTable"><thead><tr><th>Date</th><th>Tenant/Payer</th><th>Property</th><th>Description</th><th>Amount Due</th><th>Amount Paid</th><th>Status</th><th>Actions</th></tr></thead><tbody id="receivablesTableBody"></tbody></table><div id="noReceivablesMessage" class="no-data-message"><div class="icon">💸</div><p>No receivables recorded.</p></div></div></div>
+                <div class="subsection-content" id="payablesContent"><h4>Payables</h4><div class="data-table-container"><table class="data-table" id="payablesTable"><thead><tr><th>Due Date</th><th>Vendor/Payee</th><th>Property (Optional)</th><th>Description</th><th>Amount</th><th>Status</th><th>Actions</th></tr></thead><tbody id="payablesTableBody"></tbody></table><div id="noPayablesMessage" class="no-data-message"><div class="icon">🧾</div><p>No payables recorded.</p></div></div></div>
+                <div class="subsection-content" id="bankAccountsContent"><h4>Bank Accounts</h4><div class="data-table-container"><table class="data-table" id="bankAccountsTable"><thead><tr><th>Account Name</th><th>Bank Name</th><th>Account Number (Last 4)</th><th>Type</th><th>Current Balance</th><th>Actions</th></tr></thead><tbody id="bankAccountsTableBody"></tbody></table><div id="noBankAccountsMessage" class="no-data-message"><div class="icon">🏦</div><p>No bank accounts set up.</p></div></div></div>
+                <div class="subsection-content" id="journalEntriesContent"><h4>Journal Entries</h4><div class="data-table-container"><table class="data-table" id="journalEntriesTable"><thead><tr><th>Date</th><th>Entry ID</th><th>Description</th><th>Total Debits</th><th>Total Credits</th><th>Actions</th></tr></thead><tbody id="journalEntriesTableBody"></tbody></table><div id="noJournalEntriesMessage" class="no-data-message"><div class="icon">📓</div><p>No journal entries found.</p></div></div></div>
+                <div class="subsection-content" id="bankTransfersContent"><h4>Bank Transfers</h4><div class="data-table-container"><table class="data-table" id="bankTransfersTable"><thead><tr><th>Date</th><th>From Account</th><th>To Account</th><th>Amount</th><th>Memo</th><th>Status</th><th>Actions</th></tr></thead><tbody id="bankTransfersTableBody"></tbody></table><div id="noBankTransfersMessage" class="no-data-message"><div class="icon">↔️</div><p>No bank transfers recorded.</p></div></div></div>
+                <div class="subsection-content" id="glAccountsContent"><h4>GL Accounts (Chart of Accounts)</h4><div class="data-table-container"><table class="data-table" id="glAccountsTable"><thead><tr><th>Account Number</th><th>Account Name</th><th>Type</th><th>Sub-Type</th><th>Balance (Calculated)</th><th>Actions</th></tr></thead><tbody id="glAccountsTableBody"></tbody></table><div id="noGLAccountsMessage" class="no-data-message"><div class="icon">📊</div><p>Chart of Accounts is empty.</p></div></div></div>
+                <div class="subsection-content" id="diagnosticsContent"><h4>Diagnostics</h4> <div class="no-data-message"><div class="icon">🩺</div><p>Accounting Diagnostics features coming soon.</p><span>This section will help identify potential issues or discrepancies in your accounting data.</span></div></div>
+            </div>
+        </div>
+    </div>
+
+    <button class="fab" id="addItemBtn" aria-label="Add new accounting item">+</button>
+
+    <!-- Modals -->
+    <div id="receivableModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>Add/Edit Receivable</h3><button class="close-btn" data-modal-id="receivableModal">&times;</button></div><form id="receivableForm"><input type="hidden" name="receivableId"><div class="form-group"><label>Date</label><input type="date" name="date" required></div><div class="form-group"><label>Tenant/Payer</label><input type="text" name="payerName" required></div><div class="form-group"><label>Property</label><select name="propertyId" required></select></div><div class="form-group"><label>Description</label><input type="text" name="description" required></div><div class="form-group"><label>Amount Due ($)</label><input type="number" name="amountDue" step="0.01" required></div><div class="form-group"><label>Status</label><select name="status"><option>Due</option><option>Paid</option><option>Overdue</option><option>Partial</option></select></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="receivableModal">Cancel</button><button type="submit" class="submit-btn">Save</button></div></form></div></div>
+    <div id="payableModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>Add/Edit Payable</h3><button class="close-btn" data-modal-id="payableModal">&times;</button></div><form id="payableForm"><input type="hidden" name="payableId"><div class="form-group"><label>Due Date</label><input type="date" name="dueDate" required></div><div class="form-group"><label>Vendor/Payee</label><input type="text" name="payeeName" required></div><div class="form-group"><label>Property (Optional)</label><select name="propertyId"><option value="">N/A</option></select></div><div class="form-group"><label>Description</label><input type="text" name="description" required></div><div class="form-group"><label>Amount ($)</label><input type="number" name="amount" step="0.01" required></div><div class="form-group"><label>Status</label><select name="status"><option>Unpaid</option><option>Paid</option><option>Pending</option></select></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="payableModal">Cancel</button><button type="submit" class="submit-btn">Save</button></div></form></div></div>
+    <div id="bankAccountModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>Add/Edit Bank Account</h3><button class="close-btn" data-modal-id="bankAccountModal">&times;</button></div><form id="bankAccountForm"><input type="hidden" name="bankAccountId"><div class="form-group"><label>Account Name</label><input type="text" name="accountName" required></div><div class="form-group"><label>Bank Name</label><input type="text" name="bankName"></div><div class="form-group"><label>Account Number</label><input type="text" name="accountNumber" placeholder="Full number (stored securely)"></div><div class="form-group"><label>Account Type</label><select name="accountType"><option>Checking</option><option>Savings</option><option>Credit Card</option><option>Loan</option><option>Other</option></select></div><div class="form-group"><label>Opening Balance ($)</label><input type="number" name="openingBalance" step="0.01"></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="bankAccountModal">Cancel</button><button type="submit" class="submit-btn">Save</button></div></form></div></div>
+    <div id="journalEntryModal" class="modal"><div class="modal-content" style="max-width: 700px;"><div class="modal-header"><h3>Add/Edit Journal Entry</h3><button class="close-btn" data-modal-id="journalEntryModal">&times;</button></div><form id="journalEntryForm"><input type="hidden" name="journalEntryId"><div class="form-group"><label>Date</label><input type="date" name="date" required></div><div class="form-group"><label>Description</label><input type="text" name="description" required></div><div id="jeLinesContainer" class="form-group"></div><button type="button" id="addJeLineBtn" class="submit-btn" style="background-color: #6c757d; margin-bottom:15px;">Add Line</button><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="journalEntryModal">Cancel</button><button type="submit" class="submit-btn">Save</button></div></form></div></div>
+    <div id="bankTransferModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>Add/Edit Bank Transfer</h3><button class="close-btn" data-modal-id="bankTransferModal">&times;</button></div><form id="bankTransferForm"><input type="hidden" name="bankTransferId"><div class="form-group"><label>Date</label><input type="date" name="date" required></div><div class="form-group"><label>From Account</label><select name="fromAccountId" required></select></div><div class="form-group"><label>To Account</label><select name="toAccountId" required></select></div><div class="form-group"><label>Amount ($)</label><input type="number" name="amount" step="0.01" required></div><div class="form-group"><label>Memo</label><input type="text" name="memo"></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="bankTransferModal">Cancel</button><button type="submit" class="submit-btn">Save</button></div></form></div></div>
+    <div id="glAccountModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>Add/Edit GL Account</h3><button class="close-btn" data-modal-id="glAccountModal">&times;</button></div><form id="glAccountForm"><input type="hidden" name="glAccountId"><div class="form-group"><label>Account Number</label><input type="text" name="accountNumber" required></div><div class="form-group"><label>Account Name</label><input type="text" name="accountName" required></div><div class="form-group"><label>Type</label><select name="type"><option>Asset</option><option>Liability</option><option>Equity</option><option>Income</option><option>Expense</option></select></div><div class="form-group"><label>Sub-Type (Optional)</label><input type="text" name="subType"></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="glAccountModal">Cancel</button><button type="submit" class="submit-btn">Save</button></div></form></div></div>
+
+    <div id="customAlertModal"><div class="custom-alert"><p></p></div></div>
+    <div id="customConfirmModal" class="modal"><div class="modal-content confirm-modal-content"><div class="modal-header"><h3 id="customConfirmTitle"></h3><button class="close-btn" data-modal-id="customConfirmModal">&times;</button></div><div class="modal-body"><p id="customConfirmMessage"></p></div><div class="modal-footer"><button class="cancel-btn-confirm" id="customConfirmCancel">Cancel</button><button class="confirm-btn" id="customConfirmOk">OK</button></div></div></div>
+
+    <script type="module">
+        import { initializeAuth, showAlert, showConfirm, editIconSVG, deleteIconSVG, getDbData, updateDbData, initializeCustomDropdown } from './js/platform_common.js';
+        import { getDatabase, ref, push, onValue, set, remove, serverTimestamp, query, orderByChild, equalTo } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
+
+        // Module-scoped variables initialized first
+        let commonDependencies = {};
+        let pageCurrentUserId;
+        let pageDatabase;
+        let localPropertiesMap = {};
+        let localBankAccountsMap = {};
+        let localGLAccountsMap = {};
+
+        const DOMElements = {
+            addItemBtn: document.getElementById('addItemBtn'),
+            receivableModal: document.getElementById('receivableModal'), receivableForm: document.getElementById('receivableForm'),
+            payableModal: document.getElementById('payableModal'), payableForm: document.getElementById('payableForm'),
+            bankAccountModal: document.getElementById('bankAccountModal'), bankAccountForm: document.getElementById('bankAccountForm'),
+            journalEntryModal: document.getElementById('journalEntryModal'), journalEntryForm: document.getElementById('journalEntryForm'), addJeLineBtn: document.getElementById('addJeLineBtn'),
+            bankTransferModal: document.getElementById('bankTransferModal'), bankTransferForm: document.getElementById('bankTransferForm'),
+            glAccountModal: document.getElementById('glAccountModal'), glAccountForm: document.getElementById('glAccountForm'),
+            receivablesTableBody: document.getElementById('receivablesTableBody'), noReceivablesMessage: document.getElementById('noReceivablesMessage'),
+            payablesTableBody: document.getElementById('payablesTableBody'), noPayablesMessage: document.getElementById('noPayablesMessage'),
+            bankAccountsTableBody: document.getElementById('bankAccountsTableBody'), noBankAccountsMessage: document.getElementById('noBankAccountsMessage'),
+            journalEntriesTableBody: document.getElementById('journalEntriesTableBody'), noJournalEntriesMessage: document.getElementById('noJournalEntriesMessage'),
+            bankTransfersTableBody: document.getElementById('bankTransfersTableBody'), noBankTransfersMessage: document.getElementById('noBankTransfersMessage'),
+            glAccountsTableBody: document.getElementById('glAccountsTableBody'), noGLAccountsMessage: document.getElementById('noGLAccountsMessage'),
+        };
+
+        function pageInit(userId, db, fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbDataExt, fbUpdateDbDataExt, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon, commonInitializeCustomDropdown) {
+            pageCurrentUserId = userId;
+            pageDatabase = db;
+            
+            commonDependencies.fbRef = fbRef;
+            commonDependencies.fbPush = fbPush;
+            commonDependencies.fbSet = fbSet;
+            commonDependencies.fbRemove = fbRemove;
+            commonDependencies.fbServerTimestamp = fbServerTimestamp;
+            commonDependencies.fbQuery = fbQuery;
+            commonDependencies.fbOrderByChild = fbOrderByChild;
+            commonDependencies.fbEqualTo = fbEqualTo;
+            commonDependencies.fbGetDbData = fbGetDbDataExt;
+            commonDependencies.fbUpdateDbData = fbUpdateDbDataExt;
+            commonDependencies.commonShowAlert = commonShowAlert;
+            commonDependencies.commonShowConfirm = commonShowConfirm;
+            commonDependencies.commonEditIcon = commonEditIcon;
+            commonDependencies.commonDeleteIcon = commonDeleteIcon;
+            commonDependencies.initializeCustomDropdown = commonInitializeCustomDropdown;
+
+            initializeSubNav();
+            initializePropertiesListener();
+            initializeBankAccountsListener();
+            initializeGLAccountsListener();
+            loadDataForActiveSubsection();
+            setupEventListeners();
+            
+            if (DOMElements.addItemBtn) {
+                DOMElements.addItemBtn.addEventListener('click', () => {
+                    const activeSubSection = document.querySelector('#accountingSubNav .sub-nav-item.active').dataset.subsection;
+                    openModalForSubsection(activeSubSection);
+                });
+            }
+        }
+
+        function initializeSubNav() {
+            const subNavContainer = document.getElementById('accountingSubNav');
+            if (!subNavContainer) return;
+            const subsections = document.querySelectorAll('#accountingView .subsection-content');
+            const subNavItems = subNavContainer.querySelectorAll('.sub-nav-item');
+            subNavItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    subNavItems.forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                    const targetId = item.dataset.subsection + "Content";
+                    subsections.forEach(content => {
+                        content.classList.remove('active');
+                        if (content.id === targetId) content.classList.add('active');
+                    });
+                    loadDataForActiveSubsection();
+                    if (DOMElements.addItemBtn) {
+                        DOMElements.addItemBtn.style.display = item.dataset.subsection === 'diagnostics' ? 'none' : 'flex';
+                    }
+                });
+            });
+        }
+
+        function initializePropertiesListener() {
+            if (!pageCurrentUserId || !pageDatabase || !commonDependencies.fbRef) return;
+            const propertiesRef = commonDependencies.fbRef(pageDatabase, `properties/${pageCurrentUserId}`);
+            onValue(commonDependencies.fbQuery(propertiesRef, commonDependencies.fbOrderByChild('address')), (snapshot) => {
+                localPropertiesMap = {};
+                snapshot.forEach(propSnapshot => { localPropertiesMap[propSnapshot.key] = propSnapshot.val().address; });
+                const selectsToPopulate = [DOMElements.receivableForm?.elements.propertyId, DOMElements.payableForm?.elements.propertyId];
+                selectsToPopulate.forEach(select => {
+                    if(select) {
+                        const currentVal = select.value;
+                        select.innerHTML = select.name === 'propertyId' && select.parentElement.textContent.includes('(Optional)') ? '<option value="">N/A</option>' : '<option value="">Select Property</option>';
+                        snapshot.forEach(propSnapshot => {
+                            const option = document.createElement('option');
+                            option.value = propSnapshot.key; option.textContent = propSnapshot.val().address;
+                            select.appendChild(option);
+                        });
+                        select.value = currentVal;
+                    }
+                });
+            });
+        }
+        function initializeBankAccountsListener() {
+            if (!pageCurrentUserId || !pageDatabase || !commonDependencies.fbRef) return;
+            const bankAccountsRef = commonDependencies.fbRef(pageDatabase, `bankAccounts/${pageCurrentUserId}`);
+            onValue(commonDependencies.fbQuery(bankAccountsRef, commonDependencies.fbOrderByChild('accountName')), (snapshot) => {
+                localBankAccountsMap = {};
+                snapshot.forEach(accSnapshot => { localBankAccountsMap[accSnapshot.key] = accSnapshot.val().accountName; });
+                const selectsToPopulate = [DOMElements.bankTransferForm?.elements.fromAccountId, DOMElements.bankTransferForm?.elements.toAccountId];
+                selectsToPopulate.forEach(select => {
+                    if(select) {
+                        const currentVal = select.value;
+                        select.innerHTML = '<option value="">Select Account</option>';
+                        snapshot.forEach(accSnapshot => {
+                            const option = document.createElement('option');
+                            option.value = accSnapshot.key; option.textContent = `${accSnapshot.val().accountName} (...${accSnapshot.val().accountNumber?.slice(-4) || 'XXXX'})`;
+                            select.appendChild(option);
+                        });
+                        select.value = currentVal;
+                    }
+                });
+            });
+        }
+        function initializeGLAccountsListener() {
+            if (!pageCurrentUserId || !pageDatabase || !commonDependencies.fbRef) return;
+            const glAccountsRef = commonDependencies.fbRef(pageDatabase, `glAccounts/${pageCurrentUserId}`);
+            onValue(commonDependencies.fbQuery(glAccountsRef, commonDependencies.fbOrderByChild('accountNumber')), (snapshot) => {
+                localGLAccountsMap = {};
+                snapshot.forEach(glSnapshot => { localGLAccountsMap[glSnapshot.key] = { name: glSnapshot.val().accountName, number: glSnapshot.val().accountNumber }; });
+            });
+        }
+
+        function loadDataForActiveSubsection() {
+            const activeNavItem = document.querySelector('#accountingSubNav .sub-nav-item.active');
+            if (!activeNavItem) return;
+            const activeSubSection = activeNavItem.dataset.subsection;
+            switch (activeSubSection) {
+                case 'receivables': loadReceivables(); break;
+                case 'payables': loadPayables(); break;
+                case 'bankAccounts': loadBankAccounts(); break;
+                case 'journalEntries': loadJournalEntries(); break;
+                case 'bankTransfers': loadBankTransfers(); break;
+                case 'glAccounts': loadGLAccounts(); break;
+            }
+        }
+
+        function setupEventListeners() {
+            const forms = [
+                {form: DOMElements.receivableForm, path: 'receivables', name: 'Receivable'},
+                {form: DOMElements.payableForm, path: 'payables', name: 'Payable'},
+                {form: DOMElements.bankAccountForm, path: 'bankAccounts', name: 'Bank Account'},
+                {form: DOMElements.journalEntryForm, path: 'journalEntries', name: 'Journal Entry'},
+                {form: DOMElements.bankTransferForm, path: 'bankTransfers', name: 'Bank Transfer'},
+                {form: DOMElements.glAccountForm, path: 'glAccounts', name: 'GL Account'}
+            ];
+            forms.forEach(f => {
+                if (f.form) f.form.addEventListener('submit', (e) => handleGenericFormSubmit(e, f.path, f.name, f.form.id.replace('Form','Modal')));
+            });
+            if(DOMElements.addJeLineBtn) DOMElements.addJeLineBtn.addEventListener('click', addJournalEntryLine);
+        }
+
+        async function handleGenericFormSubmit(e, firebasePath, itemName, modalId) {
+            e.preventDefault();
+            if (!pageCurrentUserId || !commonDependencies.fbServerTimestamp) { commonDependencies.commonShowAlert('System error or user not authenticated.'); return; }
+            const form = e.target;
+            const idInputName = Object.keys(form.elements).find(key => key.name && key.name.toLowerCase().includes('id') && form.elements[key].type === 'hidden');
+            const id = idInputName ? form.elements[idInputName].value : null;
+            let data = {};
+            if (firebasePath === 'journalEntries') {
+                data.date = form.elements.date.value;
+                data.description = form.elements.description.value;
+                data.lines = [];
+                const lineContainers = form.querySelectorAll('.je-line-item');
+                let totalDebits = 0, totalCredits = 0;
+                for (const lineEl of lineContainers) {
+                    const lineData = {
+                        glAccountId: lineEl.querySelector('select[name^="glAccountId_"]').value,
+                        description: lineEl.querySelector('input[name^="lineDescription_"]').value,
+                        debit: parseFloat(lineEl.querySelector('input[name^="debit_"]').value) || 0,
+                        credit: parseFloat(lineEl.querySelector('input[name^="credit_"]').value) || 0,
+                    };
+                    if (!lineData.glAccountId || (lineData.debit === 0 && lineData.credit === 0)) { continue; }
+                    if (lineData.debit > 0 && lineData.credit > 0) { commonDependencies.commonShowAlert('A line cannot have both debit and credit.'); return; }
+                    data.lines.push(lineData);
+                    totalDebits += lineData.debit;
+                    totalCredits += lineData.credit;
+                }
+                if (data.lines.length === 0) { commonDependencies.commonShowAlert('Journal entry must have at least one valid line.'); return; }
+                if (Math.abs(totalDebits - totalCredits) > 0.001) { commonDependencies.commonShowAlert('Debits must equal credits.'); return; }
+                data.totalDebits = totalDebits;
+                data.totalCredits = totalCredits;
+            } else {
+                for (let element of form.elements) {
+                    if (element.name && element.type !== 'submit' && element.type !== 'button') data[element.name] = element.value;
+                }
+                if(idInputName) delete data[idInputName];
+            }
+            data.userId = pageCurrentUserId; data.updatedAt = commonDependencies.fbServerTimestamp();
+            try {
+                const path = `${firebasePath}/${pageCurrentUserId}`;
+                if (id) {
+                    const itemRef = commonDependencies.fbRef(pageDatabase, `${path}/${id}`);
+                    const snapshot = await commonDependencies.fbGetDbData(itemRef);
+                    const existingData = snapshot.val() || {};
+                    await commonDependencies.fbSet(itemRef, {...existingData, ...data, createdAt: existingData.createdAt || commonDependencies.fbServerTimestamp()});
+                    commonDependencies.commonShowAlert(`${itemName} updated.`);
+                } else {
+                    data.createdAt = commonDependencies.fbServerTimestamp();
+                    await commonDependencies.fbPush(commonDependencies.fbRef(pageDatabase, path), data);
+                    commonDependencies.commonShowAlert(`${itemName} added.`);
+                }
+                if (document.getElementById(modalId)) document.getElementById(modalId).style.display = 'none';
+            } catch (error) { commonDependencies.commonShowAlert(`Error: ${error.message}`); }
+        }
+
+        function openModalForSubsection(subsection, id = null, data = {}) {
+            let modal, form;
+            switch (subsection) {
+                case 'receivables': modal = DOMElements.receivableModal; form = DOMElements.receivableForm; break;
+                case 'payables': modal = DOMElements.payableModal; form = DOMElements.payableForm; break;
+                case 'bankAccounts': modal = DOMElements.bankAccountModal; form = DOMElements.bankAccountForm; break;
+                case 'journalEntries': modal = DOMElements.journalEntryModal; form = DOMElements.journalEntryForm; resetJournalEntryLines(form, data.lines); break;
+                case 'bankTransfers': modal = DOMElements.bankTransferModal; form = DOMElements.bankTransferForm; break;
+                case 'glAccounts': modal = DOMElements.glAccountModal; form = DOMElements.glAccountForm; break;
+                default: return;
+            }
+            if (form) {
+                form.reset();
+                const idInputName = Object.keys(form.elements).find(key => key.name && key.name.toLowerCase().includes('id') && form.elements[key].type === 'hidden');
+                if(idInputName && form.elements[idInputName]) form.elements[idInputName].value = id || '';
+                if (subsection !== 'journalEntries') { 
+                     for (const key in data) { if (form.elements[key]) form.elements[key].value = data[key]; }
+                } else {
+                    if (form.elements.date) form.elements.date.value = data.date || '';
+                    if (form.elements.description) form.elements.description.value = data.description || '';
+                }
+            }
+            if (modal) modal.style.display = 'flex';
+        }
+        async function handleDeleteGeneric(firebasePath, itemId, itemName) {
+            if (!pageCurrentUserId || !pageDatabase || !commonDependencies.commonShowConfirm) return;
+            const confirmed = await commonDependencies.commonShowConfirm(`Delete this ${itemName}?`);
+            if (confirmed) {
+                try {
+                    await commonDependencies.fbRemove(commonDependencies.fbRef(pageDatabase, `${firebasePath}/${pageCurrentUserId}/${itemId}`));
+                    commonDependencies.commonShowAlert(`${itemName} deleted.`);
+                } catch (error) { commonDependencies.commonShowAlert(`Error: ${error.message}`); }
+            }
+        }
+
+        function loadReceivables() {
+            if (!pageCurrentUserId || !pageDatabase || !commonDependencies.fbRef) return;
+            const dataRef = commonDependencies.fbRef(pageDatabase, `receivables/${pageCurrentUserId}`);
+            onValue(commonDependencies.fbQuery(dataRef, commonDependencies.fbOrderByChild('date')), (snapshot) => {
+                DOMElements.receivablesTableBody.innerHTML = ''; let hasData = false;
+                snapshot.forEach(child => { hasData = true; populateReceivableRow({id: child.key, ...child.val()}); });
+                DOMElements.noReceivablesMessage.style.display = hasData ? 'none' : 'block';
+            });
+        }
+        function populateReceivableRow(data) {
+            const row = DOMElements.receivablesTableBody.insertRow();
+            row.insertCell().textContent = data.date ? new Date(data.date).toLocaleDateString() : 'N/A';
+            row.insertCell().textContent = data.payerName;
+            row.insertCell().textContent = localPropertiesMap[data.propertyId] || 'N/A';
+            row.insertCell().textContent = data.description;
+            row.insertCell().textContent = data.amountDue ? `$${parseFloat(data.amountDue).toFixed(2)}` : 'N/A';
+            row.insertCell().textContent = data.amountPaid ? `$${parseFloat(data.amountPaid).toFixed(2)}` : 'N/A';
+            row.insertCell().innerHTML = `<span class="status-badge status-${(data.status || 'due').toLowerCase()}">${data.status || 'Due'}</span>`;
+            const actionsCell = row.insertCell();
+            actionsCell.innerHTML = `<button class="edit-btn">${commonDependencies.commonEditIcon}</button><button class="delete-btn">${commonDependencies.commonDeleteIcon}</button>`;
+            actionsCell.querySelector('.edit-btn').addEventListener('click', () => openModalForSubsection('receivables', data.id, data));
+            actionsCell.querySelector('.delete-btn').addEventListener('click', () => handleDeleteGeneric('receivables', data.id, 'Receivable'));
+            row.addEventListener('click', () => openModalForSubsection('receivables', data.id, data));
+        }
+        function loadPayables() {
+            if (!pageCurrentUserId || !pageDatabase || !commonDependencies.fbRef) return;
+            const dataRef = commonDependencies.fbRef(pageDatabase, `payables/${pageCurrentUserId}`);
+            onValue(commonDependencies.fbQuery(dataRef, commonDependencies.fbOrderByChild('dueDate')), (snapshot) => {
+                DOMElements.payablesTableBody.innerHTML = ''; let hasData = false;
+                snapshot.forEach(child => { hasData = true; populatePayableRow({id: child.key, ...child.val()}); });
+                DOMElements.noPayablesMessage.style.display = hasData ? 'none' : 'block';
+            });
+        }
+        function populatePayableRow(data) {
+            const row = DOMElements.payablesTableBody.insertRow();
+            row.insertCell().textContent = data.dueDate ? new Date(data.dueDate).toLocaleDateString() : 'N/A';
+            row.insertCell().textContent = data.payeeName;
+            row.insertCell().textContent = localPropertiesMap[data.propertyId] || 'N/A';
+            row.insertCell().textContent = data.description;
+            row.insertCell().textContent = data.amount ? `$${parseFloat(data.amount).toFixed(2)}` : 'N/A';
+            row.insertCell().innerHTML = `<span class="status-badge status-${(data.status || 'unpaid').toLowerCase()}">${data.status || 'Unpaid'}</span>`;
+            const actionsCell = row.insertCell();
+            actionsCell.innerHTML = `<button class="edit-btn">${commonDependencies.commonEditIcon}</button><button class="delete-btn">${commonDependencies.commonDeleteIcon}</button>`;
+            actionsCell.querySelector('.edit-btn').addEventListener('click', () => openModalForSubsection('payables', data.id, data));
+            actionsCell.querySelector('.delete-btn').addEventListener('click', () => handleDeleteGeneric('payables', data.id, 'Payable'));
+            row.addEventListener('click', () => openModalForSubsection('payables', data.id, data));
+        }
+        function loadBankAccounts() {
+            if (!pageCurrentUserId || !pageDatabase || !commonDependencies.fbRef) return;
+            const dataRef = commonDependencies.fbRef(pageDatabase, `bankAccounts/${pageCurrentUserId}`);
+            onValue(commonDependencies.fbQuery(dataRef, commonDependencies.fbOrderByChild('accountName')), (snapshot) => {
+                DOMElements.bankAccountsTableBody.innerHTML = ''; let hasData = false;
+                snapshot.forEach(child => { hasData = true; populateBankAccountRow({id: child.key, ...child.val()}); });
+                DOMElements.noBankAccountsMessage.style.display = hasData ? 'none' : 'block';
+            });
+        }
+        function populateBankAccountRow(data) {
+            const row = DOMElements.bankAccountsTableBody.insertRow();
+            row.insertCell().textContent = data.accountName;
+            row.insertCell().textContent = data.bankName || 'N/A';
+            row.insertCell().textContent = data.accountNumber ? `...${data.accountNumber.slice(-4)}` : 'N/A';
+            row.insertCell().textContent = data.accountType || 'N/A';
+            row.insertCell().textContent = data.currentBalance ? `$${parseFloat(data.currentBalance).toFixed(2)}` : 'N/A'; 
+            const actionsCell = row.insertCell();
+            actionsCell.innerHTML = `<button class="edit-btn">${commonDependencies.commonEditIcon}</button><button class="delete-btn">${commonDependencies.commonDeleteIcon}</button>`;
+            actionsCell.querySelector('.edit-btn').addEventListener('click', () => openModalForSubsection('bankAccounts', data.id, data));
+            actionsCell.querySelector('.delete-btn').addEventListener('click', () => handleDeleteGeneric('bankAccounts', data.id, 'Bank Account'));
+            row.addEventListener('click', () => openModalForSubsection('bankAccounts', data.id, data));
+        }
+        function addJournalEntryLine(glAccountId = '', description = '', debit = '', credit = '') {
+            const container = DOMElements.journalEntryForm.querySelector('#jeLinesContainer');
+            const lineNum = container.children.length;
+            const lineDiv = document.createElement('div');
+            lineDiv.classList.add('form-group', 'je-line-item');
+            lineDiv.style.display = 'flex'; lineDiv.style.gap = '10px'; lineDiv.style.alignItems = 'center';
+            let glOptionsHTML = '<option value="">Select GL Account</option>';
+            for (const [id, acc] of Object.entries(localGLAccountsMap)) {
+                glOptionsHTML += '<option value="' + id + '" ' + (id === glAccountId ? 'selected' : '') + '>' + acc.number + ' - ' + acc.name + '</option>';
+            }
+
+            lineDiv.innerHTML =
+                '<select name="glAccountId_' + lineNum + '" style="flex:2;" required>' + glOptionsHTML + '</select>' +
+                '<input type="text" name="lineDescription_' + lineNum + '" placeholder="Line Description" style="flex:3;" value="' + description + '">' +
+                '<input type="number" name="debit_' + lineNum + '" placeholder="Debit" style="flex:1;" step="0.01" value="' + debit + '">' +
+                '<input type="number" name="credit_' + lineNum + '" placeholder="Credit" style="flex:1;" step="0.01" value="' + credit + '">' +
+                '<button type="button" class="delete-je-line-btn" style="background:transparent;border:none;color:red;font-size:1.2rem;cursor:pointer;">&times;</button>';
+            
+            lineDiv.querySelector('.delete-je-line-btn').addEventListener('click', () => lineDiv.remove());
+            container.appendChild(lineDiv);
+        }
+        function resetJournalEntryLines(form, lines = []) {
+            if (!form) return;
+            const container = form.querySelector('#jeLinesContainer');
+            if (!container) return;
+            container.innerHTML = ''; 
+            if (lines && lines.length > 0) {
+                lines.forEach(line => addJournalEntryLine(line.glAccountId, line.description, line.debit, line.credit));
+            } else {
+                addJournalEntryLine(); addJournalEntryLine(); 
+            }
+        }
+        function loadJournalEntries() {
+            if (!pageCurrentUserId || !pageDatabase || !commonDependencies.fbRef) return;
+            const dataRef = commonDependencies.fbRef(pageDatabase, `journalEntries/${pageCurrentUserId}`);
+            onValue(commonDependencies.fbQuery(dataRef, commonDependencies.fbOrderByChild('date')), (snapshot) => {
+                DOMElements.journalEntriesTableBody.innerHTML = ''; let hasData = false;
+                snapshot.forEach(child => { hasData = true; populateJournalEntryRow({id: child.key, ...child.val()}); });
+                DOMElements.noJournalEntriesMessage.style.display = hasData ? 'none' : 'block';
+            });
+        }
+        function populateJournalEntryRow(data) {
+            const row = DOMElements.journalEntriesTableBody.insertRow();
+            row.insertCell().textContent = data.date ? new Date(data.date).toLocaleDateString() : 'N/A';
+            row.insertCell().textContent = data.id.substring(0,8) + '...';
+            row.insertCell().textContent = data.description;
+            row.insertCell().textContent = data.totalDebits ? `$${parseFloat(data.totalDebits).toFixed(2)}` : 'N/A';
+            row.insertCell().textContent = data.totalCredits ? `$${parseFloat(data.totalCredits).toFixed(2)}` : 'N/A';
+            const actionsCell = row.insertCell();
+            actionsCell.innerHTML = `<button class="edit-btn">${commonDependencies.commonEditIcon}</button><button class="delete-btn">${commonDependencies.commonDeleteIcon}</button>`;
+            actionsCell.querySelector('.edit-btn').addEventListener('click', () => openModalForSubsection('journalEntries', data.id, data));
+            actionsCell.querySelector('.delete-btn').addEventListener('click', () => handleDeleteGeneric('journalEntries', data.id, 'Journal Entry'));
+            row.addEventListener('click', () => openModalForSubsection('journalEntries', data.id, data));
+        }
+        function loadBankTransfers() {
+            if (!pageCurrentUserId || !pageDatabase || !commonDependencies.fbRef) return;
+            const dataRef = commonDependencies.fbRef(pageDatabase, `bankTransfers/${pageCurrentUserId}`);
+            onValue(commonDependencies.fbQuery(dataRef, commonDependencies.fbOrderByChild('date')), (snapshot) => {
+                DOMElements.bankTransfersTableBody.innerHTML = ''; let hasData = false;
+                snapshot.forEach(child => { hasData = true; populateBankTransferRow({id: child.key, ...child.val()}); });
+                DOMElements.noBankTransfersMessage.style.display = hasData ? 'none' : 'block';
+            });
+        }
+        function populateBankTransferRow(data) {
+            const row = DOMElements.bankTransfersTableBody.insertRow();
+            row.insertCell().textContent = data.date ? new Date(data.date).toLocaleDateString() : 'N/A';
+            row.insertCell().textContent = localBankAccountsMap[data.fromAccountId] || 'N/A';
+            row.insertCell().textContent = localBankAccountsMap[data.toAccountId] || 'N/A';
+            row.insertCell().textContent = data.amount ? `$${parseFloat(data.amount).toFixed(2)}` : 'N/A';
+            row.insertCell().textContent = data.memo || 'N/A';
+            row.insertCell().innerHTML = `<span class="status-badge status-completed">Completed</span>`; 
+            const actionsCell = row.insertCell();
+            actionsCell.innerHTML = `<button class="edit-btn">${commonDependencies.commonEditIcon}</button><button class="delete-btn">${commonDependencies.commonDeleteIcon}</button>`;
+            actionsCell.querySelector('.edit-btn').addEventListener('click', () => openModalForSubsection('bankTransfers', data.id, data));
+            actionsCell.querySelector('.delete-btn').addEventListener('click', () => handleDeleteGeneric('bankTransfers', data.id, 'Bank Transfer'));
+            row.addEventListener('click', () => openModalForSubsection('bankTransfers', data.id, data));
+        }
+        function loadGLAccounts() {
+            if (!pageCurrentUserId || !pageDatabase || !commonDependencies.fbRef) return;
+            const dataRef = commonDependencies.fbRef(pageDatabase, `glAccounts/${pageCurrentUserId}`);
+            onValue(commonDependencies.fbQuery(dataRef, commonDependencies.fbOrderByChild('accountNumber')), (snapshot) => {
+                DOMElements.glAccountsTableBody.innerHTML = ''; let hasData = false;
+                snapshot.forEach(child => { hasData = true; populateGLAccountRow({id: child.key, ...child.val()}); });
+                DOMElements.noGLAccountsMessage.style.display = hasData ? 'none' : 'block';
+            });
+        }
+        function populateGLAccountRow(data) {
+            const row = DOMElements.glAccountsTableBody.insertRow();
+            row.insertCell().textContent = data.accountNumber;
+            row.insertCell().textContent = data.accountName;
+            row.insertCell().textContent = data.type;
+            row.insertCell().textContent = data.subType || 'N/A';
+            row.insertCell().textContent = 'N/A'; 
+            const actionsCell = row.insertCell();
+            actionsCell.innerHTML = `<button class="edit-btn">${commonDependencies.commonEditIcon}</button><button class="delete-btn">${commonDependencies.commonDeleteIcon}</button>`;
+            actionsCell.querySelector('.edit-btn').addEventListener('click', () => openModalForSubsection('glAccounts', data.id, data));
+            actionsCell.querySelector('.delete-btn').addEventListener('click', () => handleDeleteGeneric('glAccounts', data.id, 'GL Account'));
+            row.addEventListener('click', () => openModalForSubsection('glAccounts', data.id, data));
+        }
+
+        initializeAuth(pageInit);
+    </script>
+</body>
+</html> 
