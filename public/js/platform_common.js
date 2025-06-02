@@ -116,6 +116,7 @@ function setupPageLayoutAndInteractivity() {
         menuToggleBtn.classList.toggle('open', isCollapsed);
         menuToggleBtn.setAttribute('aria-expanded', !isCollapsed);
         localStorage.setItem('sidebarCollapsed', isCollapsed);
+        document.body.classList.toggle('sidebar-is-collapsed', isCollapsed);
 
         // On mobile, when sidebar is open (not collapsed), ensure it has transform: translateX(0)
         // and when it is collapsed, it has transform: translateX(-100%)
@@ -127,10 +128,12 @@ function setupPageLayoutAndInteractivity() {
         sidebar.classList.add('collapsed');
         menuToggleBtn.classList.add('open');
         menuToggleBtn.setAttribute('aria-expanded', 'false');
+        document.body.classList.add('sidebar-is-collapsed');
     } else {
         sidebar.classList.remove('collapsed'); // Ensure it's not collapsed by default if no local storage state
         menuToggleBtn.classList.remove('open');
         menuToggleBtn.setAttribute('aria-expanded', 'true');
+        document.body.classList.remove('sidebar-is-collapsed');
     }
 
     DOMElements.welcomeMessage = document.getElementById('welcomeMessage');

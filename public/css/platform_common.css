@@ -203,8 +203,13 @@ body {
     position: relative; /* For positioning the toggle button */
 }
 
+/* Add left padding to content-header when sidebar is collapsed to make space for the fixed toggle button */
+body.sidebar-is-collapsed .content-header {
+    padding-left: 70px; /* 15px (button left) + 40px (button width) + 15px (gap) */
+}
+
 .content-header h2 {
-    margin: 0 0 0 15px; /* Add some margin if toggle button is present */
+    margin: 0; /* Remove left margin, button is out of flow */
     font-size: 1.8rem;
     font-weight: 600;
     color: #1a202c;
@@ -564,17 +569,42 @@ table.data-table tr:hover {
 
 /* Sidebar Toggle Button */
 .sidebar-toggle-btn {
-    background-color: transparent;
+    /* Original kept: */
     border: none;
     cursor: pointer;
-    padding: 0px; /* Reduced padding to match index.html closer */
-    margin-right: 15px; 
-    /* display: flex; flex-direction: column; justify-content: space-around; */ /* No longer needed for this structure */
-    width: 40px; /* Match index.html */
-    height: 40px; /* Match index.html */
+    padding: 0px; 
+    width: 40px; 
+    height: 40px; 
     outline: none;
-    z-index: 105; 
-    position: relative; /* For positioning spans absolutely if needed by menu-icon styles */
+    /* display: flex; flex-direction: column; justify-content: space-around; */ /* No longer needed for this structure */
+
+    /* Adopted from mobile / new requirements: */
+    position: fixed;
+    top: 15px;
+    z-index: 1010; 
+    background: rgba(255, 255, 255, 0.8); /* Default appearance, overridden by :not(.open) */
+    backdrop-filter: blur(5px); /* Default appearance, overridden by :not(.open) */
+    border-radius: 50%; /* Default appearance */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* margin-right: 15px; -- REMOVED */
+    /* position: relative; -- REMOVED */
+}
+
+/* State 1: Sidebar is COLLAPSED. Button has '.open' class (hamburger icon). */
+.sidebar-toggle-btn.open {
+    left: 15px; /* Positioned at the left edge of the screen */
+    /* Inherits background, backdrop-filter, border-radius from the main .sidebar-toggle-btn rule */
+}
+
+/* State 2: Sidebar is OPEN. Button does NOT have '.open' class (chevron icon). */
+.sidebar-toggle-btn:not(.open) {
+    left: calc(240px - 40px - 15px); /* Position inside the open sidebar */
+    background: transparent; /* Specific for this state */
+    backdrop-filter: none; /* Remove blur if it was inherited */
+    box-shadow: none; /* Specific for this state */
+    /* border-radius is inherited, so it remains 50% */
 }
 
 /* Hamburger icon bars from index.html, adapted for sidebar toggle */
@@ -909,37 +939,6 @@ table.data-table tr:hover {
     .content-header {
         padding-left: 60px; /* Space for the toggle button when sidebar is closed */
         position: relative; /* Ensure stacking context for its children if needed, but button is fixed */
-    }
-
-    .sidebar-toggle-btn {
-        position: fixed;
-        top: 15px;
-        z-index: 1010; /* Above sidebar */
-        background: rgba(255, 255, 255, 0.8);
-        backdrop-filter: blur(5px);
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        /* box-shadow: 0 2px 8px rgba(0,0,0,0.15); */ /* Removed as per request */
-        padding: 0; /* Reset padding if any was inherited */
-        margin-right: 0; /* Reset margin */
-    }
-
-    /* State 1: Sidebar is COLLAPSED. Button has '.open' class (hamburger icon). Position to OPEN the sidebar. */
-    .sidebar-toggle-btn.open {
-        left: 15px; /* Positioned at the left edge of the screen */
-    }
-
-    /* State 2: Sidebar is OPEN. Button does NOT have '.open' class (chevron icon). Position IN the sidebar. */
-    .sidebar-toggle-btn:not(.open) {
-        /* Position it near the top-right of the open sidebar (width 240px) */
-        /* left = sidebar_width - button_width - desired_padding_from_right_edge_of_sidebar */
-        left: calc(240px - 40px - 15px); /* = 185px from left of screen */
-        background: transparent; /* Blend into the sidebar */
-        box-shadow: none; /* No shadow when "inside" the sidebar - this was correctly none already */
     }
 
     /* Ensure icon spans are visible against potentially varied backgrounds */
