@@ -5,18 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calendar - Puul Platform</title>
     <link rel="stylesheet" href="/css/platform_common.css">
+    <!-- FullCalendar v6.1.17 JS (includes CSS) -->
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.js'></script>
     <style>
-        .calendar-placeholder {
-            width: 100%;
-            height: 600px; /* Adjust as needed */
-            background-color: #e9ecef;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            font-size: 1.5rem;
-            color: #6c757d;
-            text-align: center;
+        /* Remove old placeholder style */
+        /* .calendar-placeholder { ... } */
+        
+        /* Adjustments for FullCalendar if needed */
+        #calendar {
+            max-width: 1100px; /* Or whatever fits your layout */
+            margin: 20px auto;
+        }
+        .calendar-grid-container {
+             /* Remove fixed height from placeholder parent */
         }
     </style>
 </head>
@@ -31,6 +32,9 @@
             <div class="page-container">
                 <p>This section displays events, reminders, and important dates such as lease expirations, maintenance schedules, and move-in/move-out dates.</p>
                 
+                <!-- Calendar controls can be integrated with FullCalendar's header or kept separate if desired -->
+                <!-- For now, we will use FullCalendar\'s built-in controls -->
+                <!-- 
                 <div class="calendar-controls">
                     <button id="prevPeriodBtn" class="btn-secondary">&lt; Prev</button>
                     <h3 id="currentPeriodDisplay">[Month, Year]</h3>
@@ -42,44 +46,34 @@
                     </div>
                     <button id="addEventBtnCalPage" class="btn-primary">Add Event</button> 
                 </div>
+                -->
 
                 <div class="calendar-grid-container">
-                    <!-- Placeholder for the calendar grid -->
-                    <div class="calendar-grid-placeholder">
-                        <p>Calendar grid will be rendered here.</p>
-                        <p>(e.g., using a library like FullCalendar.io or a custom implementation)</p>
-                        
-                        <!-- Example of how events might look in a list view (could be part of a day/week view) -->
-                        <div class="event-list-sample">
-                            <h4>Upcoming Events (Sample)</h4>
-                            <ul>
-                                <li><strong>Sep 15, 10:00 AM:</strong> Unit 10A - Lease Signing</li>
-                                <li><strong>Sep 16, 02:00 PM:</strong> Property B - HVAC Maintenance</li>
-                                <li><strong>Sep 18, All Day:</strong> Move-in: Tenant for Unit 5C</li>
-                            </ul>
-                        </div>
-                    </div>
+                    <!-- FullCalendar will render here -->
+                    <div id="calendar"></div>
+                    <!-- Old placeholder removed -->
                 </div>
                 
                 <div class="calendar-sidebar">
                     <h4>Upcoming Events</h4>
                     <ul id="upcomingEventsList">
+                        <!-- This list can be kept or removed depending on preference, FullCalendar has list views -->
                         <li>[Placeholder: Event 1 - Date & Time]</li>
                         <li>[Placeholder: Event 2 - Date & Time]</li>
                         <li>[Placeholder: Event 3 - Date & Time]</li>
                     </ul>
-                    <button id="filterEventsBtn" class="btn-secondary">Filter Events</button>
+                    <button id="filterEventsBtn" class="btn-secondary" style="display:none;">Filter Events (FullCalendar handles this)</button>
                 </div>
 
             </div>
         </div>
     </div>
 
-    <button class="fab" id="addItemBtn" aria-label="Add new calendar event" style="display:none;"> <!-- Hidden for now -->
+    <button class="fab" id="addItemBtn" aria-label="Add new calendar event"> <!-- Now always visible to trigger modal -->
         +
     </button>
 
-    <!-- Modal for Adding/Editing Calendar Events (Placeholder) -->
+    <!-- Modal for Adding/Editing Calendar Events -->
     <div id="eventModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -139,48 +133,53 @@
         let pageCurrentUserId;
         let pageDatabase;
         let commonDependencies = {};
-        let localPropertiesMap = {}; // Added to store properties
+        let localPropertiesMap = {}; 
+        let calendarInstance = null; // For FullCalendar instance
 
         const pageDOMElements = {
-            addItemBtn: document.getElementById('addItemBtn'), // This is the FAB
-            addEventBtnCalPage: document.getElementById('addEventBtnCalPage'), // Button in calendar controls
+            addItemBtn: document.getElementById('addItemBtn'), 
+            // addEventBtnCalPage: document.getElementById('addEventBtnCalPage'), // Button in calendar controls - removed for now
             eventModal: document.getElementById('eventModal'),
             eventForm: document.getElementById('eventForm'),
             eventPropertySelect: document.getElementById('eventProperty'),
             upcomingEventsList: document.getElementById('upcomingEventsList'),
-            currentPeriodDisplay: document.getElementById('currentPeriodDisplay') // For later use
-            // Add more elements as calendar functionality is built
+            // currentPeriodDisplay: document.getElementById('currentPeriodDisplay'), // Removed for now
+            calendarContainer: document.getElementById('calendar')
         };
 
         function pageInit(userId, db, ...allCommonDeps) {
             pageCurrentUserId = userId;
             pageDatabase = db;
-            const [ fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbData, fbUpdateDbData, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon, commonInitializeCustomDropdown ] = allCommonDeps;
-            commonDependencies = { fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbData, fbUpdateDbData, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon, commonInitializeCustomDropdown };
+            const [ fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbDataExt, fbUpdateDbDataExt, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon, commonInitializeCustomDropdownExt ] = allCommonDeps;
+            commonDependencies = { 
+                fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, 
+                getDbData: fbGetDbDataExt, 
+                updateDbData: fbUpdateDbDataExt, 
+                commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon, 
+                initializeCustomDropdown: commonInitializeCustomDropdownExt 
+            };
 
             console.log("Calendar page initialized for user:", userId);
             
             initializePropertiesListener(); 
-            loadCalendarEvents();
+            initializeFullCalendar(); // Initialize FullCalendar
+            loadCalendarEvents(); // Keep this for the side list for now
 
             if (pageDOMElements.addItemBtn) {
                 pageDOMElements.addItemBtn.style.display = 'flex'; // Make FAB visible
                 pageDOMElements.addItemBtn.addEventListener('click', () => {
-                    openEventModal(); 
+                    openEventModal(); // Open modal without pre-filled date for FAB
                 });
             }
-            if (pageDOMElements.addEventBtnCalPage) {
-                pageDOMElements.addEventBtnCalPage.addEventListener('click', () => {
-                    openEventModal();
-                });
-            }
+            // if (pageDOMElements.addEventBtnCalPage) { // Button removed
+            //     pageDOMElements.addEventBtnCalPage.addEventListener('click', () => {
+            //         openEventModal();
+            //     });
+            // }
 
             if (pageDOMElements.eventForm) {
                 pageDOMElements.eventForm.addEventListener('submit', handleEventFormSubmit);
             }
-            
-            // Placeholder for calendar view controls - update current period display
-            pageDOMElements.currentPeriodDisplay.textContent = new Date().toLocaleDateString('default', { month: 'long', year: 'numeric' });
         }
 
         function initializePropertiesListener() {
@@ -205,17 +204,21 @@
             });
         }
         
-        function openEventModal(id = null, data = {}) {
+        function openEventModal(id = null, data = {}, prefillDate = null) {
             pageDOMElements.eventForm.reset();
             pageDOMElements.eventForm.elements.eventId.value = id || '';
             pageDOMElements.eventModal.querySelector('#eventModalTitle').textContent = id ? 'Edit Event' : 'Add New Event';
             
-            if (data && id) { // Populate form for editing
+            if (id && data) { // Populate form for editing
                 pageDOMElements.eventForm.elements.title.value = data.title || '';
-                pageDOMElements.eventForm.elements.startDate.value = data.startDate || '';
-                pageDOMElements.eventForm.elements.endDate.value = data.endDate || '';
+                // Ensure date formats match what datetime-local input expects
+                pageDOMElements.eventForm.elements.startDate.value = data.startDate ? data.startDate.substring(0,16) : '';
+                pageDOMElements.eventForm.elements.endDate.value = data.endDate ? data.endDate.substring(0,16) : '';
                 pageDOMElements.eventForm.elements.description.value = data.description || '';
                 pageDOMElements.eventForm.elements.propertyId.value = data.propertyId || '';
+            } else if (prefillDate) {
+                 // Prefill start date if dateClick triggered this
+                pageDOMElements.eventForm.elements.startDate.value = prefillDate;
             }
             pageDOMElements.eventModal.style.display = 'flex';
         }
@@ -230,41 +233,130 @@
             const eventId = form.elements.eventId.value;
             const eventData = {
                 title: form.elements.title.value,
-                startDate: form.elements.startDate.value,
-                endDate: form.elements.endDate.value,
+                start: form.elements.startDate.value, // FullCalendar uses 'start' and 'end'
+                end: form.elements.endDate.value || null, // Optional end date
                 description: form.elements.description.value,
                 propertyId: form.elements.propertyId.value,
+                // Include other relevant fields for FullCalendar if needed, e.g., allDay
+                // For Firebase, we might still use startDate and endDate for querying if preferred
+                startDate: form.elements.startDate.value, 
+                endDate: form.elements.endDate.value || null,
                 userId: pageCurrentUserId,
                 updatedAt: commonDependencies.fbServerTimestamp()
             };
 
-            if (!eventData.title || !eventData.startDate) {
+            if (!eventData.title || !eventData.start) { // Check 'start' for FullCalendar
                 commonDependencies.commonShowAlert("Event Title and Start Date are required.", "Validation Error");
                 return;
             }
 
             try {
                 const path = `calendarEvents/${pageCurrentUserId}`;
-                if (eventId) { // Update existing event
+                if (eventId) { 
                     const eventRef = commonDependencies.fbRef(pageDatabase, `${path}/${eventId}`);
+                    // Fetch existing data to preserve createdAt
                     const snapshot = await commonDependencies.getDbData(eventRef);
                     const existingData = snapshot.val() || {};
                     await commonDependencies.fbSet(eventRef, {...existingData, ...eventData, createdAt: existingData.createdAt || commonDependencies.fbServerTimestamp()});
                     commonDependencies.commonShowAlert("Event updated successfully!", "Success");
-                } else { // Add new event
+                } else { 
                     eventData.createdAt = commonDependencies.fbServerTimestamp();
                     await commonDependencies.fbPush(commonDependencies.fbRef(pageDatabase, path), eventData);
                     commonDependencies.commonShowAlert("Event added successfully!", "Success");
                 }
                 pageDOMElements.eventModal.style.display = 'none';
-                // loadCalendarEvents(); // Data will reload due to onValue listener
+                if (calendarInstance) {
+                    calendarInstance.refetchEvents(); // Refresh FullCalendar
+                }
+                // loadCalendarEvents(); // Side list also updates via its onValue listener
             } catch (error) {
                 console.error("Error saving event:", error);
                 commonDependencies.commonShowAlert(`Error saving event: ${error.message}`, "Error");
             }
         }
 
-        function loadCalendarEvents() {
+        function initializeFullCalendar() {
+            if (!pageDOMElements.calendarContainer) return;
+
+            calendarInstance = new FullCalendar.Calendar(pageDOMElements.calendarContainer, {
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+                },
+                editable: true, // Allows dragging and resizing if you implement eventDrop/eventResize handlers
+                selectable: true, // Allows date clicking/selecting
+                events: function(fetchInfo, successCallback, failureCallback) {
+                    const eventsRef = commonDependencies.fbRef(pageDatabase, `calendarEvents/${pageCurrentUserId}`);
+                    // Listen for value changes to keep calendar up to date
+                    onValue(commonDependencies.fbQuery(eventsRef, commonDependencies.fbOrderByChild('startDate')), (snapshot) => {
+                        const events = [];
+                        snapshot.forEach(childSnapshot => {
+                            const eventData = childSnapshot.val();
+                            events.push({
+                                id: childSnapshot.key, // Firebase key as event ID
+                                title: eventData.title,
+                                start: eventData.startDate, // Or eventData.start if you save it that way
+                                end: eventData.endDate || null,   // Or eventData.end
+                                description: eventData.description,
+                                propertyId: eventData.propertyId,
+                                // you can add more properties here, they will be available in event.extendedProps
+                                extendedProps: eventData 
+                            });
+                        });
+                        successCallback(events);
+                    }, (error) => {
+                        console.error("Error fetching events for FullCalendar:", error);
+                        failureCallback(error);
+                        commonDependencies.commonShowAlert("Could not load calendar events.", "Error");
+                    });
+                },
+                dateClick: function(info) {
+                    // `info.dateStr` gives 'YYYY-MM-DD'
+                    // `info.allDay` is a boolean
+                    // For datetime-local, we need 'YYYY-MM-DDTHH:mm'
+                    let prefillDateTime = info.dateStr;
+                    if (info.allDay) { // If a day cell is clicked, default to a reasonable time like 9 AM
+                        prefillDateTime += "T09:00";
+                    } else { 
+                        // If a time slot is clicked in week/day view, FullCalendar might provide time. 
+                        // For simplicity, if info.date includes time, it should be used.
+                        // The dateStr might already be in ISO format with time for non-allDay clicks.
+                        // Let's ensure it's formatted for datetime-local.
+                        const clickedDate = new Date(info.dateStr);
+                        prefillDateTime = clickedDate.getFullYear() + '-' + 
+                                         ('0' + (clickedDate.getMonth()+1)).slice(-2) + '-' + 
+                                         ('0' + clickedDate.getDate()).slice(-2) + 'T' + 
+                                         ('0' + clickedDate.getHours()).slice(-2) + ':' + 
+                                         ('0' + clickedDate.getMinutes()).slice(-2);
+                    }
+                    openEventModal(null, {}, prefillDateTime);
+                },
+                eventClick: function(info) {
+                    // info.event.id, info.event.title, info.event.start, info.event.end
+                    // info.event.extendedProps contains the rest of the Firebase data
+                    const eventDataForModal = {
+                        ...info.event.extendedProps, // original Firebase data
+                        title: info.event.title,
+                        startDate: info.event.startStr.substring(0,16), // Format for datetime-local
+                        endDate: info.event.endStr ? info.event.endStr.substring(0,16) : null
+                    };
+                    openEventModal(info.event.id, eventDataForModal);
+                }
+                // Add more FullCalendar options as needed (e.g., eventDrop, eventResize for drag-and-drop updates)
+            });
+
+            calendarInstance.render();
+
+            // Handle view controls if you keep them separate
+            // Example: document.getElementById('monthViewBtn').addEventListener('click', () => calendar.changeView('dayGridMonth'));
+            // For now, using FullCalendar's built-in header controls.
+            const fcToolbar = pageDOMElements.calendarContainer.querySelector('.fc-toolbar');
+            if(fcToolbar) fcToolbar.style.marginBottom = '20px';
+        }
+
+        function loadCalendarEvents() { // This populates the side "Upcoming Events" list
             if (!pageCurrentUserId || !pageDatabase || !pageDOMElements.upcomingEventsList) return;
             const eventsRef = commonDependencies.fbRef(pageDatabase, `calendarEvents/${pageCurrentUserId}`);
             // Order by start date, future events first or most recent first if that's preferred.
@@ -326,7 +418,9 @@
                 try {
                     await commonDependencies.fbRemove(commonDependencies.fbRef(pageDatabase, `calendarEvents/${pageCurrentUserId}/${eventId}`));
                     commonDependencies.commonShowAlert("Event deleted successfully.", "Success");
-                    // list will refresh due to onValue in loadCalendarEvents
+                    if (calendarInstance) {
+                        calendarInstance.refetchEvents(); // Refresh FullCalendar
+                    }
                 } catch (error) {
                     console.error("Error deleting event:", error);
                     commonDependencies.commonShowAlert(`Error deleting event: ${error.message}`, "Error");

@@ -77,45 +77,158 @@
     </div>
 
     <script type="module">
-        import { initializeAuth } from './js/platform_common.js';
-        function pageInit(userId, database) {
-            // Dashboard specific JS
+        import { initializeAuth, showAlert, getDbData } from './js/platform_common.js';
+        import { getDatabase, ref, onValue, query, orderByChild, limitToLast, equalTo, get } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
+
+        let pageCurrentUserId;
+        let pageDatabase;
+
+        const DOMElements = {
+            activeLeasesValue: null,
+            occupancyRateValue: null,
+            openMaintenanceValue: null,
+            overduePaymentsValue: null,
+            activityList: document.querySelector('.activity-list')
+        };
+
+        function pageInit(userId, db, commonShowAlert, commonGetDbData) {
+            pageCurrentUserId = userId;
+            pageDatabase = db;
+            // commonDependencies.showAlert = commonShowAlert; // If using showAlert
+            // commonDependencies.getDbData = commonGetDbData; // If using getDbData directly, though onValue is more common for live updates
+
             console.log("Dashboard page initialized for user:", userId);
+            
+            // Assign DOM Elements for metrics
+            const metricItems = document.querySelectorAll('.metric-item');
+            if (metricItems.length >= 4) {
+                DOMElements.activeLeasesValue = metricItems[0].querySelector('.metric-value');
+                DOMElements.occupancyRateValue = metricItems[1].querySelector('.metric-value');
+                DOMElements.openMaintenanceValue = metricItems[2].querySelector('.metric-value');
+                DOMElements.overduePaymentsValue = metricItems[3].querySelector('.metric-value');
+            }
 
-            // Populate Key Metrics
-            const metricsPlaceholders = {
-                "Active Leases": "142",
-                "Occupancy Rate": "96.5%",
-                "Open Maintenance Requests": "3",
-                "Overdue Payments": "1"
-            };
-            document.querySelectorAll('.metric-item').forEach(item => {
-                const h5 = item.querySelector('h5');
-                if (h5 && metricsPlaceholders[h5.textContent]) {
-                    const pValue = item.querySelector('.metric-value');
-                    if (pValue) {
-                        pValue.textContent = metricsPlaceholders[h5.textContent];
-                    }
+            loadKeyMetrics();
+            loadRecentActivity();
+        }
+
+        async function loadKeyMetrics() {
+            if (!pageCurrentUserId || !pageDatabase) return;
+
+            // Active Leases
+            const leasesRef = ref(pageDatabase, `leases/${pageCurrentUserId}`);
+            const activeLeasesQuery = query(leasesRef, orderByChild('status'), equalTo('Active'));
+            onValue(activeLeasesQuery, (snapshot) => {
+                if (DOMElements.activeLeasesValue) {
+                    DOMElements.activeLeasesValue.textContent = snapshot.exists() ? snapshot.size : '0';
                 }
-            });
+                calculateAndDisplayOccupancyRate(snapshot.size);
+            }, { onlyOnce: true });
 
-            // Populate Recent Activity
-            const activityPlaceholders = [
-                "New lease signed for Property Vista, Unit 12B",
-                "Maintenance request #1027 (Leaky Sink) status changed to 'In Progress'",
-                "Rent payment of $1200 received from Tenant (John Smith - Property Oaks, Unit 3A)",
-                "System notification: Property insurance for 'Downtown Plaza' expires in 30 days."
-            ];
-            const activityList = document.querySelector('.activity-list');
-            if (activityList) {
-                activityList.innerHTML = ''; // Clear existing placeholders
-                activityPlaceholders.forEach(activityText => {
+            // Open Maintenance Requests
+            const workOrdersRef = ref(pageDatabase, `workOrders/${pageCurrentUserId}`);
+            onValue(workOrdersRef, (snapshot) => {
+                let openCount = 0;
+                if (snapshot.exists()) {
+                    snapshot.forEach(childSnapshot => {
+                        const wo = childSnapshot.val();
+                        if (wo.status === 'Open' || wo.status === 'In Progress') {
+                            openCount++;
+                        }
+                    });
+                }
+                if (DOMElements.openMaintenanceValue) {
+                    DOMElements.openMaintenanceValue.textContent = openCount;
+                }
+            }, { onlyOnce: true });
+
+            // Overdue Payments (Simplified: counts receivables with status 'Overdue')
+            const receivablesRef = ref(pageDatabase, `receivables/${pageCurrentUserId}`);
+            const overdueReceivablesQuery = query(receivablesRef, orderByChild('status'), equalTo('Overdue'));
+            onValue(overdueReceivablesQuery, (snapshot) => {
+                if (DOMElements.overduePaymentsValue) {
+                    DOMElements.overduePaymentsValue.textContent = snapshot.exists() ? snapshot.size : '0';
+                }
+            }, { onlyOnce: true });
+        }
+
+        async function calculateAndDisplayOccupancyRate(activeLeaseCount) {
+            const propertiesRef = ref(pageDatabase, `properties/${pageCurrentUserId}`);
+            onValue(propertiesRef, (snapshot) => {
+                let totalUnits = 0;
+                if (snapshot.exists()) {
+                    snapshot.forEach(propSnapshot => {
+                        const property = propSnapshot.val();
+                        totalUnits += parseInt(property.numberOfUnits) || 1; // Assume 1 unit if not specified or 0
+                    });
+                }
+                let occupancyRate = "N/A";
+                if (totalUnits > 0) {
+                    occupancyRate = ((activeLeaseCount / totalUnits) * 100).toFixed(1) + '%';
+                }
+                if (DOMElements.occupancyRateValue) {
+                    DOMElements.occupancyRateValue.textContent = occupancyRate;
+                }
+            }, { onlyOnce: true });
+        }
+
+        async function loadRecentActivity() {
+            if (!pageCurrentUserId || !pageDatabase || !DOMElements.activityList) return;
+            DOMElements.activityList.innerHTML = ''; // Clear placeholders
+            
+            const activities = [];
+            const maxActivitiesPerType = 2;
+
+            // Fetch recent leases
+            try {
+                const leasesRef = ref(pageDatabase, `leases/${pageCurrentUserId}`);
+                const recentLeasesQuery = query(leasesRef, orderByChild('updatedAt'), limitToLast(maxActivitiesPerType));
+                const leaseSnapshot = await get(recentLeasesQuery);
+                if (leaseSnapshot.exists()) {
+                    leaseSnapshot.forEach(child => {
+                        const lease = child.val();
+                        const propertyName = lease.propertyId ? `Property ID ${lease.propertyId.substring(0,6)}...` : 'a property'; // Placeholder for property name resolution
+                        activities.push({ 
+                            text: `New lease started for ${propertyName} with ${lease.tenants || 'tenant(s)'}.`, 
+                            timestamp: lease.updatedAt || lease.createdAt 
+                        });
+                    });
+                }
+            } catch (error) { console.error("Error fetching recent leases:", error); }
+
+            // Fetch recent work orders
+            try {
+                const workOrdersRef = ref(pageDatabase, `workOrders/${pageCurrentUserId}`);
+                const recentWoQuery = query(workOrdersRef, orderByChild('updatedAt'), limitToLast(maxActivitiesPerType));
+                const woSnapshot = await get(recentWoQuery);
+                if (woSnapshot.exists()) {
+                    woSnapshot.forEach(child => {
+                        const wo = child.val();
+                        const propertyName = wo.propertyId ? `Property ID ${wo.propertyId.substring(0,6)}...` : 'a property'; // Placeholder
+                        activities.push({ 
+                            text: `Work order '${wo.title || 'Untitled'}' for ${propertyName} was updated to status: ${wo.status}.`, 
+                            timestamp: wo.updatedAt || wo.createdAt
+                        });
+                    });
+                }
+            } catch (error) { console.error("Error fetching recent work orders:", error); }
+            
+            // Sort activities by timestamp (descending) and take top 3-4
+            activities.sort((a, b) => b.timestamp - a.timestamp);
+            const displayedActivities = activities.slice(0, 4);
+
+            if (displayedActivities.length > 0) {
+                displayedActivities.forEach(activity => {
                     const li = document.createElement('li');
-                    li.textContent = activityText;
-                    activityList.appendChild(li);
+                    li.textContent = activity.text;
+                    // Could add a small timestamp here if desired: new Date(activity.timestamp).toLocaleTimeString()
+                    DOMElements.activityList.appendChild(li);
                 });
+            } else {
+                DOMElements.activityList.innerHTML = '<li>No recent activity to display.</li>';
             }
         }
+
         initializeAuth(pageInit);
     </script>
 </body>
