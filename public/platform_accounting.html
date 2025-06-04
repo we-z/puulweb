@@ -37,7 +37,39 @@
                 <div class="subsection-content" id="journalEntriesContent"><h4>Journal Entries</h4><div class="data-table-container"><table class="data-table" id="journalEntriesTable"><thead><tr><th>Date</th><th>Entry ID</th><th>Description</th><th>Total Debits</th><th>Total Credits</th><th>Actions</th></tr></thead><tbody id="journalEntriesTableBody"></tbody></table><div id="noJournalEntriesMessage" class="no-data-message"><div class="icon">📓</div><p>No journal entries found.</p></div></div></div>
                 <div class="subsection-content" id="bankTransfersContent"><h4>Bank Transfers</h4><div class="data-table-container"><table class="data-table" id="bankTransfersTable"><thead><tr><th>Date</th><th>From Account</th><th>To Account</th><th>Amount</th><th>Memo</th><th>Status</th><th>Actions</th></tr></thead><tbody id="bankTransfersTableBody"></tbody></table><div id="noBankTransfersMessage" class="no-data-message"><div class="icon">↔️</div><p>No bank transfers recorded.</p></div></div></div>
                 <div class="subsection-content" id="glAccountsContent"><h4>GL Accounts (Chart of Accounts)</h4><div class="data-table-container"><table class="data-table" id="glAccountsTable"><thead><tr><th>Account Number</th><th>Account Name</th><th>Type</th><th>Sub-Type</th><th>Balance (Calculated)</th><th>Actions</th></tr></thead><tbody id="glAccountsTableBody"></tbody></table><div id="noGLAccountsMessage" class="no-data-message"><div class="icon">📊</div><p>Chart of Accounts is empty.</p></div></div></div>
-                <div class="subsection-content" id="diagnosticsContent"><h4>Diagnostics</h4> <div class="no-data-message"><div class="icon">🩺</div><p>Accounting Diagnostics features coming soon.</p><span>This section will help identify potential issues or discrepancies in your accounting data.</span></div></div>
+                <div class="subsection-content" id="diagnosticsContent">
+                    <h4>Accounting Diagnostics</h4>
+                    <div class="diagnostics-overview">
+                        <p>This section provides tools to help identify and resolve potential discrepancies or issues in your accounting data. Select a diagnostic report to run:</p>
+                    </div>
+                    <div class="diagnostic-item-list">
+                        <div class="diagnostic-item">
+                            <h5>Unreconciled Transactions Report</h5>
+                            <p>Identifies bank transactions that have not been matched or reconciled with your accounting records.</p>
+                            <button class="btn-secondary run-diagnostic-btn" data-diagnostic="unreconciled">Run Report</button>
+                            <div class="diagnostic-results" id="results-unreconciled"></div>
+                        </div>
+                        <div class="diagnostic-item">
+                            <h5>Aged Payables/Receivables Discrepancy Check</h5>
+                            <p>Compares summary aging reports with outstanding balances to find inconsistencies.</p>
+                            <button class="btn-secondary run-diagnostic-btn" data-diagnostic="aging-discrepancy">Run Check</button>
+                            <div class="diagnostic-results" id="results-aging-discrepancy"></div>
+                        </div>
+                        <div class="diagnostic-item">
+                            <h5>GL Balance Anomaly Detection</h5>
+                            <p>Scans General Ledger accounts for unusual balances or unexpected activity (e.g., asset with credit balance).</p>
+                            <button class="btn-secondary run-diagnostic-btn" data-diagnostic="gl-anomaly">Run Scan</button>
+                            <div class="diagnostic-results" id="results-gl-anomaly"></div>
+                        </div>
+                        <div class="diagnostic-item">
+                            <h5>Data Integrity Check</h5>
+                            <p>Performs a series of checks for common data entry errors or orphaned records.</p>
+                            <button class="btn-secondary run-diagnostic-btn" data-diagnostic="data-integrity">Run Check</button>
+                            <div class="diagnostic-results" id="results-data-integrity"></div>
+                        </div>
+                        <!-- More diagnostic tools can be added here -->
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -49,7 +81,7 @@
     <div id="payableModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>Add/Edit Payable</h3><button class="close-btn" data-modal-id="payableModal">&times;</button></div><form id="payableForm"><input type="hidden" name="payableId"><div class="form-group"><label>Due Date</label><input type="date" name="dueDate" required></div><div class="form-group"><label>Vendor/Payee</label><input type="text" name="payeeName" required></div><div class="form-group"><label>Property (Optional)</label><select name="propertyId"><option value="">N/A</option></select></div><div class="form-group"><label>Description</label><input type="text" name="description" required></div><div class="form-group"><label>Amount ($)</label><input type="number" name="amount" step="0.01" required></div><div class="form-group"><label>Status</label><select name="status"><option>Unpaid</option><option>Paid</option><option>Pending</option></select></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="payableModal">Cancel</button><button type="submit" class="submit-btn">Save</button></div></form></div></div>
     <div id="bankAccountModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>Add/Edit Bank Account</h3><button class="close-btn" data-modal-id="bankAccountModal">&times;</button></div><form id="bankAccountForm"><input type="hidden" name="bankAccountId"><div class="form-group"><label>Account Name</label><input type="text" name="accountName" required></div><div class="form-group"><label>Bank Name</label><input type="text" name="bankName"></div><div class="form-group"><label>Account Number</label><input type="text" name="accountNumber" placeholder="Full number (stored securely)"></div><div class="form-group"><label>Account Type</label><select name="accountType"><option>Checking</option><option>Savings</option><option>Credit Card</option><option>Loan</option><option>Other</option></select></div><div class="form-group"><label>Opening Balance ($)</label><input type="number" name="openingBalance" step="0.01"></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="bankAccountModal">Cancel</button><button type="submit" class="submit-btn">Save</button></div></form></div></div>
     <div id="journalEntryModal" class="modal"><div class="modal-content" style="max-width: 700px;"><div class="modal-header"><h3>Add/Edit Journal Entry</h3><button class="close-btn" data-modal-id="journalEntryModal">&times;</button></div><form id="journalEntryForm"><input type="hidden" name="journalEntryId"><div class="form-group"><label>Date</label><input type="date" name="date" required></div><div class="form-group"><label>Description</label><input type="text" name="description" required></div><div id="jeLinesContainer" class="form-group"></div><button type="button" id="addJeLineBtn" class="submit-btn" style="background-color: #6c757d; margin-bottom:15px;">Add Line</button><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="journalEntryModal">Cancel</button><button type="submit" class="submit-btn">Save</button></div></form></div></div>
-    <div id="bankTransferModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>Add/Edit Bank Transfer</h3><button class="close-btn" data-modal-id="bankTransferModal">&times;</button></div><form id="bankTransferForm"><input type="hidden" name="bankTransferId"><div class="form-group"><label>Date</label><input type="date" name="date" required></div><div class="form-group"><label>From Account</label><select name="fromAccountId" required></select></div><div class="form-group"><label>To Account</label><select name="toAccountId" required></select></div><div class="form-group"><label>Amount ($)</label><input type="number" name="amount" step="0.01" required></div><div class="form-group"><label>Memo</label><input type="text" name="memo"></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="bankTransferModal">Cancel</button><button type="submit" class="submit-btn">Save</button></div></form></div></div>
+    <div id="bankTransferModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>Add/Edit Bank Transfer</h3><button class="close-btn" data-modal-id="bankTransferModal">&times;</button></div><form id="bankTransferForm"><input type="hidden" name="bankTransferId"><div class="form-group"><label>Date</label><input type="date" name="date" required></div><div class="form-group"><label>From Account</label><select name="fromAccountId" required></select></div><div class="form-group"><label>To Account</label><select name="toAccountId" required></select></div><div class="form-group"><label>Amount ($)</label><input type="number" name="amount" step="0.01" required></div><div class="form-group"><label>Memo</label><input type="text" name="memo"></div><div class="form-group"><label>Status</label><select name="status"><option value="Pending">Pending</option><option value="Completed">Completed</option><option value="Failed">Failed</option></select></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="bankTransferModal">Cancel</button><button type="submit" class="submit-btn">Save</button></div></form></div></div>
     <div id="glAccountModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>Add/Edit GL Account</h3><button class="close-btn" data-modal-id="glAccountModal">&times;</button></div><form id="glAccountForm"><input type="hidden" name="glAccountId"><div class="form-group"><label>Account Number</label><input type="text" name="accountNumber" required></div><div class="form-group"><label>Account Name</label><input type="text" name="accountName" required></div><div class="form-group"><label>Type</label><select name="type"><option>Asset</option><option>Liability</option><option>Equity</option><option>Income</option><option>Expense</option></select></div><div class="form-group"><label>Sub-Type (Optional)</label><input type="text" name="subType"></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="glAccountModal">Cancel</button><button type="submit" class="submit-btn">Save</button></div></form></div></div>
 
     <div id="customAlertModal"><div class="custom-alert"><p></p></div></div>
@@ -109,6 +141,7 @@
             initializeGLAccountsListener();
             loadDataForActiveSubsection();
             setupEventListeners();
+            setupDiagnosticButtons();
             
             if (DOMElements.addItemBtn) {
                 DOMElements.addItemBtn.addEventListener('click', () => {
@@ -448,7 +481,7 @@
             row.insertCell().textContent = localBankAccountsMap[data.toAccountId] || 'N/A';
             row.insertCell().textContent = data.amount ? `$${parseFloat(data.amount).toFixed(2)}` : 'N/A';
             row.insertCell().textContent = data.memo || 'N/A';
-            row.insertCell().innerHTML = `<span class="status-badge status-completed">Completed</span>`; 
+            row.insertCell().innerHTML = `<span class="status-badge status-${(data.status || 'pending').toLowerCase()}">${data.status || 'Pending'}</span>`; 
             const actionsCell = row.insertCell();
             actionsCell.innerHTML = `<button class="edit-btn">${commonDependencies.commonEditIcon}</button><button class="delete-btn">${commonDependencies.commonDeleteIcon}</button>`;
             actionsCell.querySelector('.edit-btn').addEventListener('click', () => openModalForSubsection('bankTransfers', data.id, data));
@@ -476,6 +509,36 @@
             actionsCell.querySelector('.edit-btn').addEventListener('click', () => openModalForSubsection('glAccounts', data.id, data));
             actionsCell.querySelector('.delete-btn').addEventListener('click', () => handleDeleteGeneric('glAccounts', data.id, 'GL Account'));
             row.addEventListener('click', () => openModalForSubsection('glAccounts', data.id, data));
+        }
+
+        function setupDiagnosticButtons() {
+            const diagnosticButtons = document.querySelectorAll('.run-diagnostic-btn');
+            diagnosticButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const diagnosticType = button.dataset.diagnostic;
+                    const resultsDiv = document.getElementById(`results-${diagnosticType}`);
+                    if (resultsDiv) {
+                        resultsDiv.innerHTML = '<p style="color: #6c757d; font-style: italic;">Running diagnostic...</p>'; // Clear previous results or show placeholder
+                    }
+                    
+                    let diagnosticName = '';
+                    switch (diagnosticType) {
+                        case 'unreconciled': diagnosticName = 'Unreconciled Transactions Report'; break;
+                        case 'aging-discrepancy': diagnosticName = 'Aged Payables/Receivables Discrepancy Check'; break;
+                        case 'gl-anomaly': diagnosticName = 'GL Balance Anomaly Detection'; break;
+                        case 'data-integrity': diagnosticName = 'Data Integrity Check'; break;
+                        default: diagnosticName = 'Selected Diagnostic';
+                    }
+
+                    // Simulate running the diagnostic and then show the alert
+                    setTimeout(() => {
+                        if (resultsDiv) {
+                             resultsDiv.innerHTML = ''; // Clear "Running diagnostic..."
+                        }
+                        commonDependencies.commonShowAlert(`${diagnosticName} is not yet implemented. This feature will be available in a future update.`, 'Feature Not Available');
+                    }, 500); // Short delay to simulate action
+                });
+            });
         }
 
         initializeAuth(pageInit);

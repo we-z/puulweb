@@ -307,7 +307,7 @@
                 <!-- Fixed Assets Subsection -->
                 <div class="subsection-content" id="fixedAssetsContent">
                     <h4>Fixed Assets</h4>
-                     <div class="data-table-container">
+                    <div class="data-table-container">
                         <table class="data-table" id="fixedAssetsTable">
                             <thead>
                                 <tr>
@@ -331,11 +331,44 @@
 
                 <!-- Smart Maintenance Subsection -->
                 <div class="subsection-content" id="smartMaintenanceContent">
-                    <h4>Smart Maintenance</h4>
-                    <div class="no-data-message"> <!-- Using no-data-message for placeholder -->
-                        <div class="icon">💡</div>
-                        <p>Smart Maintenance features coming soon.</p>
-                        <span>This section will provide AI-driven insights and proactive maintenance suggestions.</span>
+                    <h4>Smart Maintenance Insights</h4>
+                    <div class="smart-maintenance-overview">
+                        <p>Leverage AI and IoT data for proactive maintenance, cost optimization, and enhanced operational efficiency. This section provides predictive insights and actionable recommendations.</p>
+                    </div>
+                    <div class="smart-feature-list">
+                        <div class="smart-feature-item">
+                            <h5>Predictive Maintenance Alerts</h5>
+                            <p>Alerts based on sensor data or historical trends predicting potential equipment failures (e.g., HVAC, water heaters).</p>
+                            <ul class="alert-list">
+                                <li>[Placeholder: Alert: HVAC Unit 3B - Potential compressor failure within 7 days. Current runtime: 95% above average.]</li>
+                                <li>[Placeholder: Alert: Boiler - Property A - Pressure anomaly detected. Recommend immediate inspection.]</li>
+                            </ul>
+                            <button class="btn-secondary view-smart-details">View All Alerts</button>
+                        </div>
+                        <div class="smart-feature-item">
+                            <h5>IoT Device Status & Connectivity</h5>
+                            <p>Overview of connected smart devices (thermostats, leak detectors, smart locks) and their operational status.</p>
+                            <div class="iot-status-summary">
+                                <p>[Placeholder: Connected Devices: 48/50 | Offline: 2 | Low Battery: 1]</p>
+                                <p>[Placeholder: Last data sync: Just now]</p>
+                            </div>
+                            <button class="btn-secondary view-smart-details">Manage Devices</button>
+                        </div>
+                        <div class="smart-feature-item">
+                            <h5>Maintenance Efficiency Scorecards</h5>
+                            <p>Analytics on maintenance team performance, work order completion times, and cost-effectiveness, with AI-driven suggestions for improvement.</p>
+                            <div class="efficiency-placeholder">[Chart/Data: Trend of average repair time, cost per work order]</div>
+                            <button class="btn-secondary view-smart-details">View Reports</button>
+                        </div>
+                        <div class="smart-feature-item">
+                            <h5>Automated Work Order Generation (Suggestions)</h5>
+                            <p>AI suggests creating work orders based on detected anomalies or scheduled preventive maintenance derived from smart data.</p>
+                            <ul class="suggestion-list">
+                                <li>[Placeholder: Suggestion: Schedule air filter replacement for units 1A, 2C, 5F based on runtime.]</li>
+                            </ul>
+                            <button class="btn-secondary view-smart-details">Review Suggestions</button>
+                        </div>
+                        <!-- More Smart Maintenance features can be added here -->
                     </div>
                 </div>
             </div>
@@ -394,18 +427,20 @@
         </div>
     </div>
     
-    <!-- Placeholder Modals for other subsections (simplified) -->
     <!-- Recurring Work Order Modal -->
     <div id="recurringWorkOrderModal" class="modal">
         <div class="modal-content">
             <div class="modal-header"><h3>Add/Edit Recurring Work Order</h3><button class="close-btn" data-modal-id="recurringWorkOrderModal">&times;</button></div>
             <form id="recurringWorkOrderForm">
-                <input type="hidden" id="recurringWorkOrderId">
-                <div class="form-group"><label>Task Name</label><input type="text" name="taskName" required></div>
-                <div class="form-group"><label>Property</label><select name="propertyId"></select></div>
-                <div class="form-group"><label>Frequency</label><select name="frequency"><option>Daily</option><option>Weekly</option><option>Monthly</option><option>Annually</option></select></div>
-                <div class="form-group"><label>Start Date</label><input type="date" name="startDate"></div>
-                <div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="recurringWorkOrderModal">Cancel</button><button type="submit" class="submit-btn">Save</button></div>
+                <input type="hidden" id="recurringWorkOrderId" name="recurringWorkOrderId">
+                <div class="form-group"><label>Task Name</label><input type="text" id="recurringTaskName" name="taskName" required></div>
+                <div class="form-group"><label>Property</label><select id="recurringPropertyId" name="propertyId"></select></div>
+                <div class="form-group"><label>Frequency</label><select id="recurringFrequency" name="frequency"><option value="Daily">Daily</option><option value="Weekly">Weekly</option><option value="Bi-Weekly">Bi-Weekly</option><option value="Monthly">Monthly</option><option value="Quarterly">Quarterly</option><option value="Annually">Annually</option></select></div>
+                <div class="form-group"><label>Start Date (for first occurrence)</label><input type="date" id="recurringStartDate" name="startDate" required></div>
+                <div class="form-group"><label>Assigned Vendor (Optional)</label><select id="recurringAssignedVendorId" name="assignedVendorId"></select></div>
+                <div class="form-group"><label>Status</label><select id="recurringStatus" name="status"><option value="Active">Active</option><option value="Paused">Paused</option></select></div>
+                <div class="form-group"><label>Notes</label><textarea id="recurringNotes" name="notes" rows="3"></textarea></div>
+                <div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="recurringWorkOrderModal">Cancel</button><button type="submit" class="submit-btn">Save Recurring Task</button></div>
             </form>
         </div>
     </div>
@@ -415,13 +450,15 @@
         <div class="modal-content">
             <div class="modal-header"><h3>Add/Edit Inspection</h3><button class="close-btn" data-modal-id="inspectionModal">&times;</button></div>
             <form id="inspectionForm">
-                 <input type="hidden" id="inspectionId">
-                <div class="form-group"><label>Inspection Name</label><input type="text" name="inspectionName" required></div>
-                <div class="form-group"><label>Property</label><select name="propertyId"></select></div>
-                <div class="form-group"><label>Date Scheduled</label><input type="datetime-local" name="scheduledDate"></div>
-                <div class="form-group"><label>Inspector</label><input type="text" name="inspector"></div>
-                <div class="form-group"><label>Status</label><select name="status"><option>Scheduled</option><option>In Progress</option><option>Completed</option><option>Cancelled</option></select></div>
-                <div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="inspectionModal">Cancel</button><button type="submit" class="submit-btn">Save</button></div>
+                <input type="hidden" id="inspectionId" name="inspectionId">
+                <div class="form-group"><label>Inspection Name</label><input type="text" id="inspectionName" name="inspectionName" required></div>
+                <div class="form-group"><label>Property</label><select id="inspectionPropertyId" name="propertyId"></select></div>
+                <div class="form-group"><label>Unit (Optional)</label><input type="text" id="inspectionUnit" name="unit" placeholder="e.g., Apt 101"></div>
+                <div class="form-group"><label>Date Scheduled</label><input type="datetime-local" id="inspectionScheduledDate" name="scheduledDate"></div>
+                <div class="form-group"><label>Inspector</label><input type="text" id="inspectorName" name="inspector"></div>
+                <div class="form-group"><label>Status</label><select id="inspectionStatus" name="status"><option value="Scheduled">Scheduled</option><option value="In Progress">In Progress</option><option value="Completed">Completed</option><option value="Cancelled">Cancelled</option></select></div>
+                <div class="form-group"><label>Notes</label><textarea id="inspectionNotes" name="notes" rows="3"></textarea></div>
+                <div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="inspectionModal">Cancel</button><button type="submit" class="submit-btn">Save Inspection</button></div>
             </form>
         </div>
     </div>
@@ -431,13 +468,15 @@
         <div class="modal-content">
             <div class="modal-header"><h3>Add/Edit Unit Turn</h3><button class="close-btn" data-modal-id="unitTurnModal">&times;</button></div>
             <form id="unitTurnForm">
-                <input type="hidden" id="unitTurnId">
-                <div class="form-group"><label>Unit/Property</label><select name="propertyId" required></select></div>
-                <div class="form-group"><label>Move-Out Date</label><input type="date" name="moveOutDate"></div>
-                <div class="form-group"><label>Target Move-In Date</label><input type="date" name="targetMoveInDate"></div>
-                <div class="form-group"><label>Status</label><select name="status"><option>Pending</option><option>Cleaning</option><option>Repairs</option><option>Ready</option><option>Completed</option></select></div>
-                <div class="form-group"><label>Assigned To</label><input type="text" name="assignedTo"></div>
-                <div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="unitTurnModal">Cancel</button><button type="submit" class="submit-btn">Save</button></div>
+                <input type="hidden" id="unitTurnId" name="unitTurnId">
+                <div class="form-group"><label>Unit/Property</label><select id="unitTurnPropertyId" name="propertyId" required></select></div>
+                <div class="form-group"><label>Unit Number (if applicable)</label><input type="text" id="unitTurnUnitNumber" name="unitNumber"></div>
+                <div class="form-group"><label>Move-Out Date</label><input type="date" id="unitTurnMoveOutDate" name="moveOutDate"></div>
+                <div class="form-group"><label>Target Move-In Date</label><input type="date" id="unitTurnTargetMoveInDate" name="targetMoveInDate"></div>
+                <div class="form-group"><label>Status</label><select id="unitTurnStatus" name="status"><option value="Pending">Pending</option><option value="Cleaning">Cleaning</option><option value="Repairs">Repairs</option><option value="Ready">Ready</option><option value="Completed">Completed</option></select></div>
+                <div class="form-group"><label>Assigned To</label><input type="text" id="unitTurnAssignedTo" name="assignedTo"></div>
+                <div class="form-group"><label>Notes</label><textarea id="unitTurnNotes" name="notes" rows="3"></textarea></div>
+                <div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="unitTurnModal">Cancel</button><button type="submit" class="submit-btn">Save Unit Turn</button></div>
             </form>
         </div>
     </div>
@@ -601,58 +640,41 @@
             fixedAssetForm: document.getElementById('fixedAssetForm'),
         };
         
-        function pageInit(userId, db, fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbData, fbUpdateDbData, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon, commonInitializeCustomDropdown) {
-            pageCurrentUserId = userId;
-            pageDatabase = db;
-             commonDependencies = {
-                fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, 
-                fbOrderByChild, fbEqualTo, fbGetDbData, fbUpdateDbData, 
-                commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon,
-                initializeCustomDropdown: commonInitializeCustomDropdown
-            };
+        function pageInit(userId, db, ...allCommonDeps) {
+            pageCurrentUserId = userId; pageDatabase = db;
+            const [ fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGet, fbGetDbDataExt, fbUpdateDbDataExt, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon, commonInitializeCustomDropdown ] = allCommonDeps;
+            commonDependencies = { fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGet, fbGetDbData: fbGetDbDataExt, fbUpdateDbData: fbUpdateDbDataExt, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon, commonInitializeCustomDropdown };
 
             initializeSubNav();
-            initializePropertiesListener(); // For dropdowns in modals/filters
+            initializePropertiesListener();
+            initializeVendorsListener(); 
+            initializeMaintenanceFilters(); // Initialize and attach listeners for filters
             
-            // Initialize Work Orders section (active by default)
-            loadWorkOrders(); 
-            setupWorkOrderEventListeners();
-            commonDependencies.initializeCustomDropdown(pageDOMElements.filterProperty, loadWorkOrders, true); // true for dynamic options
-            commonDependencies.initializeCustomDropdown(pageDOMElements.filterPriority, loadWorkOrders);
-            commonDependencies.initializeCustomDropdown(pageDOMElements.filterStatus, loadWorkOrders);
-            commonDependencies.initializeCustomDropdown(pageDOMElements.sortBy, loadWorkOrders);
-            commonDependencies.initializeCustomDropdown(pageDOMElements.sortOrder, loadWorkOrders);
-            if (pageDOMElements.controlsToggleBtn && pageDOMElements.controlsContainer) {
+            loadDataForActiveSubsection();
+            setupEventListeners();
+            setupSmartMaintenanceButtons(); 
+
+            if (pageDOMElements.controlsToggleBtn) {
                 pageDOMElements.controlsToggleBtn.addEventListener('click', () => {
-                    pageDOMElements.controlsContainer.classList.toggle('expanded');
-                    pageDOMElements.controlsToggleBtn.classList.toggle('expanded');
+                    const controlsContainer = pageDOMElements.controlsToggleBtn.nextElementSibling;
+                    const arrowIcon = pageDOMElements.controlsToggleBtn.querySelector('.arrow-icon');
+                    if (controlsContainer.style.display === 'none' || controlsContainer.style.display === '') {
+                        controlsContainer.style.display = 'flex';
+                        arrowIcon.style.transform = 'rotate(0deg)';
+                    } else {
+                        controlsContainer.style.display = 'none';
+                        arrowIcon.style.transform = 'rotate(-90deg)';
+                    }
                 });
+                 // Initially hide filters
+                pageDOMElements.controlsToggleBtn.nextElementSibling.style.display = 'none';
+                pageDOMElements.controlsToggleBtn.querySelector('.arrow-icon').style.transform = 'rotate(-90deg)';
             }
             
-            // Load other subsections (they are hidden by default)
-            loadRecurringWorkOrders();
-            setupRecurringWorkOrderEventListeners();
-            loadInspections();
-            setupInspectionEventListeners();
-            loadUnitTurns();
-            setupUnitTurnEventListeners();
-            loadProjects();
-            setupProjectEventListeners();
-            loadPurchaseOrders();
-            setupPurchaseOrderEventListeners();
-            loadInventory();
-            setupInventoryEventListeners();
-            loadFixedAssets();
-            setupFixedAssetEventListeners();
-
-
-            // Central FAB click handler
-            if (pageDOMElements.addItemBtn) {
-                pageDOMElements.addItemBtn.addEventListener('click', () => {
-                    const activeSubSection = document.querySelector('.sub-nav-item.active').dataset.subsection;
-                    openModalForSubsection(activeSubSection);
-                });
-            }
+            pageDOMElements.addItemBtn.addEventListener('click', () => {
+                const activeSubSection = document.querySelector('#maintenanceSubNav .sub-nav-item.active').dataset.subsection;
+                openModalForSubsection(activeSubSection);
+            });
         }
 
         function initializeSubNav() {
@@ -872,55 +894,49 @@
             }
         }
 
-        function loadWorkOrders() { 
-            if (!pageCurrentUserId || !pageDatabase) return;
-            
-            const filterPropertyValue = pageDOMElements.filterProperty ? pageDOMElements.filterProperty.dataset.value : '';
-            const filterPriorityValue = pageDOMElements.filterPriority ? pageDOMElements.filterPriority.dataset.value : ''; 
-            const filterStatusValue = pageDOMElements.filterStatus ? pageDOMElements.filterStatus.dataset.value : '';
-            const sortByValue = pageDOMElements.sortBy ? pageDOMElements.sortBy.dataset.value : 'createdAt';
-            const sortOrderValue = pageDOMElements.sortOrder ? pageDOMElements.sortOrder.dataset.value : 'desc';
-
+        function loadWorkOrders() {
+            if (!pageCurrentUserId || !pageDatabase || !pageDOMElements.workOrderTableBody) return;
             const workOrdersRef = commonDependencies.fbRef(pageDatabase, `workOrders/${pageCurrentUserId}`);
-            onValue(commonDependencies.fbQuery(workOrdersRef, commonDependencies.fbOrderByChild('createdAt')), (snapshot) => {
-                if(pageDOMElements.workOrderTableBody) pageDOMElements.workOrderTableBody.innerHTML = '';
+            
+            // Firebase queries are limited. We can order by one child. 
+            // For more complex sorting/filtering, retrieve all and process client-side, or use Firestore.
+            // For now, let's sort by the chosen field (default createdAt) and do filtering client-side.
+            let queryRef = commonDependencies.fbQuery(workOrdersRef, commonDependencies.fbOrderByChild(workOrderSort.by));
+
+            onValue(queryRef, (snapshot) => {
+                pageDOMElements.workOrderTableBody.innerHTML = '';
+                let hasData = false;
                 let workOrdersArray = [];
-                const data = snapshot.val();
-                
-                if (data) {
-                    for (const key in data) {
-                        workOrdersArray.push({ id: key, ...data[key] });
-                    }
-                }
-
-                if (filterPropertyValue) workOrdersArray = workOrdersArray.filter(wo => wo.propertyId === filterPropertyValue);
-                if (filterPriorityValue) workOrdersArray = workOrdersArray.filter(wo => wo.priority === filterPriorityValue);
-                if (filterStatusValue) workOrdersArray = workOrdersArray.filter(wo => wo.status === filterStatusValue);
-
-                workOrdersArray.sort((a, b) => {
-                    let valA = a[sortByValue];
-                    let valB = b[sortByValue];
-                    if (sortByValue === 'priority') {
-                        const priorityOrder = { 'High': 3, 'Medium': 2, 'Low': 1 };
-                        valA = priorityOrder[valA] || 0;
-                        valB = priorityOrder[valB] || 0;
-                    } else if (typeof valA === 'string') {
-                        valA = valA.toLowerCase();
-                        valB = valB.toLowerCase();
-                    }
-                    let comparison = 0;
-                    if (valA > valB) comparison = 1;
-                    else if (valA < valB) comparison = -1;
-                    return sortOrderValue === 'desc' ? comparison * -1 : comparison;
+                snapshot.forEach(childSnapshot => {
+                    workOrdersArray.push({ id: childSnapshot.key, ...childSnapshot.val() });
                 });
-                
-                if (workOrdersArray.length > 0) {
-                    if(pageDOMElements.noWorkOrdersMessage) pageDOMElements.noWorkOrdersMessage.style.display = 'none';
-                    workOrdersArray.forEach(wo => populateWorkOrderRow(wo));
-                } else {
-                    if(pageDOMElements.noWorkOrdersMessage) pageDOMElements.noWorkOrdersMessage.style.display = 'block';
+
+                // Client-side filtering
+                const filteredWorkOrders = workOrdersArray.filter(wo => {
+                    const matchesProperty = !workOrderFilters.propertyId || wo.propertyId === workOrderFilters.propertyId;
+                    const matchesPriority = !workOrderFilters.priority || wo.priority === workOrderFilters.priority;
+                    const matchesStatus = !workOrderFilters.status || wo.status === workOrderFilters.status;
+                    return matchesProperty && matchesPriority && matchesStatus;
+                });
+
+                // Client-side sorting if not handled by Firebase query (or secondary sort)
+                if (workOrderSort.order === 'desc') {
+                    if(workOrderSort.by !== 'createdAt') { // Firebase sorts asc by default for strings, desc for numbers. Assume createdAt is timestamp (number).
+                         filteredWorkOrders.sort((a, b) => (b[workOrderSort.by] > a[workOrderSort.by]) ? 1 : ((a[workOrderSort.by] > b[workOrderSort.by]) ? -1 : 0));
+                    } else {
+                        filteredWorkOrders.reverse(); // if ordered by createdAt (timestamp) via Firebase, reverse for desc.
+                    }
+                } else if (workOrderSort.by !== 'createdAt') { // asc and not timestamp
+                     filteredWorkOrders.sort((a, b) => (a[workOrderSort.by] > b[workOrderSort.by]) ? 1 : ((b[workOrderSort.by] > a[workOrderSort.by]) ? -1 : 0));
                 }
-            });
+                // If by createdAt and asc, Firebase already handles it.
+
+                filteredWorkOrders.forEach(wo => {
+                    hasData = true;
+                    populateWorkOrderRow(wo);
+                });
+                pageDOMElements.noWorkOrdersMessage.style.display = hasData ? 'none' : 'flex';
+            }, { onlyOnce: false }); // Keep listening for real-time updates
         }
         
         function populateWorkOrderRow(wo) {
@@ -1024,26 +1040,70 @@
         }
 
         function populateRecurringWorkOrderRow(data) {
+            if (!pageDOMElements.recurringWorkOrderTableBody) return;
             const row = pageDOMElements.recurringWorkOrderTableBody.insertRow();
             row.insertCell().textContent = data.taskName;
             row.insertCell().textContent = localPropertiesMap[data.propertyId] || data.propertyId || 'N/A';
             row.insertCell().textContent = data.frequency;
-            row.insertCell().textContent = data.startDate ? new Date(data.startDate).toLocaleDateString() : 'N/A';
-            row.insertCell().innerHTML = `<span class="status-badge status-active">Active</span>`; // Placeholder status
+            
+            // Calculate Next Due Date
+            let nextDueDateStr = 'N/A';
+            if (data.startDate && data.frequency && data.status === 'Active') {
+                try {
+                    const startDate = new Date(data.startDate + 'T00:00:00'); // Ensure parsing as local date
+                    const today = new Date(); today.setHours(0,0,0,0);
+                    let nextDueDate = new Date(startDate);
+
+                    if (isNaN(nextDueDate.getTime())) {
+                        console.error("Invalid start date for recurring work order:", data.startDate, data.id);
+                        nextDueDateStr = 'Invalid Date';
+                    } else {
+                        while (nextDueDate < today) {
+                            switch (data.frequency) {
+                                case 'Daily': nextDueDate.setDate(nextDueDate.getDate() + 1); break;
+                                case 'Weekly': nextDueDate.setDate(nextDueDate.getDate() + 7); break;
+                                case 'Bi-Weekly': nextDueDate.setDate(nextDueDate.getDate() + 14); break;
+                                case 'Monthly': nextDueDate.setMonth(nextDueDate.getMonth() + 1); break;
+                                case 'Quarterly': nextDueDate.setMonth(nextDueDate.getMonth() + 3); break;
+                                case 'Annually': nextDueDate.setFullYear(nextDueDate.getFullYear() + 1); break;
+                                default: nextDueDate = new Date(today.getTime() + 100*365*24*60*60*1000); break; // Far future if frequency is unknown
+                            }
+                            if (nextDueDate > new Date(today.getTime() + 5*365*24*60*60*1000)) { // Safety break for >5 years in future
+                                console.warn("Next due date calculation seems too far in future, breaking loop.", data.id);
+                                break;
+                            }
+                        }
+                        nextDueDateStr = nextDueDate.toLocaleDateString();
+                    }
+                } catch (e) {
+                    console.error("Error calculating next due date:", e, data.id);
+                    nextDueDateStr = 'Calc Error';
+                }
+            } else if (data.status === 'Paused') {
+                nextDueDateStr = 'Paused';
+            }
+            row.insertCell().textContent = nextDueDateStr;
+            row.insertCell().innerHTML = `<span class="status-badge status-${(data.status || 'Paused').toLowerCase()}">${data.status || 'Paused'}</span>`;
+
             const actionsCell = row.insertCell();
             actionsCell.innerHTML = `<button class="edit-btn">${commonDependencies.commonEditIcon}</button><button class="delete-btn">${commonDependencies.commonDeleteIcon}</button>`;
-            actionsCell.querySelector('.edit-btn').addEventListener('click', () => openRecurringWorkOrderModal(data.id, data));
+            actionsCell.querySelector('.edit-btn').addEventListener('click', () => openModalForSubsection('recurringWorkOrders', data.id, data));
             actionsCell.querySelector('.delete-btn').addEventListener('click', () => handleDeleteGeneric('recurringWorkOrders', data.id, 'Recurring Work Order'));
-             row.addEventListener('click', () => openRecurringWorkOrderModal(data.id, data));
+            row.addEventListener('click', (e) => { if(e.target.tagName !== 'BUTTON' && !e.target.closest('button')) openModalForSubsection('recurringWorkOrders', data.id, data); });
         }
         
         function openRecurringWorkOrderModal(id = null, data = {}) {
+            if (!pageDOMElements.recurringWorkOrderForm || !pageDOMElements.recurringWorkOrderModal) return;
             pageDOMElements.recurringWorkOrderForm.reset();
-            pageDOMElements.recurringWorkOrderForm.recurringWorkOrderId.value = id || '';
-            pageDOMElements.recurringWorkOrderForm.taskName.value = data.taskName || '';
-            pageDOMElements.recurringWorkOrderForm.propertyId.value = data.propertyId || '';
-            pageDOMElements.recurringWorkOrderForm.frequency.value = data.frequency || 'Monthly';
-            pageDOMElements.recurringWorkOrderForm.startDate.value = data.startDate || '';
+            // Ensure all form elements are correctly targeted using .elements
+            pageDOMElements.recurringWorkOrderForm.elements.recurringWorkOrderId.value = id || '';
+            pageDOMElements.recurringWorkOrderForm.elements.taskName.value = data.taskName || '';
+            pageDOMElements.recurringWorkOrderForm.elements.propertyId.value = data.propertyId || '';
+            pageDOMElements.recurringWorkOrderForm.elements.frequency.value = data.frequency || 'Monthly';
+            pageDOMElements.recurringWorkOrderForm.elements.startDate.value = data.startDate || '';
+            pageDOMElements.recurringWorkOrderForm.elements.assignedVendorId.value = data.assignedVendorId || '';
+            pageDOMElements.recurringWorkOrderForm.elements.status.value = data.status || 'Active';
+            pageDOMElements.recurringWorkOrderForm.elements.notes.value = data.notes || '';
             pageDOMElements.recurringWorkOrderModal.style.display = 'flex';
         }
 
@@ -1053,78 +1113,109 @@
                 pageDOMElements.inspectionForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
                     const form = e.target;
-                    const id = form.inspectionId.value;
-                    const data = {
-                        inspectionName: form.inspectionName.value,
-                        propertyId: form.propertyId.value,
-                        scheduledDate: form.scheduledDate.value,
-                        inspector: form.inspector.value,
-                        status: form.status.value,
+                    const id = form.elements.inspectionId.value;
+                    const dataToSave = {
+                        inspectionName: form.elements.inspectionName.value,
+                        propertyId: form.elements.propertyId.value,
+                        unit: form.elements.unit.value,
+                        scheduledDate: form.elements.scheduledDate.value,
+                        inspector: form.elements.inspector.value,
+                        status: form.elements.status.value,
+                        notes: form.elements.notes.value,
                         userId: pageCurrentUserId,
                         updatedAt: commonDependencies.fbServerTimestamp()
                     };
-                    if (!data.inspectionName || !data.propertyId || !data.scheduledDate) {
+                    if (!dataToSave.inspectionName || !dataToSave.propertyId || !dataToSave.scheduledDate) {
                          commonDependencies.commonShowAlert('Name, Property, and Scheduled Date are required.', 'Validation Error');
                         return;
                     }
+                    // Using handleGenericFormSubmit structure for consistency
+                    const firebasePath = 'inspections';
+                    const itemName = 'Inspection';
+                    const modalId = 'inspectionModal';
                     try {
-                        const path = `inspections/${pageCurrentUserId}`;
+                        const path = `${firebasePath}/${pageCurrentUserId}`;
                         if (id) {
                              const itemRef = commonDependencies.fbRef(pageDatabase, `${path}/${id}`);
                              const snapshot = await commonDependencies.fbGetDbData(itemRef);
                             const existingData = snapshot.val() || {};
-                            await commonDependencies.fbSet(itemRef, {...existingData, ...data, createdAt: existingData.createdAt || commonDependencies.fbServerTimestamp()});
-                            commonDependencies.commonShowAlert('Inspection updated.');
+                            await commonDependencies.fbSet(itemRef, {...existingData, ...dataToSave, createdAt: existingData.createdAt || commonDependencies.fbServerTimestamp()});
+                            commonDependencies.commonShowAlert(`${itemName} updated.`);
                         } else {
-                            data.createdAt = commonDependencies.fbServerTimestamp();
-                            await commonDependencies.fbPush(commonDependencies.fbRef(pageDatabase, path), data);
-                            commonDependencies.commonShowAlert('Inspection added.');
+                            dataToSave.createdAt = commonDependencies.fbServerTimestamp();
+                            await commonDependencies.fbPush(commonDependencies.fbRef(pageDatabase, path), dataToSave);
+                            commonDependencies.commonShowAlert(`${itemName} added.`);
                         }
-                        pageDOMElements.inspectionModal.style.display = 'none';
-                    } catch (error) { commonDependencies.commonShowAlert(`Error: ${error.message}`); }
+                        if (pageDOMElements.inspectionModal) pageDOMElements.inspectionModal.style.display = 'none';
+                    } catch (error) { commonDependencies.commonShowAlert(`Error saving ${itemName}: ${error.message}`); }
                 });
             }
         }
 
         function loadInspections() {
-             if (!pageCurrentUserId || !pageDatabase) return;
-            const dataRef = commonDependencies.fbRef(pageDatabase, `inspections/${pageCurrentUserId}`);
-            onValue(dataRef, (snapshot) => {
+            if (!pageCurrentUserId || !pageDatabase || !pageDOMElements.inspectionsTableBody) return;
+            const inspectionsRef = commonDependencies.fbRef(pageDatabase, `inspections/${pageCurrentUserId}`);
+            onValue(commonDependencies.fbQuery(inspectionsRef, commonDependencies.fbOrderByChild('scheduledDate')), (snapshot) => {
                 pageDOMElements.inspectionsTableBody.innerHTML = '';
                 let hasData = false;
-                snapshot.forEach(child => {
+                snapshot.forEach(childSnapshot => {
                     hasData = true;
-                    populateInspectionRow({ id: child.key, ...child.val() });
+                    populateInspectionRow({ id: childSnapshot.key, ...childSnapshot.val() });
                 });
-                pageDOMElements.noInspectionsMessage.style.display = hasData ? 'none' : 'block';
+                pageDOMElements.noInspectionsMessage.style.display = hasData ? 'none' : 'flex';
             });
         }
 
         function populateInspectionRow(data) {
+            if (!pageDOMElements.inspectionsTableBody) return;
             const row = pageDOMElements.inspectionsTableBody.insertRow();
-            row.insertCell().textContent = data.inspectionName;
-            row.insertCell().textContent = localPropertiesMap[data.propertyId] || data.propertyId || 'N/A';
-            row.insertCell().textContent = data.scheduledDate ? new Date(data.scheduledDate).toLocaleString() : 'N/A';
+            row.insertCell().textContent = data.inspectionName || 'N/A';
+            
+            let propertyDisplay = localPropertiesMap[data.propertyId] || data.propertyId || 'N/A';
+            if (data.unit) {
+                propertyDisplay += ` - ${data.unit}`;
+            }
+            row.insertCell().textContent = propertyDisplay;
+
+            let formattedDate = 'N/A';
+            if (data.scheduledDate) {
+                try {
+                    const dateObj = new Date(data.scheduledDate);
+                    if (!isNaN(dateObj.getTime())) {
+                        formattedDate = dateObj.toLocaleDateString() + ' ' + dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    } else {
+                        formattedDate = 'Invalid Date';
+                    }
+                } catch (e) {
+                    formattedDate = 'Date Error'; 
+                }
+            }
+            row.insertCell().textContent = formattedDate;
             row.insertCell().textContent = data.inspector || 'N/A';
-            row.insertCell().innerHTML = `<span class="status-badge status-${data.status.toLowerCase().replace(' ', '-')}">${data.status}</span>`;
+            row.insertCell().innerHTML = `<span class="status-badge status-${(data.status || 'Scheduled').toLowerCase().replace(/\s+/g, '-')}">${data.status || 'Scheduled'}</span>`;
+
             const actionsCell = row.insertCell();
             actionsCell.innerHTML = `<button class="edit-btn">${commonDependencies.commonEditIcon}</button><button class="delete-btn">${commonDependencies.commonDeleteIcon}</button>`;
-            actionsCell.querySelector('.edit-btn').addEventListener('click', () => openInspectionModal(data.id, data));
-            actionsCell.querySelector('.delete-btn').addEventListener('click', () => handleDeleteGeneric('inspections', data.id, 'Inspection'));
-            row.addEventListener('click', () => openInspectionModal(data.id, data));
+            // Corrected event listeners
+            actionsCell.querySelector('.edit-btn').addEventListener('click', (e) => { e.stopPropagation(); openModalForSubsection('inspections', data.id, data); });
+            actionsCell.querySelector('.delete-btn').addEventListener('click', (e) => { e.stopPropagation(); handleDeleteGeneric('inspections', data.id, 'Inspection'); });
+            row.addEventListener('click', (e) => { if(e.target.tagName !== 'BUTTON' && !e.target.closest('button')) openModalForSubsection('inspections', data.id, data); });
         }
 
         function openInspectionModal(id = null, data = {}) {
+            if (!pageDOMElements.inspectionForm || !pageDOMElements.inspectionModal) return;
             pageDOMElements.inspectionForm.reset();
-            pageDOMElements.inspectionForm.inspectionId.value = id || '';
-            pageDOMElements.inspectionForm.inspectionName.value = data.inspectionName || '';
-            pageDOMElements.inspectionForm.propertyId.value = data.propertyId || '';
-            pageDOMElements.inspectionForm.scheduledDate.value = data.scheduledDate || '';
-            pageDOMElements.inspectionForm.inspector.value = data.inspector || '';
-            pageDOMElements.inspectionForm.status.value = data.status || 'Scheduled';
+            const formElements = pageDOMElements.inspectionForm.elements;
+            formElements.inspectionId.value = id || '';
+            formElements.inspectionName.value = data.inspectionName || '';
+            formElements.propertyId.value = data.propertyId || '';
+            formElements.unit.value = data.unit || '';
+            formElements.scheduledDate.value = data.scheduledDate || '';
+            formElements.inspector.value = data.inspector || '';
+            formElements.status.value = data.status || 'Scheduled';
+            formElements.notes.value = data.notes || '';
             pageDOMElements.inspectionModal.style.display = 'flex';
         }
-
 
         // --- Unit Turns Section Logic ---
         function setupUnitTurnEventListeners() {
@@ -1132,75 +1223,91 @@
                 pageDOMElements.unitTurnForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
                     const form = e.target;
-                    const id = form.unitTurnId.value;
-                    const data = {
-                        propertyId: form.propertyId.value,
-                        moveOutDate: form.moveOutDate.value,
-                        targetMoveInDate: form.targetMoveInDate.value,
-                        status: form.status.value,
-                        assignedTo: form.assignedTo.value,
+                    const id = form.elements.unitTurnId.value;
+                    const dataToSave = {
+                        propertyId: form.elements.propertyId.value,
+                        unitNumber: form.elements.unitNumber.value,
+                        moveOutDate: form.elements.moveOutDate.value,
+                        targetMoveInDate: form.elements.targetMoveInDate.value,
+                        status: form.elements.status.value,
+                        assignedTo: form.elements.assignedTo.value,
+                        notes: form.elements.notes.value,
                         userId: pageCurrentUserId,
                         updatedAt: commonDependencies.fbServerTimestamp()
                     };
-                     if (!data.propertyId) {
-                         commonDependencies.commonShowAlert('Property is required.', 'Validation Error');
+                    if (!dataToSave.propertyId) {
+                        commonDependencies.commonShowAlert('Property is required for Unit Turn.', 'Validation Error');
                         return;
                     }
+                    // Using handleGenericFormSubmit structure for consistency
+                    const firebasePath = 'unitTurns';
+                    const itemName = 'Unit Turn';
+                    const modalId = 'unitTurnModal';
                     try {
-                        const path = `unitTurns/${pageCurrentUserId}`;
+                        const path = `${firebasePath}/${pageCurrentUserId}`;
                         if (id) {
                             const itemRef = commonDependencies.fbRef(pageDatabase, `${path}/${id}`);
                             const snapshot = await commonDependencies.fbGetDbData(itemRef);
                             const existingData = snapshot.val() || {};
-                            await commonDependencies.fbSet(itemRef, {...existingData, ...data, createdAt: existingData.createdAt || commonDependencies.fbServerTimestamp()});
-                            commonDependencies.commonShowAlert('Unit Turn updated.');
+                            await commonDependencies.fbSet(itemRef, {...existingData, ...dataToSave, createdAt: existingData.createdAt || commonDependencies.fbServerTimestamp()});
+                            commonDependencies.commonShowAlert(`${itemName} updated.`);
                         } else {
-                            data.createdAt = commonDependencies.fbServerTimestamp();
-                            await commonDependencies.fbPush(commonDependencies.fbRef(pageDatabase, path), data);
-                            commonDependencies.commonShowAlert('Unit Turn added.');
+                            dataToSave.createdAt = commonDependencies.fbServerTimestamp();
+                            await commonDependencies.fbPush(commonDependencies.fbRef(pageDatabase, path), dataToSave);
+                            commonDependencies.commonShowAlert(`${itemName} added.`);
                         }
-                        pageDOMElements.unitTurnModal.style.display = 'none';
-                    } catch (error) { commonDependencies.commonShowAlert(`Error: ${error.message}`); }
+                        if (pageDOMElements.unitTurnModal) pageDOMElements.unitTurnModal.style.display = 'none';
+                    } catch (error) { commonDependencies.commonShowAlert(`Error saving ${itemName}: ${error.message}`); }
                 });
             }
         }
 
         function loadUnitTurns() {
-            if (!pageCurrentUserId || !pageDatabase) return;
-            const dataRef = commonDependencies.fbRef(pageDatabase, `unitTurns/${pageCurrentUserId}`);
-            onValue(dataRef, (snapshot) => {
+            if (!pageCurrentUserId || !pageDatabase || !pageDOMElements.unitTurnsTableBody) return;
+            const unitTurnsRef = commonDependencies.fbRef(pageDatabase, `unitTurns/${pageCurrentUserId}`);
+            onValue(commonDependencies.fbQuery(unitTurnsRef, commonDependencies.fbOrderByChild('targetMoveInDate')), (snapshot) => {
                 pageDOMElements.unitTurnsTableBody.innerHTML = '';
                 let hasData = false;
-                snapshot.forEach(child => {
+                snapshot.forEach(childSnapshot => {
                     hasData = true;
-                    populateUnitTurnRow({ id: child.key, ...child.val() });
+                    populateUnitTurnRow({ id: childSnapshot.key, ...childSnapshot.val() });
                 });
-                pageDOMElements.noUnitTurnsMessage.style.display = hasData ? 'none' : 'block';
+                pageDOMElements.noUnitTurnsMessage.style.display = hasData ? 'none' : 'flex';
             });
         }
-        
+
         function populateUnitTurnRow(data) {
+            if (!pageDOMElements.unitTurnsTableBody) return;
             const row = pageDOMElements.unitTurnsTableBody.insertRow();
-            row.insertCell().textContent = localPropertiesMap[data.propertyId] || data.propertyId || 'N/A';
-            row.insertCell().textContent = data.moveOutDate ? new Date(data.moveOutDate).toLocaleDateString() : 'N/A';
-            row.insertCell().textContent = data.targetMoveInDate ? new Date(data.targetMoveInDate).toLocaleDateString() : 'N/A';
-            row.insertCell().innerHTML = `<span class="status-badge status-${data.status.toLowerCase().replace(' ', '-')}">${data.status}</span>`;
+            let propertyDisplay = localPropertiesMap[data.propertyId] || data.propertyId || 'N/A';
+            if (data.unitNumber) {
+                propertyDisplay += ` - ${data.unitNumber}`;
+            }
+            row.insertCell().textContent = propertyDisplay;
+            row.insertCell().textContent = data.moveOutDate ? new Date(data.moveOutDate + 'T00:00:00').toLocaleDateString() : 'N/A';
+            row.insertCell().textContent = data.targetMoveInDate ? new Date(data.targetMoveInDate + 'T00:00:00').toLocaleDateString() : 'N/A';
+            row.insertCell().innerHTML = `<span class="status-badge status-${(data.status || 'Pending').toLowerCase().replace(/\s+/g, '-')}">${data.status || 'Pending'}</span>`;
             row.insertCell().textContent = data.assignedTo || 'N/A';
+            
             const actionsCell = row.insertCell();
             actionsCell.innerHTML = `<button class="edit-btn">${commonDependencies.commonEditIcon}</button><button class="delete-btn">${commonDependencies.commonDeleteIcon}</button>`;
-            actionsCell.querySelector('.edit-btn').addEventListener('click', () => openUnitTurnModal(data.id, data));
-            actionsCell.querySelector('.delete-btn').addEventListener('click', () => handleDeleteGeneric('unitTurns', data.id, 'Unit Turn'));
-            row.addEventListener('click', () => openUnitTurnModal(data.id, data));
+            actionsCell.querySelector('.edit-btn').addEventListener('click', (e) => { e.stopPropagation(); openModalForSubsection('unitTurns', data.id, data); });
+            actionsCell.querySelector('.delete-btn').addEventListener('click', (e) => { e.stopPropagation(); handleDeleteGeneric('unitTurns', data.id, 'Unit Turn'); });
+            row.addEventListener('click', (e) => { if(e.target.tagName !== 'BUTTON' && !e.target.closest('button')) openModalForSubsection('unitTurns', data.id, data); });
         }
-
+        
         function openUnitTurnModal(id = null, data = {}) {
+            if (!pageDOMElements.unitTurnForm || !pageDOMElements.unitTurnModal) return;
             pageDOMElements.unitTurnForm.reset();
-            pageDOMElements.unitTurnForm.unitTurnId.value = id || '';
-            pageDOMElements.unitTurnForm.propertyId.value = data.propertyId || '';
-            pageDOMElements.unitTurnForm.moveOutDate.value = data.moveOutDate || '';
-            pageDOMElements.unitTurnForm.targetMoveInDate.value = data.targetMoveInDate || '';
-            pageDOMElements.unitTurnForm.status.value = data.status || 'Pending';
-            pageDOMElements.unitTurnForm.assignedTo.value = data.assignedTo || '';
+            const formElements = pageDOMElements.unitTurnForm.elements;
+            formElements.unitTurnId.value = id || '';
+            formElements.propertyId.value = data.propertyId || '';
+            formElements.unitNumber.value = data.unitNumber || '';
+            formElements.moveOutDate.value = data.moveOutDate || '';
+            formElements.targetMoveInDate.value = data.targetMoveInDate || '';
+            formElements.status.value = data.status || 'Pending';
+            formElements.assignedTo.value = data.assignedTo || '';
+            formElements.notes.value = data.notes || '';
             pageDOMElements.unitTurnModal.style.display = 'flex';
         }
 
@@ -1540,6 +1647,16 @@
         }
         
         initializeAuth(pageInit);
+
+        function setupSmartMaintenanceButtons() {
+            const smButtons = document.querySelectorAll('#smartMaintenanceContent .btn-primary, #smartMaintenanceContent .btn-secondary'); // Adjust selector as needed
+            smButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const featureTitle = button.closest('.smart-feature-item')?.querySelector('h5')?.textContent || button.textContent || 'Selected Feature';
+                    commonDependencies.commonShowAlert(`The "${featureTitle}" feature is part of Smart Maintenance and is currently under development. Check back soon!`, "Feature Coming Soon");
+                });
+            });
+        }
     </script>
 </body>
 </html> 

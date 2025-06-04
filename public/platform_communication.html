@@ -53,7 +53,82 @@
                 <div class="subsection-content" id="messagesContent">
                     <h4>Messages</h4>
                     <p>Direct and group messaging with tenants, owners, and vendors.</p>
-                    <div class="communication-placeholder">Messaging interface (e.g., chat channels, direct messages list, message composer) will be implemented here.</div>
+                    
+                    <div class="messaging-layout">
+                        <div class="conversations-panel">
+                            <div class="panel-header">
+                                <h5>Conversations</h5>
+                                <button id="newConversationBtn" class="btn-icon" title="New Message">+</button>
+                            </div>
+                            <div class="search-bar">
+                                <input type="search" placeholder="Search messages...">
+                            </div>
+                            <ul id="conversationList" class="item-list">
+                                <li class="conversation-item active">
+                                    <div class="conv-avatar">JD</div>
+                                    <div class="conv-details">
+                                        <div class="conv-name">John Doe (Tenant - Unit 10A)</div>
+                                        <div class="conv-preview">[Placeholder: Okay, I will drop off the check...]</div>
+                                    </div>
+                                    <div class="conv-timestamp">10:32 AM</div>
+                                </li>
+                                <li class="conversation-item">
+                                    <div class="conv-avatar">SV</div>
+                                    <div class="conv-details">
+                                        <div class="conv-name">Smith Electrical (Vendor)</div>
+                                        <div class="conv-preview">[Placeholder: We can schedule for next Tuesday.]</div>
+                                    </div>
+                                    <div class="conv-timestamp">Yesterday</div>
+                                </li>
+                                <li class="conversation-item">
+                                    <div class="conv-avatar">PO</div>
+                                    <div class="conv-details">
+                                        <div class="conv-name">Property Owners Group</div>
+                                        <div class="conv-preview">[Placeholder: Alice: Reminder about the upcoming HOA meeting...]</div>
+                                    </div>
+                                    <div class="conv-timestamp">3d ago</div>
+                                </li>
+                                <!-- More conversation items here -->
+                            </ul>
+                        </div>
+
+                        <div class="message-display-panel">
+                            <div class="panel-header message-header">
+                                <h5>Conversation with John Doe (Tenant - Unit 10A)</h5>
+                                <button id="messageActionsBtn" class="btn-icon">...</button> 
+                            </div>
+                            <div id="messageList" class="message-list">
+                                <div class="message-item received">
+                                    <div class="msg-avatar">JD</div>
+                                    <div class="msg-bubble">
+                                        <div class="msg-sender">John Doe</div>
+                                        <div class="msg-text">[Placeholder: Hi, I wanted to confirm if someone will be available to collect the rent check tomorrow morning?]</div>
+                                        <div class="msg-timestamp">9:15 AM</div>
+                                    </div>
+                                </div>
+                                <div class="message-item sent">
+                                     <div class="msg-bubble">
+                                        <div class="msg-sender">You</div>
+                                        <div class="msg-text">[Placeholder: Hello John, yes, Sarah will be in the office from 9 AM to 12 PM. You can drop it off with her.]</div>
+                                        <div class="msg-timestamp">9:20 AM</div>
+                                    </div>
+                                </div>
+                                 <div class="message-item received">
+                                    <div class="msg-avatar">JD</div>
+                                    <div class="msg-bubble">
+                                        <div class="msg-sender">John Doe</div>
+                                        <div class="msg-text">[Placeholder: Okay, I will drop off the check around 10 AM. Thanks!]</div>
+                                        <div class="msg-timestamp">10:32 AM</div>
+                                    </div>
+                                </div>
+                                <!-- More messages here -->
+                            </div>
+                            <div class="message-composer">
+                                <textarea id="messageInput" placeholder="Type your message..."></textarea>
+                                <button id="sendMessageBtn" class="btn-primary">Send</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -62,7 +137,7 @@
     <button class="fab" id="addItemBtn" aria-label="Add new communication item">+</button>
 
     <!-- Modals -->
-    <div id="letterModal" class="modal"><div class="modal-content" style="max-width: 700px;"><div class="modal-header"><h3>Create/Edit Letter/Notice</h3><button class="close-btn" data-modal-id="letterModal">&times;</button></div><form id="letterForm"><input type="hidden" name="letterId"><div class="form-group"><label>Title/Subject</label><input type="text" name="subject" required></div><div class="form-group"><label>Recipient Type</label><select name="recipientType"><option>Tenant</option><option>Owner</option><option>Vendor</option><option>Group</option></select></div><div class="form-group"><label>Recipients</label><input type="text" name="recipients" placeholder="Enter names, emails, or group name"></div><div class="form-group"><label>Body</label><textarea name="bodyContent" rows="10" placeholder="Compose letter content here..."></textarea></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="letterModal">Cancel</button><button type="submit" class="submit-btn">Save/Send</button></div></form></div></div>
+    <div id="letterModal" class="modal"><div class="modal-content" style="max-width: 700px;"><div class="modal-header"><h3>Create/Edit Letter/Notice</h3><button class="close-btn" data-modal-id="letterModal">&times;</button></div><form id="letterForm"><input type="hidden" name="letterId"><div class="form-group"><label>Title/Subject</label><input type="text" name="subject" required></div><div class="form-group"><label>Recipient Type</label><select name="recipientType"><option>Tenant</option><option>Owner</option><option>Vendor</option><option>Group</option></select></div><div class="form-group"><label>Recipients</label><input type="text" name="recipients" placeholder="Enter names, emails, or group name"></div><div class="form-group"><label>Body</label><textarea name="bodyContent" rows="10" placeholder="Compose letter content here..."></textarea></div><div class="form-group"><label>Status</label><select name="status"><option value="Draft">Draft</option><option value="Sent">Sent</option><option value="Archived">Archived</option></select></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="letterModal">Cancel</button><button type="submit" class="submit-btn">Save/Send</button></div></form></div></div>
     <div id="formModal" class="modal"><div class="modal-content" style="max-width: 700px;"><div class="modal-header"><h3>Create/Edit Form/Template</h3><button class="close-btn" data-modal-id="formModal">&times;</button></div><form id="formTemplateForm"><input type="hidden" name="formId"><div class="form-group"><label>Form/Template Name</label><input type="text" name="formName" required></div><div class="form-group"><label>Category</label><input type="text" name="category" placeholder="e.g., Leasing, Maintenance, Legal"></div><div class="form-group"><label>Content/Structure</label><textarea name="formContent" rows="10" placeholder="Define form fields or template content here (e.g., using markdown or a simple DSL)"></textarea></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="formModal">Cancel</button><button type="submit" class="submit-btn">Save Template</button></div></form></div></div>
 
     <div id="customAlertModal"><div class="custom-alert"><p></p></div></div>
@@ -80,7 +155,19 @@
             formModal: document.getElementById('formModal'), formTemplateForm: document.getElementById('formTemplateForm'),
             lettersTableBody: document.getElementById('lettersTableBody'), noLettersMessage: document.getElementById('noLettersMessage'),
             formsTableBody: document.getElementById('formsTableBody'), noFormsMessage: document.getElementById('noFormsMessage'),
+            // Messaging DOMElements
+            conversationList: document.getElementById('conversationList'),
+            messageList: document.getElementById('messageList'),
+            messageInput: document.getElementById('messageInput'),
+            sendMessageBtn: document.getElementById('sendMessageBtn'),
+            newConversationBtn: document.getElementById('newConversationBtn'),
+            currentConversationTitle: document.querySelector('.message-header h5')
         };
+
+        // Removed Mock Data for Messaging
+        let currentConversationId = null; 
+        let conversationsListener = null; // To store onValue listener for conversations
+        let messagesListener = null;    // To store onValue listener for messages
 
         function pageInit(userId, db, ...allCommonDeps) {
             pageCurrentUserId = userId; pageDatabase = db;
@@ -88,8 +175,12 @@
             commonDependencies = { fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbData, fbUpdateDbData, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon, commonInitializeCustomDropdown };
 
             initializeSubNav();
-            loadDataForActiveSubsection();
-            setupEventListeners();
+            loadDataForActiveSubsection(); 
+            
+            // Initialize Messaging with Firebase
+            loadUserConversations(); // Changed from renderConversationList directly
+
+            setupEventListeners(); 
             
             DOMElements.addItemBtn.addEventListener('click', () => {
                 const activeSubSection = document.querySelector('#communicationSubNav .sub-nav-item.active').dataset.subsection;
@@ -111,11 +202,29 @@
                         content.classList.remove('active');
                         if (content.id === targetId) content.classList.add('active');
                     });
-                    loadDataForActiveSubsection();
-                    fab.style.display = item.dataset.subsection === 'messages' ? 'none' : 'flex';
+                    loadDataForActiveSubsection(); 
+                    if (item.dataset.subsection === 'messages') {
+                        fab.style.display = 'none';
+                        // loadUserConversations will handle rendering if needed
+                        if (!currentConversationId && DOMElements.conversationList.firstChild) {
+                            // If no conversation is selected, and list has items, select first.
+                            // This logic might need adjustment based on how conversations are loaded/selected.
+                        } else if (currentConversationId) {
+                            loadMessagesForConversation(currentConversationId);
+                        } else {
+                            DOMElements.messageList.innerHTML = '<div class=\"communication-placeholder\">Select a conversation to view messages.</div>';
+                            if(DOMElements.currentConversationTitle) DOMElements.currentConversationTitle.textContent = 'Messages';
+                        }
+                    } else {
+                        fab.style.display = 'flex';
+                        if (messagesListener) messagesListener(); // Detach messages listener if navigating away
+                        if (conversationsListener) conversationsListener(); // Detach conversations listener
+                        messagesListener = null;
+                        conversationsListener = null;
+                    }
                 });
             });
-             const defaultActive = subNavContainer.querySelector('.sub-nav-item.active').dataset.subsection;
+            const defaultActive = subNavContainer.querySelector('.sub-nav-item.active').dataset.subsection;
             if (defaultActive === 'messages') fab.style.display = 'none'; else fab.style.display = 'flex';
         }
 
@@ -124,6 +233,13 @@
             switch (activeSubSection) {
                 case 'letters': loadLetters(); break;
                 case 'forms': loadForms(); break;
+                case 'messages': 
+                    loadUserConversations(); // Ensure conversations are loaded when messages tab is active
+                    if (!currentConversationId) {
+                         if(DOMElements.currentConversationTitle) DOMElements.currentConversationTitle.textContent = 'Messages';
+                         if(DOMElements.messageList) DOMElements.messageList.innerHTML = '<div class=\"communication-placeholder\">Select a conversation.</div>';
+                    }
+                    break;
             }
         }
 
@@ -135,6 +251,209 @@
             forms.forEach(f => {
                 if (f.form) f.form.addEventListener('submit', (e) => handleGenericFormSubmit(e, f.path, f.name, f.form.id.replace('Form','Modal').replace('TemplateForm','Modal')));
             });
+
+            // Messaging Event Listeners
+            if (DOMElements.sendMessageBtn) {
+                DOMElements.sendMessageBtn.addEventListener('click', handleSendMessage);
+            }
+            if (DOMElements.messageInput) {
+                DOMElements.messageInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        handleSendMessage();
+                    }
+                });
+            }
+            if (DOMElements.newConversationBtn) {
+                DOMElements.newConversationBtn.addEventListener('click', () => {
+                    commonDependencies.commonShowAlert("Starting new conversations is coming soon!", "Feature Placeholder");
+                });
+            }
+        }
+        
+        // Messaging Functions (Firebase Integrated)
+        function loadUserConversations() {
+            if (!pageCurrentUserId || !DOMElements.conversationList) return;
+
+            if (conversationsListener) conversationsListener(); // Detach previous listener
+            
+            const conversationsRef = commonDependencies.fbRef(pageDatabase, `conversations/${pageCurrentUserId}`);
+            // Order by last message timestamp, descending (most recent first)
+            const conversationsQuery = commonDependencies.fbQuery(conversationsRef, commonDependencies.fbOrderByChild('lastMessageTimestamp'));
+
+            conversationsListener = onValue(conversationsQuery, (snapshot) => {
+                DOMElements.conversationList.innerHTML = '';
+                let firstConversationId = null;
+                let conversations = [];
+                snapshot.forEach(childSnapshot => {
+                    conversations.push({ id: childSnapshot.key, ...childSnapshot.val() });
+                });
+                
+                // Reverse to get descending order (Firebase returns ascending for numeric timestamps if not specified)
+                conversations.reverse();
+
+                if (conversations.length === 0) {
+                    DOMElements.conversationList.innerHTML = '<li class=\"communication-placeholder\">No conversations yet.</li>';
+                    if(DOMElements.currentConversationTitle) DOMElements.currentConversationTitle.textContent = 'Messages';
+                    if(DOMElements.messageList) DOMElements.messageList.innerHTML = '<div class=\"communication-placeholder\">Start a new conversation!</div>';
+                    currentConversationId = null;
+                    return;
+                }
+
+                conversations.forEach((conv, index) => {
+                    if (index === 0 && !currentConversationId) { // Select the first conversation by default if none is active
+                        firstConversationId = conv.id;
+                    }
+                    const li = document.createElement('li');
+                    li.classList.add('conversation-item');
+                    if (conv.id === currentConversationId) {
+                        li.classList.add('active');
+                    }
+                    li.dataset.convId = conv.id;
+
+                    const name = conv.name || 'Conversation'; // Default name
+                    const avatarInitials = name.substring(0, 1) + (name.split(' ')[1] ? name.split(' ')[1].substring(0,1) : '');
+
+                    li.innerHTML = `
+                        <div class="conv-avatar">${avatarInitials.toUpperCase()}</div>
+                        <div class="conv-details">
+                            <div class="conv-name">${name}</div>
+                            <div class="conv-preview">${conv.lastMessagePreview || 'No messages yet.'}</div>
+                        </div>
+                        <div class="conv-timestamp">${conv.lastMessageTimestamp ? new Date(conv.lastMessageTimestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }) : ''}</div>
+                    `;
+                    li.addEventListener('click', () => {
+                        currentConversationId = conv.id;
+                        loadUserConversations(); // Re-render to update active state
+                        loadMessagesForConversation(conv.id);
+                        if (DOMElements.currentConversationTitle) {
+                            DOMElements.currentConversationTitle.textContent = `Conversation with ${name}`;
+                        }
+                    });
+                    DOMElements.conversationList.appendChild(li);
+                });
+
+                if (firstConversationId && !currentConversationId) {
+                    currentConversationId = firstConversationId;
+                    loadMessagesForConversation(firstConversationId);
+                     const firstConvData = conversations.find(c => c.id === firstConversationId);
+                    if (DOMElements.currentConversationTitle && firstConvData) {
+                        DOMElements.currentConversationTitle.textContent = `Conversation with ${firstConvData.name || 'Conversation'}`;
+                    }
+                     // Highlight the first conversation as active in the list
+                    const activeLi = DOMElements.conversationList.querySelector(`[data-conv-id="${firstConversationId}"]`);
+                    if (activeLi) activeLi.classList.add('active');
+                } else if (currentConversationId) {
+                    // Ensure the current conversation remains highlighted
+                     const activeLi = DOMElements.conversationList.querySelector(`[data-conv-id="${currentConversationId}"]`);
+                     if (activeLi) activeLi.classList.add('active');
+                     else { // currentConversationId might no longer exist
+                        currentConversationId = firstConversationId; // fallback
+                        if(currentConversationId) loadMessagesForConversation(currentConversationId);
+                        // Update title and active class if fallback occurs
+                     }
+                }
+
+            });
+        }
+
+        function loadMessagesForConversation(conversationId) {
+            if (!pageCurrentUserId || !DOMElements.messageList || !conversationId) {
+                if(DOMElements.messageList) DOMElements.messageList.innerHTML = '<div class=\"communication-placeholder\">Select a conversation to view messages.</div>';
+                return;
+            }
+            currentConversationId = conversationId; // Ensure this is set
+
+            if (messagesListener) messagesListener(); // Detach previous listener
+
+            const messagesRef = commonDependencies.fbRef(pageDatabase, `messages/${conversationId}`);
+            const messagesQuery = commonDependencies.fbQuery(messagesRef, commonDependencies.fbOrderByChild('timestamp')); // Order by time
+
+            messagesListener = onValue(messagesQuery, (snapshot) => {
+                DOMElements.messageList.innerHTML = '';
+                if (!snapshot.exists()) {
+                    DOMElements.messageList.innerHTML = '<div class=\"communication-placeholder\">No messages in this conversation yet. Send one!</div>';
+                    return;
+                }
+                snapshot.forEach(childSnapshot => {
+                    const msg = { id: childSnapshot.key, ...childSnapshot.val() };
+                    const msgItem = document.createElement('div');
+                    const messageType = msg.senderId === pageCurrentUserId ? 'sent' : 'received';
+                    msgItem.classList.add('message-item', messageType);
+                    
+                    let avatarHtml = '';
+                    // For now, senderName might not be readily available in message object. 
+                    // Conversation object could store participant names.
+                    const senderName = messageType === 'sent' ? 'You' : (msg.senderName || 'Other User'); // Placeholder for senderName
+                    const avatarInitials = senderName.substring(0,1) + (senderName.split(' ')[1] ? senderName.split(' ')[1].substring(0,1) : '');
+
+                    if (messageType === 'received') {
+                        avatarHtml = `<div class="msg-avatar">${avatarInitials.toUpperCase()}</div>`;
+                    }
+
+                    msgItem.innerHTML = `
+                        ${avatarHtml}
+                        <div class="msg-bubble">
+                            <div class="msg-sender">${senderName}</div>
+                            <div class="msg-text">${msg.text}</div>
+                            <div class="msg-timestamp">${new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}</div>
+                        </div>
+                    `;
+                    DOMElements.messageList.appendChild(msgItem);
+                });
+                DOMElements.messageList.scrollTop = DOMElements.messageList.scrollHeight;
+            });
+        }
+
+        async function handleSendMessage() {
+            if (!DOMElements.messageInput || !DOMElements.messageInput.value.trim() || !currentConversationId) {
+                if (!currentConversationId) commonDependencies.commonShowAlert("No active conversation selected.", "Error");
+                return;
+            }
+            const text = DOMElements.messageInput.value.trim();
+            
+            const newMessageData = {
+                senderId: pageCurrentUserId,
+                text: text,
+                timestamp: commonDependencies.fbServerTimestamp() // Use server timestamp
+            };
+
+            try {
+                // Push new message to messages/{conversationId}
+                const messageRef = commonDependencies.fbRef(pageDatabase, `messages/${currentConversationId}`);
+                await commonDependencies.fbPush(messageRef, newMessageData);
+
+                // Update conversation's last message preview and timestamp
+                // Need to fetch participant UIDs from the conversation node
+                const conversationRef = commonDependencies.fbRef(pageDatabase, `conversations/${pageCurrentUserId}/${currentConversationId}`);
+                const convSnapshot = await commonDependencies.fbGetDbData(conversationRef);
+                const conversationData = convSnapshot.val();
+
+                if (conversationData && conversationData.participants) {
+                    const updates = {};
+                    // Update for current user
+                    updates[`/conversations/${pageCurrentUserId}/${currentConversationId}/lastMessagePreview`] = text.substring(0, 40) + (text.length > 40 ? "..." : "");
+                    updates[`/conversations/${pageCurrentUserId}/${currentConversationId}/lastMessageTimestamp`] = commonDependencies.fbServerTimestamp();
+                    
+                    // Update for other participants
+                    Object.keys(conversationData.participants).forEach(participantId => {
+                        if (participantId !== pageCurrentUserId) {
+                            updates[`/conversations/${participantId}/${currentConversationId}/lastMessagePreview`] = text.substring(0, 40) + (text.length > 40 ? "..." : "");
+                            updates[`/conversations/${participantId}/${currentConversationId}/lastMessageTimestamp`] = commonDependencies.fbServerTimestamp();
+                            // Potentially add unread count logic here for the other participant
+                        }
+                    });
+                    await commonDependencies.fbUpdateDbData(commonDependencies.fbRef(pageDatabase), updates);
+                }
+                
+                DOMElements.messageInput.value = '';
+                DOMElements.messageInput.focus();
+                // Messages will re-render due to onValue listener in loadMessagesForConversation
+                // Conversations list will re-render due to onValue listener in loadUserConversations
+            } catch (error) {
+                console.error("Error sending message:", error);
+                commonDependencies.commonShowAlert("Failed to send message: " + error.message, "Error");
+            }
         }
 
         async function handleGenericFormSubmit(e, firebasePath, itemName, modalId) {
@@ -208,7 +527,7 @@
             row.insertCell().textContent = data.subject;
             row.insertCell().textContent = data.recipients || 'N/A';
             row.insertCell().textContent = data.updatedAt ? new Date(data.updatedAt).toLocaleDateString() : 'N/A';
-            row.insertCell().innerHTML = `<span class="status-badge status-sent">${data.status || 'Sent'}</span>`; // Placeholder
+            row.insertCell().innerHTML = `<span class="status-badge status-${(data.status || 'Draft').toLowerCase()}">${data.status || 'Draft'}</span>`;
             const actionsCell = row.insertCell();
             actionsCell.innerHTML = `<button class="edit-btn">${commonDependencies.commonEditIcon}</button><button class="delete-btn">${commonDependencies.commonDeleteIcon}</button>`;
             actionsCell.querySelector('.edit-btn').addEventListener('click', () => openModalForSubsection('letters', data.id, data));

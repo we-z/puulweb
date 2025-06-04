@@ -69,8 +69,8 @@
     <button class="fab" id="addItemBtn" aria-label="Add new person">+</button>
 
     <!-- Modals -->
-    <div id="tenantModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>Add/Edit Tenant</h3><button class="close-btn" data-modal-id="tenantModal">&times;</button></div><form id="tenantForm"><input type="hidden" id="tenantId"><div class="form-group"><label>Full Name</label><input type="text" name="fullName" required></div><div class="form-group"><label>Primary Email</label><input type="email" name="email"></div><div class="form-group"><label>Primary Phone</label><input type="tel" name="phone"></div><div class="form-group"><label>Associated Property/Unit</label><select name="propertyId"></select></div><div class="form-group"><label>Lease ID (Optional)</label><input type="text" name="leaseId"></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="tenantModal">Cancel</button><button type="submit" class="submit-btn">Save</button></div></form></div></div>
-    <div id="ownerModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>Add/Edit Owner</h3><button class="close-btn" data-modal-id="ownerModal">&times;</button></div><form id="ownerForm"><input type="hidden" id="ownerId"><div class="form-group"><label>Full Name</label><input type="text" name="fullName" required></div><div class="form-group"><label>Primary Email</label><input type="email" name="email"></div><div class="form-group"><label>Primary Phone</label><input type="tel" name="phone"></div><div class="form-group"><label>Mailing Address</label><textarea name="mailingAddress"></textarea></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="ownerModal">Cancel</button><button type="submit" class="submit-btn">Save</button></div></form></div></div>
+    <div id="tenantModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>Add/Edit Tenant</h3><button class="close-btn" data-modal-id="tenantModal">&times;</button></div><form id="tenantForm"><input type="hidden" id="tenantId" name="tenantId"><div class="form-group"><label>Full Name</label><input type="text" name="fullName" required></div><div class="form-group"><label>Primary Email</label><input type="email" name="email"></div><div class="form-group"><label>Primary Phone</label><input type="tel" name="phone"></div><div class="form-group"><label>Associated Property</label><select name="propertyId"></select></div><div class="form-group"><label>Unit Number</label><input type="text" name="unitNumber" placeholder="e.g., Apt 101"></div><div class="form-group"><label>Lease Start Date</label><input type="date" name="leaseStartDate"></div><div class="form-group"><label>Lease End Date</label><input type="date" name="leaseEndDate"></div><div class="form-group"><label>Rent Amount ($)</label><input type="number" name="rentAmount" step="0.01"></div><div class="form-group"><label>Lease ID (Optional, if linking to a separate lease record)</label><input type="text" name="leaseId"></div><div class="form-group"><label>Emergency Contact Name</label><input type="text" name="emergencyContactName"></div><div class="form-group"><label>Emergency Contact Phone</label><input type="tel" name="emergencyContactPhone"></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="tenantModal">Cancel</button><button type="submit" class="submit-btn">Save</button></div></form></div></div>
+    <div id="ownerModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>Add/Edit Owner</h3><button class="close-btn" data-modal-id="ownerModal">&times;</button></div><form id="ownerForm"><input type="hidden" id="ownerId" name="ownerId"><div class="form-group"><label>Full Name</label><input type="text" name="fullName" required></div><div class="form-group"><label>Primary Email</label><input type="email" name="email"></div><div class="form-group"><label>Primary Phone</label><input type="tel" name="phone"></div><div class="form-group"><label>Mailing Address</label><textarea name="mailingAddress"></textarea></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="ownerModal">Cancel</button><button type="submit" class="submit-btn">Save</button></div></form></div></div>
     <div id="vendorModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>Add/Edit Vendor</h3><button class="close-btn" data-modal-id="vendorModal">&times;</button></div><form id="vendorForm"><input type="hidden" id="vendorId"><div class="form-group"><label>Company Name</label><input type="text" name="companyName" required></div><div class="form-group"><label>Contact Name</label><input type="text" name="contactName"></div><div class="form-group"><label>Service Type</label><input type="text" name="serviceType" placeholder="e.g., Plumbing, Electrical"></div><div class="form-group"><label>Primary Email</label><input type="email" name="email"></div><div class="form-group"><label>Primary Phone</label><input type="tel" name="phone"></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="vendorModal">Cancel</button><button type="submit" class="submit-btn">Save</button></div></form></div></div>
 
     <div id="customAlertModal"><div class="custom-alert"><p></p></div></div>
@@ -250,75 +250,106 @@
 
         // Tenants
         function loadTenants() {
-            const dataRef = commonDependencies.fbRef(pageDatabase, `tenants/${pageCurrentUserId}`);
-            onValue(commonDependencies.fbQuery(dataRef, commonDependencies.fbOrderByChild('fullName')), (snapshot) => {
+            if (!pageCurrentUserId || !pageDatabase || !DOMElements.tenantsTableBody) return;
+            const tenantsRef = commonDependencies.fbRef(pageDatabase, `tenants/${pageCurrentUserId}`);
+            onValue(commonDependencies.fbQuery(tenantsRef, commonDependencies.fbOrderByChild('fullName')), (snapshot) => {
                 DOMElements.tenantsTableBody.innerHTML = '';
                 let hasData = false;
-                snapshot.forEach(child => { hasData = true; populateTenantRow({id: child.key, ...child.val()}); });
-                DOMElements.noTenantsMessage.style.display = hasData ? 'none' : 'block';
+                snapshot.forEach(childSnapshot => {
+                    hasData = true;
+                    populateTenantRow({ id: childSnapshot.key, ...childSnapshot.val() });
+                });
+                DOMElements.noTenantsMessage.style.display = hasData ? 'none' : 'flex';
             });
         }
+
         function populateTenantRow(data) {
+            if (!DOMElements.tenantsTableBody) return;
             const row = DOMElements.tenantsTableBody.insertRow();
-            row.insertCell().textContent = data.fullName;
+            row.insertCell().textContent = data.fullName || 'N/A';
             row.insertCell().textContent = data.email || 'N/A';
             row.insertCell().textContent = data.phone || 'N/A';
-            row.insertCell().textContent = localPropertiesMap[data.propertyId] || 'N/A';
-            const lease = data.leaseId && localLeasesMap[data.leaseId] ? localLeasesMap[data.leaseId] : null;
-            row.insertCell().textContent = lease && lease.endDate ? new Date(lease.endDate).toLocaleDateString() : 'N/A';
+            
+            let propertyUnitDisplay = localPropertiesMap[data.propertyId] || 'N/A';
+            if (data.unitNumber) {
+                propertyUnitDisplay += (propertyUnitDisplay === 'N/A' ? data.unitNumber : ` - ${data.unitNumber}`);
+            }
+            row.insertCell().textContent = propertyUnitDisplay;
+
+            let leaseEndDateDisplay = 'N/A';
+            if (data.leaseEndDate) {
+                leaseEndDateDisplay = new Date(data.leaseEndDate + 'T00:00:00').toLocaleDateString();
+            } else if (data.leaseId && localLeasesMap[data.leaseId] && localLeasesMap[data.leaseId].endDate) {
+                leaseEndDateDisplay = new Date(localLeasesMap[data.leaseId].endDate + 'T00:00:00').toLocaleDateString();
+            }
+            row.insertCell().textContent = leaseEndDateDisplay;
+            
             const actionsCell = row.insertCell();
             actionsCell.innerHTML = `<button class="edit-btn">${commonDependencies.commonEditIcon}</button><button class="delete-btn">${commonDependencies.commonDeleteIcon}</button>`;
-            actionsCell.querySelector('.edit-btn').addEventListener('click', () => openModalForSubsection('tenants', data.id, data));
-            actionsCell.querySelector('.delete-btn').addEventListener('click', () => handleDeleteGeneric('tenants', data.id, 'Tenant'));
-            row.addEventListener('click', () => openModalForSubsection('tenants', data.id, data));
+            actionsCell.querySelector('.edit-btn').addEventListener('click', (e) => { e.stopPropagation(); openModalForSubsection('tenants', data.id, data); });
+            actionsCell.querySelector('.delete-btn').addEventListener('click', (e) => { e.stopPropagation(); handleDeleteGeneric('tenants', data.id, 'Tenant'); });
+            row.addEventListener('click', (e) => { if(e.target.tagName !== 'BUTTON' && !e.target.closest('button')) openModalForSubsection('tenants', data.id, data); });
         }
 
         // Owners
         function loadOwners() {
-            const dataRef = commonDependencies.fbRef(pageDatabase, `owners/${pageCurrentUserId}`);
-            onValue(commonDependencies.fbQuery(dataRef, commonDependencies.fbOrderByChild('fullName')), (snapshot) => {
+            if (!pageCurrentUserId || !pageDatabase || !DOMElements.ownersTableBody) return;
+            const ownersRef = commonDependencies.fbRef(pageDatabase, `owners/${pageCurrentUserId}`);
+            onValue(commonDependencies.fbQuery(ownersRef, commonDependencies.fbOrderByChild('fullName')), (snapshot) => {
                 DOMElements.ownersTableBody.innerHTML = '';
                 let hasData = false;
-                snapshot.forEach(child => { hasData = true; populateOwnerRow({id: child.key, ...child.val()}); });
-                DOMElements.noOwnersMessage.style.display = hasData ? 'none' : 'block';
+                snapshot.forEach(childSnapshot => {
+                    hasData = true;
+                    populateOwnerRow({ id: childSnapshot.key, ...childSnapshot.val() });
+                });
+                DOMElements.noOwnersMessage.style.display = hasData ? 'none' : 'flex';
             });
         }
+
         function populateOwnerRow(data) {
+            if (!DOMElements.ownersTableBody) return;
             const row = DOMElements.ownersTableBody.insertRow();
-            row.insertCell().textContent = data.fullName;
+            row.insertCell().textContent = data.fullName || 'N/A';
             row.insertCell().textContent = data.email || 'N/A';
             row.insertCell().textContent = data.phone || 'N/A';
-            // Placeholder for properties owned - would require more complex data fetching/linking
-            row.insertCell().textContent = 'N/A'; 
+            row.insertCell().textContent = 'N/A'; // Placeholder for Properties Owned
+            
             const actionsCell = row.insertCell();
             actionsCell.innerHTML = `<button class="edit-btn">${commonDependencies.commonEditIcon}</button><button class="delete-btn">${commonDependencies.commonDeleteIcon}</button>`;
-            actionsCell.querySelector('.edit-btn').addEventListener('click', () => openModalForSubsection('owners', data.id, data));
-            actionsCell.querySelector('.delete-btn').addEventListener('click', () => handleDeleteGeneric('owners', data.id, 'Owner'));
-            row.addEventListener('click', () => openModalForSubsection('owners', data.id, data));
+            actionsCell.querySelector('.edit-btn').addEventListener('click', (e) => { e.stopPropagation(); openModalForSubsection('owners', data.id, data); });
+            actionsCell.querySelector('.delete-btn').addEventListener('click', (e) => { e.stopPropagation(); handleDeleteGeneric('owners', data.id, 'Owner'); });
+            row.addEventListener('click', (e) => { if(e.target.tagName !== 'BUTTON' && !e.target.closest('button')) openModalForSubsection('owners', data.id, data); });
         }
 
         // Vendors
         function loadVendors() {
-            const dataRef = commonDependencies.fbRef(pageDatabase, `vendors/${pageCurrentUserId}`);
-            onValue(commonDependencies.fbQuery(dataRef, commonDependencies.fbOrderByChild('companyName')), (snapshot) => {
+            if (!pageCurrentUserId || !pageDatabase || !DOMElements.vendorsTableBody) return;
+            const vendorsRef = commonDependencies.fbRef(pageDatabase, `vendors/${pageCurrentUserId}`);
+            onValue(commonDependencies.fbQuery(vendorsRef, commonDependencies.fbOrderByChild('companyName')), (snapshot) => {
                 DOMElements.vendorsTableBody.innerHTML = '';
                 let hasData = false;
-                snapshot.forEach(child => { hasData = true; populateVendorRow({id: child.key, ...child.val()}); });
-                DOMElements.noVendorsMessage.style.display = hasData ? 'none' : 'block';
+                snapshot.forEach(childSnapshot => {
+                    hasData = true;
+                    populateVendorRow({ id: childSnapshot.key, ...childSnapshot.val() });
+                });
+                DOMElements.noVendorsMessage.style.display = hasData ? 'none' : 'flex';
             });
         }
+
         function populateVendorRow(data) {
+            if (!DOMElements.vendorsTableBody) return;
             const row = DOMElements.vendorsTableBody.insertRow();
-            row.insertCell().textContent = data.companyName;
+            row.insertCell().textContent = data.companyName || 'N/A';
             row.insertCell().textContent = data.contactName || 'N/A';
             row.insertCell().textContent = data.serviceType || 'N/A';
             row.insertCell().textContent = data.email || 'N/A';
             row.insertCell().textContent = data.phone || 'N/A';
+            
             const actionsCell = row.insertCell();
             actionsCell.innerHTML = `<button class="edit-btn">${commonDependencies.commonEditIcon}</button><button class="delete-btn">${commonDependencies.commonDeleteIcon}</button>`;
-            actionsCell.querySelector('.edit-btn').addEventListener('click', () => openModalForSubsection('vendors', data.id, data));
-            actionsCell.querySelector('.delete-btn').addEventListener('click', () => handleDeleteGeneric('vendors', data.id, 'Vendor'));
-            row.addEventListener('click', () => openModalForSubsection('vendors', data.id, data));
+            actionsCell.querySelector('.edit-btn').addEventListener('click', (e) => { e.stopPropagation(); openModalForSubsection('vendors', data.id, data); });
+            actionsCell.querySelector('.delete-btn').addEventListener('click', (e) => { e.stopPropagation(); handleDeleteGeneric('vendors', data.id, 'Vendor'); });
+            row.addEventListener('click', (e) => { if(e.target.tagName !== 'BUTTON' && !e.target.closest('button')) openModalForSubsection('vendors', data.id, data); });
         }
 
         initializeAuth(pageInit);

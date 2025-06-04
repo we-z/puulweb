@@ -13,6 +13,17 @@
         .subsection-content { display: none; }
         .subsection-content.active { display: block; }
         .report-placeholder { padding: 20px; background-color: #f8f9fa; border: 1px dashed #ced4da; border-radius: 8px; text-align: center; color: #6c757d; margin-top: 15px;}
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+        .metric-card { padding: 20px; background-color: #f8f9fa; border: 1px solid #ced4da; border-radius: 8px; }
+        .metric-value-large { font-size: 24px; font-weight: bold; }
+        .metric-trend { color: #6c757d; }
+        .metric-chart-placeholder { margin-top: 10px; }
+        .charts-area { display: flex; flex-wrap: wrap; gap: 20px; }
+        .chart-container { flex: 1 0 100%; }
+        .chart-container.full-width { flex-basis: 100%; }
+        .chart-container.half-width { flex-basis: calc(50% - 10px); }
+        .chart-placeholder-large { height: 300px; background-color: #f8f9fa; border: 1px dashed #ced4da; border-radius: 8px; }
+        .chart-placeholder-medium { height: 200px; background-color: #f8f9fa; border: 1px dashed #ced4da; border-radius: 8px; }
     </style>
 </head>
 <body>
@@ -48,9 +59,49 @@
                 </div>
 
                 <div class="subsection-content" id="metricsContent">
-                    <h4>Metrics & Analytics</h4>
-                    <p>Visualize key performance indicators (KPIs) and trends across your portfolio.</p>
-                    <div class="report-placeholder">Dashboard with charts and graphs for key metrics (e.g., occupancy, delinquency, maintenance costs) will be here.</div>
+                    <h4>Metrics & Analytics Dashboard</h4>
+                    <p>Visualize key performance indicators (KPIs) and trends across your portfolio to make data-driven decisions.</p>
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <h5>Occupancy Rate</h5>
+                            <div class="metric-value-large">[92.5%]</div>
+                            <div class="metric-trend">[+0.5% vs Last Month]</div>
+                            <div class="metric-chart-placeholder">[Small line chart for trend]</div>
+                        </div>
+                        <div class="metric-card">
+                            <h5>Average Delinquency</h5>
+                            <div class="metric-value-large">[$1,250]</div>
+                            <div class="metric-trend">[-$50 vs Last Month]</div>
+                            <div class="metric-chart-placeholder">[Small bar chart for comparison]</div>
+                        </div>
+                        <div class="metric-card">
+                            <h5>Maintenance Costs (MoM)</h5>
+                            <div class="metric-value-large">[$5,800]</div>
+                            <div class="metric-trend">[+15% vs Last Month]</div>
+                            <div class="metric-chart-placeholder">[Small line chart for trend]</div>
+                        </div>
+                        <div class="metric-card">
+                            <h5>Lease Renewals</h5>
+                            <div class="metric-value-large">[75% Rate]</div>
+                            <div class="metric-trend">[Target: 80%]</div>
+                            <div class="metric-chart-placeholder">[Gauge chart placeholder]</div>
+                        </div>
+                    </div>
+                    <div class="charts-area">
+                        <div class="chart-container full-width">
+                            <h5>Revenue vs. Expenses Over Time</h5>
+                            <div class="chart-placeholder-large">[Placeholder for large line or bar chart showing revenue and expenses trends, e.g., for the last 12 months. Include options for filtering by property or period.]</div>
+                        </div>
+                        <div class="chart-container half-width">
+                            <h5>Work Order Completion Rate by Priority</h5>
+                            <div class="chart-placeholder-medium">[Placeholder for pie or bar chart showing completion rates for High, Medium, Low priority work orders.]</div>
+                        </div>
+                        <div class="chart-container half-width">
+                            <h5>Vacancy Duration Analysis</h5>
+                            <div class="chart-placeholder-medium">[Placeholder for histogram or box plot showing average days units remain vacant.]</div>
+                        </div>
+                        <!-- More charts and KPI visualizations can be added here -->
+                    </div>
                 </div>
 
                 <div class="subsection-content" id="surveysContent">
@@ -88,6 +139,17 @@
             surveyModal: document.getElementById('surveyModal'), surveyForm: document.getElementById('surveyForm'),
             scheduledReportsTableBody: document.getElementById('scheduledReportsTableBody'), noScheduledReportsMessage: document.getElementById('noScheduledReportsMessage'),
             surveysTableBody: document.getElementById('surveysTableBody'), noSurveysMessage: document.getElementById('noSurveysMessage'),
+            reportsContent: document.getElementById('reportsContent'),
+            reportSelectionContainer: null,
+            reportViewArea: null,
+            metricsContent: document.getElementById('metricsContent'),
+            kpiOccupancyRateValue: null, kpiOccupancyRateTrend: null,
+            kpiAvgDelinquencyValue: null, kpiAvgDelinquencyTrend: null,
+            kpiMaintenanceCostsValue: null, kpiMaintenanceCostsTrend: null,
+            kpiLeaseRenewalsValue: null, kpiLeaseRenewalsTrend: null,
+            chartRevenueExpensesPlaceholder: null,
+            chartWoCompletionPlaceholder: null,
+            chartVacancyDurationPlaceholder: null
         };
 
         function pageInit(userId, db, ...allCommonDeps) {
@@ -98,6 +160,7 @@
             initializeSubNav();
             loadDataForActiveSubsection();
             setupEventListeners();
+            setupReportAndMetricsDOMElements();
             
             DOMElements.addItemBtn.addEventListener('click', () => {
                 const activeSubSection = document.querySelector('#reportingSubNav .sub-nav-item.active').dataset.subsection;
@@ -136,6 +199,8 @@
         function loadDataForActiveSubsection() {
             const activeSubSection = document.querySelector('#reportingSubNav .sub-nav-item.active').dataset.subsection;
             switch (activeSubSection) {
+                case 'reports': loadAvailableReports(); break;
+                case 'metrics': loadMetricsData(); break;
                 case 'scheduledReports': loadScheduledReports(); break;
                 case 'surveys': loadSurveys(); break;
             }
@@ -186,7 +251,9 @@
             switch (subsection) {
                 case 'scheduledReports': modal = DOMElements.scheduledReportModal; form = DOMElements.scheduledReportForm; break;
                 case 'surveys': modal = DOMElements.surveyModal; form = DOMElements.surveyForm; break;
-                default: return;
+                default: 
+                    commonDependencies.commonShowAlert("This section does not support adding new items directly.", "Info");
+                    return;
             }
             if (form) {
                 form.reset();
@@ -219,16 +286,16 @@
         }
         function populateScheduledReportRow(data) {
             const row = DOMElements.scheduledReportsTableBody.insertRow();
-            row.insertCell().textContent = data.reportType;
-            row.insertCell().textContent = data.frequency;
-            row.insertCell().textContent = 'N/A'; // Placeholder for Next Run Date
-            row.insertCell().textContent = data.recipients;
-            row.insertCell().innerHTML = `<span class="status-badge status-${(data.status || 'active').toLowerCase()}">${data.status || 'Active'}</span>`;
+            row.insertCell().textContent = data.reportType || 'N/A';
+            row.insertCell().textContent = data.frequency || 'N/A';
+            row.insertCell().textContent = data.nextRunDate || 'N/A';
+            row.insertCell().textContent = data.recipients || 'N/A';
+            row.insertCell().innerHTML = `<span class="status-badge status-${(data.status || 'Paused').toLowerCase()}">${data.status || 'Paused'}</span>`;
             const actionsCell = row.insertCell();
             actionsCell.innerHTML = `<button class="edit-btn">${commonDependencies.commonEditIcon}</button><button class="delete-btn">${commonDependencies.commonDeleteIcon}</button>`;
-            actionsCell.querySelector('.edit-btn').addEventListener('click', () => openModalForSubsection('scheduledReports', data.id, data));
-            actionsCell.querySelector('.delete-btn').addEventListener('click', () => handleDeleteGeneric('scheduledReports', data.id, 'Scheduled Report'));
-            row.addEventListener('click', () => openModalForSubsection('scheduledReports', data.id, data));
+            actionsCell.querySelector('.edit-btn').addEventListener('click', (e) => { e.stopPropagation(); openModalForSubsection('scheduledReports', data.id, data); });
+            actionsCell.querySelector('.delete-btn').addEventListener('click', (e) => { e.stopPropagation(); handleDeleteGeneric('scheduledReports', data.id, 'Scheduled Report');});
+            row.addEventListener('click', (e) => { if(e.target.tagName !== 'BUTTON' && !e.target.closest('button')) openModalForSubsection('scheduledReports', data.id, data);});
         }
 
         // Surveys
@@ -242,16 +309,155 @@
         }
         function populateSurveyRow(data) {
             const row = DOMElements.surveysTableBody.insertRow();
-            row.insertCell().textContent = data.surveyTitle;
-            row.insertCell().textContent = data.targetAudience;
+            row.insertCell().textContent = data.surveyTitle || 'N/A';
+            row.insertCell().textContent = data.targetAudience || 'N/A';
             row.insertCell().textContent = data.createdAt ? new Date(data.createdAt).toLocaleDateString() : 'N/A';
-            row.insertCell().textContent = data.responseCount || 0; // Placeholder
-            row.insertCell().innerHTML = `<span class="status-badge status-${(data.status || 'draft').toLowerCase()}">${data.status || 'Draft'}</span>`;
+            row.insertCell().textContent = data.responsesCount || 0;
+            row.insertCell().innerHTML = `<span class="status-badge status-${(data.status || 'Draft').toLowerCase()}">${data.status || 'Draft'}</span>`;
             const actionsCell = row.insertCell();
             actionsCell.innerHTML = `<button class="edit-btn">${commonDependencies.commonEditIcon}</button><button class="delete-btn">${commonDependencies.commonDeleteIcon}</button>`;
-            actionsCell.querySelector('.edit-btn').addEventListener('click', () => openModalForSubsection('surveys', data.id, data));
-            actionsCell.querySelector('.delete-btn').addEventListener('click', () => handleDeleteGeneric('surveys', data.id, 'Survey'));
-            row.addEventListener('click', () => openModalForSubsection('surveys', data.id, data));
+            actionsCell.querySelector('.edit-btn').addEventListener('click', (e) => { e.stopPropagation(); openModalForSubsection('surveys', data.id, data); });
+            actionsCell.querySelector('.delete-btn').addEventListener('click', (e) => { e.stopPropagation(); handleDeleteGeneric('surveys', data.id, 'Survey');});
+            row.addEventListener('click', (e) => { if(e.target.tagName !== 'BUTTON' && !e.target.closest('button')) openModalForSubsection('surveys', data.id, data);});
+        }
+
+        function setupReportAndMetricsDOMElements() {
+            // Reports section
+            if (DOMElements.reportsContent) {
+                // Clear initial placeholder if it exists and we're building dynamically
+                const existingPlaceholder = DOMElements.reportsContent.querySelector('.report-placeholder');
+                if (existingPlaceholder) existingPlaceholder.innerHTML = '';
+
+                DOMElements.reportSelectionContainer = document.createElement('div');
+                DOMElements.reportSelectionContainer.className = 'report-selection-container';
+                DOMElements.reportSelectionContainer.style.marginBottom = '20px';
+                DOMElements.reportSelectionContainer.innerHTML = '<h5>Select a Report:</h5>';
+                
+                DOMElements.reportViewArea = document.createElement('div');
+                DOMElements.reportViewArea.className = 'report-view-area report-placeholder'; // Reuse styling
+                DOMElements.reportViewArea.textContent = 'Select a report to view its details here.';
+
+                if (existingPlaceholder) { // Insert before the original placeholder's spot or just append
+                    DOMElements.reportsContent.insertBefore(DOMElements.reportSelectionContainer, existingPlaceholder);
+                    DOMElements.reportsContent.insertBefore(DOMElements.reportViewArea, existingPlaceholder);
+                    existingPlaceholder.remove(); // Remove the old static placeholder
+                } else {
+                    DOMElements.reportsContent.appendChild(DOMElements.reportSelectionContainer);
+                    DOMElements.reportsContent.appendChild(DOMElements.reportViewArea);
+                }
+            }
+
+            // Metrics section - KPI cards
+            const metricsGrid = DOMElements.metricsContent.querySelector('.metrics-grid');
+            if (metricsGrid) {
+                const kpiCards = metricsGrid.children;
+                if (kpiCards.length >= 4) {
+                    DOMElements.kpiOccupancyRateValue = kpiCards[0].querySelector('.metric-value-large');
+                    DOMElements.kpiOccupancyRateTrend = kpiCards[0].querySelector('.metric-trend');
+                    
+                    DOMElements.kpiAvgDelinquencyValue = kpiCards[1].querySelector('.metric-value-large');
+                    DOMElements.kpiAvgDelinquencyTrend = kpiCards[1].querySelector('.metric-trend');
+
+                    DOMElements.kpiMaintenanceCostsValue = kpiCards[2].querySelector('.metric-value-large');
+                    DOMElements.kpiMaintenanceCostsTrend = kpiCards[2].querySelector('.metric-trend');
+
+                    DOMElements.kpiLeaseRenewalsValue = kpiCards[3].querySelector('.metric-value-large');
+                    DOMElements.kpiLeaseRenewalsTrend = kpiCards[3].querySelector('.metric-trend');
+                }
+            }
+            // Metrics section - Charts
+            const chartsArea = DOMElements.metricsContent.querySelector('.charts-area');
+            if(chartsArea) {
+                const chartPlaceholders = chartsArea.querySelectorAll('.chart-placeholder-large, .chart-placeholder-medium');
+                if(chartPlaceholders.length >=3){
+                    DOMElements.chartRevenueExpensesPlaceholder = chartPlaceholders[0];
+                    DOMElements.chartWoCompletionPlaceholder = chartPlaceholders[1];
+                    DOMElements.chartVacancyDurationPlaceholder = chartPlaceholders[2];
+                }
+            }
+        }
+
+        const availableReports = [
+            { id: 'occupancy_summary', name: 'Occupancy Summary', description: 'Overview of property occupancy rates.' },
+            { id: 'rent_roll', name: 'Rent Roll', description: 'Detailed list of tenants and rent status.' },
+            { id: 'delinquency_report', name: 'Delinquency Report', description: 'List of tenants with overdue payments.' },
+            { id: 'maintenance_activity', name: 'Maintenance Activity', description: 'Summary of work orders and maintenance tasks.' },
+            { id: 'financial_statement', name: 'Financial Statement', description: 'Income, expenses, and overall financial health.' }
+        ];
+
+        function loadAvailableReports() {
+            if (!DOMElements.reportSelectionContainer) return;
+            
+            // Clear previous report list (if any, besides the title)
+            while(DOMElements.reportSelectionContainer.childElementCount > 1) {
+                 DOMElements.reportSelectionContainer.removeChild(DOMElements.reportSelectionContainer.lastChild);
+            }
+            
+            const reportList = document.createElement('div');
+            reportList.className = 'buttons-group'; // For styling as a group of buttons
+            reportList.style.display = 'flex';
+            reportList.style.gap = '10px';
+            reportList.style.flexWrap = 'wrap';
+
+            availableReports.forEach(report => {
+                const button = document.createElement('button');
+                button.className = 'btn-secondary'; // Or a more specific class
+                button.textContent = report.name;
+                button.dataset.reportId = report.id;
+                button.title = report.description;
+                button.addEventListener('click', () => displayReport(report));
+                reportList.appendChild(button);
+            });
+            DOMElements.reportSelectionContainer.appendChild(reportList);
+            if(DOMElements.reportViewArea) DOMElements.reportViewArea.textContent = 'Select a report to view its details here.';
+        }
+
+        function displayReport(report) {
+            if (!DOMElements.reportViewArea) return;
+            DOMElements.reportViewArea.innerHTML = `
+                <h4>${report.name}</h4>
+                <p>${report.description}</p>
+                <div style="margin-top: 20px; padding:15px; background-color: #e9ecef; border-radius:4px;">
+                    <em>Content for ${report.name} will be generated and displayed here. This is a placeholder.</em>
+                    <p>For a real report, this area would contain tables, charts, and data related to ${report.name.toLowerCase()}.</p>
+                </div>
+            `;
+        }
+
+        function loadMetricsData() {
+            // Mock data for KPIs
+            const kpiData = {
+                occupancy: { value: "93.2%", trend: "+0.7% vs Last Month" },
+                delinquency: { value: "$1,150", trend: "-$80 vs Last Month" },
+                maintenance: { value: "$6,200", trend: "+12% vs Last Month" },
+                renewals: { value: "78% Rate", trend: "Target: 80%" }
+            };
+            populateKPIs(kpiData);
+
+            // Update chart placeholders with more specific descriptions
+            if (DOMElements.chartRevenueExpensesPlaceholder) {
+                DOMElements.chartRevenueExpensesPlaceholder.innerHTML = '<strong>[Chart Area]</strong> Detailed monthly breakdown of revenue sources (rent, fees) vs. expense categories (maintenance, utilities, admin). Ability to filter by property and time period (e.g., last 6 months, YTD, custom range).';
+            }
+            if (DOMElements.chartWoCompletionPlaceholder) {
+                DOMElements.chartWoCompletionPlaceholder.innerHTML = '<strong>[Chart Area]</strong> Pie chart showing percentage of work orders completed on time vs. overdue, segmented by priority (High, Medium, Low). Average completion time for each priority level.';
+            }
+            if (DOMElements.chartVacancyDurationPlaceholder) {
+                DOMElements.chartVacancyDurationPlaceholder.innerHTML = '<strong>[Chart Area]</strong> Histogram displaying the distribution of vacancy durations (days unit is vacant). Average vacancy duration, with comparison to market benchmarks if available.';
+            }
+        }
+
+        function populateKPIs(data) {
+            if (DOMElements.kpiOccupancyRateValue) DOMElements.kpiOccupancyRateValue.textContent = data.occupancy.value;
+            if (DOMElements.kpiOccupancyRateTrend) DOMElements.kpiOccupancyRateTrend.textContent = data.occupancy.trend;
+
+            if (DOMElements.kpiAvgDelinquencyValue) DOMElements.kpiAvgDelinquencyValue.textContent = data.delinquency.value;
+            if (DOMElements.kpiAvgDelinquencyTrend) DOMElements.kpiAvgDelinquencyTrend.textContent = data.delinquency.trend;
+
+            if (DOMElements.kpiMaintenanceCostsValue) DOMElements.kpiMaintenanceCostsValue.textContent = data.maintenance.value;
+            if (DOMElements.kpiMaintenanceCostsTrend) DOMElements.kpiMaintenanceCostsTrend.textContent = data.maintenance.trend;
+
+            if (DOMElements.kpiLeaseRenewalsValue) DOMElements.kpiLeaseRenewalsValue.textContent = data.renewals.value;
+            if (DOMElements.kpiLeaseRenewalsTrend) DOMElements.kpiLeaseRenewalsTrend.textContent = data.renewals.trend;
         }
 
         initializeAuth(pageInit);

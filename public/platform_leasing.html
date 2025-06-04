@@ -104,8 +104,37 @@
 
                 <!-- Signals Subsection -->
                 <div class="subsection-content" id="signalsContent">
-                    <h4>Signals</h4>
-                     <div class="no-data-message"><div class="icon">📡</div><p>Leasing Signals features coming soon.</p><span>This section will provide insights based on market data and prospect activity.</span></div>
+                    <h4>Leasing Signals & Insights</h4>
+                    <div class="signals-overview">
+                        <p>This section provides data-driven insights to optimize your leasing strategy, based on market trends, prospect behavior, and property performance.</p>
+                    </div>
+                    <div class="signal-item-list">
+                        <div class="signal-item">
+                            <h5>Market Rent Analysis</h5>
+                            <p>Compares your current asking rents with prevailing market rates for similar properties in the area. Suggests optimal rent adjustments.</p>
+                            <div class="signal-data-placeholder">[Chart/Data: Market Rent vs. Your Rent]</div>
+                            <button class="btn-secondary view-signal-details" data-signal="market-rent">View Details</button>
+                        </div>
+                        <div class="signal-item">
+                            <h5>Vacancy Rate Trends</h5>
+                            <p>Tracks your portfolio's vacancy rate over time compared to local market averages. Highlights units that are hard to fill.</p>
+                            <div class="signal-data-placeholder">[Chart/Data: Your Vacancy Rate vs. Market]</div>
+                            <button class="btn-secondary view-signal-details" data-signal="vacancy-trends">View Details</button>
+                        </div>
+                        <div class="signal-item">
+                            <h5>Prospect Conversion Funnel</h5>
+                            <p>Analyzes the journey from guest card to lease signing, identifying bottlenecks in your leasing process (e.g., application fall-off rate).</p>
+                            <div class="signal-data-placeholder">[Chart/Data: Prospect Funnel Stages]</div>
+                            <button class="btn-secondary view-signal-details" data-signal="conversion-funnel">View Details</button>
+                        </div>
+                        <div class="signal-item">
+                            <h5>Lease Expiration Hotspots</h5>
+                            <p>Identifies upcoming periods with a high concentration of lease expirations, helping you plan renewal strategies proactively.</p>
+                            <div class="signal-data-placeholder">[List/Calendar: Upcoming Expirations by Month]</div>
+                            <button class="btn-secondary view-signal-details" data-signal="expiration-hotspots">View Details</button>
+                        </div>
+                        <!-- More leasing signals can be added here -->
+                    </div>
                 </div>
 
             </div>
@@ -158,6 +187,7 @@
 
             loadDataForActiveSubsection(); // Load data for default active tab (Vacancies)
             setupEventListeners();
+            setupSignalButtons();
             
             DOMElements.addItemBtn.addEventListener('click', () => {
                 const activeSubSection = document.querySelector('#leasingSubNav .sub-nav-item.active').dataset.subsection;
@@ -256,46 +286,80 @@
                     data[element.name] = element.value;
                 }
             }
-            delete data[idInputName]; // Don't save the ID field itself in the data object
+            // Do not save the ID field itself in the data object (e.g. vacancyId, guestCardId, etc.)
+            if(idInputName && data[idInputName]) delete data[idInputName]; 
+
             data.userId = pageCurrentUserId;
             data.updatedAt = commonDependencies.fbServerTimestamp();
 
+            let pathToUpdate = firebasePath; // Default path
+            let effectiveId = id;
+
+            // Special handling for vacancies: vacancyModal edits a property's details
+            if (firebasePath === 'vacancies') {
+                if (!effectiveId) {
+                    commonDependencies.commonShowAlert('No property ID specified for vacancy update.');
+                    return;
+                }
+                pathToUpdate = 'properties'; // Target the properties collection
+                // The 'id' from vacancyModal (stored in vacancyId hidden input) is the propertyId
+            }
+
             // Specific logic for renewal - it updates an existing lease
             if (itemName === 'Renewal') {
-                const leaseIdToRenew = form.renewalLeaseId.value;
+                const leaseIdToRenew = form.elements.renewalLeaseId.value;
                 if (!leaseIdToRenew) { commonDependencies.commonShowAlert('No lease selected for renewal.'); return; }
                 const leaseRef = commonDependencies.fbRef(pageDatabase, `leases/${pageCurrentUserId}/${leaseIdToRenew}`);
                 try {
-                    const updateData = {
-                        endDate: data.newEndDate,
-                        rentAmount: data.newRentAmount,
-                        status: 'Active', // Or based on renewalStatus from form
-                        renewalProcessedAt: commonDependencies.fbServerTimestamp()
-                        // Potentially log renewal details under a sub-object or separate path
+                    const renewalSpecificData = {
+                        renewalInfo: {
+                            status: data.renewalStatus, // from renewalModal's status select
+                            offerDate: data.renewalOfferDate || commonDependencies.fbServerTimestamp(), // Assuming a field for offer date
+                            processedAt: commonDependencies.fbServerTimestamp()
+                        },
+                        updatedAt: commonDependencies.fbServerTimestamp()
                     };
-                    await commonDependencies.fbUpdateDbData(leaseRef, updateData);
-                    commonDependencies.commonShowAlert('Lease renewed successfully!');
+
+                    if (data.renewalStatus === 'Accepted') {
+                        renewalSpecificData.endDate = data.newEndDate;
+                        renewalSpecificData.rentAmount = data.newRentAmount;
+                        renewalSpecificData.status = 'Active'; // Lease becomes/remains active
+                    }
+                    // Remove fields that are not part of the lease object itself from renewalSpecificData
+                    delete data.newEndDate; 
+                    delete data.newRentAmount;
+                    delete data.renewalStatus;
+                    delete data.renewalLeaseId; 
+                    delete data.leaseDisplayId;
+                    delete data.renewalTenants;
+                    delete data.renewalProperty;
+                    delete data.renewalOfferDate; // This should be part of renewalInfo
+
+                    await commonDependencies.fbUpdateDbData(leaseRef, renewalSpecificData);
+                    commonDependencies.commonShowAlert('Lease renewal processed!');
                     document.getElementById(modalId).style.display = 'none';
-                    loadLeases(); // Refresh leases and renewals list
+                    loadLeases(); 
                     loadRenewals();
-                } catch (error) { commonDependencies.commonShowAlert(`Error renewing lease: ${error.message}`); }
+                } catch (error) { commonDependencies.commonShowAlert(`Error processing renewal: ${error.message}`); }
                 return;
             }
 
             try {
-                const path = `${firebasePath}/${pageCurrentUserId}`;
-                if (id) {
-                    const itemRef = commonDependencies.fbRef(pageDatabase, `${path}/${id}`);
+                const itemPath = `${pathToUpdate}/${pageCurrentUserId}`;
+                if (effectiveId) { // Existing item
+                    const itemRef = commonDependencies.fbRef(pageDatabase, `${itemPath}/${effectiveId}`);
                     const snapshot = await commonDependencies.fbGetDbData(itemRef);
                     const existingData = snapshot.val() || {};
-                    await commonDependencies.fbSet(itemRef, {...existingData, ...data, createdAt: existingData.createdAt || commonDependencies.fbServerTimestamp()});
+                    // For vacancies (properties), ensure we merge, not overwrite unrelated property fields
+                    const updatePayload = firebasePath === 'vacancies' ? { ...existingData, ...data, userId: pageCurrentUserId, updatedAt: commonDependencies.fbServerTimestamp() } : { ...existingData, ...data, createdAt: existingData.createdAt || commonDependencies.fbServerTimestamp() };
+                    await commonDependencies.fbSet(itemRef, updatePayload);
                     commonDependencies.commonShowAlert(`${itemName} updated.`);
-                } else {
+                } else { // New item
                     data.createdAt = commonDependencies.fbServerTimestamp();
-                    await commonDependencies.fbPush(commonDependencies.fbRef(pageDatabase, path), data);
+                    await commonDependencies.fbPush(commonDependencies.fbRef(pageDatabase, itemPath), data);
                     commonDependencies.commonShowAlert(`${itemName} added.`);
                 }
-                document.getElementById(modalId).style.display = 'none';
+                if (document.getElementById(modalId)) document.getElementById(modalId).style.display = 'none';
             } catch (error) { commonDependencies.commonShowAlert(`Error: ${error.message}`); }
         }
 
@@ -483,6 +547,22 @@
             actionsCell.innerHTML = `<button class="process-renewal-btn" title="Process Renewal">Process</button>`;
             actionsCell.querySelector('.process-renewal-btn').addEventListener('click', () => openModalForSubsection('renewals', data.id, data));
              row.addEventListener('click', () => openModalForSubsection('renewals', data.id, data));
+        }
+
+        function setupSignalButtons() {
+            const signalButtons = document.querySelectorAll('.view-signal-details');
+            signalButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const signalType = button.dataset.signal;
+                    let signalName = 'Selected Signal';
+                    // Get the H5 title closest to the button
+                    const h5 = button.closest('.signal-item')?.querySelector('h5');
+                    if (h5 && h5.textContent) {
+                        signalName = h5.textContent;
+                    }
+                    commonDependencies.commonShowAlert(`Detailed insights for "${signalName}" are not yet implemented. This feature will be available in a future update.`, 'Feature Not Available');
+                });
+            });
         }
 
         initializeAuth(pageInit);

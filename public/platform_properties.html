@@ -105,8 +105,8 @@
             <form id="propertyForm">
                 <input type="hidden" id="propertyIdInput" name="propertyId">
                 <div class="form-group">
-                    <label for="propertyAddress">Address</label>
-                    <input type="text" id="propertyAddress" name="address" required placeholder="e.g., 123 Main St, Anytown, USA">
+                    <label for="propertyAddress">Full Address</label>
+                    <input type="text" id="propertyAddress" name="address" required placeholder="e.g., 123 Main St, Anytown, ST 12345">
                 </div>
                 <div class="form-group">
                     <label for="propertyType">Type</label>
@@ -124,8 +124,52 @@
                     </select>
                 </div>
                 <div class="form-group">
+                    <label for="propertySubType">Sub-Type / Name (Optional)</label>
+                    <input type="text" id="propertySubType" name="propertySubType" placeholder="e.g., Detached, Park Place Apartments">
+                </div>
+                <div class="form-group">
+                    <label for="numberOfUnits">Number of Units (if applicable)</label>
+                    <input type="number" id="numberOfUnits" name="numberOfUnits" min="1" step="1" placeholder="e.g., 1 for SFH, 10 for building">
+                </div>
+                <div class="form-group">
+                    <label for="yearBuilt">Year Built</label>
+                    <input type="number" id="yearBuilt" name="yearBuilt" min="1800" max="2099" step="1" placeholder="e.g., 1995">
+                </div>
+                <div class="form-group">
+                    <label for="squareFootage">Square Footage</label>
+                    <input type="number" id="squareFootage" name="squareFootage" min="0" step="1">
+                </div>
+                <div class="form-group">
+                    <label for="bedrooms">Bedrooms</label>
+                    <input type="number" id="bedrooms" name="bedrooms" min="0" step="1">
+                </div>
+                <div class="form-group">
+                    <label for="bathrooms">Bathrooms</label>
+                    <input type="number" id="bathrooms" name="bathrooms" min="0" step="0.5">
+                </div>
+                <div class="form-group">
+                    <label for="parkingSpots">Parking Spots</label>
+                    <input type="number" id="parkingSpots" name="parkingSpots" min="0" step="1">
+                </div>
+                <div class="form-group">
+                    <label for="amenities">Amenities (comma-separated)</label>
+                    <textarea id="amenities" name="amenities" rows="2" placeholder="e.g., Pool, Gym, In-unit Laundry"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="purchasePrice">Purchase Price ($)</label>
+                    <input type="number" id="purchasePrice" name="purchasePrice" min="0" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="purchaseDate">Purchase Date</label>
+                    <input type="date" id="purchaseDate" name="purchaseDate">
+                </div>
+                <div class="form-group">
+                    <label for="marketValue">Estimated Market Value ($)</label>
+                    <input type="number" id="marketValue" name="marketValue" min="0" step="0.01">
+                </div>
+                <div class="form-group">
                     <label for="propertyNotes">Notes (Optional)</label>
-                    <textarea id="propertyNotes" name="notes" rows="3" placeholder="e.g., Number of units, specific details..."></textarea>
+                    <textarea id="propertyNotes" name="notes" rows="3" placeholder="e.g., Access codes, specific details..."></textarea>
                 </div>
                 <div class="form-actions">
                     <button type="button" class="cancel-btn" data-modal-id="propertyModal">Cancel</button>
@@ -174,6 +218,17 @@
             propertyIdInput: document.getElementById('propertyIdInput'),
             propertyAddress: document.getElementById('propertyAddress'),
             propertyType: document.getElementById('propertyType'),
+            propertySubType: document.getElementById('propertySubType'),
+            numberOfUnits: document.getElementById('numberOfUnits'),
+            yearBuilt: document.getElementById('yearBuilt'),
+            squareFootage: document.getElementById('squareFootage'),
+            bedrooms: document.getElementById('bedrooms'),
+            bathrooms: document.getElementById('bathrooms'),
+            parkingSpots: document.getElementById('parkingSpots'),
+            amenities: document.getElementById('amenities'),
+            purchasePrice: document.getElementById('purchasePrice'),
+            purchaseDate: document.getElementById('purchaseDate'),
+            marketValue: document.getElementById('marketValue'),
             propertyNotes: document.getElementById('propertyNotes'),
             propertiesTableBody: document.getElementById('propertiesTableBody'),
             noPropertiesMessage: document.getElementById('noPropertiesMessage'),
@@ -230,6 +285,17 @@
                     }
                     const address = pageDOMElements.propertyAddress.value.trim();
                     const type = pageDOMElements.propertyType.value;
+                    const subType = pageDOMElements.propertySubType.value.trim();
+                    const numberOfUnits = pageDOMElements.numberOfUnits.value;
+                    const year = pageDOMElements.yearBuilt.value;
+                    const squareFootage = pageDOMElements.squareFootage.value;
+                    const bedrooms = pageDOMElements.bedrooms.value;
+                    const bathrooms = pageDOMElements.bathrooms.value;
+                    const parkingSpots = pageDOMElements.parkingSpots.value;
+                    const amenities = pageDOMElements.amenities.value.trim();
+                    const purchasePrice = pageDOMElements.purchasePrice.value;
+                    const purchaseDate = pageDOMElements.purchaseDate.value;
+                    const marketValue = pageDOMElements.marketValue.value;
                     const notes = pageDOMElements.propertyNotes.value.trim();
                     const propertyId = pageDOMElements.propertyIdInput.value;
 
@@ -241,6 +307,17 @@
                     const propertyData = {
                         address,
                         type,
+                        propertySubType: subType,
+                        numberOfUnits: numberOfUnits ? parseInt(numberOfUnits) : null,
+                        yearBuilt: year ? parseInt(year) : null,
+                        squareFootage: squareFootage ? parseFloat(squareFootage) : null,
+                        bedrooms: bedrooms ? parseInt(bedrooms) : null,
+                        bathrooms: bathrooms ? parseFloat(bathrooms) : null,
+                        parkingSpots: parkingSpots ? parseInt(parkingSpots) : null,
+                        amenities,
+                        purchasePrice: purchasePrice ? parseFloat(purchasePrice) : null,
+                        purchaseDate: purchaseDate || null,
+                        marketValue: marketValue ? parseFloat(marketValue) : null,
                         notes,
                         userId: pageCurrentUserId,
                         updatedAt: commonDependencies.fbServerTimestamp()
@@ -269,203 +346,110 @@
         }
 
         function loadProperties() {
-            if (!pageCurrentUserId || !pageDatabase) {
-                console.log("PropertiesPage: loadProperties - Aborted, no user or DB.");
-                return;
-            }
-            console.log(`PropertiesPage: loadProperties - Initializing for user ${pageCurrentUserId}`);
-
-            // Get filter and sort values
-            const filterTypeValue = pageDOMElements.filterPropertyType ? pageDOMElements.filterPropertyType.dataset.value : '';
-            const sortByValue = pageDOMElements.sortPropertiesBy ? pageDOMElements.sortPropertiesBy.dataset.value : 'address';
-            const sortOrderValue = pageDOMElements.sortPropertiesOrder ? pageDOMElements.sortPropertiesOrder.dataset.value : 'asc';
+            if (!pageCurrentUserId || !pageDatabase || !pageDOMElements.propertiesTableBody) return;
 
             const propertiesRef = commonDependencies.fbRef(pageDatabase, `properties/${pageCurrentUserId}`);
-            const workOrdersRef = commonDependencies.fbRef(pageDatabase, `workOrders/${pageCurrentUserId}`);
-
-            // Note: Firebase Realtime DB doesn't support multiple orderByChild or complex server-side filtering combined with sorting on different fields easily.
-            // We will fetch all properties and then filter/sort client-side for simplicity with current structure.
-            // For larger datasets, consider denormalizing data or using Firestore for more powerful queries.
-
-            onValue(propertiesRef, async (propSnapshot) => { // Changed from query to just ref to get all for client-side sort/filter
-                console.log("PropertiesPage: onValue triggered for propertiesRef.");
-                const tableBody = pageDOMElements.propertiesTableBody; 
-                const noMessage = pageDOMElements.noPropertiesMessage; 
-                
-                if (!tableBody || !noMessage) {
-                    console.error("PropertiesPage: Table body or no message element not found in DOM.");
-                    return;
-                }
-                tableBody.innerHTML = '';
-
+            
+            onValue(propertiesRef, (snapshot) => {
+                pageDOMElements.propertiesTableBody.innerHTML = '';
                 let propertiesArray = [];
-                if (propSnapshot.exists()) {
-                    propSnapshot.forEach(childSnapshot => {
-                        propertiesArray.push({ id: childSnapshot.key, ...childSnapshot.val() });
-                    });
-                }
-
-                // 1. Filter properties client-side
-                if (filterTypeValue) {
-                    propertiesArray = propertiesArray.filter(p => p.type === filterTypeValue);
-                }
-
-                // 2. Fetch work order counts (this part remains asynchronous per property)
-                let propertyPromises = propertiesArray.map(prop => {
-                    if (!prop || !prop.address) { // Basic sanity check
-                        return Promise.resolve({ ...prop, openCount: 0, totalCount: 0, error: true, message: "Missing address" });
-                    }
-                    return commonDependencies.fbGetDbData(commonDependencies.fbQuery(workOrdersRef, commonDependencies.fbOrderByChild('propertyId'), commonDependencies.fbEqualTo(prop.id)))
-                        .then(woSnapshot => {
-                            let openCount = 0;
-                            let totalCount = 0;
-                            if(woSnapshot.exists()){
-                                woSnapshot.forEach(woChild => {
-                                    totalCount++;
-                                    if(woChild.val() && woChild.val().status === 'Open') openCount++;
-                                });
-                            }
-                            return { ...prop, openCount, totalCount };
-                        }).catch(err => {
-                            console.error(`PropertiesPage: Error fetching work order count for property ${prop.id}:`, err);
-                            return { ...prop, openCount: 0, totalCount: 0, error: true, message: err.message }; 
-                        });
+                snapshot.forEach(childSnapshot => {
+                    propertiesArray.push({ id: childSnapshot.key, ...childSnapshot.val() });
                 });
 
-                Promise.all(propertyPromises).then(resolvedPropertiesWithCounts => {
-                    let finalPropertiesToRender = resolvedPropertiesWithCounts.filter(p => !(p.error && p.message === "Missing address")); // Filter out ones that had no address initially
+                // Apply filters
+                const filterType = pageDOMElements.filterPropertyType.dataset.value;
+                if (filterType) {
+                    propertiesArray = propertiesArray.filter(p => p.type === filterType);
+                }
 
-                    // 3. Sort properties client-side (after getting counts, if sorting by counts was needed - not currently an option)
-                    finalPropertiesToRender.sort((a, b) => {
-                        let valA = a[sortByValue];
-                        let valB = b[sortByValue];
-
-                        if (typeof valA === 'string') valA = valA.toLowerCase();
-                        if (typeof valB === 'string') valB = valB.toLowerCase();
-
-                        let comparison = 0;
-                        if (valA > valB) comparison = 1;
-                        else if (valA < valB) comparison = -1;
-                        
-                        return sortOrderValue === 'desc' ? comparison * -1 : comparison;
-                    });
-
-                    tableBody.innerHTML = ''; // Clear again before rendering sorted/filtered
-                    if (finalPropertiesToRender.length > 0) {
-                        noMessage.style.display = 'none';
-                        finalPropertiesToRender.forEach(propData => {
-                            if (propData.error && propData.message !== "Missing address") { // Log other errors but don't break row rendering
-                                console.warn(`PropertiesPage: Skipping rendering for property ID: ${propData.id} due to WO count error: ${propData.message}`);
-                                // Optionally render a row with an error message or skip
-                            }
-                            if (!propData.address) return; // Final check
-
-                            const row = tableBody.insertRow();
-                            row.setAttribute('data-id', propData.id);
-                            row.insertCell().textContent = propData.address;
-                            row.insertCell().textContent = propData.type || 'N/A';
-                            row.insertCell().textContent = `${propData.openCount || 0} / ${propData.totalCount || 0}`;
-                            const actionsCell = row.insertCell();
-                            actionsCell.classList.add('actions-cell');
-                            actionsCell.innerHTML = `<button class="edit-btn" title="Edit">${commonDependencies.commonEditIcon}</button><button class="delete-btn" title="Delete">${commonDependencies.commonDeleteIcon}</button>`;
-                            
-                            const editButton = actionsCell.querySelector('.edit-btn');
-                            editButton.addEventListener('click', (e) => {
-                                e.stopPropagation(); 
-                                openPropertyModal(propData.id, propData);
-                            });
-                            
-                            const deleteButton = actionsCell.querySelector('.delete-btn');
-                            deleteButton.addEventListener('click', (e) => {
-                                e.stopPropagation(); 
-                                handleDeleteProperty(propData.id);
-                            }); 
-
-                            // Make the entire row clickable to edit
-                            row.addEventListener('click', () => {
-                                // Check if the click target is not the delete button or its children
-                                if (editButton) {
-                                    editButton.click();
-                                }
-                            });
-                        });
-                    } else {
-                        noMessage.style.display = 'block';
-                    }
-                }).catch(err => {
-                    console.error("PropertiesPage: Error in Promise.all for property WO counts:", err);
-                    noMessage.style.display = 'block'; 
-                    tableBody.innerHTML = '';
+                // Apply sorting
+                const sortBy = pageDOMElements.sortPropertiesBy.dataset.value || 'address';
+                const sortOrder = pageDOMElements.sortPropertiesOrder.dataset.value || 'asc';
+                
+                propertiesArray.sort((a, b) => {
+                    let valA = a[sortBy] ? a[sortBy].toString().toLowerCase() : '';
+                    let valB = b[sortBy] ? b[sortBy].toString().toLowerCase() : '';
+                    let comparison = 0;
+                    if (valA > valB) comparison = 1;
+                    else if (valA < valB) comparison = -1;
+                    return sortOrder === 'desc' ? comparison * -1 : comparison;
                 });
-            });
+
+                if (propertiesArray.length === 0) {
+                    pageDOMElements.noPropertiesMessage.style.display = 'flex';
+                } else {
+                    pageDOMElements.noPropertiesMessage.style.display = 'none';
+                    propertiesArray.forEach(prop => populatePropertyRow(prop));
+                }
+            }, { onlyOnce: false }); // Listen for real-time updates
         }
 
+        function populatePropertyRow(data) {
+            if (!pageDOMElements.propertiesTableBody) return;
+            const row = pageDOMElements.propertiesTableBody.insertRow();
+            row.insertCell().textContent = data.address || 'N/A';
+            row.insertCell().textContent = data.type || 'N/A';
+            row.insertCell().textContent = 'N/A'; // Placeholder for Work Orders (Open/Total)
+            
+            const actionsCell = row.insertCell();
+            actionsCell.innerHTML = `<button class="edit-btn">${commonDependencies.commonEditIcon}</button><button class="delete-btn">${commonDependencies.commonDeleteIcon}</button>`;
+            
+            actionsCell.querySelector('.edit-btn').addEventListener('click', (e) => { 
+                e.stopPropagation(); 
+                openPropertyModal(data.id, data); 
+            });
+            actionsCell.querySelector('.delete-btn').addEventListener('click', (e) => { 
+                e.stopPropagation(); 
+                handleDeleteProperty(data.id, data.address);
+            });
+            row.addEventListener('click', () => openPropertyModal(data.id, data));
+        }
+
+        async function handleDeleteProperty(propertyId, propertyAddress) {
+            if (!pageCurrentUserId || !pageDatabase || !propertyId) return;
+            const confirmed = await commonDependencies.commonShowConfirm(
+                `Are you sure you want to delete the property: ${propertyAddress || 'this property'}? This action cannot be undone.`, 
+                'Delete Property'
+            );
+            if (confirmed) {
+                try {
+                    const propertyRef = commonDependencies.fbRef(pageDatabase, `properties/${pageCurrentUserId}/${propertyId}`);
+                    await commonDependencies.fbRemove(propertyRef);
+                    commonDependencies.commonShowAlert('Property deleted successfully!');
+                    // loadProperties(); // Data will be reloaded by onValue listener
+                } catch (error) {
+                    console.error('Error deleting property:', error);
+                    commonDependencies.commonShowAlert(`Error: ${error.message}`, 'Delete Error');
+                }
+            }
+        }
+
+        // Modified to handle populating all new fields
         function openPropertyModal(id = null, data = {}) {
-            if(!pageDOMElements.propertyForm || !pageDOMElements.propertyModal) return;
+            if (!pageDOMElements.propertyForm || !pageDOMElements.propertyModal) return;
             pageDOMElements.propertyForm.reset();
-            pageDOMElements.propertyIdInput.value = id || '';
             pageDOMElements.propertyModalTitle.textContent = id ? 'Edit Property' : 'Add New Property';
+            
+            pageDOMElements.propertyIdInput.value = id || '';
             pageDOMElements.propertyAddress.value = data.address || '';
             pageDOMElements.propertyType.value = data.type || 'Single Family Home';
+            pageDOMElements.propertySubType.value = data.propertySubType || '';
+            pageDOMElements.numberOfUnits.value = data.numberOfUnits || '';
+            pageDOMElements.yearBuilt.value = data.yearBuilt || '';
+            pageDOMElements.squareFootage.value = data.squareFootage || '';
+            pageDOMElements.bedrooms.value = data.bedrooms || '';
+            pageDOMElements.bathrooms.value = data.bathrooms || '';
+            pageDOMElements.parkingSpots.value = data.parkingSpots || '';
+            pageDOMElements.amenities.value = data.amenities || '';
+            pageDOMElements.purchasePrice.value = data.purchasePrice || '';
+            pageDOMElements.purchaseDate.value = data.purchaseDate || '';
+            pageDOMElements.marketValue.value = data.marketValue || '';
             pageDOMElements.propertyNotes.value = data.notes || '';
+            
             pageDOMElements.propertyModal.style.display = 'flex';
         }
 
-        async function handleDeleteProperty(id) {
-            if (!pageCurrentUserId || !pageDatabase) {
-                console.error("handleDeleteProperty: User ID or DB not available");
-                return;
-            }
-            
-            const workOrdersQueryRef = commonDependencies.fbQuery(commonDependencies.fbRef(pageDatabase, `workOrders/${pageCurrentUserId}/`));
-            const propertyRef = commonDependencies.fbRef(pageDatabase, `properties/${pageCurrentUserId}/${id}`);
-
-            const confirmModal = document.getElementById('customConfirmModal');
-            const confirmTitle = confirmModal.querySelector('#customConfirmTitle');
-            const confirmMessage = confirmModal.querySelector('#customConfirmMessage');
-            const confirmCancel = confirmModal.querySelector('#customConfirmCancel');
-            const confirmOk = confirmModal.querySelector('#customConfirmOk');
-
-            confirmTitle.textContent = 'Confirm Delete';
-            confirmMessage.textContent = 'Are you sure you want to delete this property?';
-
-            confirmCancel.addEventListener('click', () => {
-                confirmModal.style.display = 'none';
-            });
-
-            confirmOk.addEventListener('click', async () => {
-                try {
-                    // Delete work orders associated with the property
-                    const workOrdersSnapshot = await commonDependencies.fbGetDbData(workOrdersQueryRef);
-                    if (workOrdersSnapshot.exists()) {
-                        const workOrders = workOrdersSnapshot.val();
-                        if (workOrders) {
-                            const workOrdersKeys = Object.keys(workOrders);
-                            const deletePromises = workOrdersKeys.map(key => {
-                                return commonDependencies.fbRemove(commonDependencies.fbRef(pageDatabase, `workOrders/${pageCurrentUserId}/${key}`));
-                            });
-                            await Promise.all(deletePromises);
-                        }
-                    }
-
-                    // Delete the property
-                    await commonDependencies.fbRemove(propertyRef);
-                    commonDependencies.commonShowAlert('Property deleted successfully!');
-
-                    // Refresh properties
-                    loadProperties();
-
-                    if (confirmModal) confirmModal.style.display = 'none';
-                } catch (error) {
-                    console.error('Error deleting property:', error);
-                    commonDependencies.commonShowAlert(`Error deleting property: ${error.message}`, 'Delete Error');
-                }
-            });
-
-            confirmModal.style.display = 'flex';
-        }
-
-        console.log('[platform_properties.html] About to call initializeAuth.');
         initializeAuth(pageInit);
     </script>
 </body>

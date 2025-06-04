@@ -14,8 +14,63 @@
             <h2>Settings</h2>
         </div>
         <div class="page-container">
-            <p>Settings content will be implemented here. Users will be able to configure their preferences and application settings.</p>
-            <!-- Add settings forms and options here -->
+            <!-- Settings Section: User Profile -->
+            <div class="settings-section">
+                <h4>User Profile</h4>
+                <form id="userProfileForm">
+                    <div class="form-group">
+                        <label for="userName">Name:</label>
+                        <input type="text" id="userName" name="userName" placeholder="[User Name Placeholder]">
+                    </div>
+                    <div class="form-group">
+                        <label for="userEmail">Email:</label>
+                        <input type="email" id="userEmail" name="userEmail" placeholder="[User Email Placeholder]" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="userPhone">Phone:</label>
+                        <input type="tel" id="userPhone" name="userPhone" placeholder="[User Phone Placeholder]">
+                    </div>
+                    <button type="submit" class="btn-primary">Save Profile</button>
+                </form>
+            </div>
+
+            <!-- Settings Section: Notification Preferences -->
+            <div class="settings-section">
+                <h4>Notification Preferences</h4>
+                <form id="notificationPrefsForm">
+                    <div class="form-group">
+                        <label>Receive email notifications for:</label>
+                        <div><input type="checkbox" id="notifyMaintenance" name="notifyMaintenance" checked> <label for="notifyMaintenance">Maintenance Updates</label></div>
+                        <div><input type="checkbox" id="notifyLease" name="notifyLease" checked> <label for="notifyLease">Lease Renewals</label></div>
+                        <div><input type="checkbox" id="notifyPayments" name="notifyPayments"> <label for="notifyPayments">Payment Confirmations</label></div>
+                    </div>
+                    <button type="submit" class="btn-primary">Save Preferences</button>
+                </form>
+            </div>
+
+            <!-- Settings Section: Application Settings -->
+            <div class="settings-section">
+                <h4>Application Settings</h4>
+                <form id="appSettingsForm">
+                    <div class="form-group">
+                        <label for="appTheme">Theme:</label>
+                        <select id="appTheme" name="appTheme">
+                            <option value="light">Light Mode</option>
+                            <option value="dark">Dark Mode (Coming Soon!)</option>
+                        </select>
+                    </div>
+                     <div class="form-group">
+                        <label for="itemsPerPage">Default Items Per Page:</label>
+                        <select id="itemsPerPage" name="itemsPerPage">
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-primary">Save App Settings</button>
+                </form>
+            </div>
+            <!-- Add more settings forms and options here -->
         </div>
     </div>
 
@@ -29,11 +84,154 @@
     </div>
     
     <script type="module">
-        import { initializeAuth } from './js/platform_common.js';
-        function pageInit(userId, database) {
-            // Settings specific JS, if any, can go here
+        import { initializeAuth, showAlert, getDbData, updateDbData } from './js/platform_common.js';
+        import { getDatabase, ref, set, get, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
+
+        let pageCurrentUserId;
+        let pageDatabase;
+        let common = {}; // For common functions and Firebase refs
+
+        const DOMElements = {
+            userProfileForm: document.getElementById('userProfileForm'),
+            notificationPrefsForm: document.getElementById('notificationPrefsForm'),
+            appSettingsForm: document.getElementById('appSettingsForm'),
+            userNameInput: document.getElementById('userName'),
+            userEmailInput: document.getElementById('userEmail'),
+            userPhoneInput: document.getElementById('userPhone'),
+            notifyMaintenanceCheckbox: document.getElementById('notifyMaintenance'),
+            notifyLeaseCheckbox: document.getElementById('notifyLease'),
+            notifyPaymentsCheckbox: document.getElementById('notifyPayments'),
+            appThemeSelect: document.getElementById('appTheme'),
+            itemsPerPageSelect: document.getElementById('itemsPerPage')
+        };
+
+        function pageInit(userId, db, fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbDataExt, fbUpdateDbDataExt, commonShowAlert) {
+            pageCurrentUserId = userId;
+            pageDatabase = db;
+            common.fbRef = fbRef;
+            common.fbSet = fbSet;
+            common.fbGet = get; // Assuming 'get' is available for direct reads if needed, or use fbGetDbDataExt
+            common.fbServerTimestamp = fbServerTimestamp;
+            common.getDbData = fbGetDbDataExt;
+            common.updateDbData = fbUpdateDbDataExt;
+            common.showAlert = commonShowAlert;
+
             console.log("Settings page initialized for user:", userId);
+
+            loadUserProfile();
+            loadNotificationPreferences();
+            loadApplicationSettings();
+
+            setupEventListeners();
         }
+
+        async function loadUserProfile() {
+            if (!pageCurrentUserId || !DOMElements.userProfileForm) return;
+            const path = `userProfile/${pageCurrentUserId}`;
+            try {
+                const data = await common.getDbData(common.fbRef(pageDatabase, path));
+                if (data) {
+                    DOMElements.userNameInput.value = data.name || '';
+                    DOMElements.userEmailInput.value = data.email || ''; // Email might be pre-filled from auth
+                    DOMElements.userPhoneInput.value = data.phone || '';
+                }
+                // If email is not in profile but available from auth (e.g. Firebase Auth user object)
+                // it could be populated here. For now, assume it's part of userProfile data or pre-filled.
+            } catch (error) {
+                console.error("Error loading user profile:", error);
+                // common.showAlert("Could not load profile data.", "Error");
+            }
+        }
+
+        async function loadNotificationPreferences() {
+            if (!pageCurrentUserId || !DOMElements.notificationPrefsForm) return;
+            const path = `notificationPreferences/${pageCurrentUserId}`;
+            try {
+                const data = await common.getDbData(common.fbRef(pageDatabase, path));
+                if (data) {
+                    DOMElements.notifyMaintenanceCheckbox.checked = data.maintenance !== undefined ? data.maintenance : true;
+                    DOMElements.notifyLeaseCheckbox.checked = data.lease !== undefined ? data.lease : true;
+                    DOMElements.notifyPaymentsCheckbox.checked = data.payments !== undefined ? data.payments : false;
+                }
+            } catch (error) {
+                console.error("Error loading notification preferences:", error);
+                // common.showAlert("Could not load notification preferences.", "Error");
+            }
+        }
+
+        async function loadApplicationSettings() {
+            if (!pageCurrentUserId || !DOMElements.appSettingsForm) return;
+            const path = `applicationSettings/${pageCurrentUserId}`;
+            try {
+                const data = await common.getDbData(common.fbRef(pageDatabase, path));
+                if (data) {
+                    DOMElements.appThemeSelect.value = data.theme || 'light';
+                    DOMElements.itemsPerPageSelect.value = data.itemsPerPage || '25';
+                }
+            } catch (error) {
+                console.error("Error loading application settings:", error);
+                // common.showAlert("Could not load application settings.", "Error");
+            }
+        }
+
+        function setupEventListeners() {
+            if (DOMElements.userProfileForm) {
+                DOMElements.userProfileForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const dataToSave = {
+                        name: DOMElements.userNameInput.value,
+                        phone: DOMElements.userPhoneInput.value,
+                        // email: DOMElements.userEmailInput.value, // Email is read-only, typically not updated here by user
+                        updatedAt: common.fbServerTimestamp()
+                    };
+                    try {
+                        await common.updateDbData(common.fbRef(pageDatabase, `userProfile/${pageCurrentUserId}`), dataToSave);
+                        common.showAlert("Profile saved successfully!", "Success");
+                    } catch (error) {
+                        console.error("Error saving profile:", error);
+                        common.showAlert("Failed to save profile.", "Error");
+                    }
+                });
+            }
+
+            if (DOMElements.notificationPrefsForm) {
+                DOMElements.notificationPrefsForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const dataToSave = {
+                        maintenance: DOMElements.notifyMaintenanceCheckbox.checked,
+                        lease: DOMElements.notifyLeaseCheckbox.checked,
+                        payments: DOMElements.notifyPaymentsCheckbox.checked,
+                        updatedAt: common.fbServerTimestamp()
+                    };
+                    try {
+                        await common.updateDbData(common.fbRef(pageDatabase, `notificationPreferences/${pageCurrentUserId}`), dataToSave);
+                        common.showAlert("Notification preferences saved!", "Success");
+                    } catch (error) {
+                        console.error("Error saving notification preferences:", error);
+                        common.showAlert("Failed to save notification preferences.", "Error");
+                    }
+                });
+            }
+
+            if (DOMElements.appSettingsForm) {
+                DOMElements.appSettingsForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const dataToSave = {
+                        theme: DOMElements.appThemeSelect.value,
+                        itemsPerPage: DOMElements.itemsPerPageSelect.value,
+                        updatedAt: common.fbServerTimestamp()
+                    };
+                    try {
+                        await common.updateDbData(common.fbRef(pageDatabase, `applicationSettings/${pageCurrentUserId}`), dataToSave);
+                        common.showAlert("Application settings saved!", "Success");
+                    } catch (error) {
+                        console.error("Error saving application settings:", error);
+                        common.showAlert("Failed to save application settings.", "Error");
+                    }
+                });
+            }
+        }
+
         initializeAuth(pageInit);
     </script>
 </body>

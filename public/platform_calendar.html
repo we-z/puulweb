@@ -29,14 +29,48 @@
                 <h2>Calendar</h2>
             </div>
             <div class="page-container">
-                <p>This section will display events, reminders, and important dates related to property management, such as lease expirations, maintenance schedules, and move-in/move-out dates.</p>
-                <br>
-                <div class="calendar-placeholder">
-                    Full Calendar Component Coming Soon
-                    <br>
-                    (e.g., FullCalendar.io integration)
+                <p>This section displays events, reminders, and important dates such as lease expirations, maintenance schedules, and move-in/move-out dates.</p>
+                
+                <div class="calendar-controls">
+                    <button id="prevPeriodBtn" class="btn-secondary">&lt; Prev</button>
+                    <h3 id="currentPeriodDisplay">[Month, Year]</h3>
+                    <button id="nextPeriodBtn" class="btn-secondary">Next &gt;</button>
+                    <div class="view-options">
+                        <button id="dayViewBtn" class="btn-tertiary active">Day</button>
+                        <button id="weekViewBtn" class="btn-tertiary">Week</button>
+                        <button id="monthViewBtn" class="btn-tertiary">Month</button>
+                    </div>
+                    <button id="addEventBtnCalPage" class="btn-primary">Add Event</button> 
                 </div>
-                <!-- Future: Add event list, filters, add event button -->
+
+                <div class="calendar-grid-container">
+                    <!-- Placeholder for the calendar grid -->
+                    <div class="calendar-grid-placeholder">
+                        <p>Calendar grid will be rendered here.</p>
+                        <p>(e.g., using a library like FullCalendar.io or a custom implementation)</p>
+                        
+                        <!-- Example of how events might look in a list view (could be part of a day/week view) -->
+                        <div class="event-list-sample">
+                            <h4>Upcoming Events (Sample)</h4>
+                            <ul>
+                                <li><strong>Sep 15, 10:00 AM:</strong> Unit 10A - Lease Signing</li>
+                                <li><strong>Sep 16, 02:00 PM:</strong> Property B - HVAC Maintenance</li>
+                                <li><strong>Sep 18, All Day:</strong> Move-in: Tenant for Unit 5C</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="calendar-sidebar">
+                    <h4>Upcoming Events</h4>
+                    <ul id="upcomingEventsList">
+                        <li>[Placeholder: Event 1 - Date & Time]</li>
+                        <li>[Placeholder: Event 2 - Date & Time]</li>
+                        <li>[Placeholder: Event 3 - Date & Time]</li>
+                    </ul>
+                    <button id="filterEventsBtn" class="btn-secondary">Filter Events</button>
+                </div>
+
             </div>
         </div>
     </div>
@@ -105,12 +139,16 @@
         let pageCurrentUserId;
         let pageDatabase;
         let commonDependencies = {};
+        let localPropertiesMap = {}; // Added to store properties
 
         const pageDOMElements = {
-            addItemBtn: document.getElementById('addItemBtn'),
+            addItemBtn: document.getElementById('addItemBtn'), // This is the FAB
+            addEventBtnCalPage: document.getElementById('addEventBtnCalPage'), // Button in calendar controls
             eventModal: document.getElementById('eventModal'),
             eventForm: document.getElementById('eventForm'),
-            eventPropertySelect: document.getElementById('eventProperty')
+            eventPropertySelect: document.getElementById('eventProperty'),
+            upcomingEventsList: document.getElementById('upcomingEventsList'),
+            currentPeriodDisplay: document.getElementById('currentPeriodDisplay') // For later use
             // Add more elements as calendar functionality is built
         };
 
@@ -121,31 +159,42 @@
             commonDependencies = { fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbData, fbUpdateDbData, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon, commonInitializeCustomDropdown };
 
             console.log("Calendar page initialized for user:", userId);
-            initializePropertiesListener(); // For property dropdown in event modal
             
-            // Placeholder: Add FAB functionality if/when it's enabled for this page
-            // if (pageDOMElements.addItemBtn) {
-            //     pageDOMElements.addItemBtn.addEventListener('click', () => {
-            //         openEventModal(); 
-            //     });
-            // }
+            initializePropertiesListener(); 
+            loadCalendarEvents();
 
-            // Placeholder: Add form submission logic
-            // if (pageDOMElements.eventForm) {
-            //     pageDOMElements.eventForm.addEventListener('submit', handleEventFormSubmit);
-            // }
+            if (pageDOMElements.addItemBtn) {
+                pageDOMElements.addItemBtn.style.display = 'flex'; // Make FAB visible
+                pageDOMElements.addItemBtn.addEventListener('click', () => {
+                    openEventModal(); 
+                });
+            }
+            if (pageDOMElements.addEventBtnCalPage) {
+                pageDOMElements.addEventBtnCalPage.addEventListener('click', () => {
+                    openEventModal();
+                });
+            }
+
+            if (pageDOMElements.eventForm) {
+                pageDOMElements.eventForm.addEventListener('submit', handleEventFormSubmit);
+            }
+            
+            // Placeholder for calendar view controls - update current period display
+            pageDOMElements.currentPeriodDisplay.textContent = new Date().toLocaleDateString('default', { month: 'long', year: 'numeric' });
         }
 
         function initializePropertiesListener() {
             if (!pageCurrentUserId || !pageDatabase || !pageDOMElements.eventPropertySelect) return;
             const propertiesRef = commonDependencies.fbRef(pageDatabase, `properties/${pageCurrentUserId}`);
             onValue(commonDependencies.fbQuery(propertiesRef, commonDependencies.fbOrderByChild('address')), (snapshot) => {
+                localPropertiesMap = {}; // Reset map
                 const currentVal = pageDOMElements.eventPropertySelect.value;
                 pageDOMElements.eventPropertySelect.innerHTML = '<option value="">None</option>';
                 snapshot.forEach(childSnapshot => {
                     const key = childSnapshot.key;
                     const prop = childSnapshot.val();
                     if (prop && prop.address) {
+                        localPropertiesMap[key] = prop.address; // Store for later use
                         const option = document.createElement('option');
                         option.value = key;
                         option.textContent = prop.address;
@@ -156,19 +205,134 @@
             });
         }
         
-        // Placeholder functions for event management - to be fully implemented
-        // function openEventModal(id = null, data = {}) {
-        //     pageDOMElements.eventForm.reset();
-        //     pageDOMElements.eventForm.eventId.value = id || '';
-        //     // Populate other form fields from data
-        //     pageDOMElements.eventModal.style.display = 'flex';
-        // }
+        function openEventModal(id = null, data = {}) {
+            pageDOMElements.eventForm.reset();
+            pageDOMElements.eventForm.elements.eventId.value = id || '';
+            pageDOMElements.eventModal.querySelector('#eventModalTitle').textContent = id ? 'Edit Event' : 'Add New Event';
+            
+            if (data && id) { // Populate form for editing
+                pageDOMElements.eventForm.elements.title.value = data.title || '';
+                pageDOMElements.eventForm.elements.startDate.value = data.startDate || '';
+                pageDOMElements.eventForm.elements.endDate.value = data.endDate || '';
+                pageDOMElements.eventForm.elements.description.value = data.description || '';
+                pageDOMElements.eventForm.elements.propertyId.value = data.propertyId || '';
+            }
+            pageDOMElements.eventModal.style.display = 'flex';
+        }
 
-        // async function handleEventFormSubmit(e) {
-        //     e.preventDefault();
-        //     // ... get form data ...
-        //     // ... save to Firebase ...
-        // }
+        async function handleEventFormSubmit(e) {
+            e.preventDefault();
+            if (!pageCurrentUserId) {
+                commonDependencies.commonShowAlert("User not authenticated.", "Error");
+                return;
+            }
+            const form = e.target;
+            const eventId = form.elements.eventId.value;
+            const eventData = {
+                title: form.elements.title.value,
+                startDate: form.elements.startDate.value,
+                endDate: form.elements.endDate.value,
+                description: form.elements.description.value,
+                propertyId: form.elements.propertyId.value,
+                userId: pageCurrentUserId,
+                updatedAt: commonDependencies.fbServerTimestamp()
+            };
+
+            if (!eventData.title || !eventData.startDate) {
+                commonDependencies.commonShowAlert("Event Title and Start Date are required.", "Validation Error");
+                return;
+            }
+
+            try {
+                const path = `calendarEvents/${pageCurrentUserId}`;
+                if (eventId) { // Update existing event
+                    const eventRef = commonDependencies.fbRef(pageDatabase, `${path}/${eventId}`);
+                    const snapshot = await commonDependencies.getDbData(eventRef);
+                    const existingData = snapshot.val() || {};
+                    await commonDependencies.fbSet(eventRef, {...existingData, ...eventData, createdAt: existingData.createdAt || commonDependencies.fbServerTimestamp()});
+                    commonDependencies.commonShowAlert("Event updated successfully!", "Success");
+                } else { // Add new event
+                    eventData.createdAt = commonDependencies.fbServerTimestamp();
+                    await commonDependencies.fbPush(commonDependencies.fbRef(pageDatabase, path), eventData);
+                    commonDependencies.commonShowAlert("Event added successfully!", "Success");
+                }
+                pageDOMElements.eventModal.style.display = 'none';
+                // loadCalendarEvents(); // Data will reload due to onValue listener
+            } catch (error) {
+                console.error("Error saving event:", error);
+                commonDependencies.commonShowAlert(`Error saving event: ${error.message}`, "Error");
+            }
+        }
+
+        function loadCalendarEvents() {
+            if (!pageCurrentUserId || !pageDatabase || !pageDOMElements.upcomingEventsList) return;
+            const eventsRef = commonDependencies.fbRef(pageDatabase, `calendarEvents/${pageCurrentUserId}`);
+            // Order by start date, future events first or most recent first if that's preferred.
+            // For "Upcoming", sorting by startDate ascending makes sense.
+            onValue(commonDependencies.fbQuery(eventsRef, commonDependencies.fbOrderByChild('startDate')), (snapshot) => {
+                pageDOMElements.upcomingEventsList.innerHTML = ''; // Clear current list
+                let hasEvents = false;
+                const todayStr = new Date().toISOString().split('T')[0];
+
+                snapshot.forEach(childSnapshot => {
+                    const eventId = childSnapshot.key;
+                    const eventData = childSnapshot.val();
+                    
+                    // Simple filter for upcoming events (today or later)
+                    if (eventData.startDate && eventData.startDate.split('T')[0] >= todayStr) {
+                        hasEvents = true;
+                        const listItem = document.createElement('li');
+                        listItem.style.display = 'flex';
+                        listItem.style.justifyContent = 'space-between';
+                        listItem.style.alignItems = 'center';
+                        listItem.style.padding = '5px 0';
+
+                        const eventDetails = document.createElement('span');
+                        const startDate = new Date(eventData.startDate);
+                        eventDetails.textContent = `${eventData.title} - ${startDate.toLocaleDateString()} ${startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+                        
+                        const editBtn = document.createElement('button');
+                        editBtn.innerHTML = commonDependencies.commonEditIcon;
+                        editBtn.classList.add('btn-icon-small'); // Add a class for small icon buttons
+                        editBtn.title = "Edit Event";
+                        editBtn.onclick = (e) => { e.stopPropagation(); openEventModal(eventId, eventData); };
+
+                        const deleteBtn = document.createElement('button');
+                        deleteBtn.innerHTML = commonDependencies.commonDeleteIcon;
+                        deleteBtn.classList.add('btn-icon-small');
+                        deleteBtn.title = "Delete Event";
+                        deleteBtn.onclick = (e) => { e.stopPropagation(); handleDeleteEvent(eventId, eventData.title); };
+                        
+                        const buttonsDiv = document.createElement('div');
+                        buttonsDiv.appendChild(editBtn);
+                        buttonsDiv.appendChild(deleteBtn);
+
+                        listItem.appendChild(eventDetails);
+                        listItem.appendChild(buttonsDiv);
+                        pageDOMElements.upcomingEventsList.appendChild(listItem);
+                    }
+                });
+
+                if (!hasEvents) {
+                    pageDOMElements.upcomingEventsList.innerHTML = '<li>No upcoming events.</li>';
+                }
+            });
+        }
+
+        async function handleDeleteEvent(eventId, eventTitle) {
+            if (!pageCurrentUserId || !pageDatabase) return;
+            const confirmed = await commonDependencies.commonShowConfirm(`Are you sure you want to delete the event "${eventTitle || 'this event'}"?`, 'Delete Event');
+            if (confirmed) {
+                try {
+                    await commonDependencies.fbRemove(commonDependencies.fbRef(pageDatabase, `calendarEvents/${pageCurrentUserId}/${eventId}`));
+                    commonDependencies.commonShowAlert("Event deleted successfully.", "Success");
+                    // list will refresh due to onValue in loadCalendarEvents
+                } catch (error) {
+                    console.error("Error deleting event:", error);
+                    commonDependencies.commonShowAlert(`Error deleting event: ${error.message}`, "Error");
+                }
+            }
+        }
 
         initializeAuth(pageInit);
     </script>

@@ -14,8 +14,56 @@
             <h2>Dashboard</h2>
         </div>
         <div class="page-container">
-            <p>Dashboard content will be implemented here. This area will provide an overview and key metrics.</p>
-            <!-- Add dashboard widgets and charts here -->
+            <!-- Dashboard Section: Key Metrics -->
+            <div class="dashboard-section">
+                <h4>Key Metrics Overview</h4>
+                <div class="metrics-grid">
+                    <div class="metric-item">
+                        <h5>Active Leases</h5>
+                        <p class="metric-value">[Placeholder: 123]</p>
+                        <p class="metric-detail">View Details</p>
+                    </div>
+                    <div class="metric-item">
+                        <h5>Occupancy Rate</h5>
+                        <p class="metric-value">[Placeholder: 95%]</p>
+                        <p class="metric-detail">View Report</p>
+                    </div>
+                    <div class="metric-item">
+                        <h5>Open Maintenance Requests</h5>
+                        <p class="metric-value">[Placeholder: 5]</p>
+                        <p class="metric-detail">View Requests</p>
+                    </div>
+                    <div class="metric-item">
+                        <h5>Overdue Payments</h5>
+                        <p class="metric-value">[Placeholder: 2]</p>
+                        <p class="metric-detail">View Payments</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Section: Recent Activity -->
+            <div class="dashboard-section">
+                <h4>Recent Activity</h4>
+                <ul class="activity-list">
+                    <li>[Placeholder: New lease signed for Property X, Unit Y]</li>
+                    <li>[Placeholder: Maintenance request #1024 completed for Property A, Unit B]</li>
+                    <li>[Placeholder: Rent payment received from Tenant Z]</li>
+                </ul>
+                <a href="#" class="view-all-link">View all activity</a>
+            </div>
+
+            <!-- Dashboard Section: Quick Links -->
+            <div class="dashboard-section">
+                <h4>Quick Links</h4>
+                <div class="quick-links">
+                    <a href="platform_properties.html" class="quick-link-item">Manage Properties</a>
+                    <a href="platform_leasing.html" class="quick-link-item">Manage Leases</a>
+                    <a href="platform_maintenance.html" class="quick-link-item">Maintenance Requests</a>
+                    <a href="platform_accounting.html" class="quick-link-item">Accounting Overview</a>
+                    <a href="platform_people.html" class="quick-link-item">Manage People</a>
+                </div>
+            </div>
+            <!-- Further dashboard widgets and charts can be added below -->
         </div>
     </div>
     
@@ -31,8 +79,42 @@
     <script type="module">
         import { initializeAuth } from './js/platform_common.js';
         function pageInit(userId, database) {
-            // Dashboard specific JS, if any, can go here
+            // Dashboard specific JS
             console.log("Dashboard page initialized for user:", userId);
+
+            // Populate Key Metrics
+            const metricsPlaceholders = {
+                "Active Leases": "142",
+                "Occupancy Rate": "96.5%",
+                "Open Maintenance Requests": "3",
+                "Overdue Payments": "1"
+            };
+            document.querySelectorAll('.metric-item').forEach(item => {
+                const h5 = item.querySelector('h5');
+                if (h5 && metricsPlaceholders[h5.textContent]) {
+                    const pValue = item.querySelector('.metric-value');
+                    if (pValue) {
+                        pValue.textContent = metricsPlaceholders[h5.textContent];
+                    }
+                }
+            });
+
+            // Populate Recent Activity
+            const activityPlaceholders = [
+                "New lease signed for Property Vista, Unit 12B",
+                "Maintenance request #1027 (Leaky Sink) status changed to 'In Progress'",
+                "Rent payment of $1200 received from Tenant (John Smith - Property Oaks, Unit 3A)",
+                "System notification: Property insurance for 'Downtown Plaza' expires in 30 days."
+            ];
+            const activityList = document.querySelector('.activity-list');
+            if (activityList) {
+                activityList.innerHTML = ''; // Clear existing placeholders
+                activityPlaceholders.forEach(activityText => {
+                    const li = document.createElement('li');
+                    li.textContent = activityText;
+                    activityList.appendChild(li);
+                });
+            }
         }
         initializeAuth(pageInit);
     </script>
