@@ -168,7 +168,7 @@ body {
 }
 
 .sign-out-btn {
-    background-color: #343a40; /* Dark Gray/Black */
+    background-color: #000000; /* Dark Gray/Black */
     color: white;
     border: none;
     padding: 10px 15px;
@@ -181,7 +181,7 @@ body {
 }
 
 .sign-out-btn:hover {
-    background-color: #1a202c; /* Darker Gray/Black */
+    background-color: #282828; /* Darker Gray/Black */
 }
 
 .main-content {
