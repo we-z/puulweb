@@ -138,9 +138,7 @@ body {
     /* For now, they will be hidden by .sidebar.collapsed > * */
 }
 
-.nav-menu li a .link-text {
-    /* Styles for link text, if any specific ones needed beyond global .sidebar.collapsed handling */
-}
+
 
 .nav-menu li a:hover,
 .nav-menu li a.active {
