@@ -5,6 +5,116 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Puul Platform</title>
     <link rel="stylesheet" href="/css/platform_common.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .dashboard-section {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+        .metric-item {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        .metric-item h5 {
+            color: #64748b;
+            font-size: 0.875rem;
+            margin: 0 0 8px 0;
+        }
+        .metric-value {
+            font-size: 1.875rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 0 0 8px 0;
+        }
+        .metric-detail {
+            color: #3b82f6;
+            font-size: 0.875rem;
+            cursor: pointer;
+            margin: 0;
+        }
+        .metric-detail:hover {
+            text-decoration: underline;
+        }
+        .activity-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .activity-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid #e2e8f0;
+            color: #475569;
+            font-size: 0.875rem;
+        }
+        .activity-list li:last-child {
+            border-bottom: none;
+        }
+        .view-all-link {
+            display: inline-block;
+            margin-top: 16px;
+            color: #3b82f6;
+            text-decoration: none;
+            font-size: 0.875rem;
+        }
+        .view-all-link:hover {
+            text-decoration: underline;
+        }
+        .quick-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+        .quick-link-item {
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #1e293b;
+            font-weight: 500;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s ease;
+        }
+        .quick-link-item:hover {
+            background: #f1f5f9;
+            transform: translateY(-1px);
+        }
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin-top: 24px;
+        }
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .chart-container h5 {
+            margin: 0 0 16px 0;
+            color: #1e293b;
+        }
+        .chart-wrapper {
+            position: relative;
+            height: 300px;
+        }
+        @media (max-width: 1024px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
     <div id="sidebar-container"></div>
@@ -20,23 +130,54 @@
                 <div class="metrics-grid">
                     <div class="metric-item">
                         <h5>Active Leases</h5>
-                        <p class="metric-value">[Placeholder: 123]</p>
+                        <p class="metric-value" id="activeLeasesValue">0</p>
                         <p class="metric-detail">View Details</p>
                     </div>
                     <div class="metric-item">
                         <h5>Occupancy Rate</h5>
-                        <p class="metric-value">[Placeholder: 95%]</p>
+                        <p class="metric-value" id="occupancyRateValue">0%</p>
                         <p class="metric-detail">View Report</p>
                     </div>
                     <div class="metric-item">
                         <h5>Open Maintenance Requests</h5>
-                        <p class="metric-value">[Placeholder: 5]</p>
+                        <p class="metric-value" id="openMaintenanceValue">0</p>
                         <p class="metric-detail">View Requests</p>
                     </div>
                     <div class="metric-item">
                         <h5>Overdue Payments</h5>
-                        <p class="metric-value">[Placeholder: 2]</p>
+                        <p class="metric-value" id="overduePaymentsValue">$0</p>
                         <p class="metric-detail">View Payments</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Section: Charts -->
+            <div class="dashboard-section">
+                <h4>Performance Analytics</h4>
+                <div class="charts-grid">
+                    <div class="chart-container">
+                        <h5>Revenue vs Expenses</h5>
+                        <div class="chart-wrapper">
+                            <canvas id="revenueExpensesChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <h5>Occupancy Trends</h5>
+                        <div class="chart-wrapper">
+                            <canvas id="occupancyTrendsChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <h5>Maintenance Requests by Priority</h5>
+                        <div class="chart-wrapper">
+                            <canvas id="maintenancePriorityChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <h5>Payment Status Distribution</h5>
+                        <div class="chart-wrapper">
+                            <canvas id="paymentStatusChart"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -44,11 +185,7 @@
             <!-- Dashboard Section: Recent Activity -->
             <div class="dashboard-section">
                 <h4>Recent Activity</h4>
-                <ul class="activity-list">
-                    <li>[Placeholder: New lease signed for Property X, Unit Y]</li>
-                    <li>[Placeholder: Maintenance request #1024 completed for Property A, Unit B]</li>
-                    <li>[Placeholder: Rent payment received from Tenant Z]</li>
-                </ul>
+                <ul class="activity-list" id="activityList"></ul>
                 <a href="#" class="view-all-link">View all activity</a>
             </div>
 
@@ -63,16 +200,12 @@
                     <a href="platform_people.html" class="quick-link-item">Manage People</a>
                 </div>
             </div>
-            <!-- Further dashboard widgets and charts can be added below -->
         </div>
     </div>
     
-    <!-- Common Modals if needed, though likely not for a static dashboard page -->
-    <div id="customAlertModal" class="modal">
-        <div class="modal-content alert-modal-content">
-            <div class="modal-header"><h3 id="customAlertTitle">Notification</h3><button class="close-btn" data-modal-id="customAlertModal">&times;</button></div>
-            <div class="modal-body"><p id="customAlertMessage"></p></div>
-            <div class="modal-footer"><button class="ok-btn" data-modal-id="customAlertModal">OK</button></div>
+    <div id="customAlertModal">
+        <div class="custom-alert">
+            <p id="customAlertMessage"></p>
         </div>
     </div>
 
@@ -82,34 +215,264 @@
 
         let pageCurrentUserId;
         let pageDatabase;
+        let charts = {};
 
         const DOMElements = {
-            activeLeasesValue: null,
-            occupancyRateValue: null,
-            openMaintenanceValue: null,
-            overduePaymentsValue: null,
-            activityList: document.querySelector('.activity-list')
+            activeLeasesValue: document.getElementById('activeLeasesValue'),
+            occupancyRateValue: document.getElementById('occupancyRateValue'),
+            openMaintenanceValue: document.getElementById('openMaintenanceValue'),
+            overduePaymentsValue: document.getElementById('overduePaymentsValue'),
+            activityList: document.getElementById('activityList')
         };
 
         function pageInit(userId, db, commonShowAlert, commonGetDbData) {
             pageCurrentUserId = userId;
             pageDatabase = db;
-            // commonDependencies.showAlert = commonShowAlert; // If using showAlert
-            // commonDependencies.getDbData = commonGetDbData; // If using getDbData directly, though onValue is more common for live updates
-
             console.log("Dashboard page initialized for user:", userId);
             
-            // Assign DOM Elements for metrics
-            const metricItems = document.querySelectorAll('.metric-item');
-            if (metricItems.length >= 4) {
-                DOMElements.activeLeasesValue = metricItems[0].querySelector('.metric-value');
-                DOMElements.occupancyRateValue = metricItems[1].querySelector('.metric-value');
-                DOMElements.openMaintenanceValue = metricItems[2].querySelector('.metric-value');
-                DOMElements.overduePaymentsValue = metricItems[3].querySelector('.metric-value');
-            }
-
             loadKeyMetrics();
             loadRecentActivity();
+            initializeCharts();
+        }
+
+        function initializeCharts() {
+            // Revenue vs Expenses Chart
+            const revenueExpensesCtx = document.getElementById('revenueExpensesChart').getContext('2d');
+            charts.revenueExpenses = new Chart(revenueExpensesCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'Revenue',
+                            borderColor: '#10B981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            data: []
+                        },
+                        {
+                            label: 'Expenses',
+                            borderColor: '#EF4444',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            data: []
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: value => '$' + value.toLocaleString()
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Occupancy Trends Chart
+            const occupancyTrendsCtx = document.getElementById('occupancyTrendsChart').getContext('2d');
+            charts.occupancyTrends = new Chart(occupancyTrendsCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Occupancy Rate',
+                        borderColor: '#3B82F6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        data: []
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: value => value + '%'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Maintenance Priority Chart
+            const maintenancePriorityCtx = document.getElementById('maintenancePriorityChart').getContext('2d');
+            charts.maintenancePriority = new Chart(maintenancePriorityCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['High', 'Medium', 'Low'],
+                    datasets: [{
+                        data: [0, 0, 0],
+                        backgroundColor: [
+                            '#EF4444',
+                            '#F59E0B',
+                            '#10B981'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        }
+                    }
+                }
+            });
+
+            // Payment Status Chart
+            const paymentStatusCtx = document.getElementById('paymentStatusChart').getContext('2d');
+            charts.paymentStatus = new Chart(paymentStatusCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Paid', 'Overdue', 'Pending'],
+                    datasets: [{
+                        data: [0, 0, 0],
+                        backgroundColor: [
+                            '#10B981',
+                            '#EF4444',
+                            '#F59E0B'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        }
+                    }
+                }
+            });
+
+            loadChartData();
+        }
+
+        async function loadChartData() {
+            if (!pageCurrentUserId || !pageDatabase) return;
+
+            // Load Revenue vs Expenses data
+            const transactionsRef = ref(pageDatabase, `transactions/${pageCurrentUserId}`);
+            const transactionsQuery = query(transactionsRef, orderByChild('date'), limitToLast(12));
+            onValue(transactionsQuery, (snapshot) => {
+                const monthlyData = {};
+                snapshot.forEach(child => {
+                    const transaction = child.val();
+                    const date = new Date(transaction.date);
+                    const monthKey = `${date.getFullYear()}-${date.getMonth() + 1}`;
+                    
+                    if (!monthlyData[monthKey]) {
+                        monthlyData[monthKey] = { revenue: 0, expenses: 0 };
+                    }
+                    
+                    if (transaction.type === 'income') {
+                        monthlyData[monthKey].revenue += parseFloat(transaction.amount);
+                    } else {
+                        monthlyData[monthKey].expenses += parseFloat(transaction.amount);
+                    }
+                });
+
+                const labels = Object.keys(monthlyData).sort();
+                const revenueData = labels.map(month => monthlyData[month].revenue);
+                const expensesData = labels.map(month => monthlyData[month].expenses);
+
+                charts.revenueExpenses.data.labels = labels.map(month => {
+                    const [year, monthNum] = month.split('-');
+                    return new Date(year, monthNum - 1).toLocaleDateString('default', { month: 'short', year: '2-digit' });
+                });
+                charts.revenueExpenses.data.datasets[0].data = revenueData;
+                charts.revenueExpenses.data.datasets[1].data = expensesData;
+                charts.revenueExpenses.update();
+            });
+
+            // Load Occupancy Trends data
+            const leasesRef = ref(pageDatabase, `leases/${pageCurrentUserId}`);
+            const leasesQuery = query(leasesRef, orderByChild('startDate'), limitToLast(12));
+            onValue(leasesQuery, (snapshot) => {
+                const monthlyOccupancy = {};
+                let totalUnits = 0;
+
+                // First, get total units from properties
+                const propertiesRef = ref(pageDatabase, `properties/${pageCurrentUserId}`);
+                onValue(propertiesRef, (propertiesSnapshot) => {
+                    propertiesSnapshot.forEach(property => {
+                        totalUnits += parseInt(property.val().numberOfUnits) || 1;
+                    });
+
+                    // Then calculate occupancy rates
+                    snapshot.forEach(lease => {
+                        const leaseData = lease.val();
+                        const startDate = new Date(leaseData.startDate);
+                        const endDate = new Date(leaseData.endDate);
+                        const monthKey = `${startDate.getFullYear()}-${startDate.getMonth() + 1}`;
+                        
+                        if (!monthlyOccupancy[monthKey]) {
+                            monthlyOccupancy[monthKey] = 0;
+                        }
+                        monthlyOccupancy[monthKey]++;
+                    });
+
+                    const labels = Object.keys(monthlyOccupancy).sort();
+                    const occupancyData = labels.map(month => (monthlyOccupancy[month] / totalUnits) * 100);
+
+                    charts.occupancyTrends.data.labels = labels.map(month => {
+                        const [year, monthNum] = month.split('-');
+                        return new Date(year, monthNum - 1).toLocaleDateString('default', { month: 'short', year: '2-digit' });
+                    });
+                    charts.occupancyTrends.data.datasets[0].data = occupancyData;
+                    charts.occupancyTrends.update();
+                });
+            });
+
+            // Load Maintenance Priority data
+            const workOrdersRef = ref(pageDatabase, `workOrders/${pageCurrentUserId}`);
+            onValue(workOrdersRef, (snapshot) => {
+                const priorityCounts = { high: 0, medium: 0, low: 0 };
+                snapshot.forEach(wo => {
+                    const priority = wo.val().priority?.toLowerCase() || 'medium';
+                    priorityCounts[priority]++;
+                });
+
+                charts.maintenancePriority.data.datasets[0].data = [
+                    priorityCounts.high,
+                    priorityCounts.medium,
+                    priorityCounts.low
+                ];
+                charts.maintenancePriority.update();
+            });
+
+            // Load Payment Status data
+            const receivablesRef = ref(pageDatabase, `receivables/${pageCurrentUserId}`);
+            onValue(receivablesRef, (snapshot) => {
+                const statusCounts = { paid: 0, overdue: 0, pending: 0 };
+                snapshot.forEach(receivable => {
+                    const status = receivable.val().status?.toLowerCase() || 'pending';
+                    statusCounts[status]++;
+                });
+
+                charts.paymentStatus.data.datasets[0].data = [
+                    statusCounts.paid,
+                    statusCounts.overdue,
+                    statusCounts.pending
+                ];
+                charts.paymentStatus.update();
+            });
         }
 
         async function loadKeyMetrics() {
@@ -123,7 +486,7 @@
                     DOMElements.activeLeasesValue.textContent = snapshot.exists() ? snapshot.size : '0';
                 }
                 calculateAndDisplayOccupancyRate(snapshot.size);
-            }, { onlyOnce: true });
+            });
 
             // Open Maintenance Requests
             const workOrdersRef = ref(pageDatabase, `workOrders/${pageCurrentUserId}`);
@@ -140,16 +503,23 @@
                 if (DOMElements.openMaintenanceValue) {
                     DOMElements.openMaintenanceValue.textContent = openCount;
                 }
-            }, { onlyOnce: true });
+            });
 
-            // Overdue Payments (Simplified: counts receivables with status 'Overdue')
+            // Overdue Payments
             const receivablesRef = ref(pageDatabase, `receivables/${pageCurrentUserId}`);
             const overdueReceivablesQuery = query(receivablesRef, orderByChild('status'), equalTo('Overdue'));
             onValue(overdueReceivablesQuery, (snapshot) => {
-                if (DOMElements.overduePaymentsValue) {
-                    DOMElements.overduePaymentsValue.textContent = snapshot.exists() ? snapshot.size : '0';
+                let totalOverdue = 0;
+                if (snapshot.exists()) {
+                    snapshot.forEach(childSnapshot => {
+                        const receivable = childSnapshot.val();
+                        totalOverdue += parseFloat(receivable.amount) || 0;
+                    });
                 }
-            }, { onlyOnce: true });
+                if (DOMElements.overduePaymentsValue) {
+                    DOMElements.overduePaymentsValue.textContent = `$${totalOverdue.toLocaleString()}`;
+                }
+            });
         }
 
         async function calculateAndDisplayOccupancyRate(activeLeaseCount) {
@@ -159,22 +529,22 @@
                 if (snapshot.exists()) {
                     snapshot.forEach(propSnapshot => {
                         const property = propSnapshot.val();
-                        totalUnits += parseInt(property.numberOfUnits) || 1; // Assume 1 unit if not specified or 0
+                        totalUnits += parseInt(property.numberOfUnits) || 1;
                     });
                 }
-                let occupancyRate = "N/A";
+                let occupancyRate = "0%";
                 if (totalUnits > 0) {
                     occupancyRate = ((activeLeaseCount / totalUnits) * 100).toFixed(1) + '%';
                 }
                 if (DOMElements.occupancyRateValue) {
                     DOMElements.occupancyRateValue.textContent = occupancyRate;
                 }
-            }, { onlyOnce: true });
+            });
         }
 
         async function loadRecentActivity() {
             if (!pageCurrentUserId || !pageDatabase || !DOMElements.activityList) return;
-            DOMElements.activityList.innerHTML = ''; // Clear placeholders
+            DOMElements.activityList.innerHTML = '';
             
             const activities = [];
             const maxActivitiesPerType = 2;
@@ -187,14 +557,17 @@
                 if (leaseSnapshot.exists()) {
                     leaseSnapshot.forEach(child => {
                         const lease = child.val();
-                        const propertyName = lease.propertyId ? `Property ID ${lease.propertyId.substring(0,6)}...` : 'a property'; // Placeholder for property name resolution
+                        const propertyName = lease.propertyId ? `Property ID ${lease.propertyId.substring(0,6)}...` : 'a property';
                         activities.push({ 
                             text: `New lease started for ${propertyName} with ${lease.tenants || 'tenant(s)'}.`, 
                             timestamp: lease.updatedAt || lease.createdAt 
                         });
                     });
                 }
-            } catch (error) { console.error("Error fetching recent leases:", error); }
+            } catch (error) { 
+                console.warn("Could not fetch recent leases:", error);
+                // Don't show error to user, just continue with other data
+            }
 
             // Fetch recent work orders
             try {
@@ -204,16 +577,38 @@
                 if (woSnapshot.exists()) {
                     woSnapshot.forEach(child => {
                         const wo = child.val();
-                        const propertyName = wo.propertyId ? `Property ID ${wo.propertyId.substring(0,6)}...` : 'a property'; // Placeholder
+                        const propertyName = wo.propertyId ? `Property ID ${wo.propertyId.substring(0,6)}...` : 'a property';
                         activities.push({ 
                             text: `Work order '${wo.title || 'Untitled'}' for ${propertyName} was updated to status: ${wo.status}.`, 
                             timestamp: wo.updatedAt || wo.createdAt
                         });
                     });
                 }
-            } catch (error) { console.error("Error fetching recent work orders:", error); }
+            } catch (error) { 
+                console.warn("Could not fetch recent work orders:", error);
+                // Don't show error to user, just continue with other data
+            }
+
+            // Fetch recent payments
+            try {
+                const receivablesRef = ref(pageDatabase, `receivables/${pageCurrentUserId}`);
+                const recentPaymentsQuery = query(receivablesRef, orderByChild('updatedAt'), limitToLast(maxActivitiesPerType));
+                const paymentsSnapshot = await get(recentPaymentsQuery);
+                if (paymentsSnapshot.exists()) {
+                    paymentsSnapshot.forEach(child => {
+                        const payment = child.val();
+                        activities.push({ 
+                            text: `Payment of $${parseFloat(payment.amount).toLocaleString()} received for ${payment.description || 'rent'}.`, 
+                            timestamp: payment.updatedAt || payment.createdAt
+                        });
+                    });
+                }
+            } catch (error) { 
+                console.warn("Could not fetch recent payments:", error);
+                // Don't show error to user, just continue with other data
+            }
             
-            // Sort activities by timestamp (descending) and take top 3-4
+            // Sort activities by timestamp (descending) and take top 4
             activities.sort((a, b) => b.timestamp - a.timestamp);
             const displayedActivities = activities.slice(0, 4);
 
@@ -221,11 +616,10 @@
                 displayedActivities.forEach(activity => {
                     const li = document.createElement('li');
                     li.textContent = activity.text;
-                    // Could add a small timestamp here if desired: new Date(activity.timestamp).toLocaleTimeString()
                     DOMElements.activityList.appendChild(li);
                 });
             } else {
-                DOMElements.activityList.innerHTML = '<li>No recent activity to display.</li>';
+                DOMElements.activityList.innerHTML = '<li>No recent activity to display. Some data may be unavailable due to permissions.</li>';
             }
         }
 
