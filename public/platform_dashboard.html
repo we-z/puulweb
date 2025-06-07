@@ -233,6 +233,41 @@
             loadKeyMetrics();
             loadRecentActivity();
             initializeCharts();
+            setupMetricDetailHandlers();
+        }
+
+        function setupMetricDetailHandlers() {
+            // Active Leases - View Details
+            const activeLeasesDetail = document.querySelector('.metric-item:nth-child(1) .metric-detail');
+            if (activeLeasesDetail) {
+                activeLeasesDetail.addEventListener('click', () => {
+                    window.location.href = 'platform_leasing.html?filter=active';
+                });
+            }
+
+            // Occupancy Rate - View Report
+            const occupancyRateDetail = document.querySelector('.metric-item:nth-child(2) .metric-detail');
+            if (occupancyRateDetail) {
+                occupancyRateDetail.addEventListener('click', () => {
+                    window.location.href = 'platform_reporting.html?view=occupancy';
+                });
+            }
+
+            // Open Maintenance - View Requests
+            const maintenanceDetail = document.querySelector('.metric-item:nth-child(3) .metric-detail');
+            if (maintenanceDetail) {
+                maintenanceDetail.addEventListener('click', () => {
+                    window.location.href = 'platform_maintenance.html?status=open';
+                });
+            }
+
+            // Overdue Payments - View Payments
+            const paymentsDetail = document.querySelector('.metric-item:nth-child(4) .metric-detail');
+            if (paymentsDetail) {
+                paymentsDetail.addEventListener('click', () => {
+                    window.location.href = 'platform_accounting.html?status=overdue';
+                });
+            }
         }
 
         function initializeCharts() {
