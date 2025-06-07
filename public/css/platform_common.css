@@ -155,10 +155,6 @@ body {
     /* overflow: hidden; Already handled by .sidebar.collapsed > * or specific targeting */
 }
 
-.user-profile .user-info {
-    /* Styles for user info, if any specific ones needed beyond global .sidebar.collapsed handling */
-}
-
 .user-profile .welcome-message {
     font-size: 0.9rem;
     color: #555555; /* Medium Gray */
