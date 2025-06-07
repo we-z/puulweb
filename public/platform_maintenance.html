@@ -573,6 +573,18 @@
     </div>
 
     <script type="module">
+        // --- Global Work Order Filters and Sort ---
+        // These must be defined before any function uses them
+        let workOrderSort = {
+            by: 'createdAt', // default sort by createdAt
+            order: 'desc'    // default order descending
+        };
+        let workOrderFilters = {
+            propertyId: '', // default: all properties
+            priority: '',   // default: all priorities
+            status: ''      // default: all statuses
+        };
+
         import { initializeAuth, showAlert, showConfirm, editIconSVG, deleteIconSVG, getDbData, updateDbData, initializeCustomDropdown } from './js/platform_common.js';
         import { getDatabase, ref, push, onValue, set, remove, serverTimestamp, query, orderByChild, equalTo } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
 
@@ -736,6 +748,21 @@
                 // Add other cases as needed
             }
         }
+
+        function loadDataForActiveSubsection() {
+            const activeSubSection = document.querySelector('#maintenanceSubNav .sub-nav-item.active').dataset.subsection;
+            switch (activeSubSection) {
+                case 'workOrders': loadWorkOrders(); break;
+                case 'recurringWorkOrders': loadRecurringWorkOrders(); break;
+                case 'inspections': loadInspections(); break;
+                case 'unitTurns': loadUnitTurns(); break;
+                case 'projects': loadProjects(); break;
+                case 'purchaseOrders': loadPurchaseOrders(); break;
+                case 'inventory': loadInventory(); break;
+                case 'fixedAssets': loadFixedAssets(); break;
+                // Add other cases as needed
+            }
+        }
         
         function initializePropertiesListener() {
             if (!pageCurrentUserId || !pageDatabase) return;
@@ -849,7 +876,7 @@
                 pageDOMElements.workOrderForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
                     if (!pageCurrentUserId) {
-                        commonDependencies.commonShowAlert('User not authenticated.', 'Authentication Error');
+                        showAlert('User not authenticated.', 'Authentication Error');
                         return;
                     }
                     const title = pageDOMElements.workOrderTitleInput.value.trim();
@@ -860,7 +887,7 @@
                     const workOrderId = pageDOMElements.workOrderIdInput.value;
 
                     if (!title || !description) {
-                        commonDependencies.commonShowAlert('Title and Description are required.', 'Validation Error');
+                        showAlert('Title and Description are required.', 'Validation Error');
                         return;
                     }
 
@@ -877,18 +904,18 @@
                             const snapshot = await commonDependencies.fbGetDbData(workOrderRef);
                             const existingData = snapshot.val() || {};                           
                             await commonDependencies.fbSet(workOrderRef, {...existingData, ...workOrderData, createdAt: existingData.createdAt || commonDependencies.fbServerTimestamp() });
-                            commonDependencies.commonShowAlert('Work order updated successfully!');
+                            showAlert('Work order updated successfully!');
                         } else { 
                             workOrderData.createdAt = commonDependencies.fbServerTimestamp();
                             const workOrdersRef = commonDependencies.fbRef(pageDatabase, `workOrders/${pageCurrentUserId}`);
                             await commonDependencies.fbPush(workOrdersRef, workOrderData);
-                            commonDependencies.commonShowAlert('Work order added successfully!');
+                            showAlert('Work order added successfully!');
                         }
                         if(pageDOMElements.workOrderModal) pageDOMElements.workOrderModal.style.display = 'none';
                         // loadWorkOrders(); // Data will be reloaded by onValue listener
                     } catch (error) {
                         console.error('Error saving work order:', error);
-                        commonDependencies.commonShowAlert(`Error: ${error.message}`, 'Save Error');
+                        showAlert(`Error: ${error.message}`, 'Save Error');
                     }
                 });
             }
@@ -952,7 +979,7 @@
 
             const actionsCell = row.insertCell();
             actionsCell.classList.add('actions-cell');
-            actionsCell.innerHTML = `<button class="edit-btn" title="Edit">${commonDependencies.commonEditIcon}</button><button class="delete-btn" title="Delete">${commonDependencies.commonDeleteIcon}</button>`;
+            actionsCell.innerHTML = `<button class="edit-btn" title="Edit">${editIconSVG}</button><button class="delete-btn" title="Delete">${deleteIconSVG}</button>`;
             
             actionsCell.querySelector('.edit-btn').addEventListener('click', (e) => { e.stopPropagation(); openWorkOrderModal(wo.id, wo); });
             actionsCell.querySelector('.delete-btn').addEventListener('click', (e) => { e.stopPropagation(); handleDeleteWorkOrder(wo.id); });
@@ -974,15 +1001,15 @@
 
         async function handleDeleteWorkOrder(id) {
             if (!pageCurrentUserId || !pageDatabase) return;
-            const confirmed = await commonDependencies.commonShowConfirm('Are you sure you want to delete this work order?', 'Delete Work Order');
+            const confirmed = await showConfirm('Are you sure you want to delete this work order?', 'Delete Work Order');
             if (confirmed) {
                 try {
                     const workOrderRef = commonDependencies.fbRef(pageDatabase, `workOrders/${pageCurrentUserId}/${id}`);
                     await commonDependencies.fbRemove(workOrderRef);
-                    commonDependencies.commonShowAlert('Work order deleted successfully!');
+                    showAlert('Work order deleted successfully!');
                 } catch (error) {
                     console.error('Error deleting work order:', error);
-                    commonDependencies.commonShowAlert(`Error: ${error.message}`, 'Delete Error');
+                    showAlert(`Error: ${error.message}`, 'Delete Error');
                 }
             }
         }
@@ -1003,7 +1030,7 @@
                         updatedAt: commonDependencies.fbServerTimestamp()
                     };
                     if (!data.taskName || !data.propertyId || !data.frequency) {
-                        commonDependencies.commonShowAlert('Task Name, Property, and Frequency are required.', 'Validation Error');
+                        showAlert('Task Name, Property, and Frequency are required.', 'Validation Error');
                         return;
                     }
                     try {
@@ -1013,14 +1040,14 @@
                              const snapshot = await commonDependencies.fbGetDbData(itemRef);
                             const existingData = snapshot.val() || {};
                             await commonDependencies.fbSet(itemRef, {...existingData, ...data, createdAt: existingData.createdAt || commonDependencies.fbServerTimestamp()});
-                            commonDependencies.commonShowAlert('Recurring Work Order updated.');
+                            showAlert('Recurring Work Order updated.');
                         } else {
                             data.createdAt = commonDependencies.fbServerTimestamp();
                             await commonDependencies.fbPush(commonDependencies.fbRef(pageDatabase, path), data);
-                            commonDependencies.commonShowAlert('Recurring Work Order added.');
+                            showAlert('Recurring Work Order added.');
                         }
                         pageDOMElements.recurringWorkOrderModal.style.display = 'none';
-                    } catch (error) { commonDependencies.commonShowAlert(`Error: ${error.message}`); }
+                    } catch (error) { showAlert(`Error: ${error.message}`); }
                 });
             }
         }
@@ -1086,7 +1113,7 @@
             row.insertCell().innerHTML = `<span class="status-badge status-${(data.status || 'Paused').toLowerCase()}">${data.status || 'Paused'}</span>`;
 
             const actionsCell = row.insertCell();
-            actionsCell.innerHTML = `<button class="edit-btn">${commonDependencies.commonEditIcon}</button><button class="delete-btn">${commonDependencies.commonDeleteIcon}</button>`;
+            actionsCell.innerHTML = `<button class="edit-btn">${editIconSVG}</button><button class="delete-btn">${deleteIconSVG}</button>`;
             actionsCell.querySelector('.edit-btn').addEventListener('click', () => openModalForSubsection('recurringWorkOrders', data.id, data));
             actionsCell.querySelector('.delete-btn').addEventListener('click', () => handleDeleteGeneric('recurringWorkOrders', data.id, 'Recurring Work Order'));
             row.addEventListener('click', (e) => { if(e.target.tagName !== 'BUTTON' && !e.target.closest('button')) openModalForSubsection('recurringWorkOrders', data.id, data); });
@@ -1126,7 +1153,7 @@
                         updatedAt: commonDependencies.fbServerTimestamp()
                     };
                     if (!dataToSave.inspectionName || !dataToSave.propertyId || !dataToSave.scheduledDate) {
-                         commonDependencies.commonShowAlert('Name, Property, and Scheduled Date are required.', 'Validation Error');
+                         showAlert('Name, Property, and Scheduled Date are required.', 'Validation Error');
                         return;
                     }
                     // Using handleGenericFormSubmit structure for consistency
@@ -1140,14 +1167,14 @@
                              const snapshot = await commonDependencies.fbGetDbData(itemRef);
                             const existingData = snapshot.val() || {};
                             await commonDependencies.fbSet(itemRef, {...existingData, ...dataToSave, createdAt: existingData.createdAt || commonDependencies.fbServerTimestamp()});
-                            commonDependencies.commonShowAlert(`${itemName} updated.`);
+                            showAlert(`${itemName} updated.`);
                         } else {
                             dataToSave.createdAt = commonDependencies.fbServerTimestamp();
                             await commonDependencies.fbPush(commonDependencies.fbRef(pageDatabase, path), dataToSave);
-                            commonDependencies.commonShowAlert(`${itemName} added.`);
+                            showAlert(`${itemName} added.`);
                         }
                         if (pageDOMElements.inspectionModal) pageDOMElements.inspectionModal.style.display = 'none';
-                    } catch (error) { commonDependencies.commonShowAlert(`Error saving ${itemName}: ${error.message}`); }
+                    } catch (error) { showAlert(`Error saving ${itemName}: ${error.message}`); }
                 });
             }
         }
@@ -1195,7 +1222,7 @@
             row.insertCell().innerHTML = `<span class="status-badge status-${(data.status || 'Scheduled').toLowerCase().replace(/\s+/g, '-')}">${data.status || 'Scheduled'}</span>`;
 
             const actionsCell = row.insertCell();
-            actionsCell.innerHTML = `<button class="edit-btn">${commonDependencies.commonEditIcon}</button><button class="delete-btn">${commonDependencies.commonDeleteIcon}</button>`;
+            actionsCell.innerHTML = `<button class="edit-btn">${editIconSVG}</button><button class="delete-btn">${deleteIconSVG}</button>`;
             // Corrected event listeners
             actionsCell.querySelector('.edit-btn').addEventListener('click', (e) => { e.stopPropagation(); openModalForSubsection('inspections', data.id, data); });
             actionsCell.querySelector('.delete-btn').addEventListener('click', (e) => { e.stopPropagation(); handleDeleteGeneric('inspections', data.id, 'Inspection'); });
@@ -1236,7 +1263,7 @@
                         updatedAt: commonDependencies.fbServerTimestamp()
                     };
                     if (!dataToSave.propertyId) {
-                        commonDependencies.commonShowAlert('Property is required for Unit Turn.', 'Validation Error');
+                        showAlert('Property is required for Unit Turn.', 'Validation Error');
                         return;
                     }
                     // Using handleGenericFormSubmit structure for consistency
@@ -1250,14 +1277,14 @@
                             const snapshot = await commonDependencies.fbGetDbData(itemRef);
                             const existingData = snapshot.val() || {};
                             await commonDependencies.fbSet(itemRef, {...existingData, ...dataToSave, createdAt: existingData.createdAt || commonDependencies.fbServerTimestamp()});
-                            commonDependencies.commonShowAlert(`${itemName} updated.`);
+                            showAlert(`${itemName} updated.`);
                         } else {
                             dataToSave.createdAt = commonDependencies.fbServerTimestamp();
                             await commonDependencies.fbPush(commonDependencies.fbRef(pageDatabase, path), dataToSave);
-                            commonDependencies.commonShowAlert(`${itemName} added.`);
+                            showAlert(`${itemName} added.`);
                         }
                         if (pageDOMElements.unitTurnModal) pageDOMElements.unitTurnModal.style.display = 'none';
-                    } catch (error) { commonDependencies.commonShowAlert(`Error saving ${itemName}: ${error.message}`); }
+                    } catch (error) { showAlert(`Error saving ${itemName}: ${error.message}`); }
                 });
             }
         }
@@ -1290,7 +1317,7 @@
             row.insertCell().textContent = data.assignedTo || 'N/A';
             
             const actionsCell = row.insertCell();
-            actionsCell.innerHTML = `<button class="edit-btn">${commonDependencies.commonEditIcon}</button><button class="delete-btn">${commonDependencies.commonDeleteIcon}</button>`;
+            actionsCell.innerHTML = `<button class="edit-btn">${editIconSVG}</button><button class="delete-btn">${deleteIconSVG}</button>`;
             actionsCell.querySelector('.edit-btn').addEventListener('click', (e) => { e.stopPropagation(); openModalForSubsection('unitTurns', data.id, data); });
             actionsCell.querySelector('.delete-btn').addEventListener('click', (e) => { e.stopPropagation(); handleDeleteGeneric('unitTurns', data.id, 'Unit Turn'); });
             row.addEventListener('click', (e) => { if(e.target.tagName !== 'BUTTON' && !e.target.closest('button')) openModalForSubsection('unitTurns', data.id, data); });
@@ -1329,7 +1356,7 @@
                         updatedAt: commonDependencies.fbServerTimestamp()
                     };
                     if (!data.projectName) {
-                         commonDependencies.commonShowAlert('Project Name is required.', 'Validation Error');
+                         showAlert('Project Name is required.', 'Validation Error');
                         return;
                     }
                     try {
@@ -1339,14 +1366,14 @@
                              const snapshot = await commonDependencies.fbGetDbData(itemRef);
                             const existingData = snapshot.val() || {};
                             await commonDependencies.fbSet(itemRef, {...existingData, ...data, createdAt: existingData.createdAt || commonDependencies.fbServerTimestamp()});
-                            commonDependencies.commonShowAlert('Project updated.');
+                            showAlert('Project updated.');
                         } else {
                             data.createdAt = commonDependencies.fbServerTimestamp();
                             await commonDependencies.fbPush(commonDependencies.fbRef(pageDatabase, path), data);
-                            commonDependencies.commonShowAlert('Project added.');
+                            showAlert('Project added.');
                         }
                         pageDOMElements.projectModal.style.display = 'none';
-                    } catch (error) { commonDependencies.commonShowAlert(`Error: ${error.message}`); }
+                    } catch (error) { showAlert(`Error: ${error.message}`); }
                 });
             }
         }
@@ -1374,7 +1401,7 @@
             row.insertCell().textContent = data.budget ? `$${data.budget.toFixed(2)}` : 'N/A';
             row.insertCell().innerHTML = `<span class="status-badge status-${data.status.toLowerCase().replace(' ', '-')}">${data.status}</span>`;
             const actionsCell = row.insertCell();
-            actionsCell.innerHTML = `<button class="edit-btn">${commonDependencies.commonEditIcon}</button><button class="delete-btn">${commonDependencies.commonDeleteIcon}</button>`;
+            actionsCell.innerHTML = `<button class="edit-btn">${editIconSVG}</button><button class="delete-btn">${deleteIconSVG}</button>`;
             actionsCell.querySelector('.edit-btn').addEventListener('click', () => openProjectModal(data.id, data));
             actionsCell.querySelector('.delete-btn').addEventListener('click', () => handleDeleteGeneric('projects', data.id, 'Project'));
             row.addEventListener('click', () => openProjectModal(data.id, data));
@@ -1409,7 +1436,7 @@
                         updatedAt: commonDependencies.fbServerTimestamp()
                     };
                      if (!data.poNumber || !data.vendorId) {
-                         commonDependencies.commonShowAlert('PO Number and Vendor are required.', 'Validation Error');
+                         showAlert('PO Number and Vendor are required.', 'Validation Error');
                         return;
                     }
                     try {
@@ -1419,14 +1446,14 @@
                             const snapshot = await commonDependencies.fbGetDbData(itemRef);
                             const existingData = snapshot.val() || {};
                             await commonDependencies.fbSet(itemRef, {...existingData, ...data, createdAt: existingData.createdAt || commonDependencies.fbServerTimestamp()});
-                            commonDependencies.commonShowAlert('Purchase Order updated.');
+                            showAlert('Purchase Order updated.');
                         } else {
                              data.createdAt = commonDependencies.fbServerTimestamp();
                             await commonDependencies.fbPush(commonDependencies.fbRef(pageDatabase, path), data);
-                            commonDependencies.commonShowAlert('Purchase Order added.');
+                            showAlert('Purchase Order added.');
                         }
                         pageDOMElements.purchaseOrderModal.style.display = 'none';
-                    } catch (error) { commonDependencies.commonShowAlert(`Error: ${error.message}`); }
+                    } catch (error) { showAlert(`Error: ${error.message}`); }
                 });
             }
         }
@@ -1453,7 +1480,7 @@
             row.insertCell().textContent = data.totalAmount ? `$${data.totalAmount.toFixed(2)}` : 'N/A';
             row.insertCell().innerHTML = `<span class="status-badge status-${data.status.toLowerCase().replace(' ', '-')}">${data.status}</span>`;
             const actionsCell = row.insertCell();
-            actionsCell.innerHTML = `<button class="edit-btn">${commonDependencies.commonEditIcon}</button><button class="delete-btn">${commonDependencies.commonDeleteIcon}</button>`;
+            actionsCell.innerHTML = `<button class="edit-btn">${editIconSVG}</button><button class="delete-btn">${deleteIconSVG}</button>`;
             actionsCell.querySelector('.edit-btn').addEventListener('click', () => openPurchaseOrderModal(data.id, data));
             actionsCell.querySelector('.delete-btn').addEventListener('click', () => handleDeleteGeneric('purchaseOrders', data.id, 'Purchase Order'));
             row.addEventListener('click', () => openPurchaseOrderModal(data.id, data));
@@ -1487,7 +1514,7 @@
                         updatedAt: commonDependencies.fbServerTimestamp()
                     };
                     if (!data.itemName) {
-                         commonDependencies.commonShowAlert('Item Name is required.', 'Validation Error');
+                         showAlert('Item Name is required.', 'Validation Error');
                         return;
                     }
                     try {
@@ -1497,14 +1524,14 @@
                             const snapshot = await commonDependencies.fbGetDbData(itemRef);
                             const existingData = snapshot.val() || {};
                             await commonDependencies.fbSet(itemRef, {...existingData, ...data, createdAt: existingData.createdAt || commonDependencies.fbServerTimestamp()});
-                            commonDependencies.commonShowAlert('Inventory Item updated.');
+                            showAlert('Inventory Item updated.');
                         } else {
                             data.createdAt = commonDependencies.fbServerTimestamp();
                             await commonDependencies.fbPush(commonDependencies.fbRef(pageDatabase, path), data);
-                            commonDependencies.commonShowAlert('Inventory Item added.');
+                            showAlert('Inventory Item added.');
                         }
                         pageDOMElements.inventoryModal.style.display = 'none';
-                    } catch (error) { commonDependencies.commonShowAlert(`Error: ${error.message}`); }
+                    } catch (error) { showAlert(`Error: ${error.message}`); }
                 });
             }
         }
@@ -1531,7 +1558,7 @@
             row.insertCell().textContent = data.quantity;
             row.insertCell().textContent = data.location || 'N/A';
             const actionsCell = row.insertCell();
-            actionsCell.innerHTML = `<button class="edit-btn">${commonDependencies.commonEditIcon}</button><button class="delete-btn">${commonDependencies.commonDeleteIcon}</button>`;
+            actionsCell.innerHTML = `<button class="edit-btn">${editIconSVG}</button><button class="delete-btn">${deleteIconSVG}</button>`;
             actionsCell.querySelector('.edit-btn').addEventListener('click', () => openInventoryModal(data.id, data));
             actionsCell.querySelector('.delete-btn').addEventListener('click', () => handleDeleteGeneric('inventory', data.id, 'Inventory Item'));
             row.addEventListener('click', () => openInventoryModal(data.id, data));
@@ -1567,7 +1594,7 @@
                         updatedAt: commonDependencies.fbServerTimestamp()
                     };
                     if (!data.assetName) {
-                        commonDependencies.commonShowAlert('Asset Name is required.', 'Validation Error');
+                        showAlert('Asset Name is required.', 'Validation Error');
                         return;
                     }
                     try {
@@ -1577,14 +1604,14 @@
                             const snapshot = await commonDependencies.fbGetDbData(itemRef);
                             const existingData = snapshot.val() || {};
                             await commonDependencies.fbSet(itemRef, {...existingData, ...data, createdAt: existingData.createdAt || commonDependencies.fbServerTimestamp()});
-                            commonDependencies.commonShowAlert('Fixed Asset updated.');
+                            showAlert('Fixed Asset updated.');
                         } else {
                             data.createdAt = commonDependencies.fbServerTimestamp();
                             await commonDependencies.fbPush(commonDependencies.fbRef(pageDatabase, path), data);
-                            commonDependencies.commonShowAlert('Fixed Asset added.');
+                            showAlert('Fixed Asset added.');
                         }
                         pageDOMElements.fixedAssetModal.style.display = 'none';
-                    } catch (error) { commonDependencies.commonShowAlert(`Error: ${error.message}`); }
+                    } catch (error) { showAlert(`Error: ${error.message}`); }
                 });
             }
         }
@@ -1612,7 +1639,7 @@
             row.insertCell().textContent = data.purchaseCost ? `$${data.purchaseCost.toFixed(2)}` : 'N/A';
             row.insertCell().textContent = 'N/A'; // Placeholder for current value
             const actionsCell = row.insertCell();
-            actionsCell.innerHTML = `<button class="edit-btn">${commonDependencies.commonEditIcon}</button><button class="delete-btn">${commonDependencies.commonDeleteIcon}</button>`;
+            actionsCell.innerHTML = `<button class="edit-btn">${editIconSVG}</button><button class="delete-btn">${deleteIconSVG}</button>`;
             actionsCell.querySelector('.edit-btn').addEventListener('click', () => openFixedAssetModal(data.id, data));
             actionsCell.querySelector('.delete-btn').addEventListener('click', () => handleDeleteGeneric('fixedAssets', data.id, 'Fixed Asset'));
             row.addEventListener('click', () => openFixedAssetModal(data.id, data));
@@ -1633,15 +1660,15 @@
         // --- Generic Delete Function ---
         async function handleDeleteGeneric(sectionPath, itemId, itemNameSingular) {
             if (!pageCurrentUserId || !pageDatabase) return;
-            const confirmed = await commonDependencies.commonShowConfirm(`Are you sure you want to delete this ${itemNameSingular}?`, `Delete ${itemNameSingular}`);
+            const confirmed = await showConfirm(`Are you sure you want to delete this ${itemNameSingular}?`, `Delete ${itemNameSingular}`);
             if (confirmed) {
                 try {
                     const itemRef = commonDependencies.fbRef(pageDatabase, `${sectionPath}/${pageCurrentUserId}/${itemId}`);
                     await commonDependencies.fbRemove(itemRef);
-                    commonDependencies.commonShowAlert(`${itemNameSingular} deleted successfully!`);
+                    showAlert(`${itemNameSingular} deleted successfully!`);
                 } catch (error) {
                     console.error(`Error deleting ${itemNameSingular}:`, error);
-                    commonDependencies.commonShowAlert(`Error: ${error.message}`, `Delete Error`);
+                    showAlert(`Error: ${error.message}`, `Delete Error`);
                 }
             }
         }
@@ -1653,9 +1680,95 @@
             smButtons.forEach(button => {
                 button.addEventListener('click', (e) => {
                     const featureTitle = button.closest('.smart-feature-item')?.querySelector('h5')?.textContent || button.textContent || 'Selected Feature';
-                    commonDependencies.commonShowAlert(`The "${featureTitle}" feature is part of Smart Maintenance and is currently under development. Check back soon!`, "Feature Coming Soon");
+                    showAlert(`The "${featureTitle}" feature is part of Smart Maintenance and is currently under development. Check back soon!`, "Feature Coming Soon");
                 });
             });
+        }
+
+        // --- Vendors Listener ---
+        function initializeVendorsListener() {
+            if (!pageCurrentUserId || !pageDatabase) return;
+            const vendorsRef = commonDependencies.fbRef(pageDatabase, `vendors/${pageCurrentUserId}`);
+            onValue(commonDependencies.fbQuery(vendorsRef, commonDependencies.fbOrderByChild('companyName')), (snapshot) => {
+                // Purchase Order Modal Vendor Dropdown
+                const poVendorSelect = pageDOMElements.purchaseOrderForm?.elements.vendorId;
+                if (poVendorSelect) {
+                    const currentVal = poVendorSelect.value;
+                    poVendorSelect.innerHTML = '<option value="">Select Vendor</option>';
+                    snapshot.forEach(childSnapshot => {
+                        const key = childSnapshot.key;
+                        const vendor = childSnapshot.val();
+                        if (vendor && vendor.companyName) {
+                            const option = document.createElement('option');
+                            option.value = key;
+                            option.textContent = vendor.companyName;
+                            poVendorSelect.appendChild(option);
+                        }
+                    });
+                    poVendorSelect.value = currentVal; // Restore selection if possible
+                }
+                // Recurring Work Order Modal Assigned Vendor Dropdown
+                const recurringVendorSelect = pageDOMElements.recurringWorkOrderForm?.elements.assignedVendorId;
+                if (recurringVendorSelect) {
+                    const currentVal = recurringVendorSelect.value;
+                    recurringVendorSelect.innerHTML = '<option value="">Select Vendor (Optional)</option>';
+                    snapshot.forEach(childSnapshot => {
+                        const key = childSnapshot.key;
+                        const vendor = childSnapshot.val();
+                        if (vendor && vendor.companyName) {
+                            const option = document.createElement('option');
+                            option.value = key;
+                            option.textContent = vendor.companyName;
+                            recurringVendorSelect.appendChild(option);
+                        }
+                    });
+                    recurringVendorSelect.value = currentVal;
+                }
+            });
+        }
+
+        // --- Maintenance Filters Listener ---
+        function initializeMaintenanceFilters() {
+            // Set up filter and sort dropdowns for Work Orders
+            const filterPropertyDropdown = pageDOMElements.filterProperty;
+            const filterPriorityDropdown = pageDOMElements.filterPriority;
+            const filterStatusDropdown = pageDOMElements.filterStatus;
+            const sortByDropdown = pageDOMElements.sortBy;
+            const sortOrderDropdown = pageDOMElements.sortOrder;
+
+            // Helper to reload work orders with new filters
+            function reloadWorkOrdersWithFilters() {
+                // Update global filter/sort variables if they exist
+                if (typeof workOrderFilters !== 'undefined') {
+                    workOrderFilters.propertyId = filterPropertyDropdown?.dataset.value || '';
+                    workOrderFilters.priority = filterPriorityDropdown?.dataset.value || '';
+                    workOrderFilters.status = filterStatusDropdown?.dataset.value || '';
+                }
+                if (typeof workOrderSort !== 'undefined') {
+                    workOrderSort.by = sortByDropdown?.dataset.value || 'createdAt';
+                    workOrderSort.order = sortOrderDropdown?.dataset.value || 'desc';
+                }
+                if (typeof loadWorkOrders === 'function') loadWorkOrders();
+            }
+
+            // Initialize dropdowns with custom handler
+            if (filterPropertyDropdown) initializeCustomDropdown(filterPropertyDropdown, reloadWorkOrdersWithFilters, true);
+            if (filterPriorityDropdown) initializeCustomDropdown(filterPriorityDropdown, reloadWorkOrdersWithFilters);
+            if (filterStatusDropdown) initializeCustomDropdown(filterStatusDropdown, reloadWorkOrdersWithFilters);
+            if (sortByDropdown) initializeCustomDropdown(sortByDropdown, reloadWorkOrdersWithFilters);
+            if (sortOrderDropdown) initializeCustomDropdown(sortOrderDropdown, reloadWorkOrdersWithFilters);
+        }
+
+        // --- Setup All Event Listeners ---
+        function setupEventListeners() {
+            setupWorkOrderEventListeners();
+            setupRecurringWorkOrderEventListeners();
+            setupInspectionEventListeners();
+            setupUnitTurnEventListeners();
+            setupProjectEventListeners();
+            setupPurchaseOrderEventListeners();
+            setupInventoryEventListeners();
+            setupFixedAssetEventListeners();
         }
     </script>
 </body>
