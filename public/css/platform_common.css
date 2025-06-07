@@ -195,12 +195,15 @@ body {
 }
 
 .content-header {
+    position: sticky;
+    top: 0;
+    z-index: 101;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
     padding: 20px 30px;
     background-color: #ffffff;
     border-bottom: 1px solid #e0e0e0;
     display: flex;
     align-items: center;
-    position: relative; /* For positioning the toggle button */
 }
 
 /* Add left padding to content-header when sidebar is collapsed to make space for the fixed toggle button */
@@ -216,7 +219,7 @@ body.sidebar-is-collapsed .content-header {
 }
 
 .page-container {
-    /* Renamed from dashboard-container to be more generic */
+    padding-top: 80px; /* Height of .content-header + some spacing */
     padding: 30px; 
     flex-grow: 1;
 }
@@ -937,8 +940,10 @@ table.data-table tr:hover {
 
     /* Adjust content header for the fixed toggle button */
     .content-header {
-        padding-left: 60px; /* Space for the toggle button when sidebar is closed */
-        position: relative; /* Ensure stacking context for its children if needed, but button is fixed */
+        position: sticky;
+        top: 0;
+        z-index: 101;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.10);
     }
 
     /* Ensure icon spans are visible against potentially varied backgrounds */
@@ -992,5 +997,9 @@ table.data-table tr:hover {
     .controls-container select,
     .controls-container .custom-dropdown {
         width: 100%; /* Make dropdowns full width */
+    }
+
+    .page-container {
+        padding-top: 70px;
     }
 } 
