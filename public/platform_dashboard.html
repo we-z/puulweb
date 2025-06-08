@@ -114,6 +114,33 @@
                 grid-template-columns: 1fr;
             }
         }
+        .activity-modal-btn {
+            display: inline-block;
+            margin-top: 16px;
+            padding: 10px 28px;
+            background: #22223b;
+            color: #fff;
+            border: 1.5px solid #22223b;
+            border-radius: 24px;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background 0.18s, color 0.18s, border-color 0.18s;
+            cursor: pointer;
+            outline: none;
+        }
+        .activity-modal-btn:hover, .activity-modal-btn:focus {
+            background: #393a56;
+            color: #fff;
+            border-color: #393a56;
+        }
+        .activity-link {
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s;
+        }
+        .activity-link:hover, .activity-link:focus {
+            background: #f3f4f6;
+            color: #22223b;
+        }
     </style>
 </head>
 <body>
@@ -186,7 +213,7 @@
             <div class="dashboard-section">
                 <h4>Recent Activity</h4>
                 <ul class="activity-list" id="activityList"></ul>
-                <a href="#" class="view-all-link">View all activity</a>
+                <button id="viewAllActivityBtn" class="activity-modal-btn" type="button">View all activity</button>
             </div>
 
             <!-- Dashboard Section: Quick Links -->
@@ -206,6 +233,21 @@
     <div id="customAlertModal">
         <div class="custom-alert">
             <p id="customAlertMessage"></p>
+        </div>
+    </div>
+
+    <!-- Activity Modal -->
+    <div id="activityModal" class="modal" style="display:none;">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h3>All Recent Activity</h3>
+                <button class="close-btn" data-modal-id="activityModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <ul class="activity-list" id="activityModalList">
+                    <li>Loading activity...</li>
+                </ul>
+            </div>
         </div>
     </div>
 
@@ -234,6 +276,7 @@
             loadRecentActivity();
             initializeCharts();
             setupMetricDetailHandlers();
+            setupActivityModal();
         }
 
         function setupMetricDetailHandlers() {
@@ -595,7 +638,8 @@
                         const propertyName = lease.propertyId ? `Property ID ${lease.propertyId.substring(0,6)}...` : 'a property';
                         activities.push({ 
                             text: `New lease started for ${propertyName} with ${lease.tenants || 'tenant(s)'}.`, 
-                            timestamp: lease.updatedAt || lease.createdAt 
+                            timestamp: lease.updatedAt || lease.createdAt,
+                            type: 'lease'
                         });
                     });
                 }
@@ -615,7 +659,8 @@
                         const propertyName = wo.propertyId ? `Property ID ${wo.propertyId.substring(0,6)}...` : 'a property';
                         activities.push({ 
                             text: `Work order '${wo.title || 'Untitled'}' for ${propertyName} was updated to status: ${wo.status}.`, 
-                            timestamp: wo.updatedAt || wo.createdAt
+                            timestamp: wo.updatedAt || wo.createdAt,
+                            type: 'workOrder'
                         });
                     });
                 }
@@ -634,7 +679,8 @@
                         const payment = child.val();
                         activities.push({ 
                             text: `Payment of $${parseFloat(payment.amount).toLocaleString()} received for ${payment.description || 'rent'}.`, 
-                            timestamp: payment.updatedAt || payment.createdAt
+                            timestamp: payment.updatedAt || payment.createdAt,
+                            type: 'payment'
                         });
                     });
                 }
@@ -651,10 +697,119 @@
                 displayedActivities.forEach(activity => {
                     const li = document.createElement('li');
                     li.textContent = activity.text;
+                    li.classList.add('activity-link');
+                    li.setAttribute('tabindex', '0');
+                    li.dataset.type = activity.type;
+                    li.addEventListener('click', () => handleActivityClick(activity.type));
+                    li.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleActivityClick(activity.type); });
                     DOMElements.activityList.appendChild(li);
                 });
             } else {
                 DOMElements.activityList.innerHTML = '<li>No recent activity to display. Some data may be unavailable due to permissions.</li>';
+            }
+        }
+
+        function handleActivityClick(type) {
+            if (type === 'lease') {
+                window.location.href = 'platform_leasing.html';
+            } else if (type === 'workOrder') {
+                window.location.href = 'platform_maintenance.html';
+            } else if (type === 'payment') {
+                window.location.href = 'platform_accounting.html';
+            }
+        }
+
+        function setupActivityModal() {
+            const openBtn = document.getElementById('viewAllActivityBtn');
+            const modal = document.getElementById('activityModal');
+            const closeBtn = modal.querySelector('.close-btn');
+            const activityModalList = document.getElementById('activityModalList');
+
+            openBtn.addEventListener('click', () => {
+                modal.style.display = 'flex';
+                loadAllActivityForModal();
+            });
+            closeBtn.addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+            window.addEventListener('click', (event) => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+
+        async function loadAllActivityForModal() {
+            if (!pageCurrentUserId || !pageDatabase) return;
+            const activityModalList = document.getElementById('activityModalList');
+            activityModalList.innerHTML = '';
+            const activities = [];
+            const maxActivitiesPerType = 10;
+            try {
+                // Leases
+                const leasesRef = ref(pageDatabase, `leases/${pageCurrentUserId}`);
+                const recentLeasesQuery = query(leasesRef, orderByChild('updatedAt'), limitToLast(maxActivitiesPerType));
+                const leaseSnapshot = await get(recentLeasesQuery);
+                if (leaseSnapshot.exists()) {
+                    leaseSnapshot.forEach(child => {
+                        const lease = child.val();
+                        const propertyName = lease.propertyId ? `Property ID ${lease.propertyId.substring(0,6)}...` : 'a property';
+                        activities.push({ 
+                            text: `New lease started for ${propertyName} with ${lease.tenants || 'tenant(s)'}.`, 
+                            timestamp: lease.updatedAt || lease.createdAt,
+                            type: 'lease'
+                        });
+                    });
+                }
+            } catch (error) {}
+            try {
+                // Work Orders
+                const workOrdersRef = ref(pageDatabase, `workOrders/${pageCurrentUserId}`);
+                const recentWoQuery = query(workOrdersRef, orderByChild('updatedAt'), limitToLast(maxActivitiesPerType));
+                const woSnapshot = await get(recentWoQuery);
+                if (woSnapshot.exists()) {
+                    woSnapshot.forEach(child => {
+                        const wo = child.val();
+                        const propertyName = wo.propertyId ? `Property ID ${wo.propertyId.substring(0,6)}...` : 'a property';
+                        activities.push({ 
+                            text: `Work order '${wo.title || 'Untitled'}' for ${propertyName} was updated to status: ${wo.status}.`, 
+                            timestamp: wo.updatedAt || wo.createdAt,
+                            type: 'workOrder'
+                        });
+                    });
+                }
+            } catch (error) {}
+            try {
+                // Payments
+                const receivablesRef = ref(pageDatabase, `receivables/${pageCurrentUserId}`);
+                const recentPaymentsQuery = query(receivablesRef, orderByChild('updatedAt'), limitToLast(maxActivitiesPerType));
+                const paymentsSnapshot = await get(recentPaymentsQuery);
+                if (paymentsSnapshot.exists()) {
+                    paymentsSnapshot.forEach(child => {
+                        const payment = child.val();
+                        activities.push({ 
+                            text: `Payment of $${parseFloat(payment.amount).toLocaleString()} received for ${payment.description || 'rent'}.`, 
+                            timestamp: payment.updatedAt || payment.createdAt,
+                            type: 'payment'
+                        });
+                    });
+                }
+            } catch (error) {}
+            // Sort and display
+            activities.sort((a, b) => b.timestamp - a.timestamp);
+            if (activities.length > 0) {
+                activities.forEach(activity => {
+                    const li = document.createElement('li');
+                    li.textContent = activity.text;
+                    li.classList.add('activity-link');
+                    li.setAttribute('tabindex', '0');
+                    li.dataset.type = activity.type;
+                    li.addEventListener('click', () => handleActivityClick(activity.type));
+                    li.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleActivityClick(activity.type); });
+                    activityModalList.appendChild(li);
+                });
+            } else {
+                activityModalList.innerHTML = '<li>No recent activity to display. Some data may be unavailable due to permissions.</li>';
             }
         }
 
