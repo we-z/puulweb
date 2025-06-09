@@ -996,4 +996,26 @@ table.data-table tr:hover {
     .page-container {
         padding-top: 70px;
     }
+}
+
+.btn-secondary {
+    background-color: #212529;
+    color: #fff;
+    border: 1px solid #212529;
+    border-radius: 8px;
+    padding: 12px 20px;
+    font-size: 1rem;
+    font-weight: 500;
+    box-shadow: none;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+    outline: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+.btn-secondary:hover, .btn-secondary:focus {
+    background-color: #343a40;
+    border-color: #343a40;
+    color: #fff;
 } 

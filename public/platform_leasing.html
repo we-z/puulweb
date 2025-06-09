@@ -24,6 +24,42 @@
         .sub-nav-item.active { color: #000; border-bottom-color: #000; }
         .subsection-content { display: none; }
         .subsection-content.active { display: block; }
+        .signals-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 32px;
+            margin-top: 32px;
+        }
+        @media (max-width: 900px) {
+            .signals-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .signal-item {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+            padding: 28px 24px 20px 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .signal-item h5 {
+            margin: 0 0 8px 0;
+            font-size: 1.15rem;
+            color: #1e293b;
+            font-weight: 600;
+        }
+        .signal-desc {
+            color: #64748b;
+            font-size: 0.98rem;
+            margin-bottom: 18px;
+        }
+        .chart-wrapper {
+            width: 100%;
+            min-height: 220px;
+            margin-top: 0;
+        }
     </style>
 </head>
 <body>
@@ -108,32 +144,35 @@
                     <div class="signals-overview">
                         <p>This section provides data-driven insights to optimize your leasing strategy, based on market trends, prospect behavior, and property performance.</p>
                     </div>
-                    <div class="signal-item-list">
+                    <div class="signals-grid">
                         <div class="signal-item">
                             <h5>Market Rent Analysis</h5>
-                            <p>Compares your current asking rents with prevailing market rates for similar properties in the area. Suggests optimal rent adjustments.</p>
-                            <div class="signal-data-placeholder">[Chart/Data: Market Rent vs. Your Rent]</div>
-                            <button class="btn-secondary view-signal-details" data-signal="market-rent">View Details</button>
+                            <p class="signal-desc">Bar chart comparing your current asking rents with prevailing market rates for similar properties in the area.</p>
+                            <div class="chart-wrapper" style="height: 280px;">
+                                <canvas id="signalChartMarketRent"></canvas>
+                            </div>
                         </div>
                         <div class="signal-item">
                             <h5>Vacancy Rate Trends</h5>
-                            <p>Tracks your portfolio's vacancy rate over time compared to local market averages. Highlights units that are hard to fill.</p>
-                            <div class="signal-data-placeholder">[Chart/Data: Your Vacancy Rate vs. Market]</div>
-                            <button class="btn-secondary view-signal-details" data-signal="vacancy-trends">View Details</button>
+                            <p class="signal-desc">Line chart showing your portfolio's vacancy rate over time compared to local market averages.</p>
+                            <div class="chart-wrapper" style="height: 280px;">
+                                <canvas id="signalChartVacancyTrends"></canvas>
+                            </div>
                         </div>
                         <div class="signal-item">
                             <h5>Prospect Conversion Funnel</h5>
-                            <p>Analyzes the journey from guest card to lease signing, identifying bottlenecks in your leasing process (e.g., application fall-off rate).</p>
-                            <div class="signal-data-placeholder">[Chart/Data: Prospect Funnel Stages]</div>
-                            <button class="btn-secondary view-signal-details" data-signal="conversion-funnel">View Details</button>
+                            <p class="signal-desc">Bar chart visualizing the journey from guest card to lease signing, highlighting conversion at each stage.</p>
+                            <div class="chart-wrapper" style="height: 280px;">
+                                <canvas id="signalChartConversionFunnel"></canvas>
+                            </div>
                         </div>
                         <div class="signal-item">
                             <h5>Lease Expiration Hotspots</h5>
-                            <p>Identifies upcoming periods with a high concentration of lease expirations, helping you plan renewal strategies proactively.</p>
-                            <div class="signal-data-placeholder">[List/Calendar: Upcoming Expirations by Month]</div>
-                            <button class="btn-secondary view-signal-details" data-signal="expiration-hotspots">View Details</button>
+                            <p class="signal-desc">Pie chart showing the distribution of upcoming lease expirations by month.</p>
+                            <div class="chart-wrapper" style="height: 280px;">
+                                <canvas id="signalChartExpirationHotspots"></canvas>
+                            </div>
                         </div>
-                        <!-- More leasing signals can be added here -->
                     </div>
                 </div>
 
@@ -152,6 +191,8 @@
 
     <div id="customAlertModal"><div class="custom-alert"><p></p></div></div>
     <div id="customConfirmModal" class="modal"><div class="modal-content confirm-modal-content"><div class="modal-header"><h3 id="customConfirmTitle"></h3><button class="close-btn" data-modal-id="customConfirmModal">&times;</button></div><div class="modal-body"><p id="customConfirmMessage"></p></div><div class="modal-footer"><button class="cancel-btn-confirm" id="customConfirmCancel">Cancel</button><button class="confirm-btn" id="customConfirmOk">OK</button></div></div></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script type="module">
         import { initializeAuth, showAlert, showConfirm, editIconSVG, deleteIconSVG, getDbData, initializeCustomDropdown } from './js/platform_common.js';
@@ -187,7 +228,6 @@
 
             loadDataForActiveSubsection(); // Load data for default active tab (Vacancies)
             setupEventListeners();
-            setupSignalButtons();
             
             DOMElements.addItemBtn.addEventListener('click', () => {
                 const activeSubSection = document.querySelector('#leasingSubNav .sub-nav-item.active').dataset.subsection;
@@ -549,21 +589,73 @@
              row.addEventListener('click', () => openModalForSubsection('renewals', data.id, data));
         }
 
-        function setupSignalButtons() {
-            const signalButtons = document.querySelectorAll('.view-signal-details');
-            signalButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const signalType = button.dataset.signal;
-                    let signalName = 'Selected Signal';
-                    // Get the H5 title closest to the button
-                    const h5 = button.closest('.signal-item')?.querySelector('h5');
-                    if (h5 && h5.textContent) {
-                        signalName = h5.textContent;
-                    }
-                    commonDependencies.commonShowAlert(`Detailed insights for "${signalName}" are not yet implemented. This feature will be available in a future update.`, 'Feature Not Available');
-                });
+        window.addEventListener('DOMContentLoaded', function() {
+            // Market Rent Analysis
+            new Chart(document.getElementById('signalChartMarketRent').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: ['Studio', '1BR', '2BR', '3BR'],
+                    datasets: [
+                        { label: 'Your Rent', data: [0,0,0,0], backgroundColor: '#3b82f6' },
+                        { label: 'Market Rent', data: [0,0,0,0], backgroundColor: '#10b981' }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'top' } },
+                    scales: { y: { beginAtZero: true, ticks: { callback: v => '$' + v } } }
+                }
             });
-        }
+            // Vacancy Rate Trends
+            new Chart(document.getElementById('signalChartVacancyTrends').getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        { label: 'Your Vacancy Rate', data: [], borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)', fill: true },
+                        { label: 'Market Vacancy Rate', data: [], borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', fill: true }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'top' } },
+                    scales: { y: { beginAtZero: true, max: 10, ticks: { callback: v => v + '%' } } }
+                }
+            });
+            // Prospect Conversion Funnel
+            new Chart(document.getElementById('signalChartConversionFunnel').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [
+                        { label: 'Prospects', data: [], backgroundColor: ['#3b82f6', '#6366f1', '#f59e0b', '#10b981'] }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+            // Lease Expiration Hotspots
+            new Chart(document.getElementById('signalChartExpirationHotspots').getContext('2d'), {
+                type: 'pie',
+                data: {
+                    labels: [],
+                    datasets: [
+                        { label: 'Expirations', data: [], backgroundColor: ['#3b82f6', '#6366f1', '#f59e0b', '#10b981', '#ef4444'] }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'top' } }
+                }
+            });
+        });
 
         initializeAuth(pageInit);
     </script>
