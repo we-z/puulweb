@@ -60,6 +60,48 @@
             min-height: 220px;
             margin-top: 0;
         }
+        /* Action buttons styling */
+        .edit-btn, .delete-btn, .renew-btn {
+            background: none;
+            border: none;
+            padding: 4px;
+            cursor: pointer;
+            color: #64748b;
+            transition: color 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .edit-btn:hover { color: #3b82f6; }
+        .delete-btn:hover { color: #ef4444; }
+        .renew-btn:hover { color: #10b981; }
+        .icon {
+            width: 16px;
+            height: 16px;
+        }
+        .actions-cell {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-start;
+            align-items: center;
+        }
+        /* No data message styling */
+        .no-data-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: #64748b;
+        }
+        .no-data-message .icon {
+            font-size: 2rem;
+            margin-bottom: 12px;
+            display: block;
+            width: auto;
+            height: auto;
+        }
+        .no-data-message p {
+            margin: 0;
+            font-size: 1rem;
+        }
     </style>
 </head>
 <body>
@@ -467,7 +509,7 @@
             row.insertCell().textContent = data.availableDate ? new Date(data.availableDate).toLocaleDateString() : 'N/A';
             row.insertCell().textContent = data.marketRent ? `$${parseFloat(data.marketRent).toFixed(2)}` : 'N/A';
             const actionsCell = row.insertCell();
-            actionsCell.innerHTML = `<button class="edit-btn" title="Edit Vacancy Details">${commonDependencies.commonEditIcon}</button>`;
+            actionsCell.innerHTML = `<button class="edit-btn" title="Edit Vacancy Details"><svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path></svg></button>`;
             // Edit vacancy might open property modal, or a specific vacancy modal if fields differ significantly
             actionsCell.querySelector('.edit-btn').addEventListener('click', () => openModalForSubsection('vacancies', data.id, data));
              row.addEventListener('click', () => openModalForSubsection('vacancies', data.id, data));
@@ -492,7 +534,7 @@
             row.insertCell().textContent = data.createdAt ? new Date(data.createdAt).toLocaleDateString() : 'N/A';
             row.insertCell().innerHTML = `<span class="status-badge status-${(data.status || 'new').toLowerCase().replace(' ','-')}">${data.status || 'New'}</span>`;
             const actionsCell = row.insertCell();
-            actionsCell.innerHTML = `<button class="edit-btn">${commonDependencies.commonEditIcon}</button><button class="delete-btn">${commonDependencies.commonDeleteIcon}</button>`;
+            actionsCell.innerHTML = `<button class="edit-btn"><svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path></svg></button><button class="delete-btn"><svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg></button>`;
             actionsCell.querySelector('.edit-btn').addEventListener('click', () => openModalForSubsection('guestCards', data.id, data));
             actionsCell.querySelector('.delete-btn').addEventListener('click', () => handleDeleteGeneric('guestCards', data.id, 'Guest Card'));
              row.addEventListener('click', () => openModalForSubsection('guestCards', data.id, data));
@@ -516,7 +558,7 @@
             row.insertCell().innerHTML = `<span class="status-badge status-${(data.status || 'submitted').toLowerCase().replace(' ','-')}">${data.status || 'Submitted'}</span>`;
             row.insertCell().textContent = data.creditScore || 'N/A'; // Placeholder
             const actionsCell = row.insertCell();
-            actionsCell.innerHTML = `<button class="edit-btn">${commonDependencies.commonEditIcon}</button><button class="delete-btn">${commonDependencies.commonDeleteIcon}</button>`;
+            actionsCell.innerHTML = `<button class="edit-btn"><svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path></svg></button><button class="delete-btn"><svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg></button>`;
             actionsCell.querySelector('.edit-btn').addEventListener('click', () => openModalForSubsection('rentalApplications', data.id, data));
             actionsCell.querySelector('.delete-btn').addEventListener('click', () => handleDeleteGeneric('rentalApplications', data.id, 'Rental Application'));
             row.addEventListener('click', () => openModalForSubsection('rentalApplications', data.id, data));
@@ -544,7 +586,7 @@
             row.insertCell().innerHTML = `<span class="status-badge status-${(data.status || 'active').toLowerCase().replace(' ','-')}">${data.status || 'Active'}</span>`;
             const actionsCell = row.insertCell();
             // Add a specific "Renew" button for leases
-            actionsCell.innerHTML = `<button class="edit-btn">${commonDependencies.commonEditIcon}</button><button class="renew-btn" title="Process Renewal">🔁</button><button class="delete-btn">${commonDependencies.commonDeleteIcon}</button>`;
+            actionsCell.innerHTML = `<button class="edit-btn"><svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path></svg></button><button class="renew-btn" title="Process Renewal"></button><button class="delete-btn"><svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg></button>`;
             actionsCell.querySelector('.edit-btn').addEventListener('click', () => openModalForSubsection('leases', data.id, data));
             actionsCell.querySelector('.renew-btn').addEventListener('click', (e) => { e.stopPropagation(); openModalForSubsection('renewals', data.id, data); });
             actionsCell.querySelector('.delete-btn').addEventListener('click', () => handleDeleteGeneric('leases', data.id, 'Lease'));
