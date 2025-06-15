@@ -12,6 +12,115 @@
         .sub-nav-item.active { color: #000; border-bottom-color: #000; }
         .subsection-content { display: none; }
         .subsection-content.active { display: block; }
+        .form-group-row { display: flex; gap: 15px; }
+
+        /* Journal Entry Modal Styles */
+        .je-table {
+            display: grid;
+            grid-template-columns: minmax(150px, 2fr) minmax(150px, 3fr) minmax(90px, 1fr) minmax(120px, 1.5fr) auto;
+            gap: 10px;
+            align-items: center;
+            padding: 0 5px; /* Reduced padding */
+        }
+        .je-header {
+            font-weight: bold;
+            font-size: 0.8rem;
+            color: #555;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 5px;
+        }
+        .je-line-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .je-line-item:last-child {
+            border-bottom: none;
+        }
+        .je-line-item select, .je-line-item input {
+            width: 100%;
+            font-size: 0.9rem;
+        }
+        .delete-je-line-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .delete-je-line-btn svg {
+            width: 16px;
+            height: 16px;
+            fill: #888;
+            transition: fill 0.2s ease;
+        }
+        .delete-je-line-btn:hover svg {
+            fill: #dc3545;
+        }
+        .je-totals {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 15px 5px;
+            margin-top: 10px;
+            background-color: #f9f9f9;
+            border-top: 2px solid #e0e0e0;
+        }
+        .je-totals-summary {
+            display: grid;
+            grid-template-columns: auto auto;
+            gap: 5px 20px;
+            align-items: center;
+            font-size: 0.95rem;
+        }
+        .je-totals-summary label {
+            text-align: right;
+            color: #333;
+            font-weight: 500;
+        }
+        .je-totals-summary span {
+            text-align: right;
+            min-width: 100px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+        #jeBalanceStatus {
+            font-weight: bold;
+            margin-left: 25px;
+            padding: 6px 12px;
+            border-radius: 20px; /* pill shape */
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+        #jeBalanceStatus.balanced {
+            color: #155724;
+            background-color: #d4edda;
+        }
+        #jeBalanceStatus.unbalanced {
+            color: #721c24;
+            background-color: #f8d7da;
+        }
+        #addJeLineBtn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            background-color: #6c757d; /* Monotone color */
+            color: white;
+            padding: 9px 18px;
+            border-radius: 5px;
+            transition: background-color 0.2s ease;
+            margin-top: 15px; /* give some space */
+            border: none;
+            cursor: pointer;
+        }
+        #addJeLineBtn:hover {
+            background-color: #5a6268;
+        }
     </style>
 </head>
 <body>
@@ -80,7 +189,56 @@
     <div id="receivableModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>Add/Edit Receivable</h3><button class="close-btn" data-modal-id="receivableModal">&times;</button></div><form id="receivableForm"><input type="hidden" name="receivableId"><div class="form-group"><label>Date</label><input type="date" name="date" required></div><div class="form-group"><label>Tenant/Payer</label><input type="text" name="payerName" required></div><div class="form-group"><label>Property</label><select name="propertyId" required></select></div><div class="form-group"><label>Description</label><input type="text" name="description" required></div><div class="form-group"><label>Amount Due ($)</label><input type="number" name="amountDue" step="0.01" required></div><div class="form-group"><label>Status</label><select name="status"><option>Due</option><option>Paid</option><option>Overdue</option><option>Partial</option></select></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="receivableModal">Cancel</button><button type="submit" class="submit-btn">Save</button></div></form></div></div>
     <div id="payableModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>Add/Edit Payable</h3><button class="close-btn" data-modal-id="payableModal">&times;</button></div><form id="payableForm"><input type="hidden" name="payableId"><div class="form-group"><label>Due Date</label><input type="date" name="dueDate" required></div><div class="form-group"><label>Vendor/Payee</label><input type="text" name="payeeName" required></div><div class="form-group"><label>Property (Optional)</label><select name="propertyId"><option value="">N/A</option></select></div><div class="form-group"><label>Description</label><input type="text" name="description" required></div><div class="form-group"><label>Amount ($)</label><input type="number" name="amount" step="0.01" required></div><div class="form-group"><label>Status</label><select name="status"><option>Unpaid</option><option>Paid</option><option>Pending</option></select></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="payableModal">Cancel</button><button type="submit" class="submit-btn">Save</button></div></form></div></div>
     <div id="bankAccountModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>Add/Edit Bank Account</h3><button class="close-btn" data-modal-id="bankAccountModal">&times;</button></div><form id="bankAccountForm"><input type="hidden" name="bankAccountId"><div class="form-group"><label>Account Name</label><input type="text" name="accountName" required></div><div class="form-group"><label>Bank Name</label><input type="text" name="bankName"></div><div class="form-group"><label>Account Number</label><input type="text" name="accountNumber" placeholder="Full number (stored securely)"></div><div class="form-group"><label>Account Type</label><select name="accountType"><option>Checking</option><option>Savings</option><option>Credit Card</option><option>Loan</option><option>Other</option></select></div><div class="form-group"><label>Opening Balance ($)</label><input type="number" name="openingBalance" step="0.01"></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="bankAccountModal">Cancel</button><button type="submit" class="submit-btn">Save</button></div></form></div></div>
-    <div id="journalEntryModal" class="modal"><div class="modal-content" style="max-width: 700px;"><div class="modal-header"><h3>Add/Edit Journal Entry</h3><button class="close-btn" data-modal-id="journalEntryModal">&times;</button></div><form id="journalEntryForm"><input type="hidden" name="journalEntryId"><div class="form-group"><label>Date</label><input type="date" name="date" required></div><div class="form-group"><label>Description</label><input type="text" name="description" required></div><div id="jeLinesContainer" class="form-group"></div><button type="button" id="addJeLineBtn" class="submit-btn" style="background-color: #6c757d; margin-bottom:15px;">Add Line</button><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="journalEntryModal">Cancel</button><button type="submit" class="submit-btn">Save</button></div></form></div></div>
+    <div id="journalEntryModal" class="modal">
+        <div class="modal-content" style="max-width: 850px;">
+            <div class="modal-header">
+                <h3>Add/Edit Journal Entry</h3>
+                <button class="close-btn" data-modal-id="journalEntryModal">&times;</button>
+            </div>
+            <form id="journalEntryForm">
+                <input type="hidden" name="journalEntryId">
+                <div class="form-group-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label>Date</label>
+                        <input type="date" name="date" required>
+                    </div>
+                    <div class="form-group" style="flex: 2;">
+                        <label>Description</label>
+                        <input type="text" name="description" required placeholder="Overall description for the entry">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div id="jeLinesHeader" class="je-table je-header">
+                        <div style="grid-column: 1;">GL Account</div>
+                        <div style="grid-column: 2;">Description</div>
+                        <div style="grid-column: 3;">Type</div>
+                        <div style="grid-column: 4; text-align: right;">Amount</div>
+                        <div style="grid-column: 5;"></div>
+                    </div>
+                    <div id="jeLinesContainer">
+                        <!-- Journal entry lines will be dynamically inserted here -->
+                    </div>
+                    <div id="jeLinesFooter" class="je-totals">
+                        <div class="je-totals-summary">
+                            <label>Totals:</label>
+                            <span id="totalDebits">$0.00</span>
+                            <div></div>
+                            <span id="totalCredits">$0.00</span>
+                        </div>
+                        <div id="jeBalanceStatus"></div>
+                    </div>
+                </div>
+                <button type="button" id="addJeLineBtn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>
+                    <span>Add Line</span>
+                </button>
+                <div class="form-actions" style="margin-top: 20px;">
+                    <button type="button" class="cancel-btn" data-modal-id="journalEntryModal">Cancel</button>
+                    <button type="submit" class="submit-btn">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
     <div id="bankTransferModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>Add/Edit Bank Transfer</h3><button class="close-btn" data-modal-id="bankTransferModal">&times;</button></div><form id="bankTransferForm"><input type="hidden" name="bankTransferId"><div class="form-group"><label>Date</label><input type="date" name="date" required></div><div class="form-group"><label>From Account</label><select name="fromAccountId" required></select></div><div class="form-group"><label>To Account</label><select name="toAccountId" required></select></div><div class="form-group"><label>Amount ($)</label><input type="number" name="amount" step="0.01" required></div><div class="form-group"><label>Memo</label><input type="text" name="memo"></div><div class="form-group"><label>Status</label><select name="status"><option value="Pending">Pending</option><option value="Completed">Completed</option><option value="Failed">Failed</option></select></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="bankTransferModal">Cancel</button><button type="submit" class="submit-btn">Save</button></div></form></div></div>
     <div id="glAccountModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>Add/Edit GL Account</h3><button class="close-btn" data-modal-id="glAccountModal">&times;</button></div><form id="glAccountForm"><input type="hidden" name="glAccountId"><div class="form-group"><label>Account Number</label><input type="text" name="accountNumber" required></div><div class="form-group"><label>Account Name</label><input type="text" name="accountName" required></div><div class="form-group"><label>Type</label><select name="type"><option>Asset</option><option>Liability</option><option>Equity</option><option>Income</option><option>Expense</option></select></div><div class="form-group"><label>Sub-Type (Optional)</label><input type="text" name="subType"></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="glAccountModal">Cancel</button><button type="submit" class="submit-btn">Save</button></div></form></div></div>
 
@@ -250,7 +408,16 @@
             forms.forEach(f => {
                 if (f.form) f.form.addEventListener('submit', (e) => handleGenericFormSubmit(e, f.path, f.name, f.form.id.replace('Form','Modal')));
             });
-            if(DOMElements.addJeLineBtn) DOMElements.addJeLineBtn.addEventListener('click', addJournalEntryLine);
+            if(DOMElements.addJeLineBtn) DOMElements.addJeLineBtn.addEventListener('click', () => addJournalEntryLine());
+
+            const jeLinesContainer = DOMElements.journalEntryForm.querySelector('#jeLinesContainer');
+            if (jeLinesContainer) {
+                jeLinesContainer.addEventListener('input', (e) => {
+                    if (e.target.matches('input[name^="debit_"], input[name^="credit_"]')) {
+                        updateJournalEntryTotals();
+                    }
+                });
+            }
         }
 
         async function handleGenericFormSubmit(e, firebasePath, itemName, modalId) {
@@ -267,20 +434,22 @@
                 const lineContainers = form.querySelectorAll('.je-line-item');
                 let totalDebits = 0, totalCredits = 0;
                 for (const lineEl of lineContainers) {
+                    const type = lineEl.querySelector('select[name^="lineType_"]').value;
+                    const amount = parseFloat(lineEl.querySelector('input[name^="lineAmount_"]').value) || 0;
                     const lineData = {
                         glAccountId: lineEl.querySelector('select[name^="glAccountId_"]').value,
                         description: lineEl.querySelector('input[name^="lineDescription_"]').value,
-                        debit: parseFloat(lineEl.querySelector('input[name^="debit_"]').value) || 0,
-                        credit: parseFloat(lineEl.querySelector('input[name^="credit_"]').value) || 0,
+                        debit: type === 'debit' ? amount : 0,
+                        credit: type === 'credit' ? amount : 0,
                     };
-                    if (!lineData.glAccountId || (lineData.debit === 0 && lineData.credit === 0)) { continue; }
-                    if (lineData.debit > 0 && lineData.credit > 0) { commonDependencies.commonShowAlert('A line cannot have both debit and credit.'); return; }
+
+                    if (!lineData.glAccountId || amount === 0) { continue; }
                     data.lines.push(lineData);
                     totalDebits += lineData.debit;
                     totalCredits += lineData.credit;
                 }
-                if (data.lines.length === 0) { commonDependencies.commonShowAlert('Journal entry must have at least one valid line.'); return; }
-                if (Math.abs(totalDebits - totalCredits) > 0.001) { commonDependencies.commonShowAlert('Debits must equal credits.'); return; }
+                if (data.lines.length < 2) { commonDependencies.commonShowAlert('Journal entry must have at least two lines.'); return; }
+                if (Math.abs(totalDebits - totalCredits) > 0.001) { commonDependencies.commonShowAlert('Debits must equal credits. Please check your entry.'); return; }
                 data.totalDebits = totalDebits;
                 data.totalCredits = totalCredits;
             } else {
@@ -411,37 +580,85 @@
             actionsCell.querySelector('.delete-btn').addEventListener('click', () => handleDeleteGeneric('bankAccounts', data.id, 'Bank Account'));
             row.addEventListener('click', () => openModalForSubsection('bankAccounts', data.id, data));
         }
-        function addJournalEntryLine(glAccountId = '', description = '', debit = '', credit = '') {
+        function updateJournalEntryTotals() {
+            const lines = DOMElements.journalEntryForm.querySelectorAll('.je-line-item');
+            let totalDebits = 0, totalCredits = 0;
+
+            lines.forEach(line => {
+                const type = line.querySelector('select[name^="lineType_"]').value;
+                const amount = parseFloat(line.querySelector('input[name^="lineAmount_"]').value) || 0;
+                if (type === 'debit') {
+                    totalDebits += amount;
+                } else {
+                    totalCredits += amount;
+                }
+            });
+
+            const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
+            document.getElementById('totalDebits').textContent = formatter.format(totalDebits);
+            document.getElementById('totalCredits').textContent = formatter.format(totalCredits);
+
+            const statusEl = document.getElementById('jeBalanceStatus');
+            if (Math.abs(totalDebits - totalCredits) < 0.001 && totalDebits > 0) {
+                statusEl.textContent = 'Balanced';
+                statusEl.className = 'balanced';
+            } else {
+                statusEl.textContent = 'Unbalanced';
+                statusEl.className = 'unbalanced';
+            }
+        }
+        
+        function addJournalEntryLine(glAccountId = '', description = '', type = 'debit', amount = '') {
             const container = DOMElements.journalEntryForm.querySelector('#jeLinesContainer');
-            const lineNum = container.children.length;
+            const lineNum = Date.now(); // Use timestamp for a more unique ID
             const lineDiv = document.createElement('div');
-            lineDiv.classList.add('form-group', 'je-line-item');
-            lineDiv.style.display = 'flex'; lineDiv.style.gap = '10px'; lineDiv.style.alignItems = 'center';
+            lineDiv.className = 'je-table je-line-item';
+
             let glOptionsHTML = '<option value="">Select GL Account</option>';
             for (const [id, acc] of Object.entries(localGLAccountsMap)) {
-                glOptionsHTML += '<option value="' + id + '" ' + (id === glAccountId ? 'selected' : '') + '>' + acc.number + ' - ' + acc.name + '</option>';
+                const isSelected = id === glAccountId ? 'selected' : '';
+                glOptionsHTML += `<option value="${id}" ${isSelected}>${acc.number} - ${acc.name}</option>`;
             }
 
-            lineDiv.innerHTML =
-                '<select name="glAccountId_' + lineNum + '" style="flex:2;" required>' + glOptionsHTML + '</select>' +
-                '<input type="text" name="lineDescription_' + lineNum + '" placeholder="Line Description" style="flex:3;" value="' + description + '">' +
-                '<input type="number" name="debit_' + lineNum + '" placeholder="Debit" style="flex:1;" step="0.01" value="' + debit + '">' +
-                '<input type="number" name="credit_' + lineNum + '" placeholder="Credit" style="flex:1;" step="0.01" value="' + credit + '">' +
-                '<button type="button" class="delete-je-line-btn" style="background:transparent;border:none;color:red;font-size:1.2rem;cursor:pointer;">&times;</button>';
+            const typeOptionsHTML = `
+                <option value="debit" ${type === 'debit' ? 'selected' : ''}>Debit</option>
+                <option value="credit" ${type === 'credit' ? 'selected' : ''}>Credit</option>
+            `;
+
+            lineDiv.innerHTML = `
+                <div style="grid-column: 1;"><select name="glAccountId_${lineNum}" class="form-control" required>${glOptionsHTML}</select></div>
+                <div style="grid-column: 2;"><input type="text" name="lineDescription_${lineNum}" class="form-control" placeholder="Line item description" value="${description}"></div>
+                <div style="grid-column: 3;"><select name="lineType_${lineNum}" class="form-control">${typeOptionsHTML}</select></div>
+                <div style="grid-column: 4;"><input type="number" name="lineAmount_${lineNum}" class="form-control" placeholder="$0.00" style="text-align: right;" step="0.01" min="0" value="${amount}"></div>
+                <div style="grid-column: 5; text-align: center;">
+                    <button type="button" class="delete-je-line-btn">${commonDependencies.commonDeleteIcon}</button>
+                </div>
+            `;
             
-            lineDiv.querySelector('.delete-je-line-btn').addEventListener('click', () => lineDiv.remove());
+            lineDiv.querySelector('.delete-je-line-btn').addEventListener('click', () => {
+                lineDiv.remove();
+                updateJournalEntryTotals();
+            });
             container.appendChild(lineDiv);
         }
+
         function resetJournalEntryLines(form, lines = []) {
             if (!form) return;
             const container = form.querySelector('#jeLinesContainer');
             if (!container) return;
             container.innerHTML = ''; 
             if (lines && lines.length > 0) {
-                lines.forEach(line => addJournalEntryLine(line.glAccountId, line.description, line.debit, line.credit));
+                lines.forEach(line => {
+                    const isDebit = line.debit && parseFloat(line.debit) > 0;
+                    const type = isDebit ? 'debit' : 'credit';
+                    const amount = isDebit ? line.debit : line.credit;
+                    addJournalEntryLine(line.glAccountId, line.description, type, amount);
+                });
             } else {
-                addJournalEntryLine(); addJournalEntryLine(); 
+                addJournalEntryLine('', '', 'debit', ''); 
+                addJournalEntryLine('', '', 'credit', ''); 
             }
+            updateJournalEntryTotals();
         }
         function loadJournalEntries() {
             if (!pageCurrentUserId || !pageDatabase || !commonDependencies.fbRef) return;
@@ -457,8 +674,8 @@
             row.insertCell().textContent = data.date ? new Date(data.date).toLocaleDateString() : 'N/A';
             row.insertCell().textContent = data.id.substring(0,8) + '...';
             row.insertCell().textContent = data.description;
-            row.insertCell().textContent = data.totalDebits ? `$${parseFloat(data.totalDebits).toFixed(2)}` : 'N/A';
-            row.insertCell().textContent = data.totalCredits ? `$${parseFloat(data.totalCredits).toFixed(2)}` : 'N/A';
+            row.insertCell().textContent = data.totalDebits ? `$${parseFloat(data.totalDebits).toFixed(2)}` : '$0.00';
+            row.insertCell().textContent = data.totalCredits ? `$${parseFloat(data.totalCredits).toFixed(2)}` : '$0.00';
             const actionsCell = row.insertCell();
             actionsCell.innerHTML = `<button class="edit-btn">${commonDependencies.commonEditIcon}</button><button class="delete-btn">${commonDependencies.commonDeleteIcon}</button>`;
             actionsCell.querySelector('.edit-btn').addEventListener('click', () => openModalForSubsection('journalEntries', data.id, data));
