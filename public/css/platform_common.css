@@ -138,8 +138,6 @@ body {
     /* For now, they will be hidden by .sidebar.collapsed > * */
 }
 
-
-
 .nav-menu li a:hover,
 .nav-menu li a.active {
     background-color: #e9ecef; /* Light Gray for hover/active */
@@ -294,6 +292,27 @@ table.data-table tr:hover {
     width: 18px;
     height: 18px;
     vertical-align: middle;
+}
+
+/* More specific button styles from leasing page, now common */
+.edit-btn, .delete-btn, .renew-btn {
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    color: #64748b;
+    transition: color 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.edit-btn:hover { color: #3b82f6; }
+.delete-btn:hover { color: #ef4444; }
+.renew-btn:hover { color: #10b981; }
+
+.edit-btn .icon, .delete-btn .icon, .renew-btn .icon {
+    width: 16px;
+    height: 16px;
 }
 
 .fab {
