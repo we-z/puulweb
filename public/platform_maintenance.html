@@ -592,6 +592,7 @@
         let pageDatabase;
         let localPropertiesMap = {}; // For mapping property IDs to names for this page
         let commonDependencies = {}; // To store common functions, icons, and Firebase utils
+        let listenersInitialized = {}; // To track if onValue listeners are set for subsections
 
         // Cache DOM elements for each subsection for efficiency
         const pageDOMElements = {
@@ -708,6 +709,10 @@
                             content.classList.add('active');
                         }
                     });
+
+                    // Load data for the newly activated subsection
+                    loadDataForActiveSubsection();
+
                     // Show/hide FAB based on subsection if needed, or change its context
                     const fab = pageDOMElements.addItemBtn;
                     if (item.dataset.subsection === "smartMaintenance") { // Example: hide FAB for Smart Maintenance
@@ -1053,7 +1058,9 @@
         }
 
         function loadRecurringWorkOrders() {
-            if (!pageCurrentUserId || !pageDatabase) return;
+            if (!pageCurrentUserId || !pageDatabase || listenersInitialized.recurringWorkOrders) return;
+            listenersInitialized.recurringWorkOrders = true;
+
             const dataRef = commonDependencies.fbRef(pageDatabase, `recurringWorkOrders/${pageCurrentUserId}`);
             onValue(dataRef, (snapshot) => {
                 pageDOMElements.recurringWorkOrderTableBody.innerHTML = '';
@@ -1180,7 +1187,9 @@
         }
 
         function loadInspections() {
-            if (!pageCurrentUserId || !pageDatabase || !pageDOMElements.inspectionsTableBody) return;
+            if (!pageCurrentUserId || !pageDatabase || !pageDOMElements.inspectionsTableBody || listenersInitialized.inspections) return;
+            listenersInitialized.inspections = true;
+
             const inspectionsRef = commonDependencies.fbRef(pageDatabase, `inspections/${pageCurrentUserId}`);
             onValue(commonDependencies.fbQuery(inspectionsRef, commonDependencies.fbOrderByChild('scheduledDate')), (snapshot) => {
                 pageDOMElements.inspectionsTableBody.innerHTML = '';
@@ -1290,7 +1299,9 @@
         }
 
         function loadUnitTurns() {
-            if (!pageCurrentUserId || !pageDatabase || !pageDOMElements.unitTurnsTableBody) return;
+            if (!pageCurrentUserId || !pageDatabase || !pageDOMElements.unitTurnsTableBody || listenersInitialized.unitTurns) return;
+            listenersInitialized.unitTurns = true;
+
             const unitTurnsRef = commonDependencies.fbRef(pageDatabase, `unitTurns/${pageCurrentUserId}`);
             onValue(commonDependencies.fbQuery(unitTurnsRef, commonDependencies.fbOrderByChild('targetMoveInDate')), (snapshot) => {
                 pageDOMElements.unitTurnsTableBody.innerHTML = '';
@@ -1379,7 +1390,9 @@
         }
 
         function loadProjects() {
-            if (!pageCurrentUserId || !pageDatabase) return;
+            if (!pageCurrentUserId || !pageDatabase || listenersInitialized.projects) return;
+            listenersInitialized.projects = true;
+
             const dataRef = commonDependencies.fbRef(pageDatabase, `projects/${pageCurrentUserId}`);
             onValue(dataRef, (snapshot) => {
                 pageDOMElements.projectsTableBody.innerHTML = '';
@@ -1459,7 +1472,9 @@
         }
         
         function loadPurchaseOrders() {
-            if (!pageCurrentUserId || !pageDatabase) return;
+            if (!pageCurrentUserId || !pageDatabase || listenersInitialized.purchaseOrders) return;
+            listenersInitialized.purchaseOrders = true;
+
             const dataRef = commonDependencies.fbRef(pageDatabase, `purchaseOrders/${pageCurrentUserId}`);
             onValue(dataRef, (snapshot) => {
                 pageDOMElements.purchaseOrdersTableBody.innerHTML = '';
@@ -1537,7 +1552,9 @@
         }
 
         function loadInventory() {
-             if (!pageCurrentUserId || !pageDatabase) return;
+             if (!pageCurrentUserId || !pageDatabase || listenersInitialized.inventory) return;
+             listenersInitialized.inventory = true;
+
             const dataRef = commonDependencies.fbRef(pageDatabase, `inventory/${pageCurrentUserId}`);
             onValue(dataRef, (snapshot) => {
                 pageDOMElements.inventoryTableBody.innerHTML = '';
@@ -1617,7 +1634,9 @@
         }
 
         function loadFixedAssets() {
-            if (!pageCurrentUserId || !pageDatabase) return;
+            if (!pageCurrentUserId || !pageDatabase || listenersInitialized.fixedAssets) return;
+            listenersInitialized.fixedAssets = true;
+
             const dataRef = commonDependencies.fbRef(pageDatabase, `fixedAssets/${pageCurrentUserId}`);
             onValue(dataRef, (snapshot) => {
                 pageDOMElements.fixedAssetsTableBody.innerHTML = '';
