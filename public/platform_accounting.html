@@ -731,31 +731,234 @@
         function setupDiagnosticButtons() {
             const diagnosticButtons = document.querySelectorAll('.run-diagnostic-btn');
             diagnosticButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const diagnosticType = button.dataset.diagnostic;
+                button.addEventListener('click', async (e) => {
+                    const diagnosticType = e.target.dataset.diagnostic;
                     const resultsDiv = document.getElementById(`results-${diagnosticType}`);
                     if (resultsDiv) {
-                        resultsDiv.innerHTML = '<p style="color: #6c757d; font-style: italic;">Running diagnostic...</p>'; // Clear previous results or show placeholder
+                        resultsDiv.innerHTML = '<p style="color: #6c757d; font-style: italic;">Running diagnostic...</p>';
                     }
-                    
-                    let diagnosticName = '';
-                    switch (diagnosticType) {
-                        case 'unreconciled': diagnosticName = 'Unreconciled Transactions Report'; break;
-                        case 'aging-discrepancy': diagnosticName = 'Aged Payables/Receivables Discrepancy Check'; break;
-                        case 'gl-anomaly': diagnosticName = 'GL Balance Anomaly Detection'; break;
-                        case 'data-integrity': diagnosticName = 'Data Integrity Check'; break;
-                        default: diagnosticName = 'Selected Diagnostic';
-                    }
-
-                    // Simulate running the diagnostic and then show the alert
-                    setTimeout(() => {
+                    try {
+                        await runDiagnostic(diagnosticType, resultsDiv);
+                    } catch (error) {
+                        console.error("Diagnostic error:", error);
                         if (resultsDiv) {
-                             resultsDiv.innerHTML = ''; // Clear "Running diagnostic..."
+                            resultsDiv.innerHTML = `<p style="color: #dc3545;">An error occurred while running the diagnostic: ${error.message}</p>`;
                         }
-                        commonDependencies.commonShowAlert(`${diagnosticName} is not yet implemented. This feature will be available in a future update.`, 'Feature Not Available');
-                    }, 500); // Short delay to simulate action
+                        commonDependencies.commonShowAlert(`An error occurred: ${error.message}`);
+                    }
                 });
             });
+        }
+
+        async function runDiagnostic(diagnosticType, resultsDiv) {
+            const [
+                receivablesSnap,
+                payablesSnap,
+                glAccountsSnap,
+                journalEntriesSnap,
+                bankAccountsSnap,
+                propertiesSnap,
+                bankTransfersSnap
+            ] = await Promise.all([
+                getDbData(commonDependencies.fbRef(pageDatabase, `receivables/${pageCurrentUserId}`)),
+                getDbData(commonDependencies.fbRef(pageDatabase, `payables/${pageCurrentUserId}`)),
+                getDbData(commonDependencies.fbRef(pageDatabase, `glAccounts/${pageCurrentUserId}`)),
+                getDbData(commonDependencies.fbRef(pageDatabase, `journalEntries/${pageCurrentUserId}`)),
+                getDbData(commonDependencies.fbRef(pageDatabase, `bankAccounts/${pageCurrentUserId}`)),
+                getDbData(commonDependencies.fbRef(pageDatabase, `properties/${pageCurrentUserId}`)),
+                getDbData(commonDependencies.fbRef(pageDatabase, `bankTransfers/${pageCurrentUserId}`))
+            ]);
+
+            const receivables = receivablesSnap.val() || {};
+            const payables = payablesSnap.val() || {};
+            const glAccounts = glAccountsSnap.val() || {};
+            const journalEntries = journalEntriesSnap.val() || {};
+            const bankAccounts = bankAccountsSnap.val() || {};
+            const properties = propertiesSnap.val() || {};
+            const bankTransfers = bankTransfersSnap.val() || {};
+
+            // Add IDs to objects
+            Object.keys(glAccounts).forEach(id => glAccounts[id].id = id);
+            Object.keys(journalEntries).forEach(id => journalEntries[id].id = id);
+
+            let glBalances = calculateGLAccountBalances(journalEntries, glAccounts);
+
+            switch (diagnosticType) {
+                case 'unreconciled':
+                    runUnreconciledReport(resultsDiv, receivables, payables);
+                    break;
+                case 'aging-discrepancy':
+                    runAgingDiscrepancyCheck(resultsDiv, receivables, payables, glAccounts, glBalances);
+                    break;
+                case 'gl-anomaly':
+                    runGLAnomalyScan(resultsDiv, glAccounts, glBalances);
+                    break;
+                case 'data-integrity':
+                    runDataIntegrityCheck(resultsDiv, journalEntries, receivables, payables, bankTransfers, bankAccounts, glAccounts, properties);
+                    break;
+                default:
+                    resultsDiv.innerHTML = `<p>This diagnostic is not yet implemented.</p>`;
+            }
+        }
+
+        function calculateGLAccountBalances(journalEntries, glAccounts) {
+            const balances = {};
+            for (const glId in glAccounts) {
+                balances[glId] = 0;
+            }
+
+            for (const jeId in journalEntries) {
+                const entry = journalEntries[jeId];
+                if (entry.lines && Array.isArray(entry.lines)) {
+                    entry.lines.forEach(line => {
+                        if (balances[line.glAccountId] !== undefined) {
+                            balances[line.glAccountId] += (parseFloat(line.debit) || 0) - (parseFloat(line.credit) || 0);
+                        }
+                    });
+                }
+            }
+            return balances;
+        }
+
+        function renderFindings(resultsDiv, title, findings, emptyMessage) {
+             let content = `<h5>${title}</h5>`;
+             if (findings.length === 0) {
+                 content += `<p class="text-success">${emptyMessage}</p>`;
+             } else {
+                 content += `<ul class="diagnostic-findings-list">`;
+                 findings.forEach(finding => {
+                     content += `<li>${finding}</li>`;
+                 });
+                 content += `</ul>`;
+             }
+             resultsDiv.innerHTML = content;
+        }
+
+        function runUnreconciledReport(resultsDiv, receivables, payables) {
+            let findings = [];
+            
+            Object.values(receivables).forEach(r => {
+                if (r.status === 'Paid') {
+                    findings.push(`Receivable from ${r.payerName} for $${parseFloat(r.amountDue).toFixed(2)} marked as 'Paid' on ${r.date}. Review if a corresponding journal entry to debit a bank account and credit Accounts Receivable has been recorded.`);
+                }
+            });
+
+            Object.values(payables).forEach(p => {
+                if (p.status === 'Paid') {
+                    findings.push(`Payable to ${p.payeeName} for $${parseFloat(p.amount).toFixed(2)} marked as 'Paid' with due date ${p.dueDate}. Review if a corresponding journal entry to credit a bank account and debit Accounts Payable has been recorded.`);
+                }
+            });
+            
+            renderFindings(resultsDiv, 'Unreconciled Transactions Report', findings, 'No paid receivables or payables requiring review were found.');
+        }
+
+        function runAgingDiscrepancyCheck(resultsDiv, receivables, payables, glAccounts, glBalances) {
+            let findings = [];
+            
+            const arAccount = Object.values(glAccounts).find(a => a.accountName.toLowerCase().includes('accounts receivable'));
+            let totalReceivables = 0;
+            Object.values(receivables).forEach(r => {
+                if (['Due', 'Overdue', 'Partial'].includes(r.status)) {
+                    totalReceivables += parseFloat(r.amountDue) - (parseFloat(r.amountPaid) || 0);
+                }
+            });
+            
+            if (arAccount) {
+                const arBalance = glBalances[arAccount.id];
+                if (Math.abs(arBalance - totalReceivables) > 0.01) {
+                    findings.push(`Accounts Receivable balance discrepancy found. GL balance is $${arBalance.toFixed(2)}, but total outstanding receivables is $${totalReceivables.toFixed(2)}.`);
+                }
+            } else {
+                findings.push('Could not find a GL Account for "Accounts Receivable". Unable to perform discrepancy check for receivables.');
+            }
+
+            const apAccount = Object.values(glAccounts).find(a => a.accountName.toLowerCase().includes('accounts payable'));
+            let totalPayables = 0;
+            Object.values(payables).forEach(p => {
+                if (['Unpaid', 'Pending'].includes(p.status)) {
+                    totalPayables += parseFloat(p.amount);
+                }
+            });
+
+            if (apAccount) {
+                const apBalance = Math.abs(glBalances[apAccount.id]); // AP has credit balance
+                if (Math.abs(apBalance - totalPayables) > 0.01) {
+                    findings.push(`Accounts Payable balance discrepancy found. GL balance is $${apBalance.toFixed(2)}, but total outstanding payables is $${totalPayables.toFixed(2)}.`);
+                }
+            } else {
+                findings.push('Could not find a GL Account for "Accounts Payable". Unable to perform discrepancy check for payables.');
+            }
+            
+            renderFindings(resultsDiv, 'Aged Payables/Receivables Discrepancy Check', findings, 'No discrepancies found between subledgers and general ledger.');
+        }
+
+        function runGLAnomalyScan(resultsDiv, glAccounts, glBalances) {
+            let findings = [];
+            const expectations = {
+                'Asset': 'debit', 'Expense': 'debit',
+                'Liability': 'credit', 'Equity': 'credit', 'Income': 'credit'
+            };
+
+            for (const glId in glBalances) {
+                const account = glAccounts[glId];
+                if (!account) continue;
+
+                const balance = glBalances[glId];
+                const expectedType = expectations[account.type];
+                
+                if (expectedType === 'debit' && balance < -0.01) {
+                    findings.push(`GL Anomaly: ${account.type} account '${account.accountName}' (${account.accountNumber}) has an unexpected credit balance of $${Math.abs(balance).toFixed(2)}.`);
+                } else if (expectedType === 'credit' && balance > 0.01) {
+                    findings.push(`GL Anomaly: ${account.type} account '${account.accountName}' (${account.accountNumber}) has an unexpected debit balance of $${balance.toFixed(2)}.`);
+                }
+            }
+            renderFindings(resultsDiv, 'GL Balance Anomaly Detection', findings, 'No general ledger balance anomalies detected.');
+        }
+
+        function runDataIntegrityCheck(resultsDiv, journalEntries, receivables, payables, bankTransfers, bankAccounts, glAccounts, properties) {
+            let findings = [];
+            const propertyIds = Object.keys(properties);
+            const bankAccountIds = Object.keys(bankAccounts);
+            const glAccountIds = Object.keys(glAccounts);
+
+            Object.values(journalEntries).forEach(je => {
+                if (!je.lines || !Array.isArray(je.lines)) {
+                    findings.push(`Data Integrity: Journal Entry <a href="#" onclick="openModalForSubsection('journalEntries', '${je.id}', JSON.parse(decodeURIComponent('${encodeURIComponent(JSON.stringify(je))}')))">${je.id.substring(0,8)}...</a> has malformed line data.`);
+                    return;
+                }
+                let debits = 0, credits = 0;
+                je.lines.forEach((line, index) => {
+                    debits += parseFloat(line.debit) || 0;
+                    credits += parseFloat(line.credit) || 0;
+                    if (!glAccountIds.includes(line.glAccountId)) {
+                        findings.push(`Data Integrity: Journal Entry <a href="#" onclick="openModalForSubsection('journalEntries', '${je.id}', JSON.parse(decodeURIComponent('${encodeURIComponent(JSON.stringify(je))}')))">${je.id.substring(0,8)}...</a>, line ${index + 1}, refers to a non-existent GL Account ID.`);
+                    }
+                });
+                if (Math.abs(debits - credits) > 0.01) {
+                     findings.push(`Data Integrity: Journal Entry <a href="#" onclick="openModalForSubsection('journalEntries', '${je.id}', JSON.parse(decodeURIComponent('${encodeURIComponent(JSON.stringify(je))}')))">${je.id.substring(0,8)}...</a> is out of balance. Debits: $${debits.toFixed(2)}, Credits: $${credits.toFixed(2)}.`);
+                }
+            });
+
+            Object.entries(receivables).forEach(([id, r]) => {
+                if (r.propertyId && !propertyIds.includes(r.propertyId)) {
+                    findings.push(`Data Integrity: Receivable for ${r.payerName} refers to a non-existent Property ID.`);
+                }
+            });
+            Object.entries(payables).forEach(([id, p]) => {
+                if (p.propertyId && !propertyIds.includes(p.propertyId)) {
+                    findings.push(`Data Integrity: Payable to ${p.payeeName} refers to a non-existent Property ID.`);
+                }
+            });
+            Object.entries(bankTransfers).forEach(([id, t]) => {
+                if (t.fromAccountId && !bankAccountIds.includes(t.fromAccountId)) {
+                    findings.push(`Data Integrity: Bank Transfer from a non-existent account.`);
+                }
+                if (t.toAccountId && !bankAccountIds.includes(t.toAccountId)) {
+                     findings.push(`Data Integrity: Bank Transfer to a non-existent account.`);
+                }
+            });
+
+            renderFindings(resultsDiv, 'Data Integrity Check', findings, 'No data integrity issues found.');
         }
 
         initializeAuth(pageInit);
