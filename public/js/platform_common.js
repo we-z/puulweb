@@ -191,109 +191,101 @@ function setupPageLayoutAndInteractivity() {
 function initializeCustomDropdown(dropdownElement, onChangeCallback, isDynamic = false) {
     if (!dropdownElement) return;
 
-    const selectedDisplay = dropdownElement.querySelector('.dropdown-selected');
-    const optionsContainer = dropdownElement.querySelector('.dropdown-options');
-    const selectedValueSpan = selectedDisplay.querySelector('.selected-value');
-
-    // Set initial selected value and text from HTML (if .selected class is present on an option)
-    // Wait for options to potentially be populated dynamically
-    const setupInitialSelection = () => {
-        optionsContainer.querySelectorAll('.dropdown-option').forEach(opt => opt.classList.remove('selected')); // Clear previous selections
-
-        let initialSelectedOption = optionsContainer.querySelector(`.dropdown-option[data-value="${dropdownElement.dataset.value}"]`);
-
-        if (!initialSelectedOption) { // If a value was previously set but option no longer exists, or no value was set
-             initialSelectedOption = optionsContainer.querySelector('.dropdown-option.selected'); // Check for pre-selected in HTML
-        }
-        if (!initialSelectedOption && !isDynamic) { // Fallback to first option if not dynamic and nothing else found
-            initialSelectedOption = optionsContainer.querySelector('.dropdown-option');
-        }
-
-
-        if (initialSelectedOption) {
-            selectedValueSpan.textContent = initialSelectedOption.textContent;
-            dropdownElement.dataset.value = initialSelectedOption.dataset.value;
-            initialSelectedOption.classList.add('selected');
-        } else if (!isDynamic) { // Only set placeholder if not dynamic and truly no options
-            selectedValueSpan.textContent = '---'; // Placeholder
-            dropdownElement.dataset.value = '';
-        } else if (isDynamic && !dropdownElement.dataset.value) {
-            // For dynamic dropdowns, if no value is set yet, default to the "All" or first option if available after population
-            const firstOpt = optionsContainer.querySelector('.dropdown-option');
-            if (firstOpt) {
-                selectedValueSpan.textContent = firstOpt.textContent;
-                dropdownElement.dataset.value = firstOpt.dataset.value;
-                firstOpt.classList.add('selected');
-            } else {
-                selectedValueSpan.textContent = 'Loading...'; // Or some other appropriate text
-                dropdownElement.dataset.value = '';
-            }
-        }
-         // If isDynamic and dropdownElement.dataset.value is already set, assume it's correct or will be corrected by population logic
-    };
-
-
-    if (isDynamic) {
-        // For dynamic dropdowns, we might need to observe changes or re-run setup
-        // A simple approach: setup initial selection, it will be re-evaluated if options change externally
-        // and the calling code ensures `dropdownElement.dataset.value` is updated.
-        // More robust: MutationObserver on optionsContainer. For now, simple setup.
-        // The calling code for dynamic dropdowns (like properties filter in work_orders) should handle repopulating and then
-        // ensuring the correct value is selected, potentially by calling a refresh/reset on the dropdown.
-        // For now, call it once. If optionsContainer is empty initially, this might not pick the right one until options are added.
-        // The `initializePropertiesListener` in work_orders.html handles resetting selection after populating.
-        // This common function will set initial state based on current DOM.
-        setupInitialSelection();
-    } else {
-        setupInitialSelection();
+    const textInput = dropdownElement.querySelector('.dropdown-input');
+    const menu = dropdownElement.querySelector('.dropdown-menu');
+    const optionsContainer = menu.querySelector('.dropdown-options');
+    // The hidden input is now expected to be a sibling of the dropdown container, not inside.
+    // Let's find it in the parent form group.
+    const hiddenInput = dropdownElement.closest('.form-group').querySelector('input[type="hidden"]');
+    
+    if (!textInput || !menu || !optionsContainer || !hiddenInput) {
+        console.error('Custom dropdown is missing required elements (input, menu, options, hidden input).', dropdownElement);
+        return;
     }
 
+    const showMenu = () => {
+        dropdownElement.classList.add('open');
+        menu.style.visibility = 'visible';
+        menu.style.opacity = '1';
+        menu.style.transform = 'translateY(0)';
+        menu.style.pointerEvents = 'auto';
+    };
 
-    selectedDisplay.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const DOMElements = window.DOMElements || {}; // Access global DOMElements if available
+    const hideMenu = () => {
+        dropdownElement.classList.remove('open');
+        menu.style.opacity = '0';
+        menu.style.transform = 'translateY(-10px)';
+        // Let transition finish before hiding completely
+        setTimeout(() => {
+            menu.style.visibility = 'hidden';
+            menu.style.pointerEvents = 'none';
+        }, 150);
+    };
 
-        // Close other open dropdowns
-        document.querySelectorAll('.custom-dropdown.open').forEach(openDropdown => {
-            if (openDropdown !== dropdownElement) {
-                openDropdown.classList.remove('open');
-            }
+    const filterOptions = () => {
+        const filter = textInput.value.toLowerCase();
+        let hasVisibleOptions = false;
+        optionsContainer.querySelectorAll('.dropdown-option').forEach(option => {
+            const text = option.textContent.toLowerCase();
+            const isVisible = text.includes(filter);
+            option.style.display = isVisible ? '' : 'none';
+            if (isVisible) hasVisibleOptions = true;
         });
-        dropdownElement.classList.toggle('open');
+        return hasVisibleOptions;
+    };
+
+    textInput.addEventListener('focus', () => {
+        // Show all options on focus, then filter.
+        optionsContainer.querySelectorAll('.dropdown-option').forEach(opt => opt.style.display = '');
+        showMenu();
     });
-    
-    selectedDisplay.addEventListener('keydown', (e) => {
-         if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            dropdownElement.classList.toggle('open');
-        } else if (e.key === 'Escape') {
-            dropdownElement.classList.remove('open');
+
+    textInput.addEventListener('input', () => {
+        hiddenInput.value = ''; // Clear hidden value if user is typing a new value
+        if (filterOptions()) {
+            showMenu();
+        } else {
+            hideMenu();
+        }
+    });
+
+    textInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            hideMenu();
         }
     });
 
     optionsContainer.addEventListener('click', (e) => {
         if (e.target.classList.contains('dropdown-option')) {
             const option = e.target;
-            selectedValueSpan.textContent = option.textContent;
-            dropdownElement.dataset.value = option.dataset.value;
-            
-            optionsContainer.querySelectorAll('.dropdown-option').forEach(opt => opt.classList.remove('selected'));
-            option.classList.add('selected');
+            textInput.value = option.textContent;
+            hiddenInput.value = option.dataset.value;
 
-            dropdownElement.classList.remove('open');
+            hideMenu();
+
             if (onChangeCallback && typeof onChangeCallback === 'function') {
-                onChangeCallback();
+                onChangeCallback(option.dataset.value, option.textContent);
             }
         }
     });
 
-    // Add a global click listener to close dropdowns if it hasn't been added yet.
-    // This is a bit of a workaround to prevent multiple identical listeners.
+    // Add a global click listener to close dropdowns.
+    // A single listener is more efficient than one per dropdown.
     if (!document.body.hasAttribute('data-global-dropdown-listener')) {
         document.addEventListener('click', (e) => {
             document.querySelectorAll('.custom-dropdown.open').forEach(openDropdown => {
                 if (!openDropdown.contains(e.target)) {
-                    openDropdown.classList.remove('open');
+                    // Find the associated menu and hide it.
+                    const menuToHide = openDropdown.querySelector('.dropdown-menu');
+                    if (menuToHide) {
+                         openDropdown.classList.remove('open');
+                         menuToHide.style.opacity = '0';
+                         menuToHide.style.transform = 'translateY(-10px)';
+                         setTimeout(() => {
+                             menuToHide.style.visibility = 'hidden';
+                             menuToHide.style.pointerEvents = 'none';
+                         }, 150);
+                    }
                 }
             });
         });

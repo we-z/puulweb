@@ -802,18 +802,6 @@ table.data-table tr:hover {
     color: #374151;
 }
 
-.dropdown-selected {
-    background-color: #fff;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    padding: 8px 12px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    cursor: pointer;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
 .dropdown-selected:hover {
     border-color: #a1a1aa;
 }
@@ -830,26 +818,25 @@ table.data-table tr:hover {
     margin-right: 8px; /* Space for the arrow */
 }
 
-.dropdown-arrow {
+.dropdown-selected .dropdown-arrow {
     width: 1.25em;
     height: 1.25em;
     color: #6b7280;
     transition: transform 0.2s ease;
 }
 
-.custom-dropdown.open .dropdown-arrow {
+.custom-dropdown.open .dropdown-selected .dropdown-arrow {
     transform: rotate(180deg);
 }
 
-.dropdown-options {
-    /* display: none; */ /* Replaced by visibility */
+.dropdown-menu {
     visibility: hidden;
     opacity: 0;
     transform: translateY(-10px);
-    pointer-events: none; 
-    transition: opacity 0.15s ease-out, transform 0.15s ease-out, visibility 0s linear 0.15s; /* Delay hiding visibility until other transitions finish */
+    pointer-events: none;
+    transition: opacity 0.15s ease-out, transform 0.15s ease-out, visibility 0s linear 0.15s;
     position: absolute;
-    top: calc(100% + 8px); /* Increased space between field and menu */
+    top: calc(100% + 8px);
     left: 0;
     right: 0;
     background-color: #fff;
@@ -857,26 +844,33 @@ table.data-table tr:hover {
     border-radius: 6px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     z-index: 10;
-    max-height: 200px; /* Prevent overly long dropdowns */
-    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
 }
 
-.custom-dropdown.open .dropdown-options {
-    /* display: block; */ /* Replaced by visibility */
+.custom-dropdown.open .dropdown-menu {
     visibility: visible;
     opacity: 1;
     transform: translateY(0);
-    pointer-events: auto; 
-    transition-delay: 0s; /* Ensure visibility shows immediately, and other transitions start */
+    pointer-events: auto;
+    transition-delay: 0s;
+}
+
+.dropdown-options {
+    max-height: 220px; /* Prevent overly long dropdowns */
+    overflow-y: auto;
+    padding: 5px;
 }
 
 .dropdown-option {
-    padding: 10px 12px;
+    padding: 12px 15px;
     cursor: pointer;
     transition: background-color 0.15s ease, color 0.15s ease;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    border-radius: 6px;
+    margin: 2px 0;
 }
 
 .dropdown-option:hover {
@@ -888,6 +882,12 @@ table.data-table tr:hover {
     background-color: #e9ecef; /* Slightly darker light gray for selected */
     color: #000; /* Black text for selected */
     font-weight: 500;
+}
+
+/* Remove search input specific styles as it's no longer inside the menu */
+.dropdown-search:focus {
+    outline: none;
+    border-color: #868e96;
 }
 
 @media (max-width: 768px) {

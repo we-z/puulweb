@@ -75,9 +75,9 @@
     <button class="fab" id="addItemBtn" aria-label="Add new person">+</button>
 
     <!-- Modals -->
-    <div id="tenantModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>Add/Edit Tenant</h3><button class="close-btn" data-modal-id="tenantModal">&times;</button></div><form id="tenantForm"><input type="hidden" id="tenantId" name="tenantId"><div class="form-group"><label>Full Name</label><input type="text" name="fullName" required></div><div class="form-group"><label>Primary Email</label><input type="email" name="email"></div><div class="form-group"><label>Primary Phone</label><input type="tel" name="phone"></div><div class="form-group"><label>Associated Property</label><select name="propertyId"></select></div><div class="form-group"><label>Unit Number</label><input type="text" name="unitNumber" placeholder="e.g., Apt 101"></div><div class="form-group"><label>Lease Start Date</label><input type="date" name="leaseStartDate"></div><div class="form-group"><label>Lease End Date</label><input type="date" name="leaseEndDate"></div><div class="form-group"><label>Rent Amount ($)</label><input type="number" name="rentAmount" step="0.01"></div><div class="form-group"><label>Lease ID (Optional, if linking to a separate lease record)</label><input type="text" name="leaseId"></div><div class="form-group"><label>Emergency Contact Name</label><input type="text" name="emergencyContactName"></div><div class="form-group"><label>Emergency Contact Phone</label><input type="tel" name="emergencyContactPhone"></div><div class="form-group"><label>Link to User Account (for Messaging)</label><select name="authUid"></select><small>The person must have logged in to the platform at least once to appear here.</small></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="tenantModal">Cancel</button><button type="submit" class="submit-btn">Save</button></div></form></div></div>
-    <div id="ownerModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>Add/Edit Owner</h3><button class="close-btn" data-modal-id="ownerModal">&times;</button></div><form id="ownerForm"><input type="hidden" id="ownerId" name="ownerId"><div class="form-group"><label>Full Name</label><input type="text" name="fullName" required></div><div class="form-group"><label>Primary Email</label><input type="email" name="email"></div><div class="form-group"><label>Primary Phone</label><input type="tel" name="phone"></div><div class="form-group"><label>Mailing Address</label><textarea name="mailingAddress"></textarea></div><div class="form-group"><label>Link to User Account (for Messaging)</label><select name="authUid"></select><small>The person must have logged in to the platform at least once to appear here.</small></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="ownerModal">Cancel</button><button type="submit" class="submit-btn">Save</button></div></form></div></div>
-    <div id="vendorModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>Add/Edit Vendor</h3><button class="close-btn" data-modal-id="vendorModal">&times;</button></div><form id="vendorForm"><input type="hidden" id="vendorId"><div class="form-group"><label>Company Name</label><input type="text" name="companyName" required></div><div class="form-group"><label>Contact Name</label><input type="text" name="contactName"></div><div class="form-group"><label>Service Type</label><input type="text" name="serviceType" placeholder="e.g., Plumbing, Electrical"></div><div class="form-group"><label>Primary Email</label><input type="email" name="email"></div><div class="form-group"><label>Primary Phone</label><input type="tel" name="phone"></div><div class="form-group"><label>Link to User Account (for Messaging)</label><select name="authUid"></select><small>The person must have logged in to the platform at least once to appear here.</small></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="vendorModal">Cancel</button><button type="submit" class="submit-btn">Save</button></div></form></div></div>
+    <div id="tenantModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>Add/Edit Tenant</h3><button class="close-btn" data-modal-id="tenantModal">&times;</button></div><form id="tenantForm"><input type="hidden" id="tenantId" name="tenantId"><div class="form-group"><label>Full Name</label><input type="text" name="fullName" required></div><div class="form-group"><label>Primary Email</label><input type="email" name="email"></div><div class="form-group"><label>Primary Phone</label><input type="tel" name="phone"></div><div class="form-group"><label>Associated Property</label><select name="propertyId"></select></div><div class="form-group"><label>Unit Number</label><input type="text" name="unitNumber" placeholder="e.g., Apt 101"></div><div class="form-group"><label>Lease Start Date</label><input type="date" name="leaseStartDate"></div><div class="form-group"><label>Lease End Date</label><input type="date" name="leaseEndDate"></div><div class="form-group"><label>Rent Amount ($)</label><input type="number" name="rentAmount" step="0.01"></div><div class="form-group"><label>Lease ID (Optional, if linking to a separate lease record)</label><input type="text" name="leaseId"></div><div class="form-group"><label>Emergency Contact Name</label><input type="text" name="emergencyContactName"></div><div class="form-group"><label>Emergency Contact Phone</label><input type="tel" name="emergencyContactPhone"></div><div class="form-group"><label>Link to User Account (for Messaging)</label><div class="custom-dropdown" id="tenantUserDropdown"><input type="text" class="dropdown-input form-control" placeholder="Search by name or email..."><div class="dropdown-menu"><div class="dropdown-options"></div></div></div><input type="hidden" name="authUid"><small>The person must have logged in to the platform at least once to appear here.</small></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="tenantModal">Cancel</button><button type="submit" class="submit-btn">Save</button></div></form></div></div>
+    <div id="ownerModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>Add/Edit Owner</h3><button class="close-btn" data-modal-id="ownerModal">&times;</button></div><form id="ownerForm"><input type="hidden" id="ownerId" name="ownerId"><div class="form-group"><label>Full Name</label><input type="text" name="fullName" required></div><div class="form-group"><label>Primary Email</label><input type="email" name="email"></div><div class="form-group"><label>Primary Phone</label><input type="tel" name="phone"></div><div class="form-group"><label>Mailing Address</label><textarea name="mailingAddress"></textarea></div><div class="form-group"><label>Link to User Account (for Messaging)</label><div class="custom-dropdown" id="ownerUserDropdown"><input type="text" class="dropdown-input form-control" placeholder="Search by name or email..."><div class="dropdown-menu"><div class="dropdown-options"></div></div></div><input type="hidden" name="authUid"><small>The person must have logged in to the platform at least once to appear here.</small></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="ownerModal">Cancel</button><button type="submit" class="submit-btn">Save</button></div></form></div></div>
+    <div id="vendorModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>Add/Edit Vendor</h3><button class="close-btn" data-modal-id="vendorModal">&times;</button></div><form id="vendorForm"><input type="hidden" id="vendorId"><div class="form-group"><label>Company Name</label><input type="text" name="companyName" required></div><div class="form-group"><label>Contact Name</label><input type="text" name="contactName"></div><div class="form-group"><label>Service Type</label><input type="text" name="serviceType" placeholder="e.g., Plumbing, Electrical"></div><div class="form-group"><label>Primary Email</label><input type="email" name="email"></div><div class="form-group"><label>Primary Phone</label><input type="tel" name="phone"></div><div class="form-group"><label>Link to User Account (for Messaging)</label><div class="custom-dropdown" id="vendorUserDropdown"><input type="text" class="dropdown-input form-control" placeholder="Search by name or email..."><div class="dropdown-menu"><div class="dropdown-options"></div></div></div><input type="hidden" name="authUid"><small>The person must have logged in to the platform at least once to appear here.</small></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="vendorModal">Cancel</button><button type="submit" class="submit-btn">Save</button></div></form></div></div>
 
     <div id="customAlertModal"><div class="custom-alert"><p></p></div></div>
     <div id="customConfirmModal" class="modal"><div class="modal-content confirm-modal-content"><div class="modal-header"><h3 id="customConfirmTitle"></h3><button class="close-btn" data-modal-id="customConfirmModal">&times;</button></div><div class="modal-body"><p id="customConfirmMessage"></p></div><div class="modal-footer"><button class="cancel-btn-confirm" id="customConfirmCancel">Cancel</button><button class="confirm-btn" id="customConfirmOk">OK</button></div></div></div>
@@ -111,6 +111,7 @@
             initializePropertiesListener(); // For property dropdown in tenant modal
             initializeLeasesListener(); // For tenant lease end dates
             initializeUsersListener(); // For linking accounts in modals
+            initializeSearchableDropdowns(); // Setup the new searchable dropdowns
             loadDataForActiveSubsection();
             setupEventListeners();
             
@@ -190,19 +191,59 @@
             });
         }
 
+        function initializeSearchableDropdowns() {
+            const dropdownConfigs = [
+                { id: 'tenantUserDropdown', inputName: 'authUid' },
+                { id: 'ownerUserDropdown', inputName: 'authUid' },
+                { id: 'vendorUserDropdown', inputName: 'authUid' }
+            ];
+
+            dropdownConfigs.forEach(config => {
+                const dropdown = document.getElementById(config.id);
+                if (dropdown) {
+                    commonDependencies.commonInitializeCustomDropdown(dropdown, (value) => {
+                        // The dropdown's parent form group contains the hidden input
+                        const hiddenInput = dropdown.closest('.form-group').querySelector(`input[name="${config.inputName}"]`);
+                        if (hiddenInput) {
+                            hiddenInput.value = value;
+                        }
+                    }, true); // isDynamic = true
+                }
+            });
+        }
+
         function populateUserAccountDropdowns() {
-            const selects = document.querySelectorAll('select[name="authUid"]');
-            selects.forEach(select => {
-                const currentVal = select.value;
-                select.innerHTML = '<option value="">Not Linked</option>';
+            const dropdowns = [
+                document.getElementById('tenantUserDropdown'),
+                document.getElementById('ownerUserDropdown'),
+                document.getElementById('vendorUserDropdown')
+            ];
+            
+            dropdowns.forEach(dropdown => {
+                if (!dropdown) return;
+                const menu = dropdown.querySelector('.dropdown-menu');
+                if (!menu) return;
+                const optionsContainer = menu.querySelector('.dropdown-options');
+                if (!optionsContainer) return;
+                
+                // Clear previous options
+                optionsContainer.innerHTML = '';
+
+                // Add "Not Linked" option
+                const notLinkedOption = document.createElement('div');
+                notLinkedOption.className = 'dropdown-option';
+                notLinkedOption.dataset.value = '';
+                notLinkedOption.textContent = 'Not Linked';
+                optionsContainer.appendChild(notLinkedOption);
+                
                 for (const uid in allPlatformUsers) {
                     const user = allPlatformUsers[uid];
-                    const option = document.createElement('option');
-                    option.value = uid;
-                    option.textContent = `${user.displayName} (${user.email})`;
-                    select.appendChild(option);
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'dropdown-option';
+                    optionDiv.dataset.value = uid;
+                    optionDiv.textContent = `${user.displayName} (${user.email})`;
+                    optionsContainer.appendChild(optionDiv);
                 }
-                select.value = currentVal;
             });
         }
 
@@ -270,7 +311,27 @@
                 form.reset();
                 const idInputName = Object.keys(form.elements).find(key => key.toLowerCase().includes('id') && form.elements[key].type === 'hidden');
                 if(idInputName) form.elements[idInputName].value = id || '';
-                for (const key in data) { if (form.elements[key]) form.elements[key].value = data[key]; }
+                for (const key in data) { 
+                    if (form.elements[key] && form.elements[key].type !== 'hidden') {
+                         form.elements[key].value = data[key]; 
+                    }
+                }
+                 // Handle custom dropdown separately
+                const dropdown = form.querySelector('.custom-dropdown');
+                const hiddenInput = form.querySelector('input[name="authUid"]');
+                const textInput = dropdown.querySelector('.dropdown-input');
+
+                if (dropdown && hiddenInput && textInput) {
+                    const authUid = data.authUid || '';
+                    hiddenInput.value = authUid;
+                    
+                    const selectedOptionData = allPlatformUsers[authUid];
+                    if (authUid && selectedOptionData) {
+                        textInput.value = `${selectedOptionData.displayName} (${selectedOptionData.email})`;
+                    } else {
+                        textInput.value = '';
+                    }
+                }
             }
             if (modal) modal.style.display = 'flex';
         }

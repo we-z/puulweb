@@ -211,7 +211,7 @@
         ".read": "$uid === auth.uid",
         ".indexOn": "lastMessageTimestamp",
         "$conversationId": {
-          ".write": "(data.exists() && data.child('participants').child(auth.uid).exists()) || (!data.exists() && newData.child('participants').child(auth.uid).exists() && $uid === auth.uid)"
+          ".write": "(!newData.exists() && $uid === auth.uid) || (newData.exists() && newData.child('participants').child(auth.uid).exists())"
         }
       }
     },
