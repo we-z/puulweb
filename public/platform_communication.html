@@ -245,11 +245,11 @@
 
         function setupEventListeners() {
             const forms = [
-                {form: DOMElements.letterForm, path: 'letters', name: 'Letter/Notice'},
-                {form: DOMElements.formTemplateForm, path: 'forms', name: 'Form/Template'}
+                {form: DOMElements.letterForm, path: 'letters', name: 'Letter/Notice', modalId: 'letterModal'},
+                {form: DOMElements.formTemplateForm, path: 'forms', name: 'Form/Template', modalId: 'formModal'}
             ];
             forms.forEach(f => {
-                if (f.form) f.form.addEventListener('submit', (e) => handleGenericFormSubmit(e, f.path, f.name, f.form.id.replace('Form','Modal').replace('TemplateForm','Modal')));
+                if (f.form) f.form.addEventListener('submit', (e) => handleGenericFormSubmit(e, f.path, f.name, f.modalId));
             });
 
             // Messaging Event Listeners
@@ -530,8 +530,8 @@
             row.insertCell().innerHTML = `<span class="status-badge status-${(data.status || 'Draft').toLowerCase()}">${data.status || 'Draft'}</span>`;
             const actionsCell = row.insertCell();
             actionsCell.innerHTML = `<button class="edit-btn">${commonDependencies.commonEditIcon}</button><button class="delete-btn">${commonDependencies.commonDeleteIcon}</button>`;
-            actionsCell.querySelector('.edit-btn').addEventListener('click', () => openModalForSubsection('letters', data.id, data));
-            actionsCell.querySelector('.delete-btn').addEventListener('click', () => handleDeleteGeneric('letters', data.id, 'Letter/Notice'));
+            actionsCell.querySelector('.edit-btn').addEventListener('click', (e) => { e.stopPropagation(); openModalForSubsection('letters', data.id, data); });
+            actionsCell.querySelector('.delete-btn').addEventListener('click', (e) => { e.stopPropagation(); handleDeleteGeneric('letters', data.id, 'Letter/Notice'); });
             row.addEventListener('click', () => openModalForSubsection('letters', data.id, data));
         }
 
@@ -552,8 +552,8 @@
             row.insertCell().textContent = data.usageCount || 0; // Placeholder
             const actionsCell = row.insertCell();
             actionsCell.innerHTML = `<button class="edit-btn">${commonDependencies.commonEditIcon}</button><button class="delete-btn">${commonDependencies.commonDeleteIcon}</button>`;
-            actionsCell.querySelector('.edit-btn').addEventListener('click', () => openModalForSubsection('forms', data.id, data));
-            actionsCell.querySelector('.delete-btn').addEventListener('click', () => handleDeleteGeneric('forms', data.id, 'Form/Template'));
+            actionsCell.querySelector('.edit-btn').addEventListener('click', (e) => { e.stopPropagation(); openModalForSubsection('forms', data.id, data); });
+            actionsCell.querySelector('.delete-btn').addEventListener('click', (e) => { e.stopPropagation(); handleDeleteGeneric('forms', data.id, 'Form/Template'); });
             row.addEventListener('click', () => openModalForSubsection('forms', data.id, data));
         }
 
