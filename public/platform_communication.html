@@ -171,8 +171,22 @@
 
         /* Message Composer */
         .message-composer { display: flex; align-items: center; gap: 10px; padding: 15px 20px; border-top: 1px solid #e0e0e0; flex-shrink: 0; background: #fcfcfc; }
-        #messageInput { flex-grow: 1; border: 1px solid #ced4da; border-radius: 20px; padding: 12px 18px; font-size: 1rem; resize: none; line-height: 1.5;}
+        #messageInput { 
+            flex-grow: 1; 
+            border: 1px solid #ced4da; 
+            border-radius: 20px; 
+            padding: 0 18px; 
+            font-size: 1rem; 
+            resize: none; 
+            height: 40px;
+            line-height: 40px;
+            display: block;
+            overflow-y: auto;
+        }
         #messageInput:focus { outline: none; border-color: #495057; box-shadow: 0 0 0 2px rgba(73, 80, 87, 0.15); }
+        #messageInput::placeholder {
+            line-height: 40px;
+        }
         #sendMessageBtn {
             background-color: #212529; /* Black */
             color: white;
@@ -317,7 +331,7 @@
                             <div class="message-composer">
                                 <textarea id="messageInput" placeholder="Type your message..."></textarea>
                                 <button id="sendMessageBtn" title="Send Message">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16"><path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576 6.636 10.07Zm6.787-8.201L1.591 6.602l4.339 2.76 7.494-7.493Z"/></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16" style="width: 30px; height: 30px;"><path fill-rule="evenodd" d="M8 13a.5.5 0 0 0 .5-.5V5.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 5.707V12.5a.5.5 0 0 0 .5.5z"/></svg>
                                 </button>
                             </div>
                         </div>
