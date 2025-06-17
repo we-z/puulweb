@@ -458,6 +458,8 @@
 
         async function handleGenericFormSubmit(e, firebasePath, itemName, modalId) {
             e.preventDefault();
+            document.getElementById(modalId).style.display = 'none';
+            
             if (!pageCurrentUserId) { commonDependencies.commonShowAlert('User not authenticated.'); return; }
             const form = e.target;
             const idInputName = Object.keys(form.elements).find(key => key.name && key.name.toLowerCase().includes('id') && form.elements[key].type === 'hidden');
@@ -482,7 +484,6 @@
                     await commonDependencies.fbPush(commonDependencies.fbRef(pageDatabase, path), data);
                     commonDependencies.commonShowAlert(`${itemName} added.`);
                 }
-                document.getElementById(modalId).style.display = 'none';
             } catch (error) { commonDependencies.commonShowAlert(`Error: ${error.message}`); }
         }
 
