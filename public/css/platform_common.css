@@ -419,6 +419,8 @@ table.data-table tr:hover {
 }
 
 .form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="tel"],
 .form-group textarea,
 .form-group select {
     width: 100%;
@@ -431,6 +433,8 @@ table.data-table tr:hover {
 }
 
 .form-group input[type="text"]:focus,
+.form-group input[type="email"]:focus,
+.form-group input[type="tel"]:focus,
 .form-group textarea:focus,
 .form-group select:focus {
     outline: none;
@@ -476,6 +480,103 @@ table.data-table tr:hover {
 .form-actions .cancel-btn:hover {
     background-color: #f8f9fa; 
     border-color: #adb5bd;
+}
+
+/* Custom Checkbox Styles */
+.form-group .checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 0.95rem;
+    color: #495057;
+    position: relative;
+}
+
+.checkbox-container input[type="checkbox"] {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+}
+
+.checkbox-custom {
+    height: 22px;
+    width: 22px;
+    background-color: #f8f9fa;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    margin-right: 12px;
+    display: inline-block;
+    position: relative;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.checkbox-container:hover .checkbox-custom {
+    border-color: #adb5bd;
+}
+
+.checkbox-container input:checked ~ .checkbox-custom {
+    background-color: #212529;
+    border-color: #212529;
+}
+
+.checkbox-custom::after {
+    content: "";
+    position: absolute;
+    display: none;
+    left: 7px;
+    top: 3px;
+    width: 6px;
+    height: 12px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.checkbox-container input:checked ~ .checkbox-custom::after {
+    display: block;
+}
+
+/* More generic primary button */
+.btn-primary {
+    background-color: #212529;
+    color: white;
+    border: 1px solid #212529;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+    text-align: center;
+}
+
+.btn-primary:hover {
+    background-color: #343a40;
+    border-color: #343a40;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+    border: 1px solid #dc3545;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
 }
 
 /* --- New Custom Alert (Toast Notification) Styles --- */
@@ -1037,4 +1138,217 @@ table.data-table tr:hover {
     background-color: #343a40;
     border-color: #343a40;
     color: #fff;
+}
+
+/* --- Dark Mode Styles --- */
+body.dark {
+    background-color: #1a202c; /* Dark background for the whole page */
+    color: #e2e8f0; /* Lighter text for dark mode */
+}
+
+.dark #sidebar-container,
+.dark .sidebar {
+    background-color: #2d3748; /* Darker sidebar */
+    border-right-color: #4a5568;
+    color: #e2e8f0;
+}
+
+.dark .logo {
+    color: #ffffff;
+}
+
+.dark .nav-menu li a {
+    color: #cbd5e0; /* Lighter gray for nav links */
+}
+
+.dark .nav-menu li a:hover,
+.dark .nav-menu li a.active {
+    background-color: #4a5568; /* Slightly lighter dark for hover/active */
+    color: #ffffff;
+}
+
+.dark .user-profile {
+    border-top-color: #4a5568;
+}
+
+.dark .user-profile .welcome-message {
+    color: #a0aec0; /* Muted text color */
+}
+
+.dark .sign-out-btn {
+    background-color: #e2e8f0;
+    color: #1a202c;
+}
+.dark .sign-out-btn:hover {
+    background-color: #ffffff;
+}
+
+.dark .main-content {
+    background-color: #1a202c;
+}
+
+.dark .content-header {
+    background-color: #2d3748;
+    border-bottom-color: #4a5568;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
+
+.dark .content-header h2 {
+    color: #ffffff;
+}
+
+.dark .page-container {
+    color: #cbd5e0;
+}
+
+.dark .data-table-container,
+.dark .controls-container {
+    background-color: #2d3748;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    border-color: #4a5568;
+}
+
+.dark table.data-table th,
+.dark table.data-table td {
+    border-bottom-color: #4a5568;
+    color: #cbd5e0;
+}
+
+.dark table.data-table th {
+    background-color: #1a202c;
+    color: #e2e8f0;
+}
+
+.dark table.data-table tr:hover {
+    background-color: #4a5568;
+}
+
+.dark .status-open { background-color: #5c1a1a; color: #ffcdd2; }
+.dark .status-in-progress { background-color: #6d4c41; color: #ffccbc; }
+.dark .status-closed { background-color: #1b5e20; color: #c8e6c9; }
+.dark .priority-high { border-color: #ef9a9a; color: #ef9a9a; }
+.dark .priority-medium { border-color: #ffcc80; color: #ffcc80; }
+.dark .priority-low { border-color: #a5d6a7; color: #a5d6a7; }
+
+.dark .actions-cell button {
+    color: #a0aec0;
+}
+.dark .actions-cell button:hover {
+    color: #e2e8f0;
+}
+
+.dark .fab {
+    background-color: #e2e8f0;
+    color: #1a202c;
+}
+.dark .fab:hover {
+    background-color: #ffffff;
+}
+
+.dark .modal-content {
+    background-color: #2d3748;
+    color: #e2e8f0;
+}
+
+.dark .modal-header {
+    border-bottom-color: #4a5568;
+}
+
+.dark .modal-header h3 {
+    color: #ffffff;
+}
+
+.dark .close-btn {
+    color: #a0aec0;
+}
+.dark .close-btn:hover {
+    color: #ffffff;
+}
+
+.dark .form-group label,
+.dark .checkbox-container {
+    color: #cbd5e0;
+}
+
+.dark .form-group input[type="text"],
+.dark .form-group input[type="email"],
+.dark .form-group input[type="tel"],
+.dark .form-group textarea,
+.dark .form-group select {
+    background-color: #1a202c;
+    border-color: #4a5568;
+    color: #e2e8f0;
+}
+
+.dark .form-group input[type="text"]:focus,
+.dark .form-group input[type="email"]:focus,
+.dark .form-group input[type="tel"]:focus,
+.dark .form-group textarea:focus,
+.dark .form-group select:focus {
+    border-color: #a0aec0;
+    box-shadow: 0 0 0 3px rgba(160, 174, 192, 0.15);
+}
+
+.dark .checkbox-custom {
+    background-color: #4a5568;
+    border-color: #718096;
+}
+.dark .checkbox-container:hover .checkbox-custom {
+    border-color: #a0aec0;
+}
+.dark .checkbox-container input:checked ~ .checkbox-custom {
+    background-color: #e2e8f0;
+    border-color: #e2e8f0;
+}
+.dark .checkbox-custom::after {
+    border-color: #1a202c; /* Checkmark is dark */
+}
+
+.dark .btn-primary {
+    background-color: #e2e8f0;
+    color: #1a202c;
+    border-color: #e2e8f0;
+}
+.dark .btn-primary:hover {
+    background-color: #ffffff;
+    border-color: #ffffff;
+}
+
+.dark .custom-alert {
+    background-color: #e2e8f0;
+    color: #1a202c;
+}
+
+.dark .sidebar-toggle-btn .menu-icon span {
+    background: #e2e8f0;
+}
+.dark .sidebar-toggle-btn:not(.open) {
+    background: transparent;
+}
+.dark .sidebar-toggle-btn.open {
+    background: rgba(45, 55, 72, 0.8);
+}
+
+.dark .controls-container select {
+    background-color: #2d3748;
+    border-color: #4a5568;
+    color: #cbd5e0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23a0aec0'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd' /%3E%3C/svg%3E");
+}
+.dark .controls-container select:hover {
+    border-color: #718096;
+    background-color: #4a5568;
+}
+.dark .controls-container select:focus {
+    border-color: #a0aec0;
+    box-shadow: 0 0 0 3px rgba(160, 174, 192, 0.15);
+}
+
+.dark .settings-section {
+    background-color: #2d3748;
+    color: #e2e8f0;
+}
+.dark .settings-section h4 {
+    border-bottom-color: #4a5568;
+    color: #ffffff;
 } 

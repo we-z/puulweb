@@ -6,6 +6,24 @@
         ".write": "$uid === auth.uid"
       }
     },
+    "userProfile": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid"
+      }
+    },
+    "notificationPreferences": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid"
+      }
+    },
+    "applicationSettings": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid"
+      }
+    },
     "workOrders": {
       "$uid": {
         ".read": "$uid === auth.uid",

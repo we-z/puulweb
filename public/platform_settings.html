@@ -5,6 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Settings - Puul Platform</title>
     <link rel="stylesheet" href="/css/platform_common.css">
+    <style>
+        /* Add some spacing between settings sections */
+        .settings-section {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+
+        .dark .settings-section {
+            background-color: #2d3748;
+            color: #e2e8f0;
+        }
+
+        .settings-section h4 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 1.25rem;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 15px;
+        }
+
+        .dark .settings-section h4 {
+            border-bottom-color: #4a5568;
+            color: #ffffff;
+        }
+
+        .form-group:last-of-type {
+            margin-bottom: 0;
+        }
+
+        form button.btn-primary {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
     <div id="sidebar-container"></div>
@@ -19,16 +55,16 @@
                 <h4>User Profile</h4>
                 <form id="userProfileForm">
                     <div class="form-group">
-                        <label for="userName">Name:</label>
-                        <input type="text" id="userName" name="userName" placeholder="[User Name Placeholder]">
+                        <label for="userName">Name</label>
+                        <input type="text" id="userName" name="userName" placeholder="Enter your name">
                     </div>
                     <div class="form-group">
-                        <label for="userEmail">Email:</label>
-                        <input type="email" id="userEmail" name="userEmail" placeholder="[User Email Placeholder]" readonly>
+                        <label for="userEmail">Email</label>
+                        <input type="email" id="userEmail" name="userEmail" placeholder="user@example.com" readonly>
                     </div>
                     <div class="form-group">
-                        <label for="userPhone">Phone:</label>
-                        <input type="tel" id="userPhone" name="userPhone" placeholder="[User Phone Placeholder]">
+                        <label for="userPhone">Phone</label>
+                        <input type="tel" id="userPhone" name="userPhone" placeholder="Enter your phone number">
                     </div>
                     <button type="submit" class="btn-primary">Save Profile</button>
                 </form>
@@ -40,9 +76,23 @@
                 <form id="notificationPrefsForm">
                     <div class="form-group">
                         <label>Receive email notifications for:</label>
-                        <div><input type="checkbox" id="notifyMaintenance" name="notifyMaintenance" checked> <label for="notifyMaintenance">Maintenance Updates</label></div>
-                        <div><input type="checkbox" id="notifyLease" name="notifyLease" checked> <label for="notifyLease">Lease Renewals</label></div>
-                        <div><input type="checkbox" id="notifyPayments" name="notifyPayments"> <label for="notifyPayments">Payment Confirmations</label></div>
+                        <div class="checkbox-group">
+                            <label class="checkbox-container">
+                                <input type="checkbox" id="notifyMaintenance" name="notifyMaintenance" checked>
+                                <span class="checkbox-custom"></span>
+                                Maintenance Updates
+                            </label>
+                            <label class="checkbox-container">
+                                <input type="checkbox" id="notifyLease" name="notifyLease" checked>
+                                <span class="checkbox-custom"></span>
+                                Lease Renewals
+                            </label>
+                            <label class="checkbox-container">
+                                <input type="checkbox" id="notifyPayments" name="notifyPayments">
+                                <span class="checkbox-custom"></span>
+                                Payment Confirmations
+                            </label>
+                        </div>
                     </div>
                     <button type="submit" class="btn-primary">Save Preferences</button>
                 </form>
@@ -52,15 +102,8 @@
             <div class="settings-section">
                 <h4>Application Settings</h4>
                 <form id="appSettingsForm">
-                    <div class="form-group">
-                        <label for="appTheme">Theme:</label>
-                        <select id="appTheme" name="appTheme">
-                            <option value="light">Light Mode</option>
-                            <option value="dark">Dark Mode (Coming Soon!)</option>
-                        </select>
-                    </div>
                      <div class="form-group">
-                        <label for="itemsPerPage">Default Items Per Page:</label>
+                        <label for="itemsPerPage">Default Items Per Page</label>
                         <select id="itemsPerPage" name="itemsPerPage">
                             <option value="10">10</option>
                             <option value="25">25</option>
@@ -70,24 +113,53 @@
                     <button type="submit" class="btn-primary">Save App Settings</button>
                 </form>
             </div>
-            <!-- Add more settings forms and options here -->
+
+            <!-- Settings Section: Account Management -->
+            <div class="settings-section">
+                <h4>Account Management</h4>
+                <div class="form-group">
+                    <label>Password</label>
+                    <p>You can request a password reset email to be sent to your registered email address.</p>
+                    <button id="changePasswordBtn" class="btn-primary">Change Password</button>
+                </div>
+                <div class="form-group">
+                    <label>Delete Account</label>
+                    <p>Permanently delete your account and all associated data. This action cannot be undone.</p>
+                    <button id="deleteAccountBtn" class="btn-danger">Delete My Account</button>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Common Modals if needed -->
-    <div id="customAlertModal" class="modal">
-        <div class="modal-content alert-modal-content">
-            <div class="modal-header"><h3 id="customAlertTitle">Notification</h3><button class="close-btn" data-modal-id="customAlertModal">&times;</button></div>
-            <div class="modal-body"><p id="customAlertMessage"></p></div>
-            <div class="modal-footer"><button class="ok-btn" data-modal-id="customAlertModal">OK</button></div>
+    <div id="customAlertModal">
+        <div class="custom-alert">
+            <p id="customAlertMessage"></p>
+        </div>
+    </div>
+    
+    <div id="customConfirmModal" class="modal">
+        <div class="modal-content confirm-modal-content">
+            <div class="modal-header">
+                <h3 id="customConfirmTitle">Confirm Action</h3>
+                <button class="close-btn" data-modal-id="customConfirmModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="customConfirmMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button id="customConfirmCancel" class="cancel-btn-confirm" data-modal-id="customConfirmModal">Cancel</button>
+                <button id="customConfirmOk" class="confirm-btn" data-modal-id="customConfirmModal">OK</button>
+            </div>
         </div>
     </div>
     
     <script type="module">
-        import { initializeAuth, showAlert, getDbData, updateDbData } from './js/platform_common.js';
+        import { initializeAuth, showAlert, showConfirm, getDbData, updateDbData } from './js/platform_common.js';
         import { getDatabase, ref, set, get, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
+        import { getAuth, sendPasswordResetEmail, deleteUser } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 
-        let pageCurrentUserId;
+        let pageCurrentUser;
         let pageDatabase;
         let common = {}; // For common functions and Firebase refs
 
@@ -101,22 +173,24 @@
             notifyMaintenanceCheckbox: document.getElementById('notifyMaintenance'),
             notifyLeaseCheckbox: document.getElementById('notifyLease'),
             notifyPaymentsCheckbox: document.getElementById('notifyPayments'),
-            appThemeSelect: document.getElementById('appTheme'),
-            itemsPerPageSelect: document.getElementById('itemsPerPage')
+            itemsPerPageSelect: document.getElementById('itemsPerPage'),
+            changePasswordBtn: document.getElementById('changePasswordBtn'),
+            deleteAccountBtn: document.getElementById('deleteAccountBtn')
         };
 
-        function pageInit(userId, db, fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbDataExt, fbUpdateDbDataExt, commonShowAlert) {
-            pageCurrentUserId = userId;
+        function pageInit(user, db, fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbDataExt, fbUpdateDbDataExt, commonShowAlert, commonShowConfirm) {
+            pageCurrentUser = user;
             pageDatabase = db;
             common.fbRef = fbRef;
             common.fbSet = fbSet;
-            common.fbGet = get; // Assuming 'get' is available for direct reads if needed, or use fbGetDbDataExt
+            common.fbGet = get;
             common.fbServerTimestamp = fbServerTimestamp;
             common.getDbData = fbGetDbDataExt;
             common.updateDbData = fbUpdateDbDataExt;
             common.showAlert = commonShowAlert;
+            common.showConfirm = commonShowConfirm;
 
-            console.log("Settings page initialized for user:", userId);
+            console.log("Settings page initialized for user:", pageCurrentUser.uid);
 
             loadUserProfile();
             loadNotificationPreferences();
@@ -126,28 +200,33 @@
         }
 
         async function loadUserProfile() {
-            if (!pageCurrentUserId || !DOMElements.userProfileForm) return;
-            const path = `userProfile/${pageCurrentUserId}`;
+            if (!pageCurrentUser || !DOMElements.userProfileForm) return;
+            DOMElements.userEmailInput.value = pageCurrentUser.email || '';
+
+            const path = `userProfile/${pageCurrentUser.uid}`;
             try {
-                const data = await common.getDbData(common.fbRef(pageDatabase, path));
+                const snapshot = await common.getDbData(common.fbRef(pageDatabase, path));
+                const data = snapshot.val();
                 if (data) {
                     DOMElements.userNameInput.value = data.name || '';
-                    DOMElements.userEmailInput.value = data.email || ''; // Email might be pre-filled from auth
                     DOMElements.userPhoneInput.value = data.phone || '';
+                    // Ensure email from auth is used if not in profile, already set above
+                    if (data.email) {
+                        DOMElements.userEmailInput.value = data.email;
+                    }
                 }
-                // If email is not in profile but available from auth (e.g. Firebase Auth user object)
-                // it could be populated here. For now, assume it's part of userProfile data or pre-filled.
             } catch (error) {
                 console.error("Error loading user profile:", error);
-                // common.showAlert("Could not load profile data.", "Error");
+                common.showAlert("Could not load profile data.", "Error");
             }
         }
 
         async function loadNotificationPreferences() {
-            if (!pageCurrentUserId || !DOMElements.notificationPrefsForm) return;
-            const path = `notificationPreferences/${pageCurrentUserId}`;
+            if (!pageCurrentUser || !DOMElements.notificationPrefsForm) return;
+            const path = `notificationPreferences/${pageCurrentUser.uid}`;
             try {
-                const data = await common.getDbData(common.fbRef(pageDatabase, path));
+                const snapshot = await common.getDbData(common.fbRef(pageDatabase, path));
+                const data = snapshot.val();
                 if (data) {
                     DOMElements.notifyMaintenanceCheckbox.checked = data.maintenance !== undefined ? data.maintenance : true;
                     DOMElements.notifyLeaseCheckbox.checked = data.lease !== undefined ? data.lease : true;
@@ -155,22 +234,22 @@
                 }
             } catch (error) {
                 console.error("Error loading notification preferences:", error);
-                // common.showAlert("Could not load notification preferences.", "Error");
+                common.showAlert("Could not load notification preferences.", "Error");
             }
         }
 
         async function loadApplicationSettings() {
-            if (!pageCurrentUserId || !DOMElements.appSettingsForm) return;
-            const path = `applicationSettings/${pageCurrentUserId}`;
+            if (!pageCurrentUser || !DOMElements.appSettingsForm) return;
+            const path = `applicationSettings/${pageCurrentUser.uid}`;
             try {
-                const data = await common.getDbData(common.fbRef(pageDatabase, path));
+                const snapshot = await common.getDbData(common.fbRef(pageDatabase, path));
+                const data = snapshot.val();
                 if (data) {
-                    DOMElements.appThemeSelect.value = data.theme || 'light';
                     DOMElements.itemsPerPageSelect.value = data.itemsPerPage || '25';
                 }
             } catch (error) {
                 console.error("Error loading application settings:", error);
-                // common.showAlert("Could not load application settings.", "Error");
+                common.showAlert("Could not load application settings.", "Error");
             }
         }
 
@@ -181,12 +260,12 @@
                     const dataToSave = {
                         name: DOMElements.userNameInput.value,
                         phone: DOMElements.userPhoneInput.value,
-                        // email: DOMElements.userEmailInput.value, // Email is read-only, typically not updated here by user
+                        email: DOMElements.userEmailInput.value,
                         updatedAt: common.fbServerTimestamp()
                     };
                     try {
-                        await common.updateDbData(common.fbRef(pageDatabase, `userProfile/${pageCurrentUserId}`), dataToSave);
-                        common.showAlert("Profile saved successfully!", "Success");
+                        await common.updateDbData(common.fbRef(pageDatabase, `userProfile/${pageCurrentUser.uid}`), dataToSave);
+                        common.showAlert("Profile saved successfully!");
                     } catch (error) {
                         console.error("Error saving profile:", error);
                         common.showAlert("Failed to save profile.", "Error");
@@ -204,8 +283,8 @@
                         updatedAt: common.fbServerTimestamp()
                     };
                     try {
-                        await common.updateDbData(common.fbRef(pageDatabase, `notificationPreferences/${pageCurrentUserId}`), dataToSave);
-                        common.showAlert("Notification preferences saved!", "Success");
+                        await common.updateDbData(common.fbRef(pageDatabase, `notificationPreferences/${pageCurrentUser.uid}`), dataToSave);
+                        common.showAlert("Notification preferences saved!");
                     } catch (error) {
                         console.error("Error saving notification preferences:", error);
                         common.showAlert("Failed to save notification preferences.", "Error");
@@ -217,16 +296,61 @@
                 DOMElements.appSettingsForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
                     const dataToSave = {
-                        theme: DOMElements.appThemeSelect.value,
                         itemsPerPage: DOMElements.itemsPerPageSelect.value,
                         updatedAt: common.fbServerTimestamp()
                     };
                     try {
-                        await common.updateDbData(common.fbRef(pageDatabase, `applicationSettings/${pageCurrentUserId}`), dataToSave);
-                        common.showAlert("Application settings saved!", "Success");
+                        await common.updateDbData(common.fbRef(pageDatabase, `applicationSettings/${pageCurrentUser.uid}`), dataToSave);
+                        common.showAlert("Application settings saved!");
                     } catch (error) {
                         console.error("Error saving application settings:", error);
                         common.showAlert("Failed to save application settings.", "Error");
+                    }
+                });
+            }
+            
+            if (DOMElements.changePasswordBtn) {
+                DOMElements.changePasswordBtn.addEventListener('click', async () => {
+                    const confirmed = await common.showConfirm("Are you sure you want to send a password reset email? You will be logged out.", "Change Password");
+                    if (confirmed) {
+                        const auth = getAuth();
+                        try {
+                            await sendPasswordResetEmail(auth, pageCurrentUser.email);
+                            common.showAlert("Password reset email sent. Please check your inbox.");
+                            // Optionally sign the user out
+                            auth.signOut();
+                        } catch (error) {
+                             console.error("Password reset error:", error);
+                             common.showAlert(`Error sending password reset email: ${error.message}`, "Error");
+                        }
+                    }
+                });
+            }
+
+            if (DOMElements.deleteAccountBtn) {
+                DOMElements.deleteAccountBtn.addEventListener('click', async () => {
+                     const confirmed = await common.showConfirm(
+                        "This is a permanent action. Are you absolutely sure you want to delete your account and all related data?",
+                        "Delete Account Confirmation"
+                    );
+                    if (confirmed) {
+                        const auth = getAuth();
+                        const user = auth.currentUser;
+                        if (user) {
+                            try {
+                                // For security, recent login is required. Handle re-authentication if necessary.
+                                // This basic implementation assumes the user is recently authenticated.
+                                await deleteUser(user);
+                                // The onAuthStateChanged listener in common.js will redirect to login page.
+                            } catch (error) {
+                                console.error("Account deletion error:", error);
+                                let message = "Failed to delete account.";
+                                if (error.code === 'auth/requires-recent-login') {
+                                    message = "This action requires you to have logged in recently. Please sign out and sign back in to delete your account.";
+                                }
+                                common.showAlert(message, "Error");
+                            }
+                        }
                     }
                 });
             }
