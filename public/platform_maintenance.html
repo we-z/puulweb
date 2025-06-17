@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Maintenance - Puul Platform</title>
     <link rel="stylesheet" href="/css/platform_common.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         /* Tab-like navigation for subsections */
         .sub-nav {
@@ -33,6 +34,70 @@
         }
         .subsection-content.active {
             display: block;
+        }
+        .smart-feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            align-items: start;
+        }
+        .smart-feature-item {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .smart-feature-item h5 {
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        .alert-list, .suggestion-list, .iot-device-list {
+            list-style-type: none;
+            padding-left: 0;
+            margin-top: 10px;
+        }
+        .alert-list li, .suggestion-list li, .iot-device-list li {
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+        }
+        .alert-list li.critical {
+            background-color: #fff0f0;
+            border-left: 3px solid #e53e3e;
+        }
+        .alert-list li.warning {
+             background-color: #fffaf0;
+            border-left: 3px solid #dd6b20;
+        }
+        .suggestion-list button {
+            margin-left: 10px;
+            padding: 2px 8px;
+            font-size: 0.8em;
+            vertical-align: middle;
+        }
+        #scorecard-metrics {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+         #scorecard-metrics .metric {
+            padding: 10px;
+        }
+        #scorecard-metrics .metric .value {
+            font-size: 1.8em;
+            font-weight: 600;
+        }
+        #scorecard-metrics .metric .label {
+            font-size: 0.9em;
+            color: #555;
+        }
+        #workOrderStatusChartContainer {
+            position: relative;
+            height: 250px;
+            width: 100%;
         }
     </style>
 </head>
@@ -339,36 +404,34 @@
                         <div class="smart-feature-item">
                             <h5>Predictive Maintenance Alerts</h5>
                             <p>Alerts based on sensor data or historical trends predicting potential equipment failures (e.g., HVAC, water heaters).</p>
-                            <ul class="alert-list">
-                                <li>[Placeholder: Alert: HVAC Unit 3B - Potential compressor failure within 7 days. Current runtime: 95% above average.]</li>
-                                <li>[Placeholder: Alert: Boiler - Property A - Pressure anomaly detected. Recommend immediate inspection.]</li>
-                            </ul>
-                            <button class="btn-secondary view-smart-details">View All Alerts</button>
+                            <ul class="alert-list" id="predictiveAlertsList"></ul>
+                            <div id="noPredictiveAlerts" style="display: none; text-align: center; padding: 20px; color: #777;">No predictive alerts at this time.</div>
+                            <button class="btn-secondary view-smart-details" id="refreshSmartMaintenanceBtn" style="width: 100%; margin-top: 10px;">Refresh Insights</button>
                         </div>
                         <div class="smart-feature-item">
                             <h5>IoT Device Status & Connectivity</h5>
                             <p>Overview of connected smart devices (thermostats, leak detectors, smart locks) and their operational status.</p>
-                            <div class="iot-status-summary">
-                                <p>[Placeholder: Connected Devices: 48/50 | Offline: 2 | Low Battery: 1]</p>
-                                <p>[Placeholder: Last data sync: Just now]</p>
-                            </div>
-                            <button class="btn-secondary view-smart-details">Manage Devices</button>
+                            <div class="iot-status-summary" id="iotStatusSummary" style="margin-bottom: 15px;"></div>
+                            <ul class="iot-device-list" id="iotDeviceList"></ul>
+                            <div id="noIotDevices" style="display: none; text-align: center; padding: 20px; color: #777;">No IoT devices are being tracked.</div>
                         </div>
                         <div class="smart-feature-item">
                             <h5>Maintenance Efficiency Scorecards</h5>
-                            <p>Analytics on maintenance team performance, work order completion times, and cost-effectiveness, with AI-driven suggestions for improvement.</p>
-                            <div class="efficiency-placeholder">[Chart/Data: Trend of average repair time, cost per work order]</div>
-                            <button class="btn-secondary view-smart-details">View Reports</button>
+                            <p>Analytics on maintenance team performance, work order completion times, and cost-effectiveness.</p>
+                            <div id="maintenanceScorecards">
+                                 <div id="scorecard-metrics"></div>
+                                 <div id="workOrderStatusChartContainer">
+                                    <canvas id="workOrderStatusChart"></canvas>
+                                 </div>
+                            </div>
+                            <div id="noMaintenanceDataForScorecard" style="display: none; text-align: center; padding: 20px; color: #777;">Not enough data to generate scorecards.</div>
                         </div>
                         <div class="smart-feature-item">
                             <h5>Automated Work Order Generation (Suggestions)</h5>
                             <p>AI suggests creating work orders based on detected anomalies or scheduled preventive maintenance derived from smart data.</p>
-                            <ul class="suggestion-list">
-                                <li>[Placeholder: Suggestion: Schedule air filter replacement for units 1A, 2C, 5F based on runtime.]</li>
-                            </ul>
-                            <button class="btn-secondary view-smart-details">Review Suggestions</button>
+                            <ul class="suggestion-list" id="workOrderSuggestionsList"></ul>
+                            <div id="noWorkOrderSuggestions" style="display: none; text-align: center; padding: 20px; color: #777;">No work order suggestions at this time.</div>
                         </div>
-                        <!-- More Smart Maintenance features can be added here -->
                     </div>
                 </div>
             </div>
@@ -593,6 +656,7 @@
         let localPropertiesMap = {}; // For mapping property IDs to names for this page
         let commonDependencies = {}; // To store common functions, icons, and Firebase utils
         let listenersInitialized = {}; // To track if onValue listeners are set for subsections
+        let workOrderStatusChartInstance = null; // To hold the chart instance
 
         // Cache DOM elements for each subsection for efficiency
         const pageDOMElements = {
@@ -733,7 +797,7 @@
                     openRecurringWorkOrderModal(id, data);
                     break;
                 case 'inspections':
-                    openInspectionModal(id,data);
+                    openInspectionModal(id, data);
                     break;
                 case 'unitTurns':
                     openUnitTurnModal(id, data);
@@ -742,13 +806,13 @@
                     openProjectModal(id, data);
                     break;
                 case 'purchaseOrders':
-                    openPurchaseOrderModal(id,data);
+                    openPurchaseOrderModal(id, data);
                     break;
                 case 'inventory':
-                    openInventoryModal(id,data);
+                    openInventoryModal(id, data);
                     break;
                 case 'fixedAssets':
-                    openFixedAssetModal(id,data);
+                    openFixedAssetModal(id, data);
                     break;
                 // Add other cases as needed
             }
@@ -765,6 +829,7 @@
                 case 'purchaseOrders': loadPurchaseOrders(); break;
                 case 'inventory': loadInventory(); break;
                 case 'fixedAssets': loadFixedAssets(); break;
+                case 'smartMaintenance': loadSmartMaintenanceData(); break;
                 // Add other cases as needed
             }
         }
@@ -1695,14 +1760,291 @@
         initializeAuth(pageInit);
 
         function setupSmartMaintenanceButtons() {
-            const smButtons = document.querySelectorAll('#smartMaintenanceContent .btn-primary, #smartMaintenanceContent .btn-secondary'); // Adjust selector as needed
-            smButtons.forEach(button => {
-                button.addEventListener('click', (e) => {
-                    const featureTitle = button.closest('.smart-feature-item')?.querySelector('h5')?.textContent || button.textContent || 'Selected Feature';
-                    showAlert(`The "${featureTitle}" feature is part of Smart Maintenance and is currently under development. Check back soon!`, "Feature Coming Soon");
-                });
-            });
+            const refreshBtn = document.getElementById('refreshSmartMaintenanceBtn');
+            if (refreshBtn) {
+                refreshBtn.addEventListener('click', loadSmartMaintenanceData);
+            }
         }
+
+        // --- Smart Maintenance Section ---
+        async function loadSmartMaintenanceData() {
+            if (!pageCurrentUserId || !pageDatabase) return;
+            // The refresh button can also call this function
+            const refreshBtn = document.getElementById('refreshSmartMaintenanceBtn');
+            if(refreshBtn) refreshBtn.disabled = true;
+
+            // Clear old data
+            document.getElementById('predictiveAlertsList').innerHTML = '<li>Loading alerts...</li>';
+            document.getElementById('iotStatusSummary').innerHTML = 'Loading device status...';
+            document.getElementById('iotDeviceList').innerHTML = '';
+            document.getElementById('workOrderSuggestionsList').innerHTML = '<li>Loading suggestions...</li>';
+            document.getElementById('scorecard-metrics').innerHTML = 'Loading metrics...';
+            
+            if (workOrderStatusChartInstance) {
+                workOrderStatusChartInstance.destroy();
+                workOrderStatusChartInstance = null;
+            }
+
+            try {
+                // Run all data loading in parallel for speed
+                const [alerts, suggestions] = await generatePredictiveAlertsAndSuggestions();
+                const [iotSummary, iotDevices] = await loadIotDeviceData();
+                const [metrics, chartData] = await generateMaintenanceScorecards();
+
+                // Update UI once all data is fetched and processed
+                updatePredictiveAlertsUI(alerts);
+                updateWorkOrderSuggestionsUI(suggestions);
+                updateIotStatusUI(iotSummary, iotDevices);
+                updateScorecardsUI(metrics, chartData);
+
+            } catch (error) {
+                console.error("Error loading Smart Maintenance data:", error);
+                showAlert("Could not load Smart Maintenance insights. Please try again.", "Error");
+            } finally {
+                 if(refreshBtn) refreshBtn.disabled = false;
+            }
+        }
+        
+        function updatePredictiveAlertsUI(alerts) {
+            const alertsList = document.getElementById('predictiveAlertsList');
+            const noAlertsMsg = document.getElementById('noPredictiveAlerts');
+            alertsList.innerHTML = '';
+            if (alerts && alerts.length > 0) {
+                alerts.forEach(alert => {
+                    const li = document.createElement('li');
+                    li.className = alert.type; // 'critical' or 'warning'
+                    li.innerHTML = `<strong>${alert.title}:</strong> ${alert.message}`;
+                    alertsList.appendChild(li);
+                });
+                noAlertsMsg.style.display = 'none';
+            } else {
+                noAlertsMsg.style.display = 'block';
+            }
+        }
+
+        function updateWorkOrderSuggestionsUI(suggestions) {
+            const suggestionsList = document.getElementById('workOrderSuggestionsList');
+            const noSuggestionsMsg = document.getElementById('noWorkOrderSuggestions');
+            suggestionsList.innerHTML = '';
+            if (suggestions && suggestions.length > 0) {
+                 suggestions.forEach(suggestion => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<span>${suggestion.text}</span>`;
+                    const createBtn = document.createElement('button');
+                    createBtn.className = 'btn-secondary';
+                    createBtn.textContent = 'Create Work Order';
+                    createBtn.onclick = () => {
+                        openWorkOrderModal(null, {
+                            title: suggestion.wo.title,
+                            propertyId: suggestion.wo.propertyId,
+                            description: suggestion.wo.description,
+                            priority: 'High'
+                        });
+                    };
+                    li.appendChild(createBtn);
+                    suggestionsList.appendChild(li);
+                });
+                noSuggestionsMsg.style.display = 'none';
+            } else {
+                noSuggestionsMsg.style.display = 'block';
+            }
+        }
+
+        function updateIotStatusUI(summary, devices) {
+            const summaryContainer = document.getElementById('iotStatusSummary');
+            const deviceList = document.getElementById('iotDeviceList');
+            const noDevicesMsg = document.getElementById('noIotDevices');
+            summaryContainer.innerHTML = '';
+            deviceList.innerHTML = '';
+
+            if (devices && devices.length > 0) {
+                 summaryContainer.innerHTML = `<strong>Connected Devices:</strong> ${summary.online}/${summary.total} | <strong>Offline:</strong> ${summary.offline} | <strong>Low Battery:</strong> ${summary.lowBattery}`;
+                 devices.forEach(device => {
+                    const li = document.createElement('li');
+                    const statusColor = device.status === 'online' ? 'green' : 'red';
+                    const batteryInfo = device.battery !== null ? ` | Battery: ${device.battery}% ${device.battery < 20 ? '⚠️' : ''}` : '';
+                    li.innerHTML = `<span style="color:${statusColor}">●</span> <strong>${device.name}</strong> (${localPropertiesMap[device.propertyId] || 'N/A'}) - <em>${device.type}</em>${batteryInfo}`;
+                    deviceList.appendChild(li);
+                });
+                noDevicesMsg.style.display = 'none';
+            } else {
+                noDevicesMsg.style.display = 'block';
+                 summaryContainer.innerHTML = '';
+            }
+        }
+
+        function updateScorecardsUI(metrics, chartData) {
+            const metricsContainer = document.getElementById('scorecard-metrics');
+            const noDataMsg = document.getElementById('noMaintenanceDataForScorecard');
+            const chartContainer = document.getElementById('workOrderStatusChartContainer');
+            const chartCanvas = document.getElementById('workOrderStatusChart');
+            metricsContainer.innerHTML = '';
+            
+            if (workOrderStatusChartInstance) {
+                workOrderStatusChartInstance.destroy();
+                workOrderStatusChartInstance = null;
+            }
+
+            if (chartData) {
+                metricsContainer.innerHTML = `
+                    <div class="metric"><div class="value">${metrics.open}</div><div class="label">Open</div></div>
+                    <div class="metric"><div class="value">${metrics.inProgress}</div><div class="label">In Progress</div></div>
+                    <div class="metric"><div class="value">${metrics.closed}</div><div class="label">Closed</div></div>
+                    <div class="metric"><div class="value">${metrics.avgCompletionTime}</div><div class="label">Avg. Close Time</div></div>
+                `;
+                
+                workOrderStatusChartInstance = new Chart(chartCanvas, {
+                    type: 'doughnut',
+                    data: chartData,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'top' } }
+                    }
+                });
+                noDataMsg.style.display = 'none';
+                chartContainer.style.display = 'block';
+            } else {
+                noDataMsg.style.display = 'block';
+                chartContainer.style.display = 'none';
+            }
+        }
+
+        async function generatePredictiveAlertsAndSuggestions() {
+            const assetsRef = commonDependencies.fbRef(pageDatabase, `fixedAssets/${pageCurrentUserId}`);
+            const snapshot = await commonDependencies.fbGet(assetsRef);
+            const assets = snapshot.val();
+            
+            let alerts = [];
+            let suggestions = [];
+
+            if (assets) {
+                for (const assetId in assets) {
+                    const asset = assets[assetId];
+                    if(!asset.purchaseDate || !asset.assetName) continue;
+
+                    const purchaseDate = new Date(asset.purchaseDate);
+                    const ageInYears = (new Date() - purchaseDate) / (1000 * 60 * 60 * 24 * 365.25);
+                    const propertyName = localPropertiesMap[asset.propertyId] || 'Unknown Property';
+
+                    let alertMessage = null;
+                    let alertType = 'warning';
+                    
+                    if (asset.assetName.toLowerCase().includes('hvac') && ageInYears > 5) {
+                        alertMessage = `HVAC unit "${asset.assetName}" at ${propertyName} is over 5 years old. Recommend inspection.`;
+                    } else if (asset.assetName.toLowerCase().includes('water heater') && ageInYears > 8) {
+                        alertMessage = `Water heater "${asset.assetName}" at ${propertyName} is over 8 years old. High risk of failure.`;
+                        alertType = 'critical';
+                    } else if (asset.assetName.toLowerCase().includes('roof') && ageInYears > 15) {
+                         alertMessage = `Roof "${asset.assetName}" at ${propertyName} is over 15 years old. Recommend professional inspection.`;
+                         alertType = 'critical';
+                    }
+                    
+                    if (alertMessage) {
+                        const alertTitle = assetTypeToTitle(asset.assetName);
+                        alerts.push({ title: alertTitle, message: alertMessage, type: alertType });
+                        suggestions.push({
+                            text: `Preventive maintenance for ${asset.assetName} at ${propertyName}.`,
+                            wo: {
+                                title: `Preventive Check: ${asset.assetName}`,
+                                propertyId: asset.propertyId,
+                                description: `Generated from smart alert: ${alertMessage}`
+                            }
+                        });
+                    }
+                }
+            }
+            return [alerts, suggestions];
+        }
+
+        function assetTypeToTitle(assetName) {
+            const name = assetName.toLowerCase();
+            if (name.includes('hvac')) return 'HVAC System Alert';
+            if (name.includes('water heater')) return 'Water Heater Alert';
+            if (name.includes('roof')) return 'Roofing Alert';
+            return 'Asset Maintenance Alert';
+        }
+
+        async function loadIotDeviceData() {
+            const iotDevicesRef = commonDependencies.fbRef(pageDatabase, `iotDevices/${pageCurrentUserId}`);
+            const snapshot = await commonDependencies.fbGet(iotDevicesRef);
+            const iotData = snapshot.val();
+            
+            let devices = [];
+            if (iotData) {
+                devices = Object.keys(iotData).map(key => ({ id: key, ...iotData[key] }));
+            }
+
+            let online = 0, offline = 0, lowBattery = 0;
+            devices.forEach(d => {
+                if (d.status === 'online') {
+                    online++;
+                } else {
+                    offline++;
+                }
+                if (d.battery !== null && typeof d.battery === 'number' && d.battery < 20) {
+                    lowBattery++;
+                }
+            });
+
+            const summary = { total: devices.length, online, offline, lowBattery };
+            return [summary, devices];
+        }
+
+        async function generateMaintenanceScorecards() {
+            const workOrdersRef = commonDependencies.fbRef(pageDatabase, `workOrders/${pageCurrentUserId}`);
+            const snapshot = await commonDependencies.fbGet(workOrdersRef);
+            const workOrders = snapshot.val();
+            
+            if (!workOrders || Object.keys(workOrders).length === 0) {
+                return [null, null];
+            }
+
+            let statusCounts = { 'Open': 0, 'In Progress': 0, 'Closed': 0 };
+            let totalCompletionTime = 0;
+            let closedCount = 0;
+
+            for (const id in workOrders) {
+                const wo = workOrders[id];
+                if (statusCounts.hasOwnProperty(wo.status)) {
+                    statusCounts[wo.status]++;
+                }
+                if (wo.status === 'Closed' && wo.createdAt && wo.updatedAt) {
+                    const completionTime = wo.updatedAt - wo.createdAt;
+                    if (completionTime > 0) {
+                        totalCompletionTime += completionTime;
+                        closedCount++;
+                    }
+                }
+            }
+
+            let avgCompletionDays = 'N/A';
+            if (closedCount > 0) {
+                const avgMs = totalCompletionTime / closedCount;
+                const days = avgMs / (1000 * 60 * 60 * 24);
+                avgCompletionDays = days > 1 ? `${days.toFixed(1)}d` : `${(days * 24).toFixed(1)}h`;
+            }
+
+            const metrics = {
+                open: statusCounts['Open'],
+                inProgress: statusCounts['In Progress'],
+                closed: statusCounts['Closed'],
+                avgCompletionTime: avgCompletionDays
+            };
+            
+            const chartData = {
+                labels: ['Open', 'In Progress', 'Closed'],
+                datasets: [{
+                    label: 'Work Order Statuses',
+                    data: [statusCounts['Open'], statusCounts['In Progress'], statusCounts['Closed']],
+                    backgroundColor: ['#f6ad55', '#4299e1', '#68d391'],
+                    hoverOffset: 4
+                }]
+            };
+
+            return [metrics, chartData];
+        }
+
 
         // --- Vendors Listener ---
         function initializeVendorsListener() {
