@@ -36,16 +36,20 @@
             display: block;
         }
         .smart-feature-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            display: flex;
+            flex-wrap: wrap;
             gap: 20px;
-            align-items: start;
         }
         .smart-feature-item {
             background-color: #fff;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            flex: 1 1 calc(50% - 10px);
+            box-sizing: border-box;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
         }
         .smart-feature-item h5 {
             margin-top: 0;
