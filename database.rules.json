@@ -1,0 +1,229 @@
+{
+  "rules": {
+    "users": {
+      ".read": "auth != null",
+      "$uid": {
+        ".write": "$uid === auth.uid"
+      }
+    },
+    "workOrders": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid",
+        ".indexOn": ["propertyId", "createdAt", "updatedAt", "status", "priority", "title"]
+      }
+    },
+    "recurringWorkOrders": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid",
+        ".indexOn": ["taskName", "propertyId", "startDate", "status", "updatedAt"]
+      }
+    },
+    "inspections": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid",
+        ".indexOn": ["scheduledDate", "propertyId", "status", "updatedAt"]
+      }
+    },
+    "unitTurns": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid",
+        ".indexOn": ["targetMoveInDate", "propertyId", "status", "updatedAt"]
+      }
+    },
+    "projects": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid",
+        ".indexOn": ["projectName", "propertyId", "startDate", "endDate", "status", "updatedAt"]
+      }
+    },
+    "purchaseOrders": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid",
+        ".indexOn": ["poNumber", "vendorId", "orderDate", "status", "updatedAt"]
+      }
+    },
+    "inventory": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid",
+        ".indexOn": ["itemName", "sku", "category", "location", "updatedAt"]
+      }
+    },
+    "fixedAssets": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid",
+        ".indexOn": ["assetName", "assetId", "propertyId", "purchaseDate", "updatedAt"]
+      }
+    },
+    "properties": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid",
+        ".indexOn": ["address", "createdAt", "updatedAt"]
+      }
+    },
+    "units": {
+       "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid",
+        ".indexOn": ["propertyId", "status", "createdAt", "updatedAt"]
+      }
+    },
+    "guestCards": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid",
+        ".indexOn": ["createdAt", "propertyId", "status", "updatedAt"]
+      }
+    },
+    "rentalApplications": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid",
+        ".indexOn": ["submissionDate", "propertyId", "status", "updatedAt"]
+      }
+    },
+    "leases": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid",
+        ".indexOn": ["propertyId", "startDate", "endDate", "status", "updatedAt"]
+      }
+    },
+    "tenants": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid",
+        ".indexOn": ["fullName", "createdAt", "updatedAt"]
+      }
+    },
+    "owners": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid",
+        ".indexOn": ["fullName", "createdAt", "updatedAt"]
+      }
+    },
+    "vendors": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid",
+        ".indexOn": ["companyName", "createdAt", "updatedAt"]
+      }
+    },
+    "receivables": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid",
+        ".indexOn": ["date", "status", "updatedAt"]
+      }
+    },
+    "payables": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid",
+        ".indexOn": ["dueDate", "status", "updatedAt"]
+      }
+    },
+    "bankAccounts": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid",
+        ".indexOn": ["accountName", "updatedAt"]
+      }
+    },
+    "journalEntries": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid",
+        ".indexOn": ["date", "updatedAt"]
+      }
+    },
+    "bankTransfers": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid",
+        ".indexOn": ["date", "status", "updatedAt"]
+      }
+    },
+    "glAccounts": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid",
+        ".indexOn": ["accountNumber", "updatedAt"]
+      }
+    },
+    "transactions": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid",
+        ".indexOn": ["date", "type", "updatedAt"]
+      }
+    },
+    "calendarEvents": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid",
+        ".indexOn": ["startDate", "endDate", "propertyId", "createdAt", "updatedAt"]
+      }
+    },
+    "iotDevices": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid"
+      }
+    },
+    "scheduledReports": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && auth.uid == $uid"
+      }
+    },
+    "surveys": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && auth.uid == $uid"
+      }
+    },
+    "letters": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid",
+        ".indexOn": "updatedAt"
+      }
+    },
+    "forms": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid",
+        ".indexOn": "formName"
+      }
+    },
+    "conversations": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".indexOn": "lastMessageTimestamp",
+        "$conversationId": {
+          ".write": "(data.exists() && data.child('participants').child(auth.uid).exists()) || (!data.exists() && newData.child('participants').child(auth.uid).exists() && $uid === auth.uid)"
+        }
+      }
+    },
+    "messages": {
+      "$conversationId": {
+        ".read": "root.child('conversations').child(auth.uid).child($conversationId).exists()",
+        ".indexOn": "timestamp",
+        "$messageId": {
+          ".write": "root.child('conversations').child(auth.uid).child($conversationId).exists()",
+          ".validate": "newData.hasChildren(['senderId', 'text', 'timestamp']) && newData.child('senderId').val() === auth.uid"
+        }
+      }
+    }
+  }
+} 

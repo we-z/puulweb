@@ -380,6 +380,14 @@ function initializeAuth(pageSpecificInitCallback) {
             cachedUserDisplayName = displayName;
             sessionStorage.setItem('puulUserDisplayName', displayName);
 
+            // Add/update user in the public /users directory for messaging user search
+            const userPublicRef = ref(database, 'users/' + user.uid);
+            update(userPublicRef, {
+                displayName: displayName,
+                email: user.email,
+                uid: user.uid
+            }).catch(error => console.error("Failed to update user in public directory", error));
+
             // Ensure welcome message is updated after DOM might have been populated by setupPageLayoutAndInteractivity
             if (DOMElements.welcomeMessage) {
                 DOMElements.welcomeMessage.textContent = `Welcome, ${displayName}!`;
