@@ -1082,12 +1082,20 @@ table.data-table tr:hover {
         transition: none !important; /* No transition for margin */
     }
 
+    /* Keep the toggle button in the same position on mobile */
+    .sidebar-toggle-btn:not(.open) {
+        left: 15px; /* Override desktop positioning */
+        background: rgba(255, 255, 255, 0.8); /* Re-apply background for visibility */
+        backdrop-filter: blur(5px); /* Re-apply blur for visibility */
+    }
+
     /* Adjust content header for the fixed toggle button */
     .content-header {
         position: sticky;
         top: 0;
         z-index: 101;
         box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+        padding-left: 70px;
     }
 
     /* Ensure icon spans are visible against potentially varied backgrounds */
