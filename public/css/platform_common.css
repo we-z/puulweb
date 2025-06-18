@@ -903,6 +903,18 @@ table.data-table tr:hover {
     color: #374151;
 }
 
+.dropdown-selected {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background-color: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
 .dropdown-selected:hover {
     border-color: #a1a1aa;
 }
@@ -961,6 +973,24 @@ table.data-table tr:hover {
     max-height: 220px; /* Prevent overly long dropdowns */
     overflow-y: auto;
     padding: 5px;
+}
+
+/* Simple dropdown styles (without menu wrapper) */
+.custom-dropdown:not(.open) .dropdown-options {
+    display: none;
+}
+
+.custom-dropdown.open .dropdown-options {
+    display: block;
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    background-color: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    z-index: 10;
 }
 
 .dropdown-option {

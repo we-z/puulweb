@@ -206,7 +206,7 @@
     <script type="module">
         console.log('[platform_properties.html] Script module started.');
 
-        import { initializeAuth, showAlert, showConfirm, editIconSVG, deleteIconSVG, getDbData, updateDbData, initializeCustomDropdown } from './js/platform_common.js';
+        import { initializeAuth, showAlert, showConfirm, editIconSVG, deleteIconSVG, getDbData, updateDbData, initializeSimpleDropdown } from './js/platform_common.js';
         import { getDatabase, ref, push, onValue, set, remove, serverTimestamp, query, orderByChild, equalTo } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
 
         // Page-specific DOM Elements
@@ -251,16 +251,16 @@
                 fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, 
                 fbOrderByChild, fbEqualTo, fbGetDbData, fbUpdateDbData, 
                 commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon,
-                initializeCustomDropdown
+                initializeSimpleDropdown
             };
 
             loadProperties();
 
             // Initialize custom dropdowns for properties page
             const propertiesCommonOnChange = () => loadProperties();
-            initializeCustomDropdown(pageDOMElements.filterPropertyType, propertiesCommonOnChange);
-            initializeCustomDropdown(pageDOMElements.sortPropertiesBy, propertiesCommonOnChange);
-            initializeCustomDropdown(pageDOMElements.sortPropertiesOrder, propertiesCommonOnChange);
+            initializeSimpleDropdown(pageDOMElements.filterPropertyType, propertiesCommonOnChange);
+            initializeSimpleDropdown(pageDOMElements.sortPropertiesBy, propertiesCommonOnChange);
+            initializeSimpleDropdown(pageDOMElements.sortPropertiesOrder, propertiesCommonOnChange);
 
             // Initialize controls toggle button for Properties page
             if (pageDOMElements.controlsToggleBtn && pageDOMElements.controlsContainer) {

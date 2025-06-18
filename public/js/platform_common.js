@@ -293,6 +293,78 @@ function initializeCustomDropdown(dropdownElement, onChangeCallback, isDynamic =
     }
 }
 
+// Helper function to initialize simple dropdowns (without text input)
+function initializeSimpleDropdown(dropdownElement, onChangeCallback) {
+    if (!dropdownElement) return;
+
+    const selectedElement = dropdownElement.querySelector('.dropdown-selected');
+    const selectedValueSpan = dropdownElement.querySelector('.selected-value');
+    const optionsContainer = dropdownElement.querySelector('.dropdown-options');
+    
+    if (!selectedElement || !selectedValueSpan || !optionsContainer) {
+        console.error('Simple dropdown is missing required elements.', dropdownElement);
+        return;
+    }
+
+    const toggleDropdown = () => {
+        const isOpen = dropdownElement.classList.contains('open');
+        if (isOpen) {
+            dropdownElement.classList.remove('open');
+        } else {
+            dropdownElement.classList.add('open');
+        }
+    };
+
+    selectedElement.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleDropdown();
+    });
+
+    selectedElement.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            toggleDropdown();
+        } else if (e.key === 'Escape' && dropdownElement.classList.contains('open')) {
+            dropdownElement.classList.remove('open');
+        }
+    });
+
+    optionsContainer.addEventListener('click', (e) => {
+        const option = e.target.closest('.dropdown-option');
+        if (option) {
+            // Update selected value
+            selectedValueSpan.textContent = option.textContent;
+            dropdownElement.dataset.value = option.dataset.value;
+            
+            // Update selected state
+            optionsContainer.querySelectorAll('.dropdown-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            option.classList.add('selected');
+            
+            // Close dropdown
+            dropdownElement.classList.remove('open');
+            
+            // Call callback if provided
+            if (onChangeCallback && typeof onChangeCallback === 'function') {
+                onChangeCallback(option.dataset.value, option.textContent);
+            }
+        }
+    });
+
+    // Add a global click listener to close dropdowns
+    if (!document.body.hasAttribute('data-global-simple-dropdown-listener')) {
+        document.addEventListener('click', (e) => {
+            document.querySelectorAll('.custom-dropdown.open').forEach(openDropdown => {
+                if (!openDropdown.contains(e.target)) {
+                    openDropdown.classList.remove('open');
+                }
+            });
+        });
+        document.body.setAttribute('data-global-simple-dropdown-listener', 'true');
+    }
+}
+
 const editIconSVG = `<svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path></svg>`;
 const deleteIconSVG = `<svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>`;
 
@@ -425,5 +497,6 @@ export {
     getDbData, updateDbData,
     initializeAuth,
     ref, push, set, remove, serverTimestamp, query, orderByChild, equalTo,
-    initializeCustomDropdown
+    initializeCustomDropdown,
+    initializeSimpleDropdown
 }; 
