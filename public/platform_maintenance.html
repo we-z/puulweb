@@ -652,7 +652,7 @@
             status: ''      // default: all statuses
         };
 
-        import { initializeAuth, showAlert, showConfirm, editIconSVG, deleteIconSVG, getDbData, updateDbData, initializeCustomDropdown } from './js/platform_common.js';
+        import { initializeAuth, showAlert, showConfirm, editIconSVG, deleteIconSVG, getDbData, updateDbData, initializeCustomDropdown, initializeSimpleDropdown } from './js/platform_common.js';
         import { getDatabase, ref, push, onValue, set, remove, serverTimestamp, query, orderByChild, equalTo } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
 
         let pageCurrentUserId;
@@ -2117,11 +2117,11 @@
             }
 
             // Initialize dropdowns with custom handler
-            if (filterPropertyDropdown) initializeCustomDropdown(filterPropertyDropdown, reloadWorkOrdersWithFilters, true);
-            if (filterPriorityDropdown) initializeCustomDropdown(filterPriorityDropdown, reloadWorkOrdersWithFilters);
-            if (filterStatusDropdown) initializeCustomDropdown(filterStatusDropdown, reloadWorkOrdersWithFilters);
-            if (sortByDropdown) initializeCustomDropdown(sortByDropdown, reloadWorkOrdersWithFilters);
-            if (sortOrderDropdown) initializeCustomDropdown(sortOrderDropdown, reloadWorkOrdersWithFilters);
+            if (filterPropertyDropdown) initializeSimpleDropdown(filterPropertyDropdown, reloadWorkOrdersWithFilters);
+            if (filterPriorityDropdown) initializeSimpleDropdown(filterPriorityDropdown, reloadWorkOrdersWithFilters);
+            if (filterStatusDropdown) initializeSimpleDropdown(filterStatusDropdown, reloadWorkOrdersWithFilters);
+            if (sortByDropdown) initializeSimpleDropdown(sortByDropdown, reloadWorkOrdersWithFilters);
+            if (sortOrderDropdown) initializeSimpleDropdown(sortOrderDropdown, reloadWorkOrdersWithFilters);
         }
 
         // --- Setup All Event Listeners ---
