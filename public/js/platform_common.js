@@ -463,7 +463,7 @@ function initializeAuth(pageSpecificInitCallback) {
             }
 
             if (pageSpecificInitCallback && typeof pageSpecificInitCallback === 'function') {
-                pageSpecificInitCallback(user, database, ref, push, set, remove, serverTimestamp, query, orderByChild, equalTo, getDbData, updateDbData, showAlert, showConfirm, editIconSVG, deleteIconSVG, initializeCustomDropdown);
+                pageSpecificInitCallback(user.uid, database, ref, push, set, remove, serverTimestamp, query, orderByChild, equalTo, getDbData, updateDbData, showAlert, showConfirm, editIconSVG, deleteIconSVG, initializeCustomDropdown);
             }
         } else {
             currentUserId = null;
