@@ -178,8 +178,9 @@
             deleteAccountBtn: document.getElementById('deleteAccountBtn')
         };
 
-        function pageInit(user, db, fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbDataExt, fbUpdateDbDataExt, commonShowAlert, commonShowConfirm) {
-            pageCurrentUser = user;
+        function pageInit(userId, db, fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbDataExt, fbUpdateDbDataExt, commonShowAlert, commonShowConfirm) {
+            const auth = getAuth();
+            pageCurrentUser = auth.currentUser; // Get the full user object from auth state
             pageDatabase = db;
             common.fbRef = fbRef;
             common.fbSet = fbSet;
@@ -189,6 +190,12 @@
             common.updateDbData = fbUpdateDbDataExt;
             common.showAlert = commonShowAlert;
             common.showConfirm = commonShowConfirm;
+
+            if (!pageCurrentUser) {
+                console.error("Settings page could not retrieve current user. Aborting initialization.");
+                common.showAlert("Could not verify user session. Please refresh.", "Error");
+                return;
+            }
 
             console.log("Settings page initialized for user:", pageCurrentUser.uid);
 
