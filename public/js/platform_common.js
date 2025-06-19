@@ -54,6 +54,7 @@ function generateSystemPrompt() {
 }
 
 function initializeConversation() {
+    console.log('[AI Agent] Initializing conversation. Current User ID:', currentUserId);
     conversationId = sessionStorage.getItem('aiCurrentConversationId');
     if (conversationId) {
         // Load existing conversation from Firebase
@@ -209,7 +210,8 @@ function setupPageLayoutAndInteractivity() {
         AI_DOMElements.sendBtn = document.getElementById('ai-send-btn');
         const newChatBtn = document.getElementById('ai-new-chat-btn');
         
-        initializeConversation(); // Start or restore the conversation history
+        // Defer conversation loading until user is confirmed
+        // initializeConversation(); 
 
         if (newChatBtn) {
             newChatBtn.addEventListener('click', startNewConversation);
@@ -862,53 +864,56 @@ function showConfirm(message, title = "Confirm Action") {
 }
 
 // --- Firebase Auth & Initialization Hook (to be called by each page) ---
-function initializeAuth(pageSpecificInitCallback) {
+let pageInitCallback = null;
+
+function initializeAuth(callback) {
+    pageInitCallback = callback;
+}
+
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        currentUserId = user.uid;
+        const displayName = user.displayName || user.email.split('@')[0];
+        cachedUserDisplayName = displayName;
+        sessionStorage.setItem('puulUserDisplayName', displayName);
+
+        // Now that we have a user, initialize the AI conversation.
+        initializeConversation();
+
+        // Add/update user in the public /users directory for messaging user search
+        const userPublicRef = ref(database, 'users/' + user.uid);
+        update(userPublicRef, {
+            displayName: displayName,
+            email: user.email,
+            uid: user.uid
+        }).catch(error => console.error("Failed to update user in public directory", error));
+
+        // Ensure welcome message is updated now that we have a user.
+        if (DOMElements.welcomeMessage) {
+            DOMElements.welcomeMessage.textContent = `Welcome, ${displayName}!`;
+        }
+        
+        // If a page-specific init function is waiting, call it now that we're authenticated.
+        if (typeof pageInitCallback === 'function') {
+            pageInitCallback(user.uid, database, ref, push, set, remove, serverTimestamp, query, orderByChild, equalTo, getDbData, updateDbData, showAlert, showConfirm, editIconSVG, deleteIconSVG, initializeCustomDropdown, getFunctions, httpsCallable);
+        }
+    } else {
+        currentUserId = null;
+        sessionStorage.removeItem('puulUserDisplayName');
+        window.location.href = '/';
+    }
+});
+
+document.addEventListener('DOMContentLoaded', () => {
     // This is a bit of a hack to get the current page name for the AI context.
     const pathName = window.location.pathname.split('/').pop();
     currentPageContext = pathName.replace('platform_', '').replace('.html', '');
+    
+    // Remove the FOUC-prevention class now that the JS has loaded and can take over.
+    document.documentElement.classList.remove('js-loading');
+    setupPageLayoutAndInteractivity();
+});
 
-    // Defer layout setup until DOM is ready
-    document.addEventListener('DOMContentLoaded', () => {
-        // Remove the FOUC-prevention class now that the JS has loaded and can take over.
-        document.documentElement.classList.remove('js-loading');
-        setupPageLayoutAndInteractivity();
-    });
-
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            currentUserId = user.uid;
-            const displayName = user.displayName || user.email.split('@')[0];
-            cachedUserDisplayName = displayName;
-            sessionStorage.setItem('puulUserDisplayName', displayName);
-
-            // Add/update user in the public /users directory for messaging user search
-            const userPublicRef = ref(database, 'users/' + user.uid);
-            update(userPublicRef, {
-                displayName: displayName,
-                email: user.email,
-                uid: user.uid
-            }).catch(error => console.error("Failed to update user in public directory", error));
-
-            // Ensure welcome message is updated after DOM might have been populated by setupPageLayoutAndInteractivity
-            if (DOMElements.welcomeMessage) {
-                DOMElements.welcomeMessage.textContent = `Welcome, ${displayName}!`;
-            } else {
-                // If setupPageLayoutAndInteractivity hasn't run yet, try to update when it does
-                document.addEventListener('DOMContentLoaded', () => {
-                    if(DOMElements.welcomeMessage) DOMElements.welcomeMessage.textContent = `Welcome, ${displayName}!`;
-                });
-            }
-
-            if (pageSpecificInitCallback && typeof pageSpecificInitCallback === 'function') {
-                pageSpecificInitCallback(user.uid, database, ref, push, set, remove, serverTimestamp, query, orderByChild, equalTo, getDbData, updateDbData, showAlert, showConfirm, editIconSVG, deleteIconSVG, initializeCustomDropdown, getFunctions, httpsCallable);
-            }
-        } else {
-            currentUserId = null;
-            sessionStorage.removeItem('puulUserDisplayName');
-            window.location.href = '/';
-        }
-    });
-}
 
 // --- Firebase Data Helpers ---
 async function getDbData(dataRef) {

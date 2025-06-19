@@ -245,8 +245,10 @@
     },
     "aiConversations": {
       "$uid": {
-        ".read": "$uid === auth.uid",
-        ".write": "$uid === auth.uid"
+        "$conversationId": {
+          ".read": "auth !== null && auth.uid === $uid",
+          ".write": "auth !== null && auth.uid === $uid"
+        }
       }
     }
   }
