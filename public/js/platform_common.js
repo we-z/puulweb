@@ -1,6 +1,7 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 import { getDatabase, ref, push, set, remove, serverTimestamp, query, orderByChild, equalTo, get, update } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
+import { getFunctions, httpsCallable } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js';
 
 const firebaseConfig = {
     apiKey: "AIzaSyCTJnqW7xH0TpvDUEv73HWaVWp46bpIV9k",
@@ -12,8 +13,11 @@ const firebaseConfig = {
     appId: "1:155293676322:web:100962810832e88305ab7b"
 };
 
+const GEMINI_API_KEY = "AIzaSyBr8Wm-CCxn73Qo94rtGeMBQqqS_Z56pZ8"; // IMPORTANT: Replace with your actual key from Google AI Studio
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const functions = getFunctions(app);
 const database = getDatabase(app);
 let currentUserId = null;
 let cachedUserDisplayName = sessionStorage.getItem('puulUserDisplayName');
@@ -302,67 +306,25 @@ function addMessageToChat(content, type, isSuggestion = false) {
     messageDiv.appendChild(messageContent);
     AI_DOMElements.chatArea.appendChild(messageDiv);
     AI_DOMElements.chatArea.scrollTop = AI_DOMElements.chatArea.scrollHeight;
+
+    return messageDiv;
 }
 
-function handleAgentQuery(query) {
-    const lowerQuery = query.toLowerCase();
-    let response = "I'm sorry, I don't understand that command. You can ask me to 'show open work orders' or 'create a new tenant'.";
-    let isSuggestion = false;
+async function handleAgentQuery(query) {
+    const loadingMessage = addMessageToChat('...', 'agent');
 
-    if (lowerQuery.includes('show open work orders')) {
-        response = `
-            <p>I can filter the table to show only 'Open' work orders.</p>
-            <div class="suggestion-card">
-                <div class="suggestion-actions">
-                    <button class="btn-secondary cancel-btn">Reject</button>
-                    <button class="btn-primary submit-btn" id="suggest-filter-wo">Accept</button>
-                </div>
-            </div>`;
-        isSuggestion = true;
+    try {
+        const generateGeminiResponse = httpsCallable(functions, 'generateGeminiResponse');
+        const result = await generateGeminiResponse({ query: query });
+        
+        const agentResponse = result.data.response;
+        loadingMessage.querySelector('.message-content p').textContent = agentResponse;
 
-        // Add event listener for the accept button.
-        // Use event delegation on chatArea for dynamically added buttons
-        setTimeout(() => { // Use timeout to ensure button is in DOM
-            document.getElementById('suggest-filter-wo')?.addEventListener('click', () => {
-                showAlert("Filtering for open work orders.");
-                // This is a mock action. In a real app, this would trigger the filter logic.
-                const statusFilter = document.querySelector('#customFilterStatus .selected-value');
-                if (statusFilter) {
-                    statusFilter.textContent = 'Open';
-                    // In a real app, you would also programmatically trigger the filter change event.
-                }
-            });
-        }, 0);
-
-    } else if (lowerQuery.includes('create a new tenant')) {
-        response = `
-            <p>I can open the 'Add New Tenant' form for you.</p>
-            <div class="suggestion-card">
-                 <div class="suggestion-actions">
-                    <button class="btn-secondary cancel-btn">Reject</button>
-                    <button class="btn-primary submit-btn" id="suggest-open-tenant-modal">Accept</button>
-                </div>
-            </div>`;
-        isSuggestion = true;
-         setTimeout(() => {
-            document.getElementById('suggest-open-tenant-modal')?.addEventListener('click', () => {
-                const addBtn = document.getElementById('addItemBtn');
-                const subNav = document.querySelector('#peopleSubNav .sub-nav-item[data-subsection="tenants"]');
-                if(addBtn && subNav) {
-                    // Switch to tenants tab and open modal. This is a mock action.
-                    // In real app, you'd navigate and then click. For now, just alert.
-                     showAlert("Opening new tenant modal...");
-                } else {
-                    showAlert("Could not find the button to perform this action.", "Error");
-                }
-            });
-        }, 0);
+    } catch (error) {
+        console.error("Error calling Firebase Function:", error);
+        const errorMessage = `Sorry, I encountered an error: ${error.message}`;
+        loadingMessage.querySelector('.message-content p').textContent = errorMessage;
     }
-    
-    // Simulate thinking time
-    setTimeout(() => {
-        addMessageToChat(response, 'agent', isSuggestion);
-    }, 500);
 }
 
 // Helper function to initialize custom dropdowns
@@ -645,7 +607,7 @@ function initializeAuth(pageSpecificInitCallback) {
             }
 
             if (pageSpecificInitCallback && typeof pageSpecificInitCallback === 'function') {
-                pageSpecificInitCallback(user.uid, database, ref, push, set, remove, serverTimestamp, query, orderByChild, equalTo, getDbData, updateDbData, showAlert, showConfirm, editIconSVG, deleteIconSVG, initializeCustomDropdown);
+                pageSpecificInitCallback(user.uid, database, ref, push, set, remove, serverTimestamp, query, orderByChild, equalTo, getDbData, updateDbData, showAlert, showConfirm, editIconSVG, deleteIconSVG, initializeCustomDropdown, getFunctions, httpsCallable);
             }
         } else {
             currentUserId = null;
@@ -680,5 +642,6 @@ export {
     initializeAuth,
     ref, push, set, remove, serverTimestamp, query, orderByChild, equalTo,
     initializeCustomDropdown,
-    initializeSimpleDropdown
+    initializeSimpleDropdown,
+    getFunctions, httpsCallable
 }; 
