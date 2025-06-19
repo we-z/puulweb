@@ -183,7 +183,7 @@ body {
     flex-direction: column;
     overflow-y: auto; 
     background-color: #f7f8fc; 
-    transition: margin-left 0.3s ease; /* Should not be needed if sidebar width is 0 */
+    transition: margin-left 0.3s ease, margin-right 0.3s ease; /* Added margin-right transition */
 }
 
 .content-header {
@@ -199,7 +199,7 @@ body {
 }
 
 /* Add left padding to content-header when sidebar is collapsed to make space for the fixed toggle button */
-body.sidebar-is-collapsed .content-header {
+html.sidebar-is-collapsed .content-header {
     padding-left: 70px; /* 15px (button left) + 40px (button width) + 15px (gap) */
 }
 
@@ -211,7 +211,6 @@ body.sidebar-is-collapsed .content-header {
 }
 
 .page-container {
-    padding-top: 80px; /* Height of .content-header + some spacing */
     padding: 30px; 
     flex-grow: 1;
 }
@@ -331,8 +330,17 @@ table.data-table tr:hover {
     justify-content: center;
     cursor: pointer;
     box-shadow: 0 6px 12px rgba(0,0,0,0.2);
-    transition: transform 0.2s ease-in-out, background-color 0.2s;
+    transition: transform 0.2s ease-in-out, background-color 0.2s, right 0.3s ease, visibility 0s;
     z-index: 1000;
+    visibility: visible; /* Default state */
+}
+
+html.js-loading .fab {
+    visibility: hidden; /* Hide button while JS is loading state */
+}
+
+html.ai-agent-is-open .fab {
+    right: 360px; /* 320px for the sidebar + 40px original offset */
 }
 
 .fab:hover {
@@ -1371,7 +1379,7 @@ body.dark {
     background-color: #2d3748;
     border-color: #4a5568;
     color: #cbd5e0;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23a0aec0'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd' /%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%3Ca0aec0'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd' /%3E%3C/svg%3E");
 }
 .dark .controls-container select:hover {
     border-color: #718096;
@@ -1389,4 +1397,258 @@ body.dark {
 .dark .settings-section h4 {
     border-bottom-color: #4a5568;
     color: #ffffff;
+}
+
+/* --- AI Agent Sidebar Styles --- */
+#ai-agent-container {
+    position: relative;
+    z-index: 99; /* Below main sidebar but above content if overlapping */
+    background-color: #ffffff;
+    flex-shrink: 0;
+}
+
+.ai-agent {
+    width: 320px; /* A bit wider for chat */
+    height: 100%;
+    background-color: #f8f9fa; /* Slightly different background */
+    box-shadow: -2px 0 5px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid #e0e0e0;
+    transition: width 0.3s ease;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.ai-agent.collapsed {
+    width: 0;
+    border-left: none;
+}
+
+.ai-agent.collapsed > * {
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.1s ease, visibility 0s linear 0.1s;
+}
+
+.ai-agent-header {
+    padding: 20px;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+}
+
+.ai-agent-header h5 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+/* AI Agent Toggle Button (Chevron Right/Left) */
+.ai-agent-toggle-btn {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 1010;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(5px);
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: right 0.3s ease, background-color 0.2s;
+}
+
+body.ai-agent-is-open .ai-agent-toggle-btn {
+    right: calc(320px + 15px); /* Position left of the open sidebar */
+}
+
+.ai-agent-toggle-btn .icon {
+    width: 20px;
+    height: 20px;
+    color: #333;
+    transition: transform 0.3s ease;
+}
+
+body.ai-agent-is-open .ai-agent-toggle-btn .icon {
+    transform: rotate(180deg);
+}
+
+
+/* Chat Area */
+.ai-chat-area {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.ai-message {
+    display: flex;
+    max-width: 85%;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.ai-message .avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #6c757d;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    flex-shrink: 0;
+    font-size: 0.9rem;
+}
+
+.ai-message .message-content {
+    background-color: #ffffff;
+    padding: 10px 15px;
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+}
+
+.ai-message.user {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+}
+
+.ai-message.user .message-content {
+    background-color: #212529;
+    color: white;
+}
+
+.ai-message.user .avatar {
+    background-color: #3b82f6;
+}
+
+/* Suggestion Card */
+.suggestion-card {
+    border-top: 1px solid #e0e0e0;
+    margin-top: 10px;
+    padding-top: 10px;
+}
+
+.dark .ai-message.user .message-content {
+    background-color: #e2e8f0;
+    color: #1a202c;
+}
+
+.suggestion-card p {
+    margin: 0 0 10px;
+    font-size: 0.9rem;
+}
+
+.suggestion-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.suggestion-actions button {
+    font-size: 0.8rem;
+    padding: 6px 12px;
+    border-radius: 6px;
+}
+
+/* Input Area */
+.ai-input-area {
+    padding: 15px 20px;
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    gap: 10px;
+    background-color: #f8f9fa;
+}
+
+#ai-message-input {
+    flex-grow: 1;
+    border: 1px solid #ced4da;
+    border-radius: 20px;
+    padding: 10px 18px;
+    font-size: 0.95rem;
+    resize: none;
+    height: 20px; /* Will be adjusted by line-height */
+    line-height: 20px;
+}
+
+#ai-send-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background-color: #212529;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+#ai-send-btn:hover {
+    background-color: #343a40;
+}
+#ai-send-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+.dark .custom-alert {
+    background-color: #e2e8f0;
+    color: #1a202c;
+}
+
+.dark .ai-agent {
+    background-color: #2d3748;
+    border-left-color: #4a5568;
+}
+
+.dark .ai-agent-header, .dark .ai-input-area {
+    background-color: #2d3748;
+    border-color: #4a5568;
+}
+
+.dark .ai-agent-header h5 {
+    color: #e2e8f0;
+}
+
+.dark .ai-message .message-content {
+    background-color: #4a5568;
+    color: #e2e8f0;
+}
+
+.dark #ai-message-input {
+    background-color: #1a202c;
+    border-color: #4a5568;
+    color: #e2e8f0;
+}
+
+.dark #ai-send-btn {
+    background-color: #e2e8f0;
+    color: #1a202c;
+}
+.dark #ai-send-btn:hover {
+    background-color: #ffffff;
+}
+
+.dark .ai-agent-toggle-btn {
+    background: rgba(45, 55, 72, 0.8);
+}
+.dark .ai-agent-toggle-btn .icon {
+    color: #e2e8f0;
+}
+
+.dark .sidebar-toggle-btn .menu-icon span {
+    background: #e2e8f0;
 } 

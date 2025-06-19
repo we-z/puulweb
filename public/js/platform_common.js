@@ -32,6 +32,40 @@ const DOMElements = {
     signOutBtn: null      // Populated in initializeSidebar
 };
 
+// --- AI Agent Sidebar ---
+const AI_DOMElements = {
+    container: null,
+    toggleBtn: null,
+    chatArea: null,
+    input: null,
+    sendBtn: null,
+    agent: null
+};
+
+function generateAgentSidebarHTML() {
+    return `
+        <div class="ai-agent">
+            <div class="ai-agent-header">
+                <h5>AI Agent</h5>
+            </div>
+            <div class="ai-chat-area">
+                <div class="ai-message agent">
+                    <div class="avatar">AI</div>
+                    <div class="message-content">
+                        <p>Hello! How can I help you manage your properties today?</p>
+                    </div>
+                </div>
+            </div>
+            <div class="ai-input-area">
+                <textarea id="ai-message-input" placeholder="Ask me anything..." rows="1"></textarea>
+                <button id="ai-send-btn" title="Send">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" /></svg>
+                </button>
+            </div>
+        </div>
+    `;
+}
+
 // --- Sidebar Generation & Toggle ---
 function generateSidebarHTML(activePage) {
     const pages = [
@@ -78,12 +112,13 @@ function generateSidebarHTML(activePage) {
 function setupPageLayoutAndInteractivity() {
     console.log('[platform_common.js] Executing setupPageLayoutAndInteractivity for page:', window.location.pathname);
     const sidebarContainer = document.getElementById('sidebar-container');
+    const mainContent = document.querySelector('.main-content'); // Get main content
     console.log('[platform_common.js] Found #sidebar-container:', sidebarContainer);
     const contentHeader = document.querySelector('.content-header');
     console.log('[platform_common.js] Found .content-header:', contentHeader);
 
-    if (!sidebarContainer) {
-        console.error('[platform_common.js] CRITICAL: Sidebar container #sidebar-container not found in the DOM for page:', window.location.pathname);
+    if (!sidebarContainer || !mainContent) {
+        console.error('[platform_common.js] CRITICAL: Sidebar container or Main Content not found in the DOM for page:', window.location.pathname);
         return;
     }
     if (!contentHeader) {
@@ -94,6 +129,63 @@ function setupPageLayoutAndInteractivity() {
     const currentPage = window.location.pathname;
     sidebarContainer.innerHTML = generateSidebarHTML(currentPage);
     
+    // --- Inject and Setup AI Agent Sidebar ---
+    AI_DOMElements.container = document.getElementById('ai-agent-container');
+    if (AI_DOMElements.container) {
+        AI_DOMElements.container.innerHTML = generateAgentSidebarHTML();
+
+        AI_DOMElements.agent = document.querySelector('.ai-agent');
+        AI_DOMElements.chatArea = document.querySelector('.ai-chat-area');
+        AI_DOMElements.input = document.getElementById('ai-message-input');
+        AI_DOMElements.sendBtn = document.getElementById('ai-send-btn');
+
+        if (!document.getElementById('aiAgentToggleBtn')) {
+            AI_DOMElements.toggleBtn = document.createElement('button');
+            AI_DOMElements.toggleBtn.id = 'aiAgentToggleBtn';
+            AI_DOMElements.toggleBtn.className = 'ai-agent-toggle-btn';
+            AI_DOMElements.toggleBtn.innerHTML = `<svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" /></svg>`;
+            document.body.appendChild(AI_DOMElements.toggleBtn);
+            
+            AI_DOMElements.toggleBtn.addEventListener('click', () => {
+                const isOpened = !AI_DOMElements.agent.classList.toggle('collapsed');
+                document.documentElement.classList.toggle('ai-agent-is-open', isOpened);
+                localStorage.setItem('aiAgentCollapsed', !isOpened);
+            });
+        }
+
+        // --- Restore AI Agent Sidebar State on Page Load ---
+        if (localStorage.getItem('aiAgentCollapsed') !== 'false') { // Default to collapsed
+            AI_DOMElements.agent.classList.add('collapsed');
+        } else {
+            AI_DOMElements.agent.classList.remove('collapsed');
+        }
+
+        if(AI_DOMElements.sendBtn) {
+            const handleSend = () => {
+                const query = AI_DOMElements.input.value.trim();
+                if (query) {
+                    addMessageToChat(query, 'user');
+                    handleAgentQuery(query);
+                    AI_DOMElements.input.value = '';
+                    AI_DOMElements.input.style.height = '20px';
+                }
+            };
+            AI_DOMElements.sendBtn.addEventListener('click', handleSend);
+            AI_DOMElements.input.addEventListener('keypress', (e) => {
+                if(e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSend();
+                }
+            });
+            AI_DOMElements.input.addEventListener('input', () => {
+                AI_DOMElements.input.style.height = 'auto';
+                AI_DOMElements.input.style.height = (AI_DOMElements.input.scrollHeight) + 'px';
+            });
+        }
+    } else {
+        console.warn('[platform_common.js] AI Agent container #ai-agent-container not found. The AI sidebar will not be loaded.');
+    }
+
     const sidebar = sidebarContainer.querySelector('.sidebar');
     if (!sidebar) {
         console.error('Dynamically generated .sidebar element not found after injection.');
@@ -116,24 +208,17 @@ function setupPageLayoutAndInteractivity() {
         menuToggleBtn.classList.toggle('open', isCollapsed);
         menuToggleBtn.setAttribute('aria-expanded', !isCollapsed);
         localStorage.setItem('sidebarCollapsed', isCollapsed);
-        document.body.classList.toggle('sidebar-is-collapsed', isCollapsed);
-
-        // On mobile, when sidebar is open (not collapsed), ensure it has transform: translateX(0)
-        // and when it is collapsed, it has transform: translateX(-100%)
-        // The CSS handles this via :not(.collapsed) and .collapsed selectors within the media query.
-        // No explicit JS style change for transform is needed here due to the CSS setup.
+        document.documentElement.classList.toggle('sidebar-is-collapsed', isCollapsed);
     });
 
     if (localStorage.getItem('sidebarCollapsed') === 'true') {
         sidebar.classList.add('collapsed');
         menuToggleBtn.classList.add('open');
         menuToggleBtn.setAttribute('aria-expanded', 'false');
-        document.body.classList.add('sidebar-is-collapsed');
     } else {
-        sidebar.classList.remove('collapsed'); // Ensure it's not collapsed by default if no local storage state
+        sidebar.classList.remove('collapsed');
         menuToggleBtn.classList.remove('open');
         menuToggleBtn.setAttribute('aria-expanded', 'true');
-        document.body.classList.remove('sidebar-is-collapsed');
     }
 
     DOMElements.welcomeMessage = document.getElementById('welcomeMessage');
@@ -185,6 +270,99 @@ function setupPageLayoutAndInteractivity() {
             event.target.style.display = 'none';
         }
     });
+
+    // Remove the FOUC-prevention class now that the JS has loaded and can take over.
+    document.documentElement.classList.remove('js-loading');
+}
+
+// --- AI Agent Chat Logic ---
+function addMessageToChat(content, type, isSuggestion = false) {
+    if (!AI_DOMElements.chatArea) return;
+
+    const messageDiv = document.createElement('div');
+    messageDiv.classList.add('ai-message', type);
+    
+    const avatar = document.createElement('div');
+    avatar.className = 'avatar';
+    avatar.textContent = type === 'user' ? 'You' : 'AI';
+
+    const messageContent = document.createElement('div');
+    messageContent.className = 'message-content';
+
+    if (isSuggestion) {
+        messageContent.innerHTML = content; // content is pre-formatted HTML for suggestions
+    } else {
+        const p = document.createElement('p');
+        p.style.margin = 0;
+        p.textContent = content;
+        messageContent.appendChild(p);
+    }
+    
+    messageDiv.appendChild(avatar);
+    messageDiv.appendChild(messageContent);
+    AI_DOMElements.chatArea.appendChild(messageDiv);
+    AI_DOMElements.chatArea.scrollTop = AI_DOMElements.chatArea.scrollHeight;
+}
+
+function handleAgentQuery(query) {
+    const lowerQuery = query.toLowerCase();
+    let response = "I'm sorry, I don't understand that command. You can ask me to 'show open work orders' or 'create a new tenant'.";
+    let isSuggestion = false;
+
+    if (lowerQuery.includes('show open work orders')) {
+        response = `
+            <p>I can filter the table to show only 'Open' work orders.</p>
+            <div class="suggestion-card">
+                <div class="suggestion-actions">
+                    <button class="btn-secondary cancel-btn">Reject</button>
+                    <button class="btn-primary submit-btn" id="suggest-filter-wo">Accept</button>
+                </div>
+            </div>`;
+        isSuggestion = true;
+
+        // Add event listener for the accept button.
+        // Use event delegation on chatArea for dynamically added buttons
+        setTimeout(() => { // Use timeout to ensure button is in DOM
+            document.getElementById('suggest-filter-wo')?.addEventListener('click', () => {
+                showAlert("Filtering for open work orders.");
+                // This is a mock action. In a real app, this would trigger the filter logic.
+                const statusFilter = document.querySelector('#customFilterStatus .selected-value');
+                if (statusFilter) {
+                    statusFilter.textContent = 'Open';
+                    // In a real app, you would also programmatically trigger the filter change event.
+                }
+            });
+        }, 0);
+
+    } else if (lowerQuery.includes('create a new tenant')) {
+        response = `
+            <p>I can open the 'Add New Tenant' form for you.</p>
+            <div class="suggestion-card">
+                 <div class="suggestion-actions">
+                    <button class="btn-secondary cancel-btn">Reject</button>
+                    <button class="btn-primary submit-btn" id="suggest-open-tenant-modal">Accept</button>
+                </div>
+            </div>`;
+        isSuggestion = true;
+         setTimeout(() => {
+            document.getElementById('suggest-open-tenant-modal')?.addEventListener('click', () => {
+                const addBtn = document.getElementById('addItemBtn');
+                const subNav = document.querySelector('#peopleSubNav .sub-nav-item[data-subsection="tenants"]');
+                if(addBtn && subNav) {
+                    // Switch to tenants tab and open modal. This is a mock action.
+                    // In real app, you'd navigate and then click. For now, just alert.
+                     showAlert("Opening new tenant modal...");
+                } else {
+                    showAlert("Could not find the button to perform this action.", "Error");
+                }
+            });
+        }, 0);
+    }
+    
+    // Simulate thinking time
+    setTimeout(() => {
+        addMessageToChat(response, 'agent', isSuggestion);
+    }, 500);
 }
 
 // Helper function to initialize custom dropdowns
@@ -435,7 +613,11 @@ function showConfirm(message, title = "Confirm Action") {
 // --- Firebase Auth & Initialization Hook (to be called by each page) ---
 function initializeAuth(pageSpecificInitCallback) {
     // Defer layout setup until DOM is ready
-    document.addEventListener('DOMContentLoaded', setupPageLayoutAndInteractivity);
+    document.addEventListener('DOMContentLoaded', () => {
+        // Remove the FOUC-prevention class now that the JS has loaded and can take over.
+        document.documentElement.classList.remove('js-loading');
+        setupPageLayoutAndInteractivity();
+    });
 
     onAuthStateChanged(auth, (user) => {
         if (user) {

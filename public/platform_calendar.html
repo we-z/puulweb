@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="js-loading">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calendar - Puul Platform</title>
     <link rel="stylesheet" href="/css/platform_common.css">
+    <script src="/js/fouc-prevention.js"></script>
     <!-- FullCalendar v6.1.17 JS (includes CSS) -->
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.js'></script>
     <style>
@@ -61,6 +62,8 @@
             </div>
         </div>
     </div>
+
+    <div id="ai-agent-container"></div>
 
     <button class="fab" id="addItemBtn" aria-label="Add new calendar event"> <!-- Now always visible to trigger modal -->
         +
