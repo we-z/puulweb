@@ -4,7 +4,7 @@ const axios = require("axios");
 // It's recommended to store your API key in Firebase environment variables for security
 // To set this variable, run the following command in your terminal:
 // firebase functions:config:set gemini.key="YOUR_API_KEY"
-// Deployment trigger: 1
+// Deployment trigger: 2
 const GEMINI_API_KEY = functions.config().gemini.key;
 const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 

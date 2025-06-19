@@ -196,11 +196,14 @@ body {
     border-bottom: 1px solid #e0e0e0;
     display: flex;
     align-items: center;
+    justify-content: space-between; /* This will push the agent toggle to the right */
 }
 
 /* Add left padding to content-header when sidebar is collapsed to make space for the fixed toggle button */
 html.sidebar-is-collapsed .content-header {
     padding-left: 70px; /* 15px (button left) + 40px (button width) + 15px (gap) */
+    background-color: #e9ecef;
+    color: #333;
 }
 
 .content-header h2 {
@@ -1432,11 +1435,11 @@ body.dark {
 }
 
 .ai-agent-header {
+    position: relative; /* Set as positioning context */
     padding: 20px;
     border-bottom: 1px solid #e0e0e0;
     display: flex;
     align-items: center;
-    justify-content: space-between;
     flex-shrink: 0;
 }
 
@@ -1448,25 +1451,21 @@ body.dark {
 
 /* AI Agent Toggle Button (Chevron Right/Left) */
 .ai-agent-toggle-btn {
-    position: fixed;
-    top: 15px;
-    right: 15px;
-    z-index: 1010;
-    width: 40px;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(5px);
-    border-radius: 50%;
     border: none;
+    background: transparent;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: right 0.3s ease, background-color 0.2s;
+    padding: 5px;
+    width: 30px;
+    height: 30px;
+    color: #6c757d;
+    transition: color 0.2s, transform 0.3s ease;
+}
+.ai-agent-toggle-btn:hover {
+    color: #333;
 }
 
-body.ai-agent-is-open .ai-agent-toggle-btn {
-    right: calc(320px + 15px); /* Position left of the open sidebar */
+html.ai-agent-is-open .ai-agent-toggle-btn {
+    transform: rotate(180deg);
 }
 
 .ai-agent-toggle-btn .icon {
@@ -1476,7 +1475,7 @@ body.ai-agent-is-open .ai-agent-toggle-btn {
     transition: transform 0.3s ease;
 }
 
-body.ai-agent-is-open .ai-agent-toggle-btn .icon {
+html.ai-agent-is-open .ai-agent-toggle-btn .icon {
     transform: rotate(180deg);
 }
 
@@ -1651,4 +1650,24 @@ body.ai-agent-is-open .ai-agent-toggle-btn .icon {
 
 .dark .sidebar-toggle-btn .menu-icon span {
     background: #e2e8f0;
+}
+
+#ai-new-chat-btn {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: 1px solid #ced4da;
+    color: #555;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+    font-weight: 600;
+}
+#ai-new-chat-btn:hover {
+    background-color: #e9ecef;
+    color: #333;
 } 

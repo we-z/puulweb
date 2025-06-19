@@ -46,13 +46,46 @@ const AI_DOMElements = {
 };
 
 let conversationHistory = [];
-const system_prompt = `You are an AI assistant for a property management platform called Puul. Your name is 'Puul-E'. You can help users with tasks related to leasing, accounting, maintenance, and more. Be concise and helpful. When asked to perform an action, respond with what you will do and why. Use the tools provided to navigate, filter data, or open forms for the user. Do not use markdown in your response. The current page is ${window.location.pathname.split('/').pop().split('.')[0]}.`;
+let conversationId = null;
+let currentPageContext = 'unknown'; // This will be set on each page load
+
+function generateSystemPrompt() {
+    return `You are an AI assistant for a property management platform called Puul. Your name is 'Puul-E'. You are an expert property manager. Be concise and helpful. When asked to perform an action, respond with what you will do and why. Use the tools provided to navigate, filter data, or open forms for the user. Do not use markdown in your response. The user is currently on the '${currentPageContext}' page.`;
+}
 
 function initializeConversation() {
+    conversationId = sessionStorage.getItem('aiCurrentConversationId');
+    if (conversationId) {
+        // Load existing conversation from Firebase
+        const historyRef = ref(database, `aiConversations/${currentUserId}/${conversationId}`);
+        get(historyRef).then((snapshot) => {
+            if (snapshot.exists()) {
+                conversationHistory = snapshot.val();
+                 // Ensure the system prompt is up-to-date with the current page context
+                conversationHistory[0].parts[0].text = generateSystemPrompt();
+                renderConversation(conversationHistory);
+            } else {
+                startNewConversation();
+            }
+        });
+    } else {
+        startNewConversation();
+    }
+}
+
+function startNewConversation() {
     conversationHistory = [
-        { "role": "user", "parts": [{ "text": system_prompt }] },
+        { "role": "user", "parts": [{ "text": generateSystemPrompt() }] },
         { "role": "model", "parts": [{ "text": "Understood. I am Puul-E, your property management assistant. How can I help?" }] }
     ];
+    // Generate a new ID for the conversation
+    const newConversationRef = push(ref(database, `aiConversations/${currentUserId}`));
+    conversationId = newConversationRef.key;
+    sessionStorage.setItem('aiCurrentConversationId', conversationId);
+    
+    // Save the initial state to the new conversation ID
+    set(newConversationRef, conversationHistory);
+    renderConversation(conversationHistory);
 }
 
 function generateAgentSidebarHTML() {
@@ -60,6 +93,7 @@ function generateAgentSidebarHTML() {
         <div class="ai-agent">
             <div class="ai-agent-header">
                 <h5>AI Agent</h5>
+                <button id="ai-new-chat-btn">New Chat</button>
             </div>
             <div class="ai-chat-area">
                 <div class="ai-message agent">
@@ -77,6 +111,28 @@ function generateAgentSidebarHTML() {
             </div>
         </div>
     `;
+}
+
+function renderConversation(history) {
+    if (!AI_DOMElements.chatArea) return;
+    // Clear existing messages except the very first greeting
+    AI_DOMElements.chatArea.innerHTML = '';
+    
+    // Skip the first two messages (system prompt and initial greeting)
+    const messagesToRender = history.slice(2);
+    
+    // Manually add back the initial greeting
+     addMessageToChat('Hello! How can I help you manage your properties today?', 'agent');
+
+    messagesToRender.forEach(message => {
+        // We only render user messages and model's text responses.
+        // Function call requests/responses are part of the logic but not explicitly rendered.
+        if (message.role === 'user') {
+            addMessageToChat(message.parts[0].text, 'user');
+        } else if (message.role === 'model' && message.parts[0].text) {
+            addMessageToChat(message.parts[0].text, 'agent');
+        }
+    });
 }
 
 // --- Sidebar Generation & Toggle ---
@@ -151,16 +207,33 @@ function setupPageLayoutAndInteractivity() {
         AI_DOMElements.chatArea = document.querySelector('.ai-chat-area');
         AI_DOMElements.input = document.getElementById('ai-message-input');
         AI_DOMElements.sendBtn = document.getElementById('ai-send-btn');
+        const newChatBtn = document.getElementById('ai-new-chat-btn');
+        
+        initializeConversation(); // Start or restore the conversation history
 
-        initializeConversation(); // Start the conversation history
+        if (newChatBtn) {
+            newChatBtn.addEventListener('click', startNewConversation);
+        }
 
+        // --- AI Agent Toggle Button ---
         if (!document.getElementById('aiAgentToggleBtn')) {
             AI_DOMElements.toggleBtn = document.createElement('button');
             AI_DOMElements.toggleBtn.id = 'aiAgentToggleBtn';
             AI_DOMElements.toggleBtn.className = 'ai-agent-toggle-btn';
             AI_DOMElements.toggleBtn.innerHTML = `<svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" /></svg>`;
-            document.body.appendChild(AI_DOMElements.toggleBtn);
             
+            // Create a wrapper for both toggle buttons
+            let toggleWrapper = contentHeader.querySelector('.toggle-button-wrapper');
+            if (!toggleWrapper) {
+                toggleWrapper = document.createElement('div');
+                toggleWrapper.className = 'toggle-button-wrapper';
+                toggleWrapper.style.display = 'flex';
+                toggleWrapper.style.alignItems = 'center';
+                toggleWrapper.style.gap = '10px';
+                contentHeader.appendChild(toggleWrapper);
+            }
+            toggleWrapper.appendChild(AI_DOMElements.toggleBtn);
+
             AI_DOMElements.toggleBtn.addEventListener('click', () => {
                 const isOpened = !AI_DOMElements.agent.classList.toggle('collapsed');
                 document.documentElement.classList.toggle('ai-agent-is-open', isOpened);
@@ -181,6 +254,7 @@ function setupPageLayoutAndInteractivity() {
                 if (query) {
                     addMessageToChat(query, 'user');
                     conversationHistory.push({ role: "user", parts: [{ text: query }] });
+                    set(ref(database, `aiConversations/${currentUserId}/${conversationId}`), conversationHistory);
                     handleAgentQuery(conversationHistory);
                     AI_DOMElements.input.value = '';
                     AI_DOMElements.input.style.height = '20px';
@@ -216,7 +290,21 @@ function setupPageLayoutAndInteractivity() {
         menuToggleBtn.setAttribute('aria-label', 'Toggle sidebar');
         menuToggleBtn.setAttribute('aria-expanded', 'true');
         menuToggleBtn.innerHTML = `<div class="menu-icon"><span></span><span></span><span></span></div>`;
-        contentHeader.insertBefore(menuToggleBtn, contentHeader.firstChild);
+        
+        // Ensure the wrapper exists and prepend the main sidebar toggle to it
+        let toggleWrapper = contentHeader.querySelector('.toggle-button-wrapper');
+        if (!toggleWrapper) {
+            toggleWrapper = document.createElement('div');
+            toggleWrapper.className = 'toggle-button-wrapper';
+            toggleWrapper.style.display = 'flex';
+            toggleWrapper.style.alignItems = 'center';
+            toggleWrapper.style.gap = '10px';
+             contentHeader.appendChild(toggleWrapper);
+        }
+        toggleWrapper.prepend(menuToggleBtn); // Prepend so it appears before the AI toggle
+
+        // Adjust the header to accommodate the wrapper
+        contentHeader.insertBefore(toggleWrapper, contentHeader.querySelector('h2').nextSibling);
     }
 
     menuToggleBtn.addEventListener('click', () => {
@@ -289,6 +377,15 @@ function setupPageLayoutAndInteractivity() {
 
     // Remove the FOUC-prevention class now that the JS has loaded and can take over.
     document.documentElement.classList.remove('js-loading');
+    
+    // Check for and execute any post-navigation actions requested by the AI
+    const nextActionJSON = sessionStorage.getItem('aiNextAction');
+    if (nextActionJSON) {
+        sessionStorage.removeItem('aiNextAction'); // Clear the action so it doesn't run again
+        const nextAction = JSON.parse(nextActionJSON);
+        console.log('[AI Agent] Executing post-navigation action:', nextAction);
+        executeTool(nextAction.tool, nextAction.args);
+    }
 }
 
 // --- AI Agent Chat Logic ---
@@ -310,7 +407,7 @@ function addMessageToChat(content, type, isSuggestion = false) {
     } else {
         const p = document.createElement('p');
         p.style.margin = 0;
-        p.textContent = content;
+        p.innerHTML = content.replace(/\n/g, '<br>'); // Support line breaks
         messageContent.appendChild(p);
     }
     
@@ -324,12 +421,13 @@ function addMessageToChat(content, type, isSuggestion = false) {
 
 async function handleAgentQuery(history) {
     const loadingMessage = addMessageToChat('...', 'agent');
+    AI_DOMElements.sendBtn.disabled = true;
+    AI_DOMElements.input.disabled = true;
 
     try {
         const generateGeminiResponse = httpsCallable(functions, 'generateGeminiResponse');
-        const result = await generateGeminiResponse({ history: history });
+        let result = await generateGeminiResponse({ history: history });
         
-        // Remove loading indicator
         loadingMessage.remove();
 
         if (result.data.functionCall) {
@@ -337,21 +435,41 @@ async function handleAgentQuery(history) {
             const functionName = functionCall.name;
             const args = functionCall.args;
             
-            // Add a "Thinking..." message about the action
+            // If the tool is for navigation, we must save the history *before* we navigate.
+            if (functionName === 'navigateToPage') {
+                addMessageToChat(`Navigating to the ${args.pageName} page...`, 'agent');
+                // Save the AI's response before navigating away.
+                history.push({ role: "model", parts: [{ text: `Navigating to ${args.pageName}.`}] });
+                set(ref(database, `aiConversations/${currentUserId}/${conversationId}`), history);
+                await executeTool(functionName, args);
+                return; 
+            }
+
+            // For other tools, execute them and report back to the AI.
             addMessageToChat(`Okay, I will ${functionName.replace(/([A-Z])/g, ' $1').toLowerCase()}...`, 'agent');
 
-            // Execute the function
             const functionResult = await executeTool(functionName, args);
             
-            // For now, we won't send the result back to the LLM for a summary.
-            // We'll just show a success message.
-            addMessageToChat(`Action '${functionName}' completed successfully.`, 'agent');
-            conversationHistory.push({ role: "model", parts: [{ text: `I have just executed the function ${functionName} with the arguments ${JSON.stringify(args)}.` }] });
+            // Add the function call and its result to the history
+            history.push({ role: "model", parts: [{ functionCall: functionCall }] });
+            history.push({ role: "function", parts: [{ functionResponse: { name: functionName, response: functionResult } }] });
+            set(ref(database, `aiConversations/${currentUserId}/${conversationId}`), history);
+
+            // Call the API again to get a summary of the action.
+            const summaryResult = await generateGeminiResponse({ history: history });
+            if (summaryResult.data.response) {
+                addMessageToChat(summaryResult.data.response, 'agent');
+                history.push({ role: "model", parts: [{ text: summaryResult.data.response }] });
+                set(ref(database, `aiConversations/${currentUserId}/${conversationId}`), history);
+            }
 
         } else if (result.data.response) {
             const agentResponse = result.data.response;
             addMessageToChat(agentResponse, 'agent');
-            conversationHistory.push({ role: "model", parts: [{ text: agentResponse }] });
+            history.push({ role: "model", parts: [{ text: agentResponse }] });
+            set(ref(database, `aiConversations/${currentUserId}/${conversationId}`), history);
+        } else {
+            addMessageToChat("I'm not sure how to respond to that. Can you try rephrasing?", 'agent');
         }
 
     } catch (error) {
@@ -359,81 +477,143 @@ async function handleAgentQuery(history) {
         const errorMessage = `Sorry, I encountered an error: ${error.message}`;
         loadingMessage.remove();
         addMessageToChat(errorMessage, 'agent');
+    } finally {
+        AI_DOMElements.sendBtn.disabled = false;
+        AI_DOMElements.input.disabled = false;
+        AI_DOMElements.input.focus();
     }
 }
 
 // --- Client-Side Tool/Function Execution ---
 async function executeTool(functionName, args) {
-    switch (functionName) {
-        case 'navigateToPage':
-            return new Promise(resolve => {
+    console.log(`[AI Agent] Attempting to execute tool: ${functionName}`, args);
+    let result = { success: true, message: `Executed ${functionName}` };
+    try {
+        switch (functionName) {
+            case 'navigateToPage':
                 const page = args.pageName.toLowerCase();
-                window.location.href = `/platform_${page}.html`;
-                // Resolve after a short delay to allow navigation to start
-                setTimeout(() => resolve({ success: true }), 200);
-            });
-        
-        case 'filterTable':
-            return new Promise(resolve => {
-                // This is a simplified implementation that simulates a filter click.
-                // It assumes the filter dropdowns are present on the page.
-                const page = args.page.toLowerCase();
-                const filterBy = args.filterBy.toLowerCase();
-                const value = args.value;
+                const validPages = ['dashboard', 'calendar', 'leasing', 'properties', 'people', 'accounting', 'maintenance', 'reporting', 'communication', 'settings'];
+                if (validPages.includes(page)) {
+                    window.location.assign(`/platform_${page}.html`);
+                } else {
+                    console.error(`[AI Agent] Navigation failed: Page '${page}' not found.`);
+                    result = { success: false, message: `Page '${page}' not found.` };
+                }
+                break;
+            
+            case 'filterTable':
+                const { page: filterPage, filterBy, value } = args;
+                const dropdownIdMap = {
+                    maintenance: {
+                        status: 'customFilterStatus',
+                        priority: 'customFilterPriority',
+                        property: 'customFilterProperty'
+                    },
+                    properties: {
+                        type: 'customFilterPropertyType'
+                    }
+                };
+                const dropdownId = dropdownIdMap[filterPage.toLowerCase()]?.[filterBy.toLowerCase()];
                 
-                let dropdownId;
-                if (page === 'maintenance' && filterBy === 'status') dropdownId = 'customFilterStatus';
-                if (page === 'maintenance' && filterBy === 'priority') dropdownId = 'customFilterPriority';
-                // Add more mappings here as needed...
-
-                const dropdown = document.getElementById(dropdownId);
-                if (dropdown) {
-                    const option = dropdown.querySelector(`.dropdown-option[data-value="${value}"]`);
-                    if (option) {
-                        option.click(); // This will trigger the simple dropdown's onChange callback
-                        resolve({ success: true, message: `Filtered ${page} by ${filterBy} for '${value}'` });
+                if (dropdownId) {
+                    const dropdown = document.getElementById(dropdownId);
+                    if (dropdown) {
+                        const option = dropdown.querySelector(`.dropdown-option[data-value="${value}"]`);
+                        if (option) {
+                            // This is a direct simulation of the simple dropdown's logic
+                            const selectedValueSpan = dropdown.querySelector('.selected-value');
+                            const allOptions = dropdown.querySelectorAll('.dropdown-option');
+                            
+                            if (selectedValueSpan) selectedValueSpan.textContent = option.textContent;
+                            dropdown.dataset.value = option.dataset.value;
+                            
+                            allOptions.forEach(opt => opt.classList.remove('selected'));
+                            option.classList.add('selected');
+                            
+                            // Manually trigger the reload logic associated with the filter
+                            const reloadFunction = window.loadWorkOrders || window.loadProperties;
+                            if (typeof reloadFunction === 'function') {
+                                reloadFunction();
+                                result.message = `Successfully filtered ${filterPage} by ${filterBy} for '${value}'`;
+                            } else {
+                                console.warn("[AI Agent] Could not find a data reload function on the window object.");
+                                result = { success: false, message: "Could not visually update the table, but filter was set."};
+                            }
+                        } else {
+                            console.error(`[AI Agent] Filter failed: Value '${value}' not found in dropdown '${dropdownId}'.`);
+                            result = { success: false, message: `Value '${value}' not found for filter '${filterBy}'` };
+                        }
                     } else {
-                        resolve({ success: false, message: `Value '${value}' not found for filter '${filterBy}'` });
+                        console.error(`[AI Agent] Filter failed: Dropdown element '${dropdownId}' not found.`);
+                        result = { success: false, message: `Filter dropdown '${dropdownId}' not found on page '${filterPage}'` };
                     }
                 } else {
-                    resolve({ success: false, message: `Filter '${filterBy}' not found on page '${page}'` });
+                     console.error(`[AI Agent] Filter failed: No filter mapping for page '${filterPage}' and filterBy '${filterBy}'.`);
+                     result = { success: false, message: `Filter '${filterBy}' not available on page '${filterPage}'` };
                 }
-            });
+                break;
 
-        case 'openAddItemModal':
-             return new Promise(resolve => {
-                const itemType = args.itemType;
+            case 'openAddItemModal':
+                const { itemType } = args;
+
+                // If the user isn't on the right page, navigate first and queue this action.
+                const requiredPage = getPageForItemType(itemType);
+                if (requiredPage && currentPageContext !== requiredPage) {
+                    sessionStorage.setItem('aiNextAction', JSON.stringify({ tool: 'openAddItemModal', args: { itemType } }));
+                    await executeTool('navigateToPage', { pageName: requiredPage });
+                    return { success: true, message: `Navigating to ${requiredPage} to open modal...` };
+                }
+
+                // If on the correct page, find the right sub-tab and click the FAB.
+                const subNavSelector = getSubNavSelector(itemType);
+                if (subNavSelector) {
+                    const subNavItem = document.querySelector(subNavSelector);
+                    if (subNavItem) subNavItem.click();
+                    await new Promise(r => setTimeout(r, 150)); // Wait for UI
+                }
+                
                 const fab = document.getElementById('addItemBtn');
-
-                // A map to find the correct sub-nav item to click to reveal the right context
-                const subNavSelectorMap = {
-                    workOrders: '#maintenanceSubNav .sub-nav-item[data-subsection="workOrders"]',
-                    tenants: '#peopleSubNav .sub-nav-item[data-subsection="tenants"]',
-                    properties: '#leasingSubNav .sub-nav-item[data-subsection="vacancies"]', // No specific property add button, might link to vacancies
-                    leases: '#leasingSubNav .sub-nav-item[data-subsection="leases"]',
-                    // ... add all other item types
-                };
-
-                const subNavItem = document.querySelector(subNavSelectorMap[itemType]);
-                if (subNavItem) {
-                    subNavItem.click(); // Switch to the correct tab
-                    // Use a timeout to ensure the UI has updated before clicking the FAB
-                    setTimeout(() => {
-                        if (fab) {
-                            fab.click();
-                            resolve({ success: true, message: `Opened modal for adding new ${itemType}` });
-                        } else {
-                             resolve({ success: false, message: `Could not find the 'Add' button.`});
-                        }
-                    }, 100);
+                if (fab) {
+                    fab.click();
                 } else {
-                    resolve({ success: false, message: `Could not find the context for item type '${itemType}'` });
+                    result = { success: false, message: "Could not find the 'Add' button." };
                 }
-            });
+                break;
 
-        default:
-            return Promise.resolve({ success: false, message: `Unknown function: ${functionName}` });
+            default:
+                console.error(`[AI Agent] Unknown function call: ${functionName}`);
+                result = { success: false, message: `Unknown function: ${functionName}` };
+        }
+    } catch(e) {
+        console.error(`Error executing tool ${functionName}:`, e);
+        result = { success: false, message: `Client-side error executing ${functionName}: ${e.message}`};
     }
+    return result;
+}
+
+function getPageForItemType(itemType) {
+    if (itemType.includes('workOrder') || itemType.includes('inspection')) return 'maintenance';
+    if (itemType.includes('tenant') || itemType.includes('owner') || itemType.includes('vendor')) return 'people';
+    if (itemType.includes('lease') || itemType.includes('propert')) return 'leasing';
+    if (itemType.includes('receivable') || itemType.includes('payable') || itemType.includes('journal')) return 'accounting';
+    return null;
+}
+
+function getSubNavSelector(itemType) {
+    const map = {
+        workOrders: '#maintenanceSubNav .sub-nav-item[data-subsection="workOrders"]',
+        recurringWorkOrders: '#maintenanceSubNav .sub-nav-item[data-subsection="recurringWorkOrders"]',
+        inspections: '#maintenanceSubNav .sub-nav-item[data-subsection="inspections"]',
+        tenants: '#peopleSubNav .sub-nav-item[data-subsection="tenants"]',
+        owners: '#peopleSubNav .sub-nav-item[data-subsection="owners"]',
+        vendors: '#peopleSubNav .sub-nav-item[data-subsection="vendors"]',
+        properties: '#leasingSubNav .sub-nav-item[data-subsection="vacancies"]',
+        leases: '#leasingSubNav .sub-nav-item[data-subsection="leases"]',
+        receivables: '#accountingSubNav .sub-nav-item[data-subsection="receivables"]',
+        payables: '#accountingSubNav .sub-nav-item[data-subsection="payables"]',
+        journalEntries: '#accountingSubNav .sub-nav-item[data-subsection="journalEntries"]'
+    };
+    return map[itemType] || null;
 }
 
 // Helper function to initialize custom dropdowns
@@ -683,6 +863,10 @@ function showConfirm(message, title = "Confirm Action") {
 
 // --- Firebase Auth & Initialization Hook (to be called by each page) ---
 function initializeAuth(pageSpecificInitCallback) {
+    // This is a bit of a hack to get the current page name for the AI context.
+    const pathName = window.location.pathname.split('/').pop();
+    currentPageContext = pathName.replace('platform_', '').replace('.html', '');
+
     // Defer layout setup until DOM is ready
     document.addEventListener('DOMContentLoaded', () => {
         // Remove the FOUC-prevention class now that the JS has loaded and can take over.
