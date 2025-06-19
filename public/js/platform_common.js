@@ -45,6 +45,16 @@ const AI_DOMElements = {
     agent: null
 };
 
+let conversationHistory = [];
+const system_prompt = `You are an AI assistant for a property management platform called Puul. Your name is 'Puul-E'. You can help users with tasks related to leasing, accounting, maintenance, and more. Be concise and helpful. When asked to perform an action, respond with what you will do and why. Use the tools provided to navigate, filter data, or open forms for the user. Do not use markdown in your response. The current page is ${window.location.pathname.split('/').pop().split('.')[0]}.`;
+
+function initializeConversation() {
+    conversationHistory = [
+        { "role": "user", "parts": [{ "text": system_prompt }] },
+        { "role": "model", "parts": [{ "text": "Understood. I am Puul-E, your property management assistant. How can I help?" }] }
+    ];
+}
+
 function generateAgentSidebarHTML() {
     return `
         <div class="ai-agent">
@@ -142,6 +152,8 @@ function setupPageLayoutAndInteractivity() {
         AI_DOMElements.input = document.getElementById('ai-message-input');
         AI_DOMElements.sendBtn = document.getElementById('ai-send-btn');
 
+        initializeConversation(); // Start the conversation history
+
         if (!document.getElementById('aiAgentToggleBtn')) {
             AI_DOMElements.toggleBtn = document.createElement('button');
             AI_DOMElements.toggleBtn.id = 'aiAgentToggleBtn';
@@ -168,7 +180,8 @@ function setupPageLayoutAndInteractivity() {
                 const query = AI_DOMElements.input.value.trim();
                 if (query) {
                     addMessageToChat(query, 'user');
-                    handleAgentQuery(query);
+                    conversationHistory.push({ role: "user", parts: [{ text: query }] });
+                    handleAgentQuery(conversationHistory);
                     AI_DOMElements.input.value = '';
                     AI_DOMElements.input.style.height = '20px';
                 }
@@ -309,20 +322,117 @@ function addMessageToChat(content, type, isSuggestion = false) {
     return messageDiv;
 }
 
-async function handleAgentQuery(query) {
+async function handleAgentQuery(history) {
     const loadingMessage = addMessageToChat('...', 'agent');
 
     try {
         const generateGeminiResponse = httpsCallable(functions, 'generateGeminiResponse');
-        const result = await generateGeminiResponse({ query: query });
+        const result = await generateGeminiResponse({ history: history });
         
-        const agentResponse = result.data.response;
-        loadingMessage.querySelector('.message-content p').textContent = agentResponse;
+        // Remove loading indicator
+        loadingMessage.remove();
+
+        if (result.data.functionCall) {
+            const functionCall = result.data.functionCall;
+            const functionName = functionCall.name;
+            const args = functionCall.args;
+            
+            // Add a "Thinking..." message about the action
+            addMessageToChat(`Okay, I will ${functionName.replace(/([A-Z])/g, ' $1').toLowerCase()}...`, 'agent');
+
+            // Execute the function
+            const functionResult = await executeTool(functionName, args);
+            
+            // For now, we won't send the result back to the LLM for a summary.
+            // We'll just show a success message.
+            addMessageToChat(`Action '${functionName}' completed successfully.`, 'agent');
+            conversationHistory.push({ role: "model", parts: [{ text: `I have just executed the function ${functionName} with the arguments ${JSON.stringify(args)}.` }] });
+
+        } else if (result.data.response) {
+            const agentResponse = result.data.response;
+            addMessageToChat(agentResponse, 'agent');
+            conversationHistory.push({ role: "model", parts: [{ text: agentResponse }] });
+        }
 
     } catch (error) {
         console.error("Error calling Firebase Function:", error);
         const errorMessage = `Sorry, I encountered an error: ${error.message}`;
-        loadingMessage.querySelector('.message-content p').textContent = errorMessage;
+        loadingMessage.remove();
+        addMessageToChat(errorMessage, 'agent');
+    }
+}
+
+// --- Client-Side Tool/Function Execution ---
+async function executeTool(functionName, args) {
+    switch (functionName) {
+        case 'navigateToPage':
+            return new Promise(resolve => {
+                const page = args.pageName.toLowerCase();
+                window.location.href = `/platform_${page}.html`;
+                // Resolve after a short delay to allow navigation to start
+                setTimeout(() => resolve({ success: true }), 200);
+            });
+        
+        case 'filterTable':
+            return new Promise(resolve => {
+                // This is a simplified implementation that simulates a filter click.
+                // It assumes the filter dropdowns are present on the page.
+                const page = args.page.toLowerCase();
+                const filterBy = args.filterBy.toLowerCase();
+                const value = args.value;
+                
+                let dropdownId;
+                if (page === 'maintenance' && filterBy === 'status') dropdownId = 'customFilterStatus';
+                if (page === 'maintenance' && filterBy === 'priority') dropdownId = 'customFilterPriority';
+                // Add more mappings here as needed...
+
+                const dropdown = document.getElementById(dropdownId);
+                if (dropdown) {
+                    const option = dropdown.querySelector(`.dropdown-option[data-value="${value}"]`);
+                    if (option) {
+                        option.click(); // This will trigger the simple dropdown's onChange callback
+                        resolve({ success: true, message: `Filtered ${page} by ${filterBy} for '${value}'` });
+                    } else {
+                        resolve({ success: false, message: `Value '${value}' not found for filter '${filterBy}'` });
+                    }
+                } else {
+                    resolve({ success: false, message: `Filter '${filterBy}' not found on page '${page}'` });
+                }
+            });
+
+        case 'openAddItemModal':
+             return new Promise(resolve => {
+                const itemType = args.itemType;
+                const fab = document.getElementById('addItemBtn');
+
+                // A map to find the correct sub-nav item to click to reveal the right context
+                const subNavSelectorMap = {
+                    workOrders: '#maintenanceSubNav .sub-nav-item[data-subsection="workOrders"]',
+                    tenants: '#peopleSubNav .sub-nav-item[data-subsection="tenants"]',
+                    properties: '#leasingSubNav .sub-nav-item[data-subsection="vacancies"]', // No specific property add button, might link to vacancies
+                    leases: '#leasingSubNav .sub-nav-item[data-subsection="leases"]',
+                    // ... add all other item types
+                };
+
+                const subNavItem = document.querySelector(subNavSelectorMap[itemType]);
+                if (subNavItem) {
+                    subNavItem.click(); // Switch to the correct tab
+                    // Use a timeout to ensure the UI has updated before clicking the FAB
+                    setTimeout(() => {
+                        if (fab) {
+                            fab.click();
+                            resolve({ success: true, message: `Opened modal for adding new ${itemType}` });
+                        } else {
+                             resolve({ success: false, message: `Could not find the 'Add' button.`});
+                        }
+                    }, 100);
+                } else {
+                    resolve({ success: false, message: `Could not find the context for item type '${itemType}'` });
+                }
+            });
+
+        default:
+            return Promise.resolve({ success: false, message: `Unknown function: ${functionName}` });
     }
 }
 

@@ -8,26 +8,77 @@ const axios = require("axios");
 const GEMINI_API_KEY = functions.config().gemini.key;
 const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
+// Define the tools the AI can use
+const tools = [{
+    "functionDeclarations": [
+        {
+            "name": "navigateToPage",
+            "description": "Navigates the user to a specific page in the application.",
+            "parameters": {
+                "type": "OBJECT",
+                "properties": {
+                    "pageName": {
+                        "type": "STRING",
+                        "description": "The name of the page to navigate to. Must be one of: dashboard, calendar, leasing, properties, people, accounting, maintenance, reporting, communication, settings."
+                    }
+                },
+                "required": ["pageName"]
+            }
+        },
+        {
+            "name": "filterTable",
+            "description": "Applies a filter to the data table currently visible on the page.",
+            "parameters": {
+                "type": "OBJECT",
+                "properties": {
+                     "page": {
+                        "type": "STRING",
+                        "description": "The page the user is currently on, to identify the correct table. E.g., 'maintenance', 'leasing'."
+                    },
+                    "filterBy": {
+                        "type": "STRING",
+                        "description": "The field or category to filter by (e.g., 'status', 'priority')."
+                    },
+                    "value": {
+                        "type": "STRING",
+                        "description": "The specific value to filter for (e.g., 'Open', 'High', 'Active')."
+                    }
+                },
+                "required": ["page", "filterBy", "value"]
+            }
+        },
+        {
+            "name": "openAddItemModal",
+            "description": "Opens the modal window used to add a new item on the current page.",
+            "parameters": {
+                 "type": "OBJECT",
+                "properties": {
+                    "itemType": {
+                        "type": "STRING",
+                        "description": "The type of item to add, which corresponds to the subsection on a page. E.g., 'workOrders', 'tenants', 'leases', 'properties'."
+                    }
+                },
+                "required": ["itemType"]
+            }
+        }
+    ]
+}];
+
 exports.generateGeminiResponse = functions.https.onCall(async (data, context) => {
     // Ensure the user is authenticated
     if (!context.auth) {
         throw new functions.https.HttpsError('unauthenticated', 'The function must be called while authenticated.');
     }
 
-    const userQuery = data.query;
-    if (!userQuery) {
-        throw new functions.https.HttpsError('invalid-argument', 'The function must be called with one argument "query".');
+    const conversationHistory = data.history;
+    if (!conversationHistory || !Array.isArray(conversationHistory)) {
+        throw new functions.https.HttpsError('invalid-argument', 'The function must be called with a "history" array.');
     }
-    
-    const system_prompt = `You are an AI assistant for a property management platform called Puul. Your name is 'Puul-E'. You can help users with tasks related to leasing, accounting, maintenance, and more. Be concise and helpful. When asked to perform an action, respond with what you will do and why. Do not use markdown in your response.`;
 
     try {
         const response = await axios.post(API_URL, {
-            "contents": [
-                { "role": "user", "parts": [{ "text": system_prompt }] },
-                { "role": "model", "parts": [{ "text": "Understood. I am Puul-E, your property management assistant. How can I help?" }] },
-                { "role": "user", "parts": [{ "text": userQuery }] }
-            ],
+            "contents": conversationHistory,
+            "tools": tools,
             "generationConfig": {
                 "temperature": 0.7,
                 "topK": 1,
@@ -36,9 +87,7 @@ exports.generateGeminiResponse = functions.https.onCall(async (data, context) =>
                 "stopSequences": []
             },
         }, {
-            headers: {
-                'Content-Type': 'application/json',
-            }
+            headers: { 'Content-Type': 'application/json' }
         });
 
         if (response.data.promptFeedback && response.data.promptFeedback.blockReason) {
@@ -48,7 +97,16 @@ exports.generateGeminiResponse = functions.https.onCall(async (data, context) =>
             throw new functions.https.HttpsError('internal', "No response from AI agent.");
         }
         
-        const agentResponse = response.data.candidates[0].content.parts[0].text;
+        const candidate = response.data.candidates[0];
+        const content = candidate.content;
+
+        // Check if the model wants to call a function
+        if (content.parts[0].functionCall) {
+            return { functionCall: content.parts[0].functionCall };
+        }
+        
+        // Otherwise, return the text response
+        const agentResponse = content.parts[0].text;
         return { response: agentResponse };
 
     } catch (error) {
