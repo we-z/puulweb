@@ -13,7 +13,6 @@ const firebaseConfig = {
     appId: "1:155293676322:web:100962810832e88305ab7b"
 };
 
-const GEMINI_API_KEY = "AIzaSyBr8Wm-CCxn73Qo94rtGeMBQqqS_Z56pZ8"; // IMPORTANT: Replace with your actual key from Google AI Studio
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
