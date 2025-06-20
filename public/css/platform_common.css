@@ -1639,7 +1639,12 @@ html.ai-agent-is-open .ai-agent-toggle-btn .icon {
   background-color: #fff; /* or any other suitable color */
 }
 
-#ai-new-chat-btn {
+.ai-header-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.ai-header-btn {
     background: none;
     border: 1px solid #fff;
     color: #000;
@@ -1654,12 +1659,12 @@ html.ai-agent-is-open .ai-agent-toggle-btn .icon {
     justify-content: center;
 }
 
-#ai-new-chat-btn svg {
-    width: 18px;
-    height: 18px;
+.ai-header-btn svg {
+    width: 20px;
+    height: 20px;
 }
 
-#ai-new-chat-btn:hover {
+.ai-header-btn:hover {
     background-color: #e8e8e8;
 }
 
