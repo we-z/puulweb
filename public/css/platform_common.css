@@ -1450,13 +1450,12 @@ body.dark {
     width: 40px;
     height: 40px;
     background-color: #fff;
-    border: 1px solid #dcdfe6;
+    border: 1px solid #fff;
     border-radius: 50%;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.06);
     transition: all 0.2s ease-in-out;
 }
 .ai-agent-toggle-btn:hover {
@@ -1464,14 +1463,10 @@ body.dark {
     border-color: #c0c4cc;
 }
 
-html.ai-agent-is-open .ai-agent-toggle-btn {
-    /* Keep it visible, maybe style it differently */
-    background-color: #e9ecef;
-}
 .ai-agent-toggle-btn .icon {
-    width: 20px;
-    height: 20px;
-    color: #4a5568;
+    width: 50px;
+    height: 50px;
+    color: #000;
     transition: transform 0.3s ease;
 }
 
@@ -1639,13 +1634,6 @@ html.ai-agent-is-open .ai-agent-toggle-btn .icon {
 }
 .dark #ai-send-btn:hover {
     background: #6b7280;
-}
-.dark .ai-agent-toggle-btn {
-    background-color: #374151;
-    border-color: #4b5563;
-}
-.dark .ai-agent-toggle-btn .icon {
-    color: #d1d5db;
 }
 .dark .sidebar-toggle-btn .menu-icon span {
   background-color: #fff; /* or any other suitable color */
