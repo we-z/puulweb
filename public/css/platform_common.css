@@ -1369,7 +1369,7 @@ body.dark {
 }
 
 .dark .sidebar-toggle-btn .menu-icon span {
-    background: #e2e8f0;
+    background-color: #fff; /* or any other suitable color */
 }
 .dark .sidebar-toggle-btn:not(.open) {
     background: transparent;
@@ -1379,99 +1379,99 @@ body.dark {
 }
 
 .dark .controls-container select {
-    background-color: #2d3748;
-    border-color: #4a5568;
-    color: #cbd5e0;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%3Ca0aec0'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd' /%3E%3C/svg%3E");
+    background-color: #374151;
+    border-color: #4b5563;
+    color: #d1d5db;
 }
 .dark .controls-container select:hover {
-    border-color: #718096;
-    background-color: #4a5568;
+    border-color: #6b7280;
 }
 .dark .controls-container select:focus {
-    border-color: #a0aec0;
-    box-shadow: 0 0 0 3px rgba(160, 174, 192, 0.15);
+    border-color: #9ca3af;
+    box-shadow: 0 0 0 2px rgba(156, 163, 175, 0.3);
 }
-
 .dark .settings-section {
-    background-color: #2d3748;
-    color: #e2e8f0;
+    border-color: #374151;
 }
 .dark .settings-section h4 {
-    border-bottom-color: #4a5568;
-    color: #ffffff;
+    color: #e5e7eb;
 }
 
 /* --- AI Agent Sidebar Styles --- */
 #ai-agent-container {
     position: relative;
-    z-index: 99; /* Below main sidebar but above content if overlapping */
-    background-color: #ffffff;
-    flex-shrink: 0;
+    /* No explicit width, it's determined by the .ai-agent inside */
+    height: 100vh;
+    z-index: 99; /* Below main sidebar */
 }
 
 .ai-agent {
-    width: 320px; /* A bit wider for chat */
+    width: 300px;
     height: 100%;
-    background-color: #f8f9fa; /* Slightly different background */
-    box-shadow: -2px 0 5px rgba(0,0,0,0.05);
+    background-color: #ffffff;
+    border-left: 1px solid #e0e0e0;
     display: flex;
     flex-direction: column;
-    border-left: 1px solid #e0e0e0;
-    transition: width 0.3s ease;
+    transition: width 0.3s ease, padding 0.3s ease;
     box-sizing: border-box;
-    overflow: hidden;
+    position: relative;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.05);
 }
 
 .ai-agent.collapsed {
     width: 0;
+    padding: 0;
     border-left: none;
+    overflow: hidden;
 }
-
 .ai-agent.collapsed > * {
-    visibility: hidden;
     opacity: 0;
+    visibility: hidden;
     transition: opacity 0.1s ease, visibility 0s linear 0.1s;
 }
 
 .ai-agent-header {
-    position: relative; /* Set as positioning context */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     padding: 20px;
     border-bottom: 1px solid #e0e0e0;
-    display: flex;
-    align-items: center;
     flex-shrink: 0;
 }
 
 .ai-agent-header h5 {
     margin: 0;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: 600;
+    color: #1a202c;
 }
 
-/* AI Agent Toggle Button (Chevron Right/Left) */
 .ai-agent-toggle-btn {
-    border: none;
-    background: transparent;
+    width: 40px;
+    height: 40px;
+    background-color: #fff;
+    border: 1px solid #dcdfe6;
+    border-radius: 50%;
     cursor: pointer;
-    padding: 5px;
-    width: 30px;
-    height: 30px;
-    color: #6c757d;
-    transition: color 0.2s, transform 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+    transition: all 0.2s ease-in-out;
 }
 .ai-agent-toggle-btn:hover {
-    color: #333;
+    background-color: #f7f8fc;
+    border-color: #c0c4cc;
 }
 
 html.ai-agent-is-open .ai-agent-toggle-btn {
-    transform: rotate(180deg);
+    /* Keep it visible, maybe style it differently */
+    background-color: #e9ecef;
 }
-
 .ai-agent-toggle-btn .icon {
     width: 20px;
     height: 20px;
-    color: #333;
+    color: #4a5568;
     transition: transform 0.3s ease;
 }
 
@@ -1479,8 +1479,6 @@ html.ai-agent-is-open .ai-agent-toggle-btn .icon {
     transform: rotate(180deg);
 }
 
-
-/* Chat Area */
 .ai-chat-area {
     flex-grow: 1;
     overflow-y: auto;
@@ -1492,30 +1490,30 @@ html.ai-agent-is-open .ai-agent-toggle-btn .icon {
 
 .ai-message {
     display: flex;
-    max-width: 85%;
-    align-items: flex-start;
     gap: 10px;
+    max-width: 90%;
 }
 
 .ai-message .avatar {
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    background-color: #6c757d;
-    color: white;
+    background-color: #e9ecef;
+    color: #495057;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 500;
-    flex-shrink: 0;
     font-size: 0.9rem;
+    flex-shrink: 0;
 }
 
 .ai-message .message-content {
-    background-color: #ffffff;
+    background-color: #f1f3f5;
     padding: 10px 15px;
     border-radius: 12px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+    font-size: 0.95rem;
+    color: #333;
 }
 
 .ai-message.user {
@@ -1524,150 +1522,161 @@ html.ai-agent-is-open .ai-agent-toggle-btn .icon {
 }
 
 .ai-message.user .message-content {
-    background-color: #212529;
-    color: white;
+    background-color: #000000;
+    color: #ffffff;
 }
-
 .ai-message.user .avatar {
-    background-color: #3b82f6;
+    background-color: #ced4da;
+    color: #343a40;
 }
 
-/* Suggestion Card */
 .suggestion-card {
-    border-top: 1px solid #e0e0e0;
-    margin-top: 10px;
-    padding-top: 10px;
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 8px;
 }
 
 .dark .ai-message.user .message-content {
-    background-color: #e2e8f0;
-    color: #1a202c;
+    background-color: #3b82f6; /* Example: Blue for user message in dark mode */
+    color: #ffffff;
 }
 
 .suggestion-card p {
-    margin: 0 0 10px;
+    margin: 0 0 10px 0;
     font-size: 0.9rem;
 }
-
 .suggestion-actions {
     display: flex;
-    gap: 10px;
-    justify-content: flex-end;
+    gap: 8px;
 }
-
 .suggestion-actions button {
-    font-size: 0.8rem;
-    padding: 6px 12px;
+    font-size: 0.85rem;
+    padding: 4px 8px;
     border-radius: 6px;
+    cursor: pointer;
 }
 
-/* Input Area */
 .ai-input-area {
     padding: 15px 20px;
     border-top: 1px solid #e0e0e0;
     display: flex;
+    align-items: center; /* Align items vertically */
     gap: 10px;
-    background-color: #f8f9fa;
 }
 
 #ai-message-input {
     flex-grow: 1;
     border: 1px solid #ced4da;
-    border-radius: 20px;
-    padding: 10px 18px;
-    font-size: 0.95rem;
+    border-radius: 18px;
+    padding: 8px 15px;
+    font-size: 1rem;
     resize: none;
-    height: 20px; /* Will be adjusted by line-height */
-    line-height: 20px;
+    transition: border-color 0.2s;
+    line-height: 1.4;
+    max-height: 120px; /* Limit max height */
+}
+#ai-message-input:focus {
+    outline: none;
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.25);
 }
 
 #ai-send-btn {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
+    background: #000;
     border: none;
-    background-color: #212529;
     color: white;
-    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
     flex-shrink: 0;
 }
-
 #ai-send-btn:hover {
-    background-color: #343a40;
+    background: #333;
 }
 #ai-send-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+.dark .custom-alert {
+  background-color: #333;
+  color: #fff;
+}
+
+.dark .ai-agent {
+    background-color: #1f2937; /* Dark gray */
+    border-left-color: #374151; /* Slightly lighter gray */
+}
+
+.dark .ai-agent-header, .dark .ai-input-area {
+    border-color: #374151;
+}
+
+.dark .ai-agent-header h5 {
+    color: #e5e7eb; /* Light gray text */
+}
+
+.dark .ai-message .message-content {
+    background-color: #374151;
+    color: #d1d5db;
+}
+
+.dark #ai-message-input {
+    background-color: #374151;
+    border-color: #4b5563;
+    color: #d1d5db;
+}
+
+.dark #ai-send-btn {
+    background: #4b5563;
+}
+.dark #ai-send-btn:hover {
+    background: #6b7280;
+}
+.dark .ai-agent-toggle-btn {
+    background-color: #374151;
+    border-color: #4b5563;
+}
+.dark .ai-agent-toggle-btn .icon {
+    color: #d1d5db;
+}
+.dark .sidebar-toggle-btn .menu-icon span {
+  background-color: #fff; /* or any other suitable color */
+}
+
+#ai-new-chat-btn {
+    background: none;
+    border: 1px solid #fff;
+    color: #000;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#ai-new-chat-btn svg {
     width: 18px;
     height: 18px;
 }
 
-.dark .custom-alert {
-    background-color: #e2e8f0;
-    color: #1a202c;
-}
-
-.dark .ai-agent {
-    background-color: #2d3748;
-    border-left-color: #4a5568;
-}
-
-.dark .ai-agent-header, .dark .ai-input-area {
-    background-color: #2d3748;
-    border-color: #4a5568;
-}
-
-.dark .ai-agent-header h5 {
-    color: #e2e8f0;
-}
-
-.dark .ai-message .message-content {
-    background-color: #4a5568;
-    color: #e2e8f0;
-}
-
-.dark #ai-message-input {
-    background-color: #1a202c;
-    border-color: #4a5568;
-    color: #e2e8f0;
-}
-
-.dark #ai-send-btn {
-    background-color: #e2e8f0;
-    color: #1a202c;
-}
-.dark #ai-send-btn:hover {
-    background-color: #ffffff;
-}
-
-.dark .ai-agent-toggle-btn {
-    background: rgba(45, 55, 72, 0.8);
-}
-.dark .ai-agent-toggle-btn .icon {
-    color: #e2e8f0;
-}
-
-.dark .sidebar-toggle-btn .menu-icon span {
-    background: #e2e8f0;
-}
-
-#ai-new-chat-btn {
-    position: absolute;
-    right: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: 1px solid #ced4da;
-    color: #555;
-    padding: 5px 10px;
-    border-radius: 6px;
-    font-size: 0.8rem;
-    cursor: pointer;
-    transition: background-color 0.2s, color 0.2s;
-    font-weight: 600;
-}
 #ai-new-chat-btn:hover {
-    background-color: #e9ecef;
-    color: #333;
+    background-color: #e8e8e8;
+}
+
+/* Ensure fouc-prevention styles are declared */
+html.js-loading .main-content,
+html.js-loading #sidebar-container {
+    visibility: hidden;
 } 
