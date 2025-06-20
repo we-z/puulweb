@@ -76,8 +76,7 @@ function initializeConversation() {
 
 function startNewConversation() {
     conversationHistory = [
-        { "role": "user", "parts": [{ "text": generateSystemPrompt() }] },
-        { "role": "model", "parts": [{ "text": "Understood. I am Puul, your property management assistant. How can I help?" }] }
+        { "role": "user", "parts": [{ "text": generateSystemPrompt() }] }
     ];
     // Generate a new ID for the conversation
     const newConversationRef = push(ref(database, `aiConversations/${currentUserId}`));
@@ -112,12 +111,6 @@ function generateAgentSidebarHTML() {
                 </div>
             </div>
             <div class="ai-chat-area">
-                <div class="ai-message agent">
-                    <div class="avatar">AI</div>
-                    <div class="message-content">
-                        <p>Hello! How can I help you manage your properties today?</p>
-                    </div>
-                </div>
             </div>
             <div class="ai-input-area">
                 <textarea id="ai-message-input" placeholder="Ask me anything..." rows="1"></textarea>
@@ -131,14 +124,11 @@ function generateAgentSidebarHTML() {
 
 function renderConversation(history) {
     if (!AI_DOMElements.chatArea) return;
-    // Clear existing messages except the very first greeting
+    // Clear existing messages
     AI_DOMElements.chatArea.innerHTML = '';
-    
-    // Skip the first two messages (system prompt and initial greeting)
-    const messagesToRender = history.slice(2);
-    
-    // Manually add back the initial greeting
-     addMessageToChat('Hello! How can I help you manage your properties today?', 'agent');
+
+    // Skip the system prompt message at history[0].
+    const messagesToRender = history.slice(1);
 
     messagesToRender.forEach(message => {
         // We only render user messages and model's text responses.
