@@ -1437,6 +1437,7 @@ body.dark {
     padding: 20px;
     border-bottom: 1px solid #e0e0e0;
     flex-shrink: 0;
+    position: relative;
 }
 
 .ai-agent-header h5 {
@@ -1672,4 +1673,47 @@ html.ai-agent-is-open .ai-agent-toggle-btn .icon {
 html.js-loading .main-content,
 html.js-loading #sidebar-container {
     visibility: hidden;
+}
+
+#ai-history-menu.dropdown-menu {
+    left: auto;
+    right: -40px; /* Nudge menu to align with the header content area */
+    width: 260px;
+}
+
+.dropdown-option.no-history {
+    cursor: default;
+    color: #868e96;
+}
+.dropdown-option.no-history:hover {
+    background-color: transparent;
+}
+
+.ai-header-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+.ai-header-btn:hover {
+    border-color: #4a5568;
+}
+
+.dark .ai-history-item {
+    color: #cbd5e0;
+}
+
+.dark .ai-history-item:hover {
+    background-color: #4a5568;
+}
+
+.dark .ai-history-item.active {
+    background-color: #4a5568;
+}
+
+.dark .ai-agent-header h5 {
+    color: #e5e7eb; /* Light gray text */
+}
+
+.ai-header-buttons .custom-dropdown {
+    min-width: initial; /* Reset min-width to prevent squeezing header title */
 } 

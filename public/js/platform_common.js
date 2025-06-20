@@ -95,12 +95,15 @@ function generateAgentSidebarHTML() {
             <div class="ai-agent-header">
                 <h5>AI Agent</h5>
                 <div class="ai-header-buttons">
-                    <button id="ai-history-btn" class="ai-header-btn" title="Chat History">
-                        <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" fill="currentColor">
-                           <path d="M0 0h24v24H0z" fill="none"/>
-                           <path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.41 1.41C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/>
-                        </svg>
-                    </button>
+                    <div id="ai-history-container" class="custom-dropdown">
+                        <button id="ai-history-btn" class="ai-header-btn" title="Chat History">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" fill="currentColor">
+                               <path d="M0 0h24v24H0z" fill="none"/>
+                               <path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.41 1.41C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/>
+                            </svg>
+                        </button>
+                         <!-- Dropdown menu will be injected here -->
+                    </div>
                     <button id="ai-new-chat-btn" class="ai-header-btn" title="New Chat">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
@@ -221,12 +224,20 @@ function setupPageLayoutAndInteractivity() {
         AI_DOMElements.input = document.getElementById('ai-message-input');
         AI_DOMElements.sendBtn = document.getElementById('ai-send-btn');
         const newChatBtn = document.getElementById('ai-new-chat-btn');
+        const historyBtn = document.getElementById('ai-history-btn');
         
         // Defer conversation loading until user is confirmed
         // initializeConversation(); 
 
         if (newChatBtn) {
             newChatBtn.addEventListener('click', startNewConversation);
+        }
+
+        if (historyBtn) {
+            historyBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleHistoryDropdown();
+            });
         }
 
         // --- AI Agent Toggle Button ---
@@ -951,3 +962,110 @@ export {
     initializeSimpleDropdown,
     getFunctions, httpsCallable
 }; 
+
+// --- AI Chat History Dropdown ---
+let isHistoryDropdownOpen = false;
+
+function closeHistoryDropdown() {
+    const container = document.getElementById('ai-history-container');
+    if (container) {
+        container.classList.remove('open');
+        const menu = container.querySelector('.dropdown-menu');
+        if (menu) {
+            // Let the CSS transition finish before removing
+            setTimeout(() => menu.remove(), 200);
+        }
+    }
+    isHistoryDropdownOpen = false;
+    document.removeEventListener('click', handleClickOutsideHistoryDropdown, true);
+}
+
+function handleClickOutsideHistoryDropdown(event) {
+    const container = document.getElementById('ai-history-container');
+    if (container && !container.contains(event.target)) {
+        closeHistoryDropdown();
+    }
+}
+
+function loadConversation(convoId) {
+    if (conversationId === convoId) {
+        closeHistoryDropdown();
+        return;
+    }
+    console.log(`[AI Agent] Loading conversation ${convoId}`);
+    sessionStorage.setItem('aiCurrentConversationId', convoId);
+    initializeConversation();
+    closeHistoryDropdown();
+}
+
+function showHistoryDropdown(container, histories) {
+    // Remove existing menu if it's there
+    let menu = container.querySelector('.dropdown-menu');
+    if (menu) menu.remove();
+
+    menu = document.createElement('div');
+    menu.id = 'ai-history-menu';
+    menu.className = 'dropdown-menu';
+
+    const options = document.createElement('div');
+    options.className = 'dropdown-options';
+    
+    const historyKeys = Object.keys(histories);
+
+    if (historyKeys.length === 0) {
+        options.innerHTML = `<div class="dropdown-option no-history">No past conversations.</div>`;
+    } else {
+        historyKeys.reverse().forEach(convoId => { // Show newest first
+            const history = histories[convoId];
+            const firstUserMessage = history.find(msg => msg.role === 'user' && !msg.parts[0].text.startsWith('You are an AI assistant'));
+            const title = firstUserMessage ? firstUserMessage.parts[0].text : 'Conversation';
+
+            const item = document.createElement('div');
+            item.className = 'dropdown-option';
+            if (convoId === conversationId) {
+                item.classList.add('selected');
+            }
+            item.textContent = title.substring(0, 35) + (title.length > 35 ? '...' : '');
+            item.title = title;
+            item.dataset.conversationId = convoId;
+
+            item.addEventListener('click', (e) => {
+                e.stopPropagation();
+                loadConversation(convoId);
+            });
+            options.appendChild(item);
+        });
+    }
+
+    menu.appendChild(options);
+    container.appendChild(menu);
+    
+    // Trigger the 'open' class to show the menu with transition
+    setTimeout(() => {
+        container.classList.add('open');
+        isHistoryDropdownOpen = true;
+        document.addEventListener('click', handleClickOutsideHistoryDropdown, true);
+    }, 10); // A tiny delay ensures the transition works
+}
+
+async function toggleHistoryDropdown() {
+    const container = document.getElementById('ai-history-container');
+    if (!container) return;
+    
+    isHistoryDropdownOpen = container.classList.contains('open');
+
+    if (isHistoryDropdownOpen) {
+        closeHistoryDropdown();
+        return;
+    }
+
+    const historiesRef = ref(database, `aiConversations/${currentUserId}`);
+    try {
+        const snapshot = await get(historiesRef);
+        const allHistories = snapshot.exists() ? snapshot.val() : {};
+        showHistoryDropdown(container, allHistories);
+    } catch (error) {
+        console.error("Error fetching chat histories:", error);
+        showAlert("Could not load chat history.");
+    }
+} 
