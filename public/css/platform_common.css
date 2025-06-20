@@ -1412,10 +1412,31 @@ body.dark {
     border-left: 1px solid #e0e0e0;
     display: flex;
     flex-direction: column;
-    transition: width 0.3s ease, padding 0.3s ease;
+    transition: padding 0.3s ease;
     box-sizing: border-box;
     position: relative;
     box-shadow: -2px 0 5px rgba(0,0,0,0.05);
+}
+
+.ai-resizer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+    cursor: col-resize;
+    z-index: 10;
+    transform: translateX(-50%);
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    transition: background-color 0.2s ease;
+}
+
+.ai-resizer:hover {
+    background-color: #007bff;
+    opacity: 0.2;
 }
 
 .ai-agent.collapsed {

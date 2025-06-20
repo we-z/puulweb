@@ -91,6 +91,7 @@ function startNewConversation() {
 function generateAgentSidebarHTML() {
     return `
         <div class="ai-agent">
+            <div class="ai-resizer"></div>
             <div class="ai-agent-header">
                 <h5>AI Agent</h5>
                 <div class="ai-header-buttons">
@@ -120,6 +121,76 @@ function generateAgentSidebarHTML() {
             </div>
         </div>
     `;
+}
+
+function initializeAgentResizer(agentElement) {
+    const resizer = agentElement.querySelector('.ai-resizer');
+    if (!resizer) return;
+
+    let isResizing = false;
+    let startX, startWidth;
+
+    const handleMouseDown = (e) => {
+        // Only trigger on left-click
+        if (e.button !== 0) return;
+        e.preventDefault();
+        isResizing = true;
+        startX = e.clientX;
+        startWidth = parseInt(document.defaultView.getComputedStyle(agentElement).width, 10);
+        document.body.style.cursor = 'col-resize';
+        document.body.style.userSelect = 'none';
+
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+    };
+
+    const handleMouseMove = (e) => {
+        if (!isResizing) return;
+        const dx = e.clientX - startX;
+        let newWidth = startWidth - dx; // Dragging left decreases x, so we subtract dx to increase width
+
+        // Add constraints
+        if (newWidth < 250) newWidth = 250;
+        if (newWidth > 800) newWidth = 800;
+
+        agentElement.style.width = `${newWidth}px`;
+        updateDynamicStyles(newWidth);
+    };
+
+    const handleMouseUp = () => {
+        isResizing = false;
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+
+        // Save the new width
+        if (agentElement.style.width) {
+            localStorage.setItem('aiAgentWidth', agentElement.style.width);
+        }
+    };
+
+    resizer.addEventListener('mousedown', handleMouseDown);
+
+    function updateDynamicStyles(agentWidth) {
+        let styleSheet = document.getElementById('ai-dynamic-styles');
+        if (!styleSheet) {
+            styleSheet = document.createElement('style');
+            styleSheet.id = 'ai-dynamic-styles';
+            document.head.appendChild(styleSheet);
+        }
+        const fabRightOffset = agentWidth + 40; // 40px original offset
+        styleSheet.innerHTML = `
+            html.ai-agent-is-open .fab {
+                right: ${fabRightOffset}px !important;
+            }
+        `;
+    }
+
+    // Initial style update
+    const initialWidth = parseInt(document.defaultView.getComputedStyle(agentElement).width, 10);
+    updateDynamicStyles(initialWidth);
 }
 
 function renderConversation(history) {
@@ -210,6 +281,9 @@ function setupPageLayoutAndInteractivity() {
         AI_DOMElements.container.innerHTML = generateAgentSidebarHTML();
 
         AI_DOMElements.agent = document.querySelector('.ai-agent');
+
+        initializeAgentResizer(AI_DOMElements.agent);
+
         AI_DOMElements.chatArea = document.querySelector('.ai-chat-area');
         AI_DOMElements.input = document.getElementById('ai-message-input');
         AI_DOMElements.sendBtn = document.getElementById('ai-send-btn');
@@ -250,17 +324,42 @@ function setupPageLayoutAndInteractivity() {
             toggleWrapper.appendChild(AI_DOMElements.toggleBtn);
 
             AI_DOMElements.toggleBtn.addEventListener('click', () => {
-                const isOpened = !AI_DOMElements.agent.classList.toggle('collapsed');
-                document.documentElement.classList.toggle('ai-agent-is-open', isOpened);
-                localStorage.setItem('aiAgentCollapsed', !isOpened);
+                const agent = AI_DOMElements.agent;
+                const isCurrentlyCollapsed = agent.classList.contains('collapsed');
+
+                if (isCurrentlyCollapsed) {
+                    // --- EXPANDING ---
+                    agent.classList.remove('collapsed');
+                    // Restore width from localStorage
+                    const savedWidth = localStorage.getItem('aiAgentWidth');
+                    if (savedWidth) {
+                        agent.style.width = savedWidth;
+                    }
+                    document.documentElement.classList.add('ai-agent-is-open');
+                    localStorage.setItem('aiAgentCollapsed', 'false');
+                } else {
+                    // --- COLLAPSING ---
+                    // Clear the inline style so the .collapsed class's width can take over.
+                    // The resizer already saved the width to localStorage on mouse up.
+                    agent.style.width = '';
+                    agent.classList.add('collapsed');
+                    document.documentElement.classList.remove('ai-agent-is-open');
+                    localStorage.setItem('aiAgentCollapsed', 'true');
+                }
             });
         }
 
         // --- Restore AI Agent Sidebar State on Page Load ---
-        if (localStorage.getItem('aiAgentCollapsed') !== 'false') { // Default to collapsed
-            AI_DOMElements.agent.classList.add('collapsed');
-        } else {
-            AI_DOMElements.agent.classList.remove('collapsed');
+        const isCollapsedOnLoad = localStorage.getItem('aiAgentCollapsed') !== 'false';
+        AI_DOMElements.agent.classList.toggle('collapsed', isCollapsedOnLoad);
+        document.documentElement.classList.toggle('ai-agent-is-open', !isCollapsedOnLoad);
+
+        if (!isCollapsedOnLoad) {
+            // Restore width only if it's not supposed to be collapsed
+            const savedWidth = localStorage.getItem('aiAgentWidth');
+            if (savedWidth) {
+                AI_DOMElements.agent.style.width = savedWidth;
+            }
         }
 
         if(AI_DOMElements.sendBtn) {
