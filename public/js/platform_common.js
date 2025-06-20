@@ -50,7 +50,7 @@ let conversationId = null;
 let currentPageContext = 'unknown'; // This will be set on each page load
 
 function generateSystemPrompt() {
-    return `You are an AI assistant for a property management platform called Puul. Your name is 'Puul-E'. You are an expert property manager. Be concise and helpful. When a user's request can be fulfilled by one of your tools, you must call that tool directly. Do not first respond with text explaining what you will do. For example, if asked to 'go to the leasing page', use the navigateToPage tool immediately. The user is currently on the '${currentPageContext}' page. Do not use markdown in your response.`;
+    return `You are an AI assistant for a property management platform called Puul. Your name is 'Puul'. You are an expert property manager. Be concise and helpful. When a user's request can be fulfilled by one of your tools, you must call that tool directly. Do not first respond with text explaining what you will do. For example, if asked to 'go to the leasing page', use the navigateToPage tool immediately. The user is currently on the '${currentPageContext}' page. Do not use markdown in your response.`;
 }
 
 function initializeConversation() {
@@ -77,7 +77,7 @@ function initializeConversation() {
 function startNewConversation() {
     conversationHistory = [
         { "role": "user", "parts": [{ "text": generateSystemPrompt() }] },
-        { "role": "model", "parts": [{ "text": "Understood. I am Puul-E, your property management assistant. How can I help?" }] }
+        { "role": "model", "parts": [{ "text": "Understood. I am Puul, your property management assistant. How can I help?" }] }
     ];
     // Generate a new ID for the conversation
     const newConversationRef = push(ref(database, `aiConversations/${currentUserId}`));
