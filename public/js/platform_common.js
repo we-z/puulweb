@@ -50,7 +50,7 @@ let conversationId = null;
 let currentPageContext = 'unknown'; // This will be set on each page load
 
 function generateSystemPrompt() {
-    return `You are an AI assistant for a property management platform called Puul. Your name is 'Puul-E'. You are an expert property manager. Be concise and helpful. When asked to perform an action, respond with what you will do and why. Use the tools provided to navigate, filter data, or open forms for the user. Do not use markdown in your response. The user is currently on the '${currentPageContext}' page.`;
+    return `You are an AI assistant for a property management platform called Puul. Your name is 'Puul-E'. You are an expert property manager. Be concise and helpful. When a user's request can be fulfilled by one of your tools, you must call that tool directly. Do not first respond with text explaining what you will do. For example, if asked to 'go to the leasing page', use the navigateToPage tool immediately. The user is currently on the '${currentPageContext}' page. Do not use markdown in your response.`;
 }
 
 function initializeConversation() {
@@ -428,7 +428,7 @@ async function handleAgentQuery(history) {
 
     try {
         const generateGeminiResponse = httpsCallable(functions, 'generateGeminiResponse');
-        let result = await generateGeminiResponse({ history: history });
+        const result = await generateGeminiResponse({ history: history });
         
         loadingMessage.remove();
 
@@ -437,34 +437,30 @@ async function handleAgentQuery(history) {
             const functionName = functionCall.name;
             const args = functionCall.args;
             
-            // If the tool is for navigation, we must save the history *before* we navigate.
-            if (functionName === 'navigateToPage') {
-                addMessageToChat(`Navigating to the ${args.pageName} page...`, 'agent');
-                // Save the AI's response before navigating away.
-                history.push({ role: "model", parts: [{ text: `Navigating to ${args.pageName}.`}] });
-                set(ref(database, `aiConversations/${currentUserId}/${conversationId}`), history);
-                await executeTool(functionName, args);
-                return; 
-            }
-
-            // For other tools, execute them and report back to the AI.
-            addMessageToChat(`Okay, I will ${functionName.replace(/([A-Z])/g, ' $1').toLowerCase()}...`, 'agent');
-
-            const functionResult = await executeTool(functionName, args);
-            
-            // Add the function call and its result to the history
+            // The model is now just calling the function, so we add the functionCall to history.
             history.push({ role: "model", parts: [{ functionCall: functionCall }] });
-            history.push({ role: "function", parts: [{ functionResponse: { name: functionName, response: functionResult } }] });
+
+            // Add a user-friendly message about what's happening.
+            let friendlyMessage = `Executing ${functionName}...`;
+            if (functionName === 'navigateToPage') {
+                friendlyMessage = `Navigating to the ${args.pageName} page...`;
+            } else if (functionName === 'filterTable') {
+                friendlyMessage = `Okay, filtering ${args.page} by ${args.filterBy} for '${args.value}'.`;
+            } else if (functionName === 'openAddItemModal') {
+                friendlyMessage = `Okay, opening the form to add a new ${args.itemType}.`;
+            }
+            addMessageToChat(friendlyMessage, 'agent');
+
+            // Save history before potential navigation
             set(ref(database, `aiConversations/${currentUserId}/${conversationId}`), history);
 
-            // Call the API again to get a summary of the action.
-            const summaryResult = await generateGeminiResponse({ history: history });
-            if (summaryResult.data.response) {
-                addMessageToChat(summaryResult.data.response, 'agent');
-                history.push({ role: "model", parts: [{ text: summaryResult.data.response }] });
-                set(ref(database, `aiConversations/${currentUserId}/${conversationId}`), history);
-            }
-
+            // Execute the tool.
+            await executeTool(functionName, args);
+            
+            // For navigation, the script might stop here. For other tools, we can continue
+            // but the current design doesn't require a second AI call. The function result
+            // isn't used to generate a new summary, simplifying the flow.
+            
         } else if (result.data.response) {
             const agentResponse = result.data.response;
             addMessageToChat(agentResponse, 'agent');
