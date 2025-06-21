@@ -887,6 +887,154 @@
       }
     }
   </style>
+  <style>
+    /* Pricing Section */
+    .pricing-section {
+      width: 100%;
+      padding: 6rem 2rem;
+      background-color: white;
+      text-align: center;
+      box-sizing: border-box;
+      overflow-x: hidden;
+    }
+    .pricing-title {
+      font-size: 3rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: #000;
+    }
+    .pricing-subtitle {
+      font-size: 1.25rem;
+      color: #666;
+      margin-bottom: 4rem;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .pricing-container {
+      display: flex;
+      justify-content: center;
+      align-items: stretch; /* Make cards same height */
+      flex-wrap: wrap;
+      gap: 2rem;
+      max-width: 1500px;
+      margin: 0 auto;
+    }
+    .pricing-card {
+      background-color: #f9f9f9;
+      border-radius: 16px;
+      border: 1px solid #eee;
+      padding: 2.5rem;
+      flex: 1;
+      min-width: 320px;
+      max-width: 380px; /* Control max width */
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .pricing-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    }
+    .pricing-card.popular {
+      border: 2px solid #000;
+      position: relative;
+      background-color: white;
+    }
+    .popular-badge {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #000;
+      color: white;
+      padding: 0.5rem 1.2rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .pricing-card h3 {
+      font-size: 2rem;
+      font-weight: 600;
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+    }
+    .pricing-card-description {
+      font-size: 1rem;
+      color: #666;
+      margin-bottom: 1.5rem;
+      min-height: 100px;
+    }
+    .price-info {
+      margin-bottom: 2rem;
+    }
+    .price {
+      font-size: 2.5rem;
+      font-weight: 600;
+      display: inline-block;
+    }
+    .price-per {
+      font-size: 1rem;
+      color: #666;
+      display: inline-block;
+      margin-left: 0.5rem;
+    }
+    .price-min {
+      font-size: 0.9rem;
+      color: #666;
+      margin-top: 0.5rem;
+    }
+    .features-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 2rem 0;
+      flex-grow: 1;
+    }
+    .features-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+      font-size: 1rem;
+      line-height: 1.4;
+    }
+    .features-list li .feature-icon {
+      flex-shrink: 0;
+      margin-top: 4px;
+    }
+    .features-list .sub-item {
+      margin-left: calc(16px + 0.75rem); /* icon width + gap */
+      font-style: italic;
+      color: #333;
+    }
+    .pricing-card .cta-button {
+      width: 100%;
+      padding: 1rem;
+      background-color: #000;
+      color: white;
+      border: 1px solid #000;
+      border-radius: 8px;
+      font-size: 1.2rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: auto;
+      text-align: center;
+      text-decoration: none;
+    }
+    .pricing-card .cta-button:hover {
+      background-color: #333;
+    }
+    .pricing-card .disclaimer {
+      font-size: 0.8rem;
+      color: #666;
+      margin-top: 1rem;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
   <header>
@@ -897,6 +1045,7 @@
     <div class="header-buttons">
       <button class="secondary-btn" data-scroll-to="contact-section">Contact</button>
       <button class="secondary-btn" data-scroll-to="about-flex">About</button>
+      <button class="secondary-btn" data-scroll-to="pricing">Pricing</button>
       <button class="main-btn" data-scroll-to="contact-section">Sign In</button>
     </div>
     <button id="mobileMenuBtn" aria-label="Toggle menu">
@@ -909,6 +1058,7 @@
     <div id="mobileMenu" class="mobile-menu">
       <button class="secondary-btn" data-scroll-to="contact-section">Contact</button>
       <button class="secondary-btn" data-scroll-to="about-flex">About</button>
+      <button class="secondary-btn" data-scroll-to="pricing">Pricing</button>
       <button class="secondary-btn" data-scroll-to="contact-section">Sign In</button>
     </div>
   </header>
@@ -1017,6 +1167,83 @@
       </div>
     </div>
   </section>
+
+  <!-- Pricing Section -->
+  <section class="pricing-section" id="pricing">
+    <h2 class="pricing-title">Find the right plan for your business</h2>
+    <p class="pricing-subtitle">Puul offers flexible pricing to fit your portfolio's needs, from small properties to large-scale enterprises.</p>
+    <div class="pricing-container">
+      <!-- Core Plan -->
+      <div class="pricing-card">
+        <h3>Core</h3>
+        <p class="pricing-card-description">An out-of-the-box solution giving you one powerful platform to run any property management business.</p>
+        <div class="price-info">
+          <div>
+            <span class="price">$1.49</span>
+            <span class="price-per">/ unit/month</span>
+          </div>
+          <p class="price-min">Residential pricing. Min. 50 units, $298/mo.</p>
+        </div>
+        <ul class="features-list">
+          <li><span class="feature-icon">✓</span><span>Property Accounting & Reports</span></li>
+          <li><span class="feature-icon">✓</span><span>End-to-End Marketing & Leasing</span></li>
+          <li><span class="feature-icon">✓</span><span>Work Order Management</span></li>
+          <li><span class="feature-icon">✓</span><span>Inspections & Unit Turns</span></li>
+          <li><span class="feature-icon">✓</span><span>Integrated Communication</span></li>
+          <li><span class="feature-icon">✓</span><span>Standard Support</span></li>
+        </ul>
+        <button class="cta-button" data-scroll-to="contact-section">Get a Quote</button>
+        <p class="disclaimer">*Commercial & Community Association pricing available.</p>
+      </div>
+
+      <!-- Plus Plan -->
+      <div class="pricing-card popular">
+        <div class="popular-badge">Most Popular</div>
+        <h3>Plus</h3>
+        <p class="pricing-card-description">A configurable solution for growing businesses with complex portfolios looking to standardize processes.</p>
+        <div class="price-info">
+          <div>
+            <span class="price">$3.20</span>
+            <span class="price-per">/ unit/month</span>
+          </div>
+          <p class="price-min">Requires ~300 units, $960/mo minimum.</p>
+        </div>
+        <ul class="features-list">
+          <li><span class="feature-icon">✓</span><span>Everything in Core, and:</span></li>
+          <li class="sub-item">Affordable & Student Housing</li>
+          <li class="sub-item">Advanced Budgeting & Accounting</li>
+          <li class="sub-item">Advanced Data Analysis</li>
+          <li class="sub-item">AppFolio Stack™ Premium Integrations</li>
+          <li class="sub-item">AppFolio API (read only)</li>
+          <li class="sub-item">Enhanced Support</li>
+        </ul>
+        <button class="cta-button" data-scroll-to="contact-section">Get a Quote</button>
+        <p class="disclaimer">*Minimum spend and units apply.</p>
+      </div>
+
+      <!-- Max Plan -->
+      <div class="pricing-card">
+        <h3>Max</h3>
+        <p class="pricing-card-description">An enterprise solution for large operators focused on customization, data insights, and driving revenue.</p>
+        <div class="price-info">
+          <div>
+            <span class="price">$5.00</span>
+            <span class="price-per">/ unit/month</span>
+          </div>
+          <p class="price-min">Min. 1,500 units, $7,500/mo minimum.</p>
+        </div>
+        <ul class="features-list">
+          <li><span class="feature-icon">✓</span><span>Everything in Plus, and:</span></li>
+          <li class="sub-item">Leasing CRM & Signals</li>
+          <li class="sub-item">AppFolio API (read/write)</li>
+          <li class="sub-item">Dedicated Customer Success</li>
+        </ul>
+        <button class="cta-button" data-scroll-to="contact-section">Get a Quote</button>
+        <p class="disclaimer">*Minimum spend and units apply.</p>
+      </div>
+    </div>
+  </section>
+
   <div class="full-width-image-container" id="contact-section">
     <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/AdobeStock_home.jpg?alt=media&token=5ce4aa3a-bc2b-47fd-bda8-1c9c3e748561" alt="Adobe Stock Home" width="1920" height="1080" />
     <div class="form-overlay">
@@ -1075,7 +1302,7 @@
         <div class="footer-column">
           <h4>Product</h4>
           <a href="#">Features</a>
-          <a href="#">Pricing</a>
+          <a href="#" data-scroll-to="pricing">Pricing</a>
           <a href="#" data-scroll-to="contact-section">Contact Sales</a>
         </div>
         <div class="footer-column">
