@@ -1197,7 +1197,7 @@
         <div class="price-info">
           <div>
             <span class="price">$1.49</span>
-            <span class="price-per">/ unit/month</span>
+            <span class="price-per">/ unit / month</span>
           </div>
           <p class="price-min">Residential pricing. Min. 50 units, $298/mo.</p>
         </div>
@@ -1225,7 +1225,7 @@
         <div class="price-info">
           <div>
             <span class="price">$3.20</span>
-            <span class="price-per">/ unit/month</span>
+            <span class="price-per">/ unit / month</span>
           </div>
           <p class="price-min">Requires ~300 units, $960/mo minimum.</p>
         </div>
@@ -1252,7 +1252,7 @@
         <div class="price-info">
           <div>
             <span class="price">$5.00</span>
-            <span class="price-per">/ unit/month</span>
+            <span class="price-per">/ unit / month</span>
           </div>
           <p class="price-min">Min. 1,500 units, $7,500/mo minimum.</p>
         </div>
@@ -1407,6 +1407,9 @@
           }
         } else if (elementId === 'about-flex') {
           scrollPosition = absoluteElementTop - headerHeight - 20;
+        } else if (elementId === 'pricing') {
+          // For pricing section, scroll further down to avoid showing about section
+          scrollPosition = absoluteElementTop - headerHeight + 100; // Add 100px to scroll further down
         } else {
           scrollPosition = absoluteElementTop - headerHeight;
         }
