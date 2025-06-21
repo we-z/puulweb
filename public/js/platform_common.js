@@ -978,7 +978,7 @@ function initializeAuth(callback) {
     pageInitCallback = callback;
 }
 
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
     if (user) {
         currentUserId = user.uid;
         const displayName = user.displayName || user.email.split('@')[0];

@@ -1,9 +1,15 @@
 const functions = require("firebase-functions");
+const admin = require("firebase-admin");
 const axios = require("axios");
+const stripe = require("stripe")(functions.config().stripe.secret);
+
+admin.initializeApp();
 
 // It's recommended to store your API key in Firebase environment variables for security
 // To set this variable, run the following command in your terminal:
 // firebase functions:config:set gemini.key="YOUR_API_KEY"
+// firebase functions:config:set stripe.secret="YOUR_STRIPE_SECRET_KEY"
+// firebase functions:config:set stripe.webhook_secret="YOUR_STRIPE_WEBHOOK_SECRET"
 // Deployment trigger: 2
 const GEMINI_API_KEY = functions.config().gemini.key;
 const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
@@ -64,10 +70,138 @@ const tools = [{
     ]
 }];
 
+exports.createCheckoutSession = functions.https.onCall(async (data, context) => {
+    if (!context.auth) {
+        throw new functions.https.HttpsError('unauthenticated', 'The function must be called while authenticated.');
+    }
+
+    const { priceId, successUrl, cancelUrl } = data;
+    const uid = context.auth.uid;
+
+    try {
+        const customer = await getOrCreateCustomer(uid);
+
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            mode: 'subscription',
+            customer: customer.id,
+            client_reference_id: uid,
+            line_items: [{
+                price: priceId,
+                quantity: 1,
+            }],
+            success_url: successUrl + '?session_id={CHECKOUT_SESSION_ID}',
+            cancel_url: cancelUrl,
+        });
+
+        return { sessionId: session.id };
+    } catch (error) {
+        console.error("Stripe Checkout Session Error:", error);
+        throw new functions.https.HttpsError('internal', 'Unable to create checkout session.');
+    }
+});
+
+exports.stripeWebhook = functions.https.onRequest(async (req, res) => {
+    const signature = req.headers['stripe-signature'];
+    const endpointSecret = functions.config().stripe.webhook_secret;
+
+    let event;
+
+    try {
+        event = stripe.webhooks.constructEvent(req.rawBody, signature, endpointSecret);
+    } catch (err) {
+        console.error('Webhook signature verification failed.', err.message);
+        return res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+
+    const dataObject = event.data.object;
+
+    switch (event.type) {
+        case 'checkout.session.completed':
+            const customerId = dataObject.customer;
+            const subscription = await stripe.subscriptions.retrieve(dataObject.subscription);
+            const userRef = admin.database().ref(`users/${dataObject.client_reference_id}`);
+            await userRef.update({
+                stripeCustomerId: customerId,
+                stripeSubscriptionId: subscription.id,
+                stripeSubscriptionStatus: subscription.status,
+            });
+            break;
+        case 'customer.subscription.updated':
+        case 'customer.subscription.deleted':
+            const subscriptionData = dataObject;
+            const customer = await stripe.customers.retrieve(subscriptionData.customer);
+            const user = await admin.database().ref(`users`).orderByChild('stripeCustomerId').equalTo(customer.id).once('value');
+            if (user.exists()) {
+                const uid = Object.keys(user.val())[0];
+                await admin.database().ref(`users/${uid}`).update({
+                    stripeSubscriptionStatus: subscriptionData.status,
+                });
+            }
+            break;
+        default:
+            // Unhandled event type
+    }
+
+    res.status(200).send();
+});
+
+async function getOrCreateCustomer(uid) {
+    const userRef = admin.database().ref(`users/${uid}`);
+    const snapshot = await userRef.once('value');
+    const userData = snapshot.val();
+
+    if (userData && userData.stripeCustomerId) {
+        try {
+            const customer = await stripe.customers.retrieve(userData.stripeCustomerId);
+            if (!customer.deleted) {
+                return customer;
+            }
+        } catch (error) {
+            // Customer might have been deleted in Stripe, create a new one.
+        }
+    }
+    
+    const userAuth = await admin.auth().getUser(uid);
+    const newCustomer = await stripe.customers.create({
+        email: userAuth.email,
+        metadata: { firebaseUID: uid },
+    });
+
+    await userRef.update({ stripeCustomerId: newCustomer.id });
+    return newCustomer;
+}
+
+exports.createStripePortalLink = functions.https.onCall(async (data, context) => {
+    if (!context.auth) {
+        throw new functions.https.HttpsError('unauthenticated', 'The function must be called while authenticated.');
+    }
+
+    try {
+        const customer = await getOrCreateCustomer(context.auth.uid);
+        const { url } = await stripe.billingPortal.sessions.create({
+            customer: customer.id,
+            return_url: data.returnUrl || 'https://puul.ai/platform_settings.html',
+        });
+        return { url };
+    } catch (error) {
+        console.error("Stripe Portal Link Error:", error);
+        throw new functions.https.HttpsError('internal', 'Unable to create portal link.');
+    }
+});
+
 exports.generateGeminiResponse = functions.https.onCall(async (data, context) => {
     // Ensure the user is authenticated
     if (!context.auth) {
         throw new functions.https.HttpsError('unauthenticated', 'The function must be called while authenticated.');
+    }
+
+    const userRef = admin.database().ref(`users/${context.auth.uid}`);
+    const snapshot = await userRef.once('value');
+    const userData = snapshot.val();
+    
+    if (!userData || !userData.stripeSubscriptionStatus || userData.stripeSubscriptionStatus !== 'active') {
+        throw new functions.https.HttpsError('permission-denied', 'You must have an active subscription to use this feature.');
     }
 
     const conversationHistory = data.history;

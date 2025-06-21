@@ -115,6 +115,16 @@
                 </form>
             </div>
 
+            <!-- Settings Section: Subscription Management -->
+            <div class="settings-section">
+                <h4>Subscription</h4>
+                <div class="form-group">
+                    <label>Manage Your Subscription</label>
+                    <p>Click the button below to view your subscription details, update your payment method, and view your invoice history.</p>
+                    <button id="manageSubscriptionBtn" class="btn-primary">Manage Subscription</button>
+                </div>
+            </div>
+
             <!-- Settings Section: Account Management -->
             <div class="settings-section">
                 <h4>Account Management</h4>
@@ -159,6 +169,7 @@
         import { initializeAuth, showAlert, showConfirm, getDbData, updateDbData } from './js/platform_common.js';
         import { getDatabase, ref, set, get, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
         import { getAuth, sendPasswordResetEmail, deleteUser } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+        import { getFunctions, httpsCallable } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js';
 
         let pageCurrentUser;
         let pageDatabase;
@@ -176,7 +187,8 @@
             notifyPaymentsCheckbox: document.getElementById('notifyPayments'),
             itemsPerPageSelect: document.getElementById('itemsPerPage'),
             changePasswordBtn: document.getElementById('changePasswordBtn'),
-            deleteAccountBtn: document.getElementById('deleteAccountBtn')
+            deleteAccountBtn: document.getElementById('deleteAccountBtn'),
+            manageSubscriptionBtn: document.getElementById('manageSubscriptionBtn')
         };
 
         function pageInit(userId, db, fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbDataExt, fbUpdateDbDataExt, commonShowAlert, commonShowConfirm) {
@@ -317,6 +329,20 @@
                 });
             }
             
+            if (DOMElements.manageSubscriptionBtn) {
+                DOMElements.manageSubscriptionBtn.addEventListener('click', async () => {
+                    const functions = getFunctions();
+                    const createStripePortalLink = httpsCallable(functions, 'createStripePortalLink');
+                    try {
+                        const result = await createStripePortalLink({ returnUrl: window.location.href });
+                        window.location.href = result.data.url;
+                    } catch (error) {
+                        console.error("Error creating portal link:", error);
+                        common.showAlert("Could not open subscription management. Please try again later.", "Error");
+                    }
+                });
+            }
+
             if (DOMElements.changePasswordBtn) {
                 DOMElements.changePasswordBtn.addEventListener('click', async () => {
                     const confirmed = await common.showConfirm("Are you sure you want to send a password reset email? You will be logged out.", "Change Password");

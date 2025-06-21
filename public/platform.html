@@ -15,6 +15,7 @@
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
         import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+        import { getDatabase, ref, get } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
 
         const firebaseConfig = {
             apiKey: "AIzaSyCTJnqW7xH0TpvDUEv73HWaVWp46bpIV9k",
@@ -28,16 +29,69 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getDatabase(app);
 
-        onAuthStateChanged(auth, (user) => {
+        onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // User is signed in, redirect to the default platform page (e.g., work orders)
-                window.location.replace('/platform_dashboard.html');
+                const urlParams = new URLSearchParams(window.location.search);
+                const sessionId = urlParams.get('session_id');
+
+                // If coming from a successful Stripe checkout, poll for subscription status
+                if (sessionId) {
+                    document.querySelector('.loading-message').textContent = 'Finalizing your subscription...';
+                    try {
+                        const success = await pollSubscriptionStatus(user.uid);
+                        if (success) {
+                            window.location.replace('/platform_dashboard.html');
+                        } else {
+                            // Polling failed, redirect to settings to avoid a loop
+                            window.location.replace('/platform_settings.html');
+                        }
+                    } catch (e) {
+                         window.location.replace('/platform_settings.html');
+                    }
+                    return; // Stop further execution
+                }
+
+                // User is signed in, check subscription status
+                const userRef = ref(db, `users/${user.uid}`);
+                const snapshot = await get(userRef);
+                const userData = snapshot.val();
+                
+                if (userData && userData.stripeSubscriptionStatus === 'active') {
+                    // User has an active subscription, redirect to the default platform page
+                    window.location.replace('/platform_dashboard.html');
+                } else {
+                    // No active subscription, redirect to pricing page
+                    window.location.replace('/index.html#pricing');
+                }
             } else {
                 // No user is signed in, redirect to the login page (index.html)
                 window.location.replace('/');
             }
         });
+
+        function pollSubscriptionStatus(uid, retries = 5, delay = 1000) {
+            return new Promise((resolve, reject) => {
+                const intervalId = setInterval(async () => {
+                    const userRef = ref(db, `users/${uid}`);
+                    const snapshot = await get(userRef);
+                    const userData = snapshot.val();
+
+                    if (userData && userData.stripeSubscriptionStatus === 'active') {
+                        clearInterval(intervalId);
+                        resolve(true);
+                    } else {
+                        retries--;
+                        if (retries === 0) {
+                            clearInterval(intervalId);
+                            console.error("Subscription status polling timed out.");
+                            reject(false);
+                        }
+                    }
+                }, delay);
+            });
+        }
     </script>
 </body>
 </html> 

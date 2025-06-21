@@ -3,7 +3,16 @@
     "users": {
       ".read": "auth != null",
       "$uid": {
-        ".write": "$uid === auth.uid"
+        ".write": "$uid === auth.uid",
+        "stripeCustomerId": {
+          ".write": true 
+        },
+        "stripeSubscriptionStatus": {
+          ".write": true
+        },
+        "stripeSubscriptionId": {
+            ".write": true
+        }
       }
     },
     "userProfile": {
