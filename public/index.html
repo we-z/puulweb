@@ -1088,7 +1088,7 @@
     </p>
   </main>
   <div class="image-container">
-    <button class="main-btn">
+    <button class="main-btn" data-scroll-to="pricing">
       <span class="css-cmnm65">
         <span class="movingText" style="left:0px">Get Started</span>
         <svg aria-hidden="false" role="img" aria-label="arrow right" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1809,11 +1809,7 @@
             });
         });
 
-        // Attach to "Get Started" button
-        const getStartedButton = document.querySelector('.image-container .main-btn');
-        if (getStartedButton && getStartedButton.textContent.trim().includes('Get Started')) {
-            getStartedButton.addEventListener('click', () => handleGoogleSignIn());
-        }
+        // The "Get Started" button now uses data-scroll-to="pricing" and will be handled by the existing scroll functionality
     });
   </script>
 </body>
