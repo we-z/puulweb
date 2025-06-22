@@ -1753,110 +1753,49 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const functions = getFunctions(app);
-    const createCheckoutSession = httpsCallable(functions, 'createCheckoutSession');
-
-    const stripe = Stripe('pk_test_51MsgU4FsHlNG9dRekwHvnMWmsytNZ9Kgy78WYg5nI9uOm3HaZ0SGv73mTGE78A3WZs7ZwqmwtnvBdYIEaQalVzX700VYTSM77F');
     
-    // Configure Google Auth Provider
-    const provider = new GoogleAuthProvider();
-    provider.setCustomParameters({
-        prompt: 'select_account'
-    });
-
-    // Function to redirect to platform page
-    function redirectToPlatform() {
-        console.log('Redirecting to platform page...');
-        window.location.replace('/platform.html');
-    }
-
-    // Check if user is already signed in - THIS BLOCK IS REMOVED TO PREVENT REDIRECT LOOP
-    /*
-    onAuthStateChanged(auth, (user) => {
-        console.log('Auth state changed:', user ? 'User is signed in' : 'No user');
-        if (user) {
-            console.log('User is already signed in, redirecting...');
-            redirectToPlatform();
-        }
-    });
-    */
-
-    // Function to handle subscription checkout
-    async function handleSubscription(priceId) {
-        if (!auth.currentUser) {
-            // alert('Please sign in first to subscribe.');
-            return handleGoogleSignIn(new Event('click')); // Trigger sign-in
-        }
-        
-        try {
-            const result = await createCheckoutSession({ 
-                priceId: priceId,
-                successUrl: window.location.origin + '/platform.html',
-                cancelUrl: window.location.href,
-            });
-
-            const { sessionId } = result.data;
-            await stripe.redirectToCheckout({ sessionId });
-        } catch (error) {
-            console.error('Error creating checkout session:', error);
-            alert('Error creating checkout session: ' + error.message);
-        }
-    }
-
     // Function to handle Google Sign-In
-    async function handleGoogleSignIn(e) {
-        e.preventDefault(); // Prevent default button behavior
-        e.stopPropagation(); // Stop event propagation
-        
-        console.log('Starting Google Sign-In...');
+    async function handleGoogleSignIn(priceId = null) {
+        const provider = new GoogleAuthProvider();
+        provider.setCustomParameters({ prompt: 'select_account' });
 
-        // Disable all sign-in buttons and the Get Started button
-        document.querySelectorAll('button').forEach(button => {
-            const buttonText = button.textContent.trim();
-            if (buttonText === 'Sign In' || buttonText.includes('Get Started')) {
-                button.disabled = true;
-            }
-        });
-        
+        if (priceId) {
+            sessionStorage.setItem('postSignInAction', JSON.stringify({ action: 'subscribe', priceId: priceId }));
+        }
+
         try {
-            const result = await signInWithPopup(auth, provider);
-            console.log('Sign-in successful:', result.user);
-            // Successful sign-in will now trigger the redirect manually.
-            redirectToPlatform();
+            await signInWithPopup(auth, provider);
+            // onAuthStateChanged will handle the redirect.
         } catch (error) {
-            console.error('Detailed error:', error);
-            
-            // Re-enable all sign-in buttons and the Get Started button on error
-            document.querySelectorAll('button').forEach(button => {
-                const buttonText = button.textContent.trim();
-                if (buttonText === 'Sign In' || buttonText.includes('Get Started')) {
-                    button.disabled = false;
-                }
-            });
-
-            // Show more specific error message
-            let errorMessage = 'Error signing in with Google. ';
-            if (error.code === 'auth/popup-blocked') {
-                errorMessage += 'Please allow popups for this website.';
-            } else if (error.code === 'auth/popup-closed-by-user') {
-                errorMessage += 'Sign-in was cancelled.';
-            } else if (error.code === 'auth/cancelled-popup-request') {
-                errorMessage += 'Please try again.'; // Or 'Another sign-in attempt is in progress.'
-            } else if (error.code === 'auth/unauthorized-domain') {
-                errorMessage += 'This domain is not authorized for Firebase Authentication.';
-            } else {
-                errorMessage += 'Please try again later.';
-            }
-            alert(errorMessage);
+            console.error('Error signing in:', error);
+            // alert('Error signing in: ' + error.message);
+            sessionStorage.removeItem('postSignInAction'); // Clear action on failure
         }
     }
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // User is signed in. Redirect to paywall.
+            const postSignInAction = JSON.parse(sessionStorage.getItem('postSignInAction'));
+            if (postSignInAction) { // Clear it only if it was used or existed
+                sessionStorage.removeItem('postSignInAction');
+            }
+
+            let url = '/paywall.html';
+            if (postSignInAction && postSignInAction.action === 'subscribe' && postSignInAction.priceId) {
+                url += `?priceId=${postSignInAction.priceId}`;
+            }
+            window.location.replace(url);
+        }
+    });
 
     // Attach event listeners after the DOM is fully loaded
     document.addEventListener('DOMContentLoaded', () => {
         // Attach to "Sign In" buttons
         document.querySelectorAll('button').forEach(button => {
             if (button.textContent.trim() === 'Sign In') {
-                button.removeAttribute('data-scroll-to'); // Remove scroll behavior
-                button.addEventListener('click', handleGoogleSignIn);
+                button.removeAttribute('data-scroll-to'); 
+                button.addEventListener('click', () => handleGoogleSignIn());
             }
         });
 
@@ -1865,15 +1804,14 @@
             button.addEventListener('click', (e) => {
                 e.preventDefault();
                 const priceId = button.dataset.priceId;
-                handleSubscription(priceId);
+                handleGoogleSignIn(priceId);
             });
         });
 
         // Attach to "Get Started" button
         const getStartedButton = document.querySelector('.image-container .main-btn');
         if (getStartedButton && getStartedButton.textContent.trim().includes('Get Started')) {
-            // It already doesn't have data-scroll-to from previous step
-            getStartedButton.addEventListener('click', handleGoogleSignIn);
+            getStartedButton.addEventListener('click', () => handleGoogleSignIn());
         }
     });
   </script>

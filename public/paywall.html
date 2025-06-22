@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Puul - Subscription</title>
+    <link rel="icon" type="image/svg+xml" href="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/puul-logo.svg?alt=media&token=aac48fcb-cc8d-4af8-9744-c7eca1e7cf04" />
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f7f8fc;
+            color: #1a202c;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        #loading-overlay {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #f7f8fc;
+            z-index: 100;
+        }
+
+        #content {
+            display: none;
+            width: 100%;
+            max-width: 1400px;
+            padding: 2rem;
+            box-sizing: border-box;
+        }
+        
+        header {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 2rem;
+        }
+        .site-logo {
+            height: 2.5rem;
+            width: auto;
+            margin-right: 0.75rem;
+        }
+        header h1 {
+            font-size: 1.75rem;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .user-info {
+            margin-left: auto;
+            display: none; /* Hidden by default */
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-info span {
+            font-weight: 500;
+        }
+
+        .user-info button {
+            background: none;
+            border: 1px solid #d1d5db;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.2s;
+        }
+        .user-info button:hover {
+            background-color: #000;
+            color: #fff;
+        }
+
+        .pricing-section {
+            width: 100%;
+        }
+        .pricing-title {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #000;
+            text-align: center;
+        }
+        .pricing-subtitle {
+            font-size: 1.15rem;
+            color: #4a5568;
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+        }
+        .pricing-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            align-items: stretch;
+            margin-bottom: 4rem;
+        }
+        @media (max-width: 1024px) {
+            .pricing-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .pricing-card {
+            background-color: #ffffff;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            padding: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .pricing-card.popular {
+            border: 2px solid #1a202c;
+            position: relative;
+        }
+        .popular-badge {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #000000;
+            color: white;
+            padding: 0.5rem 1.2rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .pricing-card h3 { font-size: 1.75rem; font-weight: 600; margin-top: 1rem; margin-bottom: 0.5rem; }
+        .pricing-card-description { font-size: 1rem; color: #64748b; margin-bottom: 1.5rem; min-height: 4em; }
+        .price-info { margin-bottom: 2rem; }
+        .price { font-size: 2.25rem; font-weight: 600; }
+        .price-per { font-size: 1rem; color: #64748b; margin-left: 0.5rem; }
+        .price-min { font-size: 0.9rem; color: #64748b; margin-top: 0.5rem; }
+        .cta-button { width: 100%; padding: 1rem; background-color: #000000; color: white; border: 1px solid #404040; border-radius: 8px; font-size: 1.1rem; font-weight: 500; cursor: pointer; transition: all 0.3s ease; margin-top: auto; text-align: center; text-decoration: none; }
+        .cta-button:hover { background-color: #ffffff; color: #000000; }
+        .cta-button:disabled { background-color: #94a3b8; cursor: not-allowed; }
+
+        .feature-comparison-section { margin-top: 4rem; }
+        .feature-comparison-section h3 { text-align: center; font-size: 2rem; margin-bottom: 2rem;}
+        .feature-table { width: 100%; border-collapse: collapse; }
+        .feature-table th, .feature-table td { border: 1px solid #e2e8f0; padding: 1rem; text-align: left; }
+        .feature-table th { background-color: #f8fafc; font-weight: 600; }
+        .feature-table .category-row { background-color: #f1f5f9; font-weight: bold; cursor: pointer; }
+        .feature-table .feature-row { display: table-row; }
+        .feature-table .check-mark {
+            color: #1a202c;
+            text-align: center;
+            vertical-align: middle;
+        }
+        .feature-table .dash-mark { color: #cbd5e1; font-size: 1.5rem; text-align: center; }
+
+    </style>
+</head>
+<body>
+    <div id="loading-overlay">
+        <p class="loading-message">Loading Puul Platform...</p>
+    </div>
+
+    <div id="content">
+        <header>
+            <a href="/" style="display: flex; align-items: center; text-decoration: none; color: inherit;">
+                <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/puul-logo.svg?alt=media&token=aac48fcb-cc8d-4af8-9744-c7eca1e7cf04" alt="Puul Logo" class="site-logo" />
+                <h1>Puul</h1>
+            </a>
+            <div class="user-info" id="userInfo">
+                <span id="userDisplayName"></span>
+                <button id="signOutBtn">Sign Out</button>
+            </div>
+        </header>
+
+        <section class="pricing-section">
+            <h2 class="pricing-title">Find the right plan for your business</h2>
+            <p class="pricing-subtitle">Puul offers flexible pricing to fit your portfolio's needs, from small properties to large-scale enterprises.</p>
+            <div class="pricing-container">
+                <!-- Pricing cards will be dynamically populated here -->
+            </div>
+        </section>
+
+        <section class="feature-comparison-section">
+            <h3>Compare Features</h3>
+            <table class="feature-table">
+                <thead>
+                    <tr>
+                        <th>Features</th>
+                        <!-- Plan names will be dynamically populated here -->
+                    </tr>
+                </thead>
+                <tbody id="feature-comparison-body">
+                    <!-- Feature rows will be dynamically populated here -->
+                </tbody>
+            </table>
+        </section>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+        import { getDatabase, ref, get } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
+        import { getFunctions, httpsCallable } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCTJnqW7xH0TpvDUEv73HWaVWp46bpIV9k",
+            authDomain: "puul-app.firebaseapp.com",
+            databaseURL: "https://puul-app-default-rtdb.firebaseio.com",
+            projectId: "puul-app",
+            storageBucket: "puul-app.appspot.com",
+            messagingSenderId: "155293676322",
+            appId: "1:155293676322:web:100962810832e88305ab7b"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+        const functions = getFunctions(app);
+
+        const plans = {
+            core: { name: 'Core', priceId: 'price_1RcNOUFsHlNG9dRePimNz27G', price: '$1.49', description: 'An out-of-the-box solution giving you one powerful platform to run any property management business.', popular: false, minUnits: 'Residential pricing. Min. 50 units, $298/mo.' },
+            plus: { name: 'Plus', priceId: 'price_1RcNOvFsHlNG9dReHwB7t69Q', price: '$3.20', description: 'A configurable solution for growing businesses with complex portfolios looking to standardize processes.', popular: true, minUnits: 'Requires ~300 units, $960/mo minimum.' },
+            max: { name: 'Max', priceId: 'price_1RcNPWFsHlNG9dReUWEWXkMJ', price: '$5.00', description: 'An enterprise solution for large operators focused on customization, data insights, and driving revenue.', popular: false, minUnits: 'Min. 1,500 units, $7,500/mo minimum.' }
+        };
+
+        const features = {
+            "Core Features": {
+                "Property Accounting & Reports": { core: true, plus: true, max: true },
+                "End-to-End Marketing & Leasing": { core: true, plus: true, max: true },
+                "Work Order Management": { core: true, plus: true, max: true },
+                "Integrated Communication": { core: true, plus: true, max: true },
+                "Standard Support": { core: true, plus: true, max: true },
+            },
+            "Advanced Features": {
+                "Advanced Budgeting & Accounting": { core: false, plus: true, max: true },
+                "Custom Fields": { core: false, plus: true, max: true },
+                "Automated Workflows": { core: false, plus: true, max: true },
+                "Puul API (read only)": { core: false, plus: true, max: true },
+                 "Enhanced Support": { core: false, plus: true, max: true },
+            },
+            "Enterprise Features": {
+                "Leasing CRM": { core: false, plus: false, max: true },
+                "Leasing Signals": { core: false, plus: false, max: true },
+                "Puul API (read/write)": { core: false, plus: false, max: true },
+                "Dedicated Customer Success Management": { core: false, plus: false, max: true },
+            }
+        };
+
+        function renderPricingUI() {
+            const pricingContainer = document.querySelector('.pricing-container');
+            const featureTableHead = document.querySelector('.feature-table thead tr');
+            const featureTableBody = document.getElementById('feature-comparison-body');
+            
+            pricingContainer.innerHTML = '';
+            featureTableHead.innerHTML = '<th>Features</th>';
+            featureTableBody.innerHTML = '';
+
+            Object.keys(plans).forEach(planKey => {
+                const plan = plans[planKey];
+                
+                // Render pricing cards
+                const card = document.createElement('div');
+                card.className = `pricing-card ${plan.popular ? 'popular' : ''}`;
+                card.innerHTML = `
+                    ${plan.popular ? '<div class="popular-badge">Most Popular</div>' : ''}
+                    <h3>${plan.name}</h3>
+                    <p class="pricing-card-description">${plan.description}</p>
+                    <div class="price-info">
+                        <span class="price">${plan.price}</span>
+                        <span class="price-per">/ unit / month</span>
+                        <p class="price-min">${plan.minUnits}</p>
+                    </div>
+                    <button class="cta-button subscribe-btn" data-price-id="${plan.priceId}">Subscribe</button>
+                `;
+                pricingContainer.appendChild(card);
+                
+                // Render feature table headers
+                const th = document.createElement('th');
+                th.textContent = plan.name;
+                featureTableHead.appendChild(th);
+            });
+
+            // Render feature table body
+            Object.keys(features).forEach(category => {
+                const categoryRow = document.createElement('tr');
+                categoryRow.className = 'category-row';
+                categoryRow.innerHTML = `<td colspan="${Object.keys(plans).length + 1}">${category}</td>`;
+                categoryRow.addEventListener('click', () => {
+                    const nextRows = Array.from(categoryRow.parentElement.children).slice(Array.from(categoryRow.parentElement.children).indexOf(categoryRow) + 1);
+                    for(const row of nextRows) {
+                        if (row.classList.contains('category-row')) break;
+                        row.style.display = row.style.display === 'none' ? 'table-row' : 'none';
+                    }
+                });
+                featureTableBody.appendChild(categoryRow);
+
+                Object.keys(features[category]).forEach(featureName => {
+                    const featureRow = document.createElement('tr');
+                    featureRow.className = 'feature-row';
+                    featureRow.innerHTML = `<td>${featureName}</td>`;
+                    Object.keys(plans).forEach(planKey => {
+                        const hasFeature = features[category][featureName][planKey];
+                        featureRow.innerHTML += `<td class="${hasFeature ? 'check-mark' : 'dash-mark'}">${hasFeature ? '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="24" height="24"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>' : '—'}</td>`;
+                    });
+                    featureTableBody.appendChild(featureRow);
+                });
+            });
+        }
+
+        async function handleSubscription(priceId) {
+            const user = auth.currentUser;
+            if (!user) {
+                // Not logged in, trigger sign-in flow
+                sessionStorage.setItem('postSignInAction', JSON.stringify({ action: 'subscribe', priceId: priceId }));
+                await handleGoogleSignIn();
+                // After successful sign-in, the onAuthStateChanged listener will re-evaluate
+                return;
+            }
+
+            try {
+                document.querySelectorAll('.subscribe-btn').forEach(b => b.disabled = true);
+                const createCheckoutSession = httpsCallable(functions, 'createCheckoutSession');
+                const result = await createCheckoutSession({ 
+                    priceId: priceId,
+                    successUrl: window.location.origin + '/platform_dashboard.html', // Redirect to dashboard on success
+                    cancelUrl: window.location.href,
+                });
+                const { sessionId } = result.data;
+                const stripe = Stripe('pk_test_51MsgU4FsHlNG9dRekwHvnMWmsytNZ9Kgy78WYg5nI9uOm3HaZ0SGv73mTGE78A3WZs7ZwqmwtnvBdYIEaQalVzX700VYTSM77F');
+                await stripe.redirectToCheckout({ sessionId });
+            } catch (error) {
+                console.error('Error creating checkout session:', error);
+                alert('Error: ' + error.message);
+                document.querySelectorAll('.subscribe-btn').forEach(b => b.disabled = false);
+            }
+        }
+        
+        async function handleGoogleSignIn() {
+            const provider = new GoogleAuthProvider();
+            provider.setCustomParameters({ prompt: 'select_account' });
+            try {
+                await signInWithPopup(auth, provider);
+                // onAuthStateChanged will handle the rest
+            } catch (error) {
+                console.error('Error signing in:', error);
+                alert('Error signing in: ' + error.message);
+            }
+        }
+        
+        function showContent(user) {
+            renderPricingUI();
+            
+            // Handle user info display
+            const userInfoDiv = document.getElementById('userInfo');
+            if (user) {
+                const userDisplayNameSpan = document.getElementById('userDisplayName');
+                const signOutBtn = document.getElementById('signOutBtn');
+
+                userDisplayNameSpan.textContent = user.displayName || user.email;
+                userInfoDiv.style.display = 'flex';
+
+                signOutBtn.addEventListener('click', () => {
+                    auth.signOut();
+                });
+            } else {
+                userInfoDiv.style.display = 'none';
+            }
+
+            // Highlight plan if passed in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const priceId = urlParams.get('priceId');
+            if (priceId) {
+                const button = document.querySelector(`.subscribe-btn[data-price-id="${priceId}"]`);
+                if(button) button.closest('.pricing-card').style.transform = 'scale(1.05)';
+            }
+            
+            // Add listeners to subscribe buttons
+             document.querySelectorAll('.subscribe-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    handleSubscription(button.dataset.priceId);
+                });
+            });
+
+            document.getElementById('loading-overlay').style.display = 'none';
+            document.getElementById('content').style.display = 'block';
+        }
+
+        let isInitialLoad = true;
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const userRef = ref(db, `users/${user.uid}`);
+                const snapshot = await get(userRef);
+                const userData = snapshot.val();
+                if (userData && userData.stripeSubscriptionStatus === 'active') {
+                    window.location.replace('/platform_dashboard.html');
+                } else {
+                    const postSignInAction = JSON.parse(sessionStorage.getItem('postSignInAction'));
+                    if (postSignInAction && postSignInAction.action === 'subscribe') {
+                        sessionStorage.removeItem('postSignInAction');
+                        handleSubscription(postSignInAction.priceId);
+                    } else {
+                        showContent(user);
+                    }
+                }
+                isInitialLoad = false;
+            } else {
+                if (isInitialLoad) {
+                    showContent(null);
+                    isInitialLoad = false;
+                } else {
+                    window.location.replace('/');
+                }
+            }
+        });
+
+    </script>
+</body>
+</html> 

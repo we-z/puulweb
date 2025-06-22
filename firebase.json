@@ -4,12 +4,27 @@
   },
   "hosting": {
     "public": "public",
+    "headers": [
+      {
+        "source": "**",
+        "headers": [
+          {
+            "key": "Cross-Origin-Opener-Policy",
+            "value": "same-origin-allow-popups"
+          }
+        ]
+      }
+    ],
     "ignore": [
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
     ],
     "rewrites": [
+      {
+        "source": "/paywall",
+        "destination": "/paywall.html"
+      },
       {
         "source": "/api/generate",
         "function": "generateGeminiResponse"

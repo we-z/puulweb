@@ -63,7 +63,13 @@
                     window.location.replace('/platform_dashboard.html');
                 } else {
                     // No active subscription, redirect to pricing page
-                    window.location.replace('/index.html#pricing');
+                    let paywallUrl = '/paywall.html';
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const priceId = urlParams.get('priceId');
+                    if (priceId) {
+                        paywallUrl += `?priceId=${priceId}`;
+                    }
+                    window.location.replace(paywallUrl);
                 }
             } else {
                 // No user is signed in, redirect to the login page (index.html)
