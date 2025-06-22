@@ -910,7 +910,6 @@
       font-size: 1.25rem;
       color: #666;
       margin-bottom: 4rem;
-      max-width: 600px;
       margin-left: auto;
       margin-right: auto;
     }
@@ -936,6 +935,7 @@
       text-align: left;
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative; /* For hover overlay positioning */
     }
     .pricing-card:hover {
       transform: translateY(-10px);
@@ -969,7 +969,6 @@
       font-size: 1rem;
       color: #666;
       margin-bottom: 1.5rem;
-      min-height: 100px;
     }
     .price-info {
       margin-bottom: 2rem;
@@ -995,6 +994,11 @@
       padding: 0;
       margin: 0 0 2rem 0;
       flex-grow: 1;
+      position: relative; /* For hover overlay positioning */
+      background-color: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      border: 1px solid #000;
     }
     .features-list li {
       display: flex;
@@ -1027,6 +1031,145 @@
       margin-left: calc(16px + 0.75rem); /* icon width + gap */
       font-style: italic;
       color: #333;
+    }
+    
+    /* Hide features beyond the first 3 */
+    .features-list li:nth-child(n+4) {
+      display: none;
+    }
+    
+    /* Ensure hover overlay shows all features */
+    .features-hover-overlay li {
+      display: flex !important;
+    }
+    
+    /* + More indicator */
+    .features-more-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: 1rem;
+      padding: 0;
+      color: #666;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+    
+    .features-more-indicator:hover {
+      color: #000;
+    }
+    
+    .features-more-indicator::before {
+      content: "";
+      flex-shrink: 0;
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+    }
+    
+    .features-more-indicator::after {
+      content: "More";
+      color: inherit;
+    }
+    
+    /* Add checkmark icon to + More */
+    .features-more-indicator::before {
+      content: "";
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 20 20' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='4 11 9 16 16 5' stroke='%231a1a1a' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-size: 20px 20px;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+    
+    /* Hover overlay for additional features */
+    .features-hover-overlay {
+      position: absolute;
+      top: -1.5rem;
+      left: -1.5rem;
+      right: -1.5rem;
+      bottom: 0;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+      padding: 1.5rem;
+      z-index: 10;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(10px);
+      transition: all 0.3s ease;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    
+    .features-list:hover .features-hover-overlay {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+    
+    .features-hover-overlay h4 {
+      margin: 0 0 1rem 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #000;
+    }
+    
+    .features-hover-overlay ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .features-hover-overlay li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      margin-bottom: 0.8rem;
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
+    
+    .features-hover-overlay .feature-icon {
+      flex-shrink: 0;
+      margin-top: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+    }
+    
+    .features-hover-overlay .feature-icon svg {
+      width: 16px;
+      height: 16px;
+      stroke-width: 2;
+    }
+    
+    .features-hover-overlay .sub-item {
+      margin-left: calc(12px + 0.75rem);
+      font-style: italic;
+      color: #333;
+    }
+    
+    /* Show hint text when hovering over features list */
+    .features-list::after {
+      content: "Hover to see all features";
+      position: absolute;
+      bottom: -2rem;
+      left: 0;
+      font-size: 0.8rem;
+      color: #666;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .features-list:hover::after {
+      opacity: 1;
     }
     .pricing-card .cta-button {
       width: 100%;
@@ -1214,6 +1357,26 @@
           <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>AI Assistant & Messages</span></li>
           <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Purchase Orders & Inventory Tracking</span></li>
           <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Standard Support</span></li>
+          
+          <!-- + More indicator -->
+          <div class="features-more-indicator"></div>
+          
+          <!-- Hover overlay with all features -->
+          <div class="features-hover-overlay">
+            <h4>All Core Features</h4>
+            <ul>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Property Accounting & Reports</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>End-to-End Marketing & Leasing</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Work Order Management</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Inspections & Unit Turns</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Mobility & Convenience</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Integrated Communication</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Puul Stack™ Integrations</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>AI Assistant & Messages</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Purchase Orders & Inventory Tracking</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Standard Support</span></li>
+            </ul>
+          </div>
         </ul>
         <button class="cta-button subscribe-btn" data-price-id="price_1RcNOUFsHlNG9dRePimNz27G">Subscribe</button>
         <p class="disclaimer">*Commercial & Community Association pricing available.</p>
@@ -1242,6 +1405,35 @@
           <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Puul API (read only)</span></li>
           <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Enhanced Support</span></li>
           <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Smart Maintenance Scheduling & Billing</span></li>
+          
+          <!-- + More indicator -->
+          <div class="features-more-indicator"></div>
+          
+          <!-- Hover overlay with all features -->
+          <div class="features-hover-overlay">
+            <h4>All Plus Features</h4>
+            <ul>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Property Accounting & Reports</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>End-to-End Marketing & Leasing</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Work Order Management</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Inspections & Unit Turns</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Mobility & Convenience</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Integrated Communication</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Puul Stack™ Integrations</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>AI Assistant & Messages</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Purchase Orders & Inventory Tracking</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Standard Support</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Advanced Budgeting & Accounting</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Advanced Data Analysis</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Custom Fields</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Automated Workflows</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Puul Stack™ Premium Integrations</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Scale & Control</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Puul API (read only)</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Enhanced Support</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Smart Maintenance Scheduling & Billing</span></li>
+            </ul>
+          </div>
         </ul>
         <button class="cta-button subscribe-btn" data-price-id="price_1RcNOvFsHlNG9dReHwB7t69Q">Subscribe</button>
         <p class="disclaimer">*Minimum spend and units apply.</p>
@@ -1264,6 +1456,39 @@
           <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Leasing Signals</span></li>
           <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Puul API (read/write)</span></li>
           <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Dedicated Customer Success Management</span></li>
+          
+          <!-- + More indicator -->
+          <div class="features-more-indicator"></div>
+          
+          <!-- Hover overlay with all features -->
+          <div class="features-hover-overlay">
+            <h4>All Max Features</h4>
+            <ul>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Property Accounting & Reports</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>End-to-End Marketing & Leasing</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Work Order Management</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Inspections & Unit Turns</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Mobility & Convenience</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Integrated Communication</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Puul Stack™ Integrations</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>AI Assistant & Messages</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Purchase Orders & Inventory Tracking</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Standard Support</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Advanced Budgeting & Accounting</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Advanced Data Analysis</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Custom Fields</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Automated Workflows</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Puul Stack™ Premium Integrations</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Scale & Control</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Puul API (read only)</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Enhanced Support</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Smart Maintenance Scheduling & Billing</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Leasing CRM</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Leasing Signals</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Puul API (read/write)</span></li>
+              <li><span class="feature-icon"><svg viewBox="0 0 20 20"><polyline points="4 11 9 16 16 5"/></svg></span><span>Dedicated Customer Success Management</span></li>
+            </ul>
+          </div>
         </ul>
         <button class="cta-button subscribe-btn" data-price-id="price_1RcNPWFsHlNG9dReUWEWXkMJ">Subscribe</button>
         <p class="disclaimer">*Minimum spend and units apply.</p>
@@ -1410,8 +1635,8 @@
         } else if (elementId === 'about-flex') {
           scrollPosition = absoluteElementTop - headerHeight - 20;
         } else if (elementId === 'pricing') {
-          // For pricing section, scroll further down to avoid showing about section
-          scrollPosition = absoluteElementTop - headerHeight + 100; // Add 100px to scroll further down
+          // For pricing section, scroll further down to have pricing section fill the screen
+          scrollPosition = absoluteElementTop - headerHeight + 110; // Increased from 100px to 200px to scroll further down
         } else {
           scrollPosition = absoluteElementTop - headerHeight;
         }
