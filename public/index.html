@@ -358,7 +358,7 @@
       margin: 12rem auto;
       max-width: 80%;
       position: relative;
-      min-height: 200vh;
+      min-height: 500vh; /* Increased from 200vh to 400vh for longer scrolling */
       scroll-margin-top: 80px;
     }
     .sticky-container {
@@ -1668,9 +1668,9 @@
       const windowHeight = window.innerHeight;
       const relativeScroll = window.pageYOffset - aboutFlexTop + windowHeight/2;
       
-      // Create shorter transition points - only need about 50vh of scrolling per section
-      const section1End = 50;  // vh units
-      const section2End = 100; // vh units
+      // Create longer transition points to match the 400vh height
+      const section1End = 133;  // vh units (400vh / 3)
+      const section2End = 266;  // vh units (400vh * 2/3)
       
       // Convert vh to pixels
       const section1EndPx = (section1End * windowHeight) / 100;
@@ -1707,8 +1707,8 @@
       // Get the exact position where the sticky container should become sticky
       const stickyStart = aboutFlex.offsetTop - stickyTop;
       
-      // We only want ~150vh of scrolling for the entire section (shorter)
-      const totalScrollDistance = windowHeight * 1;
+      // We want the full 400vh of scrolling for the entire section
+      const totalScrollDistance = windowHeight * 4; // 400vh = 4 * windowHeight
       
       let progress = 0;
       if (window.pageYOffset >= stickyStart) {
@@ -1877,7 +1877,7 @@
               img.parentElement.classList.contains('full-width-image-container')) {
             const src = img.src;
             img.dataset.src = src;
-            img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"%3E%3C/svg%3E'; // Tiny placeholder
+            img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1%3E%3C/svg%3E'; // Tiny placeholder
           }
           imageObserver.observe(img);
         });
