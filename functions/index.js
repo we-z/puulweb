@@ -179,14 +179,45 @@ exports.createStripePortalLink = functions.https.onCall(async (data, context) =>
 
     try {
         const customer = await getOrCreateCustomer(context.auth.uid);
-        const { url } = await stripe.billingPortal.sessions.create({
+        
+        // Check if customer has an active subscription
+        const subscriptions = await stripe.subscriptions.list({
+            customer: customer.id,
+            status: 'active',
+            limit: 1
+        });
+        
+        if (subscriptions.data.length === 0) {
+            // If no active subscription, still try to create portal session
+            // as Stripe allows customers to view past invoices even without active subscription
+            console.log('Customer has no active subscription, but attempting to create portal session anyway');
+        }
+        
+        const session = await stripe.billingPortal.sessions.create({
             customer: customer.id,
             return_url: data.returnUrl || 'https://puul.ai/platform_settings.html',
         });
-        return { url };
+        
+        return { url: session.url };
     } catch (error) {
         console.error("Stripe Portal Link Error:", error);
-        throw new functions.https.HttpsError('internal', 'Unable to create portal link.');
+        console.error("Error details:", {
+            message: error.message,
+            type: error.type,
+            statusCode: error.statusCode,
+            raw: error.raw
+        });
+        
+        // Provide more specific error messages
+        if (error.statusCode === 400) {
+            if (error.message.includes('portal')) {
+                throw new functions.https.HttpsError('failed-precondition', 'The billing portal has not been configured in Stripe. Please contact support.');
+            } else if (error.message.includes('customer')) {
+                throw new functions.https.HttpsError('failed-precondition', 'Unable to create portal session for this customer.');
+            }
+        }
+        
+        throw new functions.https.HttpsError('internal', 'Unable to create portal link: ' + error.message);
     }
 });
 
