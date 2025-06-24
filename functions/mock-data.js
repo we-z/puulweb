@@ -225,29 +225,38 @@ const getMockData = (uid, userEmail, userDisplayName) => {
     }
     
     // 11. Transactions (for charts)
-    for (let i = 0; i < 12; i++) { // Last 12 months
+    for (let i = 0; i < 12; i++) { // Last 12 months, i=0 is current month, i=11 is 11 months ago
         const date = new Date();
         date.setMonth(date.getMonth() - i);
-        // Income
+
+        let monthlyRevenue = 0;
+        // Income: higher in more recent months, with slight fluctuations
         for (let j = 0; j < 15; j++) { // 15 rental payments per month
-             transactions[`inc_${i}_${j}`] = {
+            let rentAmount = (1200 + ((11 - i) * 50)) + (j * 20); // Base rent increases as i gets smaller
+            rentAmount *= (1 + (Math.random() - 0.5) * 0.1); // Add +/- 5% random fluctuation
+            monthlyRevenue += rentAmount;
+            transactions[`inc_${i}_${j}`] = {
                 date: new Date(date.getFullYear(), date.getMonth(), 1).toISOString().split('T')[0],
                 type: 'Income',
                 category: 'Rental Income',
-                description: `Rent - ${properties[propertyIds[j%propertyIds.length]].address}`,
-                amount: 1200 + j * 50,
+                description: `Rent for Property ${j + 1}`,
+                amount: parseFloat(rentAmount.toFixed(2)),
                 userId: uid,
-             };
+            };
         }
-        // Expenses
+
+        // Expenses: a percentage of revenue, ensuring they are always lower and slightly increasing over time.
+        const expenseRatio = 0.35 + ((11 - i) * 0.01); // Expenses are ~35% of revenue in oldest month, up to ~46% in newest
+        const monthlyExpenses = monthlyRevenue * expenseRatio;
+        const expenseCategories = ['Maintenance', 'Utilities', 'Management Fees', 'Taxes', 'Insurance'];
         for (let j = 0; j < 5; j++) {
-            const expenseType = ['Maintenance', 'Utilities', 'Management Fees'][j%3];
+            const expenseAmount = (monthlyExpenses / 5) * (1 + (Math.random() - 0.5) * 0.2); // Add some randomness
             transactions[`exp_${i}_${j}`] = {
                 date: new Date(date.getFullYear(), date.getMonth(), 15).toISOString().split('T')[0],
                 type: 'Expense',
-                category: expenseType,
-                description: `${expenseType} for ${properties[propertyIds[j%propertyIds.length]].address}`,
-                amount: expenseType === 'Maintenance' ? (200 + j*20) : (expenseType === 'Utilities' ? (100 + j*10) : 500),
+                category: expenseCategories[j],
+                description: `${expenseCategories[j]} payment`,
+                amount: parseFloat(expenseAmount.toFixed(2)),
                 userId: uid,
             };
         }
@@ -381,9 +390,10 @@ const getMockDataForUser = (uid, userEmail, userDisplayName) => {
         date.setMonth(date.getMonth() - i);
 
         let monthlyRevenue = 0;
-        // Income: higher in more recent months
+        // Income: higher in more recent months, with slight fluctuations
         for (let j = 0; j < 15; j++) { // 15 rental payments per month
-            const rentAmount = (1200 + ((11 - i) * 50)) + (j * 20); // Base rent increases as i gets smaller
+            let rentAmount = (1200 + ((11 - i) * 50)) + (j * 20); // Base rent increases as i gets smaller
+            rentAmount *= (1 + (Math.random() - 0.5) * 0.1); // Add +/- 5% random fluctuation
             monthlyRevenue += rentAmount;
             data.transactions[`inc_${i}_${j}`] = {
                 date: new Date(date.getFullYear(), date.getMonth(), 1).toISOString().split('T')[0],
@@ -395,8 +405,8 @@ const getMockDataForUser = (uid, userEmail, userDisplayName) => {
             };
         }
 
-        // Expenses: a percentage of revenue, ensuring they are always lower
-        const expenseRatio = 0.4 + (i * 0.02); // Expenses are 40% of revenue in current month, up to 62% in oldest
+        // Expenses: a percentage of revenue, ensuring they are always lower and slightly increasing over time.
+        const expenseRatio = 0.35 + ((11 - i) * 0.01); // Expenses are ~35% of revenue in oldest month, up to ~46% in newest
         const monthlyExpenses = monthlyRevenue * expenseRatio;
         const expenseCategories = ['Maintenance', 'Utilities', 'Management Fees', 'Taxes', 'Insurance'];
         for (let j = 0; j < 5; j++) {

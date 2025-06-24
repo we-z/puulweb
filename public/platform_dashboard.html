@@ -157,9 +157,9 @@
                 <h4>Key Metrics Overview</h4>
                 <div class="metrics-grid">
                     <div class="metric-item">
-                        <h5>Active Leases</h5>
-                        <p class="metric-value" id="activeLeasesValue">–</p>
-                        <p class="metric-detail">View Details</p>
+                        <h5>Monthly Recurring Revenue</h5>
+                        <p class="metric-value" id="monthlyRecurringRevenueValue">–</p>
+                        <p class="metric-detail">View Report</p>
                     </div>
                     <div class="metric-item">
                         <h5>Occupancy Rate</h5>
@@ -263,7 +263,7 @@
         let charts = {};
 
         const DOMElements = {
-            activeLeasesValue: document.getElementById('activeLeasesValue'),
+            monthlyRecurringRevenueValue: document.getElementById('monthlyRecurringRevenueValue'),
             occupancyRateValue: document.getElementById('occupancyRateValue'),
             openMaintenanceValue: document.getElementById('openMaintenanceValue'),
             overduePaymentsValue: document.getElementById('overduePaymentsValue'),
@@ -283,11 +283,11 @@
         }
 
         function setupMetricDetailHandlers() {
-            // Active Leases - View Details
-            const activeLeasesDetail = document.querySelector('.metric-item:nth-child(1) .metric-detail');
-            if (activeLeasesDetail) {
-                activeLeasesDetail.addEventListener('click', () => {
-                    window.location.href = 'platform_leasing.html?filter=active';
+            // Monthly Recurring Revenue - View Details
+            const mrrDetail = document.querySelector('.metric-item:nth-child(1) .metric-detail');
+            if (mrrDetail) {
+                mrrDetail.addEventListener('click', () => {
+                    window.location.href = 'platform_reporting.html?view=rent_roll';
                 });
             }
 
@@ -572,14 +572,22 @@
         async function loadKeyMetrics() {
             if (!pageCurrentUserId || !pageDatabase) return;
 
-            // Active Leases
+            // Monthly Recurring Revenue & Active Leases for Occupancy
             const leasesRef = ref(pageDatabase, `leases/${pageCurrentUserId}`);
             const activeLeasesQuery = query(leasesRef, orderByChild('status'), equalTo('Active'));
             onValue(activeLeasesQuery, (snapshot) => {
-                if (DOMElements.activeLeasesValue) {
-                    DOMElements.activeLeasesValue.textContent = snapshot.exists() ? snapshot.size : '0';
+                let mrr = 0;
+                let activeLeaseCount = 0;
+                if (snapshot.exists()) {
+                    activeLeaseCount = snapshot.size;
+                    snapshot.forEach(childSnapshot => {
+                        mrr += parseFloat(childSnapshot.val().rentAmount) || 0;
+                    });
                 }
-                calculateAndDisplayOccupancyRate(snapshot.size);
+                if (DOMElements.monthlyRecurringRevenueValue) {
+                    DOMElements.monthlyRecurringRevenueValue.textContent = `$${mrr.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                }
+                calculateAndDisplayOccupancyRate(activeLeaseCount);
             });
 
             // Open Maintenance Requests
