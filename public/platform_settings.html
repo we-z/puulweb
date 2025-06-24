@@ -125,6 +125,16 @@
                 </div>
             </div>
 
+            <!-- Settings Section: Data Management -->
+            <div class="settings-section">
+                <h4>Data Management</h4>
+                <div class="form-group">
+                    <label>Populate Account with Mock Data</label>
+                    <p>If your account is empty, click here to add a full set of sample data for demonstration purposes.</p>
+                    <button id="populateDataBtn" class="btn-secondary">Populate Mock Data</button>
+                </div>
+            </div>
+
             <!-- Settings Section: Account Management -->
             <div class="settings-section">
                 <h4>Account Management</h4>
@@ -188,7 +198,8 @@
             itemsPerPageSelect: document.getElementById('itemsPerPage'),
             changePasswordBtn: document.getElementById('changePasswordBtn'),
             deleteAccountBtn: document.getElementById('deleteAccountBtn'),
-            manageSubscriptionBtn: document.getElementById('manageSubscriptionBtn')
+            manageSubscriptionBtn: document.getElementById('manageSubscriptionBtn'),
+            populateDataBtn: document.getElementById('populateDataBtn')
         };
 
         function pageInit(userId, db, fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbDataExt, fbUpdateDbDataExt, commonShowAlert, commonShowConfirm) {
@@ -215,8 +226,21 @@
             loadUserProfile();
             loadNotificationPreferences();
             loadApplicationSettings();
+            checkExistingData(); // Check if data exists to enable/disable button
 
             setupEventListeners();
+        }
+
+        async function checkExistingData() {
+            const propertiesRef = common.fbRef(pageDatabase, `properties/${pageCurrentUser.uid}`);
+            const snapshot = await common.getDbData(propertiesRef);
+            if (snapshot.exists()) {
+                DOMElements.populateDataBtn.disabled = true;
+                DOMElements.populateDataBtn.textContent = 'Data Already Populated';
+                DOMElements.populateDataBtn.style.cursor = 'not-allowed';
+                DOMElements.populateDataBtn.style.backgroundColor = '#6c757d';
+                DOMElements.populateDataBtn.style.borderColor = '#6c757d';
+            }
         }
 
         async function loadUserProfile() {
@@ -385,6 +409,31 @@
                                 common.showAlert(message, "Error");
                             }
                         }
+                    }
+                });
+            }
+
+            if (DOMElements.populateDataBtn) {
+                DOMElements.populateDataBtn.addEventListener('click', async () => {
+                    const btn = DOMElements.populateDataBtn;
+                    btn.disabled = true;
+                    btn.textContent = 'Populating...';
+                    
+                    try {
+                        const populateUserData = httpsCallable(getFunctions(), 'populateUserData');
+                        const result = await populateUserData();
+                        if (result.data.success) {
+                            common.showAlert("Your account has been populated with mock data! The page will now reload.");
+                            btn.textContent = 'Data Populated';
+                             setTimeout(() => window.location.reload(), 2000);
+                        } else {
+                            throw new Error(result.data.message || 'The function returned an error.');
+                        }
+                    } catch (error) {
+                        console.error("Error populating mock data:", error);
+                        common.showAlert("Failed to populate mock data. Please try again or contact support.", "Error");
+                        btn.disabled = false;
+                        btn.textContent = 'Populate Mock Data';
                     }
                 });
             }

@@ -2,6 +2,7 @@ const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const axios = require("axios");
 const stripe = require("stripe")(functions.config().stripe.secret);
+const { getMockData } = require("./mock-data");
 
 admin.initializeApp();
 
@@ -69,6 +70,47 @@ const tools = [{
         }
     ]
 }];
+
+exports.onUserCreate = functions.auth.user().onCreate(async (user) => {
+    console.log(`New user created: ${user.uid}. Populating with mock data.`);
+    const { uid, email, displayName } = user;
+    try {
+        const mockData = getMockData(uid, email, displayName);
+        const db = admin.database();
+        const updates = {};
+        for (const [key, value] of Object.entries(mockData)) {
+            updates[`/${key}/${uid}`] = value[uid];
+        }
+        await db.ref().update(updates);
+        console.log(`Successfully populated mock data for user ${uid}.`);
+    } catch (error) {
+        console.error(`Failed to populate mock data for user ${uid}:`, error);
+    }
+});
+
+exports.populateUserData = functions.https.onCall(async (data, context) => {
+    if (!context.auth) {
+        throw new functions.https.HttpsError('unauthenticated', 'The function must be called while authenticated.');
+    }
+    const { uid, token } = context.auth;
+    const { email, name } = token;
+
+    console.log(`Populate data requested for user: ${uid}`);
+    try {
+        const mockData = getMockData(uid, email, name);
+         const db = admin.database();
+        const updates = {};
+        for (const [key, value] of Object.entries(mockData)) {
+            updates[`/${key}/${uid}`] = value[uid];
+        }
+        await db.ref().update(updates);
+        console.log(`Successfully populated mock data for user ${uid} via onCall.`);
+        return { success: true, message: 'Mock data populated successfully.' };
+    } catch (error) {
+        console.error(`Failed to populate mock data for user ${uid} via onCall:`, error);
+        throw new functions.https.HttpsError('internal', 'Failed to populate data.');
+    }
+});
 
 exports.createCheckoutSession = functions.https.onCall(async (data, context) => {
     if (!context.auth) {
