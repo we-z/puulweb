@@ -985,6 +985,22 @@ onAuthStateChanged(auth, async (user) => {
         cachedUserDisplayName = displayName;
         sessionStorage.setItem('puulUserDisplayName', displayName);
 
+        // Check if user has data, if not, populate it.
+        const userRootRef = ref(database, `properties/${user.uid}`);
+        const snapshot = await get(userRootRef);
+        if (!snapshot.exists()) {
+            console.log(`User ${user.uid} has no data. Populating...`);
+            try {
+                const populateUserData = httpsCallable(functions, 'populateUserData');
+                await populateUserData();
+                console.log("Mock data population function called successfully.");
+                // No need to reload, onValue listeners will pick up the new data.
+            } catch (error) {
+                console.error("Error calling populateUserData function:", error);
+                showAlert("Could not initialize your account with sample data. Please contact support.", "Error");
+            }
+        }
+
         // Now that we have a user, initialize the AI conversation.
         initializeConversation();
 

@@ -79,7 +79,7 @@ exports.onUserCreate = functions.auth.user().onCreate(async (user) => {
         const db = admin.database();
         const updates = {};
         for (const [key, value] of Object.entries(mockData)) {
-            updates[`/${key}/${uid}`] = value[uid];
+            updates[`/${key}/${uid}`] = value;
         }
         await db.ref().update(updates);
         console.log(`Successfully populated mock data for user ${uid}.`);
@@ -101,7 +101,7 @@ exports.populateUserData = functions.https.onCall(async (data, context) => {
          const db = admin.database();
         const updates = {};
         for (const [key, value] of Object.entries(mockData)) {
-            updates[`/${key}/${uid}`] = value[uid];
+            updates[`/${key}/${uid}`] = value;
         }
         await db.ref().update(updates);
         console.log(`Successfully populated mock data for user ${uid} via onCall.`);

@@ -256,7 +256,7 @@
 
     <script type="module">
         import { initializeAuth, showAlert, getDbData } from './js/platform_common.js';
-        import { getDatabase, ref, onValue, query, orderByChild, limitToLast, equalTo, get } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
+        import { getDatabase, ref, onValue, query, orderByChild, limitToLast, equalTo, get, startAt } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
 
         let pageCurrentUserId;
         let pageDatabase;
@@ -448,28 +448,41 @@
         async function loadChartData() {
             if (!pageCurrentUserId || !pageDatabase) return;
 
+            // Calculate the date 12 months ago to create a query range
+            const aYearAgo = new Date();
+            aYearAgo.setMonth(aYearAgo.getMonth() - 12);
+            const aYearAgoISO = aYearAgo.toISOString().split('T')[0];
+
             // Load Revenue vs Expenses data
             const transactionsRef = ref(pageDatabase, `transactions/${pageCurrentUserId}`);
-            const transactionsQuery = query(transactionsRef, orderByChild('date'), limitToLast(12));
+            // Corrected query to fetch all transactions in the last 12 months
+            const transactionsQuery = query(transactionsRef, orderByChild('date'), startAt(aYearAgoISO));
+
             onValue(transactionsQuery, (snapshot) => {
                 const monthlyData = {};
                 snapshot.forEach(child => {
                     const transaction = child.val();
-                    const date = new Date(transaction.date);
-                    const monthKey = `${date.getFullYear()}-${date.getMonth() + 1}`;
+                    // Fix: Ensure date is parsed as local time to avoid timezone-related errors
+                    const date = new Date(transaction.date + 'T00:00:00');
+                    // Use a consistent key format 'YYYY-MM' for proper sorting
+                    const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
                     
                     if (!monthlyData[monthKey]) {
                         monthlyData[monthKey] = { revenue: 0, expenses: 0 };
                     }
                     
-                    if (transaction.type === 'income') {
+                    // Corrected the case-sensitive check for transaction type
+                    if (transaction.type === 'Income') {
                         monthlyData[monthKey].revenue += parseFloat(transaction.amount);
                     } else {
                         monthlyData[monthKey].expenses += parseFloat(transaction.amount);
                     }
                 });
+                
+                // For debugging: log the processed monthly data
+                console.log("Processed Monthly Data for Chart:", monthlyData);
 
-                const labels = Object.keys(monthlyData).sort();
+                const labels = Object.keys(monthlyData).sort(); // Sorting keys alphabetically now works for 'YYYY-MM'
                 const revenueData = labels.map(month => monthlyData[month].revenue);
                 const expensesData = labels.map(month => monthlyData[month].expenses);
 
