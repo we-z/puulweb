@@ -889,8 +889,81 @@
         align-items: center;
       }
     }
-  </style>
-  <style>
+
+    /* Features/Benefits Section */
+    .features-benefits-section {
+      width: 100%;
+      padding: 6rem 2rem;
+      background-color: #f9f9f9;
+      text-align: center;
+      box-sizing: border-box;
+      overflow-x: hidden;
+    }
+
+    .features-benefits-section h2 {
+      font-size: 3rem;
+      font-weight: 550;
+      margin-bottom: 1rem;
+      color: #000;
+    }
+
+    .features-benefits-section .section-subtitle {
+      font-size: 1.25rem;
+      color: #666;
+      margin-bottom: 4rem;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      text-align: left;
+    }
+
+    .feature-item {
+      background-color: white;
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .feature-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    }
+
+    .feature-icon {
+      font-size: 2.5rem; /* For emoji icons */
+      margin-bottom: 1.5rem;
+    }
+
+    .feature-item h3 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 0.8rem;
+    }
+
+    .feature-item p {
+      font-size: 1rem;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 768px) {
+      .features-benefits-section h2 {
+        font-size: 2.5rem;
+      }
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
     /* Pricing Section */
     .pricing-section {
       width: 100%;
@@ -1207,6 +1280,7 @@
     <div class="header-buttons">
       <button class="secondary-btn" data-scroll-to="contact-section">Contact</button>
       <button class="secondary-btn" data-scroll-to="about-flex">About</button>
+      <button class="secondary-btn" data-scroll-to="features">Features</button>
       <button class="secondary-btn" data-scroll-to="pricing">Pricing</button>
       <button class="main-btn" data-scroll-to="contact-section">Sign In</button>
     </div>
@@ -1220,6 +1294,7 @@
     <div id="mobileMenu" class="mobile-menu">
       <button class="secondary-btn" data-scroll-to="contact-section">Contact</button>
       <button class="secondary-btn" data-scroll-to="about-flex">About</button>
+      <button class="secondary-btn" data-scroll-to="features">Features</button>
       <button class="secondary-btn" data-scroll-to="pricing">Pricing</button>
       <button class="secondary-btn" data-scroll-to="contact-section">Sign In</button>
     </div>
@@ -1326,6 +1401,44 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features/Benefits Section -->
+  <section class="features-benefits-section" id="features">
+    <h2>One platform, endless possibilities</h2>
+    <p class="section-subtitle">Discover how Puul's seamlessly integrated features empower you to take control, automate operations, and drive growth across your entire portfolio.</p>
+    <div class="features-grid">
+      <div class="feature-item">
+        <div class="feature-icon">💸</div>
+        <h3>Financial Management</h3>
+        <p>Streamline your accounting with automated rent collection, expense tracking, and detailed financial reporting. Make informed decisions with real-time portfolio performance data.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🛠️</div>
+        <h3>Intelligent Maintenance</h3>
+        <p>From tenant requests to vendor dispatch, our AI-powered system automates work orders. Proactive maintenance suggestions help you reduce costs and keep tenants happy.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">📝</div>
+        <h3>Automated Leasing</h3>
+        <p>Fill vacancies faster with a streamlined process from listing to lease signing. Our tools help you screen applicants, manage documents, and onboard new tenants effortlessly.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">💬</div>
+        <h3>Centralized Communications</h3>
+        <p>Keep tenants, owners, and vendors in the loop with a unified messaging hub. Automate routine announcements and provide instant support with our AI assistant.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">📈</div>
+        <h3>Powerful Analytics</h3>
+        <p>Unlock deep insights into your portfolio's performance. Track key metrics, identify trends, and access customizable reports to optimize your strategy and maximize ROI.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">📱</div>
+        <h3>Resident & Owner Portals</h3>
+        <p>Empower your tenants and owners with self-service portals. They can pay rent, submit maintenance requests, and access important documents anytime, anywhere.</p>
       </div>
     </div>
   </section>
@@ -1553,7 +1666,7 @@
       <div class="footer-links">
         <div class="footer-column">
           <h4>Product</h4>
-          <a href="#">Features</a>
+          <a href="#" data-scroll-to="features">Features</a>
           <a href="#" data-scroll-to="pricing">Pricing</a>
           <a href="#" data-scroll-to="contact-section">Contact Sales</a>
         </div>
@@ -1634,9 +1747,9 @@
           }
         } else if (elementId === 'about-flex') {
           scrollPosition = absoluteElementTop - headerHeight - 20;
-        } else if (elementId === 'pricing') {
-          // For pricing section, scroll further down to have pricing section fill the screen
-          scrollPosition = absoluteElementTop - headerHeight + 110; // Increased from 100px to 200px to scroll further down
+        } else if (elementId === 'pricing' || elementId === 'features') {
+          // For pricing and features sections, scroll further down to have them fill the screen
+          scrollPosition = absoluteElementTop - headerHeight + 110; 
         } else {
           scrollPosition = absoluteElementTop - headerHeight;
         }
