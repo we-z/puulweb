@@ -202,8 +202,6 @@ body {
 /* Add left padding to content-header when sidebar is collapsed to make space for the fixed toggle button */
 html.sidebar-is-collapsed .content-header {
     padding-left: 70px; /* 15px (button left) + 40px (button width) + 15px (gap) */
-    background-color: #e9ecef;
-    color: #333;
 }
 
 .content-header h2 {
