@@ -181,11 +181,14 @@
     header .main-btn {
       position: static;
       transform: none;
-      padding: 6px 12px;
+      padding: 6px 15px;
       font-size: 1.2rem;
-      font-weight: 550;
       color: black;
-      background-color: transparent;
+      background-color: rgba(0, 0, 0, 0.1);
+      border: 0px;
+    }
+    header .main-btn:hover {
+      background-color: rgba(0, 0, 0, 0.1);
     }
     #mobileMenuBtn {
       color: black;
@@ -1273,7 +1276,7 @@
       <button class="secondary-btn" data-scroll-to="about-flex">About</button>
       <button class="secondary-btn" data-scroll-to="features">Features</button>
       <button class="secondary-btn" data-scroll-to="pricing">Pricing</button>
-      <button class="main-btn" data-scroll-to="contact-section">Sign In</button>
+      <button class="main-btn" data-scroll-to="contact-section">Sign in</button>
     </div>
     <button id="mobileMenuBtn" aria-label="Toggle menu">
       <div class="menu-icon">
@@ -1287,7 +1290,7 @@
       <button class="secondary-btn" data-scroll-to="about-flex">About</button>
       <button class="secondary-btn" data-scroll-to="features">Features</button>
       <button class="secondary-btn" data-scroll-to="pricing">Pricing</button>
-      <button class="secondary-btn" data-scroll-to="contact-section">Sign In</button>
+      <button class="secondary-btn" data-scroll-to="contact-section">Sign in</button>
     </div>
   </header>
   <main>
@@ -2094,7 +2097,7 @@
     document.addEventListener('DOMContentLoaded', () => {
         // Attach to "Sign In" buttons
         document.querySelectorAll('button').forEach(button => {
-            if (button.textContent.trim() === 'Sign In') {
+            if (button.textContent.trim() === 'Sign in') {
                 button.removeAttribute('data-scroll-to'); 
                 button.addEventListener('click', () => handleGoogleSignIn());
             }
