@@ -1589,8 +1589,10 @@ html.ai-agent-is-open .ai-agent-toggle-btn .icon {
     font-size: 1rem;
     resize: none;
     transition: border-color 0.2s;
-    line-height: 1.4;
+    line-height: 22px;
+    height: 38px;
     max-height: 120px; /* Limit max height */
+    box-sizing: border-box;
 }
 #ai-message-input:focus {
     outline: none;
