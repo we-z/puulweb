@@ -371,7 +371,8 @@ function setupPageLayoutAndInteractivity() {
                     set(ref(database, `aiConversations/${currentUserId}/${conversationId}`), conversationHistory);
                     handleAgentQuery(conversationHistory);
                     AI_DOMElements.input.value = '';
-                    AI_DOMElements.input.style.height = '20px';
+                    AI_DOMElements.input.style.height = 'auto';
+                    AI_DOMElements.input.style.height = (AI_DOMElements.input.scrollHeight) + 'px';
                 }
             };
             AI_DOMElements.sendBtn.addEventListener('click', handleSend);
