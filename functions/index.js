@@ -1,7 +1,19 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const axios = require("axios");
-const stripe = require("stripe")(functions.config().stripe.secret);
+let stripe;
+try {
+    stripe = require("stripe")(functions.config().stripe.secret);
+} catch (e) {
+    console.warn('Stripe config not found, Stripe functionality will be disabled.');
+    stripe = {
+        checkout: { sessions: { create: () => { throw new Error('Stripe not configured'); } } },
+        webhooks: { constructEvent: () => { throw new Error('Stripe not configured'); } },
+        subscriptions: { retrieve: () => { throw new Error('Stripe not configured'); }, list: () => ({ data: [] }) },
+        customers: { retrieve: () => { throw new Error('Stripe not configured'); }, create: () => { throw new Error('Stripe not configured'); } },
+        billingPortal: { sessions: { create: () => { throw new Error('Stripe not configured'); } } },
+    };
+}
 const { getMockData } = require("./mock-data");
 
 admin.initializeApp();
@@ -12,7 +24,13 @@ admin.initializeApp();
 // firebase functions:config:set stripe.secret="YOUR_STRIPE_SECRET_KEY"
 // firebase functions:config:set stripe.webhook_secret="YOUR_STRIPE_WEBHOOK_SECRET"
 // Deployment trigger: 2
-const GEMINI_API_KEY = functions.config().gemini.key;
+let GEMINI_API_KEY;
+try {
+    GEMINI_API_KEY = functions.config().gemini.key;
+} catch (e) {
+    console.warn('Gemini API key not found, Gemini functionality will be disabled.');
+    GEMINI_API_KEY = null;
+}
 const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
 // Define the tools the AI can use
@@ -145,7 +163,14 @@ exports.createCheckoutSession = functions.https.onCall(async (data, context) => 
 
 exports.stripeWebhook = functions.https.onRequest(async (req, res) => {
     const signature = req.headers['stripe-signature'];
-    const endpointSecret = functions.config().stripe.webhook_secret;
+    let endpointSecret;
+    try {
+        endpointSecret = functions.config().stripe.webhook_secret;
+    } catch (e) {
+        console.warn('Stripe webhook secret not found, webhook processing will be skipped.');
+        res.status(200).send();
+        return;
+    }
 
     let event;
 
@@ -264,6 +289,9 @@ exports.createStripePortalLink = functions.https.onCall(async (data, context) =>
 });
 
 exports.generateGeminiResponse = functions.https.onCall(async (data, context) => {
+    if (!GEMINI_API_KEY) {
+        throw new functions.https.HttpsError('failed-precondition', 'The Gemini API key is not configured.');
+    }
     // Ensure the user is authenticated
     if (!context.auth) {
         throw new functions.https.HttpsError('unauthenticated', 'The function must be called while authenticated.');
