@@ -1,6 +1,7 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const axios = require("axios");
+const { toolImplementations } = require("./tools");
 let stripe;
 try {
     stripe = require("stripe")(functions.config().stripe.secret);
@@ -33,60 +34,108 @@ try {
 }
 const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
-// Define the tools the AI can use
-const tools = [{
-    "functionDeclarations": [
-        {
-            "name": "navigateToPage",
-            "description": "Navigates the user to a specific page in the application.",
-            "parameters": {
-                "type": "OBJECT",
-                "properties": {
-                    "pageName": {
-                        "type": "STRING",
-                        "description": "The name of the page to navigate to. Must be one of: dashboard, calendar, leasing, properties, people, accounting, maintenance, reporting, communication, settings."
-                    }
-                },
-                "required": ["pageName"]
-            }
-        },
-        {
-            "name": "filterTable",
-            "description": "Applies a filter to the data table currently visible on the page.",
-            "parameters": {
-                "type": "OBJECT",
-                "properties": {
-                     "page": {
-                        "type": "STRING",
-                        "description": "The page the user is currently on, to identify the correct table. E.g., 'maintenance', 'leasing'."
-                    },
-                    "filterBy": {
-                        "type": "STRING",
-                        "description": "The field or category to filter by (e.g., 'status', 'priority')."
-                    },
-                    "value": {
-                        "type": "STRING",
-                        "description": "The specific value to filter for (e.g., 'Open', 'High', 'Active')."
-                    }
-                },
-                "required": ["page", "filterBy", "value"]
-            }
-        },
-        {
-            "name": "openAddItemModal",
-            "description": "Opens the modal window used to add a new item on the current page.",
-            "parameters": {
-                 "type": "OBJECT",
-                "properties": {
-                    "itemType": {
-                        "type": "STRING",
-                        "description": "The type of item to add, which corresponds to the subsection on a page. E.g., 'workOrders', 'tenants', 'leases', 'properties'."
-                    }
-                },
-                "required": ["itemType"]
-            }
+// Define the tools the AI can use. We separate them into client-side and server-side.
+const clientSideTools = [
+    {
+        "name": "navigateToPage",
+        "description": "Navigates the user to a specific page in the application.",
+        "parameters": {
+            "type": "OBJECT",
+            "properties": {
+                "pageName": {
+                    "type": "STRING",
+                    "description": "The name of the page to navigate to. Must be one of: dashboard, calendar, leasing, properties, people, accounting, maintenance, reporting, communication, settings."
+                }
+            },
+            "required": ["pageName"]
         }
-    ]
+    },
+    {
+        "name": "filterTable",
+        "description": "Applies a filter to the data table currently visible on the page.",
+        "parameters": {
+            "type": "OBJECT",
+            "properties": {
+                 "page": {
+                    "type": "STRING",
+                    "description": "The page the user is currently on, to identify the correct table. E.g., 'maintenance', 'leasing'."
+                },
+                "filterBy": {
+                    "type": "STRING",
+                    "description": "The field or category to filter by (e.g., 'status', 'priority')."
+                },
+                "value": {
+                    "type": "STRING",
+                    "description": "The specific value to filter for (e.g., 'Open', 'High', 'Active')."
+                }
+            },
+            "required": ["page", "filterBy", "value"]
+        }
+    },
+    {
+        "name": "openAddItemModal",
+        "description": "Opens the modal window used to add a new item on the current page.",
+        "parameters": {
+             "type": "OBJECT",
+            "properties": {
+                "itemType": {
+                    "type": "STRING",
+                    "description": "The type of item to add, which corresponds to the subsection on a page. E.g., 'workOrders', 'tenants', 'leases', 'properties'."
+                }
+            },
+            "required": ["itemType"]
+        }
+    }
+];
+
+const serverSideTools = [
+    {
+        "name": "getData",
+        "description": "Retrieves a list of data records from the user's database, with optional filtering.",
+        "parameters": {
+            "type": "OBJECT",
+            "properties": {
+                "dataType": {
+                    "type": "STRING",
+                    "description": "The type of data to retrieve. Must be one of the top-level keys in the database, e.g., 'properties', 'workOrders', 'tenants', 'leases', 'inspections'."
+                },
+                "filters": {
+                    "type": "OBJECT",
+                    "description": "An object of key-value pairs to filter the data. The key should be a field name and the value is what to filter by.",
+                    "properties": {} // Define specific properties if you want to be more restrictive
+                }
+            },
+            "required": ["dataType"]
+        }
+    },
+    {
+        "name": "updateData",
+        "description": "Updates a specific data record in the user's database.",
+        "parameters": {
+            "type": "OBJECT",
+            "properties": {
+                "dataType": {
+                    "type": "STRING",
+                    "description": "The type of data to update, e.g., 'workOrders', 'leases'."
+                },
+                "itemId": {
+                    "type": "STRING",
+                    "description": "The unique ID of the item to be updated."
+                },
+                "updates": {
+                    "type": "OBJECT",
+                    "description": "An object of key-value pairs representing the fields to update.",
+                    "properties": {}
+                }
+            },
+            "required": ["dataType", "itemId", "updates"]
+        }
+    }
+];
+
+
+const allTools = [{
+    "functionDeclarations": [...clientSideTools, ...serverSideTools]
 }];
 
 exports.onUserCreate = functions.auth.user().onCreate(async (user) => {
@@ -292,12 +341,12 @@ exports.generateGeminiResponse = functions.https.onCall(async (data, context) =>
     if (!GEMINI_API_KEY) {
         throw new functions.https.HttpsError('failed-precondition', 'The Gemini API key is not configured.');
     }
-    // Ensure the user is authenticated
     if (!context.auth) {
         throw new functions.https.HttpsError('unauthenticated', 'The function must be called while authenticated.');
     }
 
-    const userRef = admin.database().ref(`users/${context.auth.uid}`);
+    const uid = context.auth.uid;
+    const userRef = admin.database().ref(`users/${uid}`);
     const snapshot = await userRef.once('value');
     const userData = snapshot.val();
     
@@ -310,42 +359,76 @@ exports.generateGeminiResponse = functions.https.onCall(async (data, context) =>
         throw new functions.https.HttpsError('invalid-argument', 'The function must be called with a "history" array.');
     }
 
+    const MAX_TOOL_CALLS = 5;
+
     try {
-        const response = await axios.post(API_URL, {
-            "contents": conversationHistory,
-            "tools": tools,
-            "generationConfig": {
-                "temperature": 0.7,
-                "topK": 1,
-                "topP": 1,
-                "maxOutputTokens": 2048,
-                "stopSequences": []
-            },
-        }, {
-            headers: { 'Content-Type': 'application/json' }
-        });
+        for (let i = 0; i < MAX_TOOL_CALLS; i++) {
+            const response = await axios.post(API_URL, {
+                "contents": conversationHistory,
+                "tools": allTools,
+                "generationConfig": { "temperature": 0.7, "topK": 1, "topP": 1, "maxOutputTokens": 2048, "stopSequences": [] },
+            }, {
+                headers: { 'Content-Type': 'application/json' }
+            });
 
-        if (response.data.promptFeedback && response.data.promptFeedback.blockReason) {
-             throw new functions.https.HttpsError('internal', `Request was blocked due to: ${response.data.promptFeedback.blockReason}`);
-        }
-        if (!response.data.candidates || response.data.candidates.length === 0) {
-            throw new functions.https.HttpsError('internal', "No response from AI agent.");
+            if (response.data.promptFeedback && response.data.promptFeedback.blockReason) {
+                 throw new functions.https.HttpsError('internal', `Request was blocked due to: ${response.data.promptFeedback.blockReason}`);
+            }
+            if (!response.data.candidates || response.data.candidates.length === 0) {
+                throw new functions.https.HttpsError('internal', "No response from AI agent.");
+            }
+            
+            const candidate = response.data.candidates[0];
+            const content = candidate.content;
+
+            // Check if the model wants to call a function
+            if (!content.parts[0].functionCall) {
+                // If not, we have our final text response.
+                const agentResponse = content.parts[0].text;
+                // Append the final response to the history before returning
+                conversationHistory.push({ role: 'model', parts: [{ text: agentResponse }] });
+                return { response: agentResponse, updatedHistory: conversationHistory };
+            }
+
+            const functionCall = content.parts[0].functionCall;
+            const functionName = functionCall.name;
+            const functionArgs = functionCall.args;
+            
+            // Check if the called function is a server-side tool
+            if (toolImplementations[functionName]) {
+                console.log(`Executing server-side tool: ${functionName}`, functionArgs);
+
+                // Append the model's function call to the history
+                conversationHistory.push({ role: 'model', parts: [{ functionCall }] });
+
+                // Execute the tool
+                const toolResult = await toolImplementations[functionName](functionArgs, uid);
+
+                // Append the tool's result to the history
+                conversationHistory.push({
+                    role: 'function',
+                    parts: [{ functionResponse: { name: functionName, response: toolResult } }]
+                });
+
+                // Continue to the next iteration of the loop to get the final text response
+            } else {
+                 // If it's not a server-side tool, assume it's a client-side tool.
+                 // Return it to the client for execution.
+                 console.log(`Returning client-side tool to client: ${functionName}`, functionArgs);
+                 // Append the function call to history before returning it to the client
+                 conversationHistory.push({ role: 'model', parts: [{ functionCall }] });
+                 return { functionCall: functionCall, updatedHistory: conversationHistory };
+            }
         }
         
-        const candidate = response.data.candidates[0];
-        const content = candidate.content;
-
-        // Check if the model wants to call a function
-        if (content.parts[0].functionCall) {
-            return { functionCall: content.parts[0].functionCall };
-        }
-        
-        // Otherwise, return the text response
-        const agentResponse = content.parts[0].text;
-        return { response: agentResponse };
+        // If the loop completes, it means we hit the max tool calls.
+        // Return a message to the user.
+        const finalResponse = "I seem to be having trouble completing your request. Please try rephrasing.";
+        conversationHistory.push({ role: 'model', parts: [{ text: finalResponse }] });
+        return { response: finalResponse, updatedHistory: conversationHistory };
 
     } catch (error) {
-        console.error("Error calling Gemini API:", error.response ? error.response.data : error.message);
+        console.error("Error in generateGeminiResponse loop:", error.response ? error.response.data : error.message);
         if (error.isAxiosError) {
              throw new functions.https.HttpsError('internal', 'Failed to call the Gemini API.', error.response ? error.response.data : null);
         }

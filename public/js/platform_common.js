@@ -541,19 +541,26 @@ async function handleAgentQuery(history) {
 
     try {
         const generateGeminiResponse = httpsCallable(functions, 'generateGeminiResponse');
+        // The history sent to the function is now the single source of truth.
         const result = await generateGeminiResponse({ history: history });
-        
+
         loadingMessage.remove();
 
+        // The server returns the complete, updated history.
+        // We replace our local history with the authoritative one from the server.
+        const serverHistory = result.data.updatedHistory;
+        if (serverHistory) {
+            conversationHistory = serverHistory;
+            // Save the complete history to Firebase.
+            set(ref(database, `aiConversations/${currentUserId}/${conversationId}`), conversationHistory);
+        }
+
         if (result.data.functionCall) {
+            // This is a UI-only tool that needs to be executed on the client.
             const functionCall = result.data.functionCall;
             const functionName = functionCall.name;
             const args = functionCall.args;
-            
-            // The model is now just calling the function, so we add the functionCall to history.
-            history.push({ role: "model", parts: [{ functionCall: functionCall }] });
 
-            // Add a user-friendly message about what's happening.
             let friendlyMessage = `Executing ${functionName}...`;
             if (functionName === 'navigateToPage') {
                 friendlyMessage = `Navigating to the ${args.pageName} page...`;
@@ -563,22 +570,15 @@ async function handleAgentQuery(history) {
                 friendlyMessage = `Okay, opening the form to add a new ${args.itemType}.`;
             }
             addMessageToChat(friendlyMessage, 'agent');
-
-            // Save history before potential navigation
-            set(ref(database, `aiConversations/${currentUserId}/${conversationId}`), history);
-
-            // Execute the tool.
+            
+            // Execute the client-side tool.
             await executeTool(functionName, args);
-            
-            // For navigation, the script might stop here. For other tools, we can continue
-            // but the current design doesn't require a second AI call. The function result
-            // isn't used to generate a new summary, simplifying the flow.
-            
+
         } else if (result.data.response) {
+            // The server has done all the work and returned a final text response.
             const agentResponse = result.data.response;
             addMessageToChat(agentResponse, 'agent');
-            history.push({ role: "model", parts: [{ text: agentResponse }] });
-            set(ref(database, `aiConversations/${currentUserId}/${conversationId}`), history);
+            // The history, including this final message, has already been updated and saved.
         } else {
             addMessageToChat("I'm not sure how to respond to that. Can you try rephrasing?", 'agent');
         }

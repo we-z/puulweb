@@ -1,5 +1,7 @@
 {
   "rules": {
+    ".read": "auth != null",
+    ".write": "auth != null",
     "users": {
       ".read": "auth != null",
       "$uid": {
@@ -254,9 +256,9 @@
     },
     "aiConversations": {
       "$uid": {
-        ".read": "auth !== null && auth.uid === $uid",
+        ".read": "$uid === auth.uid",
         "$conversationId": {
-          ".write": "auth !== null && auth.uid === $uid"
+          ".write": "$uid === auth.uid"
         }
       }
     }

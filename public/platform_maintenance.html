@@ -848,7 +848,7 @@
             status: ''      // default: all statuses
         };
 
-        import { initializeAuth, showAlert, showConfirm, editIconSVG, deleteIconSVG, getDbData, updateDbData, initializeCustomDropdown, initializeSimpleDropdown } from './js/platform_common.js';
+        import { initializeAuth, showAlert, showConfirm, editIconSVG, deleteIconSVG, getDbData, updateDbData, initializeSimpleDropdown } from './js/platform_common.js';
         import { getDatabase, ref, push, onValue, set, remove, serverTimestamp, query, orderByChild, equalTo } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
 
         let pageCurrentUserId;
@@ -929,8 +929,8 @@
         
         function pageInit(userId, db, ...allCommonDeps) {
             pageCurrentUserId = userId; pageDatabase = db;
-            const [ fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGet, fbGetDbDataExt, fbUpdateDbDataExt, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon, commonInitializeCustomDropdown ] = allCommonDeps;
-            commonDependencies = { fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGet, fbGetDbData: fbGetDbDataExt, fbUpdateDbData: fbUpdateDbDataExt, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon, commonInitializeCustomDropdown };
+            const [ fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGet, fbGetDbDataExt, fbUpdateDbDataExt, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon ] = allCommonDeps;
+            commonDependencies = { fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGet, fbGetDbData: fbGetDbDataExt, fbUpdateDbData: fbUpdateDbDataExt, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon };
 
             initializeSubNav();
             initializePropertiesListener();
@@ -2509,24 +2509,24 @@
 
         // --- Maintenance Filters Listener ---
         function initializeAllFilters() {
-            const renderActiveData = () => renderActiveSubsectionData();
-
-            // Special handling for Work Order sort dropdown because it requires a new Firebase query
-            const workOrderSortByDropdown = document.getElementById('customSortBy');
-            if (workOrderSortByDropdown) {
-                initializeSimpleDropdown(workOrderSortByDropdown, () => {
-                    workOrderSort.by = workOrderSortByDropdown.dataset.value || 'createdAt';
-                    loadWorkOrders(); // Re-query Firebase
-                });
-            }
-
-            // Initialize all other dropdowns to just re-render the current data
-            document.querySelectorAll('.controls-container .custom-dropdown').forEach(dropdown => {
-                // Skip the one we just handled
-                if (dropdown.id === 'customSortBy') return;
-                
-                initializeSimpleDropdown(dropdown, renderActiveData);
+            // Main Work Order Filters
+            initializeSimpleDropdown(pageDOMElements.filterProperty, () => renderActiveSubsectionData());
+            initializeSimpleDropdown(pageDOMElements.filterPriority, () => renderActiveSubsectionData());
+            initializeSimpleDropdown(pageDOMElements.filterStatus, () => renderActiveSubsectionData());
+            initializeSimpleDropdown(pageDOMElements.sortBy, (value) => {
+                workOrderSort.by = value;
+                loadWorkOrders(); // Re-fetch with new sort parameter
             });
+            initializeSimpleDropdown(pageDOMElements.sortOrder, () => renderActiveSubsectionData());
+
+            // Filters for other subsections
+            document.querySelectorAll('#recurringWorkOrdersContent .custom-dropdown').forEach(dd => initializeSimpleDropdown(dd, () => renderActiveSubsectionData()));
+            document.querySelectorAll('#inspectionsContent .custom-dropdown').forEach(dd => initializeSimpleDropdown(dd, () => renderActiveSubsectionData()));
+            document.querySelectorAll('#unitTurnsContent .custom-dropdown').forEach(dd => initializeSimpleDropdown(dd, () => renderActiveSubsectionData()));
+            document.querySelectorAll('#projectsContent .custom-dropdown').forEach(dd => initializeSimpleDropdown(dd, () => renderActiveSubsectionData()));
+            document.querySelectorAll('#purchaseOrdersContent .custom-dropdown').forEach(dd => initializeSimpleDropdown(dd, () => renderActiveSubsectionData()));
+            document.querySelectorAll('#inventoryContent .custom-dropdown').forEach(dd => initializeSimpleDropdown(dd, () => renderActiveSubsectionData()));
+            document.querySelectorAll('#fixedAssetsContent .custom-dropdown').forEach(dd => initializeSimpleDropdown(dd, () => renderActiveSubsectionData()));
         }
 
         // --- Setup All Event Listeners ---
