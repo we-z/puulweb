@@ -820,6 +820,10 @@ html.ai-agent-is-open .fab {
     border: 1px solid #e5e7eb; /* Subtle border */
 }
 
+.controls-container.visible-by-default {
+    display: flex !important;
+}
+
 .filter-group, .sort-group {
     display: flex;
     align-items: center;
@@ -1806,8 +1810,6 @@ html.js-loading #sidebar-container {
     opacity: 0.2;
 }
 
-.ai-agent.collapsed {
-}
 .dark .ai-message.user .message-content {
     background-color: #4a5568;
     color: #ffffff;
@@ -1830,7 +1832,3 @@ html.js-loading #sidebar-container {
     border-color: #4a5568;
     box-shadow: 0 0 0 3px rgba(74, 85, 104, 0.15);
 }
-
-/* Controls Toggle Button for Mobile */
-.controls-toggle-btn {
-} 
