@@ -230,6 +230,47 @@
                 <!-- Recurring Work Orders Subsection -->
                 <div class="subsection-content" id="recurringWorkOrdersContent">
                     <h4>Recurring Work Orders</h4>
+                    <button class="controls-toggle-btn">
+                        <span>Filters & Sort</span>
+                        <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
+                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
+                    <div class="controls-container visible-by-default">
+                        <div class="filter-group">
+                            <label>Property:</label>
+                            <div class="custom-dropdown" id="recurringFilterProperty">
+                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Properties</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                <div class="dropdown-options"><div class="dropdown-option" data-value="">All Properties</div></div>
+                            </div>
+                        </div>
+                        <div class="filter-group">
+                            <label>Frequency:</label>
+                            <div class="custom-dropdown" id="recurringFilterFrequency">
+                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                <div class="dropdown-options">
+                                    <div class="dropdown-option" data-value="">All</div>
+                                    <div class="dropdown-option" data-value="Daily">Daily</div>
+                                    <div class="dropdown-option" data-value="Weekly">Weekly</div>
+                                    <div class="dropdown-option" data-value="Bi-Weekly">Bi-Weekly</div>
+                                    <div class="dropdown-option" data-value="Monthly">Monthly</div>
+                                    <div class="dropdown-option" data-value="Quarterly">Quarterly</div>
+                                    <div class="dropdown-option" data-value="Annually">Annually</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="filter-group">
+                            <label>Status:</label>
+                            <div class="custom-dropdown" id="recurringFilterStatus">
+                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                <div class="dropdown-options">
+                                    <div class="dropdown-option" data-value="">All</div>
+                                    <div class="dropdown-option" data-value="Active">Active</div>
+                                    <div class="dropdown-option" data-value="Paused">Paused</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="data-table-container">
                         <table class="data-table" id="recurringWorkOrderTable">
                             <thead>
@@ -256,6 +297,34 @@
                 <!-- Inspections Subsection -->
                 <div class="subsection-content" id="inspectionsContent">
                     <h4>Inspections</h4>
+                    <button class="controls-toggle-btn">
+                        <span>Filters & Sort</span>
+                        <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
+                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
+                    <div class="controls-container visible-by-default">
+                        <div class="filter-group">
+                            <label>Property:</label>
+                            <div class="custom-dropdown" id="inspectionsFilterProperty">
+                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Properties</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                <div class="dropdown-options"><div class="dropdown-option" data-value="">All Properties</div></div>
+                            </div>
+                        </div>
+                        <div class="filter-group">
+                            <label>Status:</label>
+                            <div class="custom-dropdown" id="inspectionsFilterStatus">
+                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                <div class="dropdown-options">
+                                    <div class="dropdown-option" data-value="">All</div>
+                                    <div class="dropdown-option" data-value="Scheduled">Scheduled</div>
+                                    <div class="dropdown-option" data-value="In Progress">In Progress</div>
+                                    <div class="dropdown-option" data-value="Completed">Completed</div>
+                                    <div class="dropdown-option" data-value="Cancelled">Cancelled</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                      <div class="data-table-container">
                         <table class="data-table" id="inspectionsTable">
                             <thead>
@@ -280,6 +349,35 @@
                 <!-- Unit Turns Subsection -->
                 <div class="subsection-content" id="unitTurnsContent">
                      <h4>Unit Turns</h4>
+                    <button class="controls-toggle-btn">
+                        <span>Filters & Sort</span>
+                        <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
+                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
+                    <div class="controls-container visible-by-default">
+                        <div class="filter-group">
+                            <label>Property:</label>
+                            <div class="custom-dropdown" id="unitTurnsFilterProperty">
+                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Properties</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                <div class="dropdown-options"><div class="dropdown-option" data-value="">All Properties</div></div>
+                            </div>
+                        </div>
+                        <div class="filter-group">
+                            <label>Status:</label>
+                            <div class="custom-dropdown" id="unitTurnsFilterStatus">
+                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                <div class="dropdown-options">
+                                    <div class="dropdown-option" data-value="">All</div>
+                                    <div class="dropdown-option" data-value="Pending">Pending</div>
+                                    <div class="dropdown-option" data-value="Cleaning">Cleaning</div>
+                                    <div class="dropdown-option" data-value="Repairs">Repairs</div>
+                                    <div class="dropdown-option" data-value="Ready">Ready</div>
+                                    <div class="dropdown-option" data-value="Completed">Completed</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                      <div class="data-table-container">
                         <table class="data-table" id="unitTurnsTable">
                             <thead>
@@ -304,6 +402,35 @@
                 <!-- Projects Subsection -->
                 <div class="subsection-content" id="projectsContent">
                     <h4>Projects</h4>
+                    <button class="controls-toggle-btn">
+                        <span>Filters & Sort</span>
+                        <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
+                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
+                    <div class="controls-container visible-by-default">
+                        <div class="filter-group">
+                            <label>Property:</label>
+                            <div class="custom-dropdown" id="projectsFilterProperty">
+                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Properties</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                <div class="dropdown-options"><div class="dropdown-option" data-value="">All Properties</div></div>
+                            </div>
+                        </div>
+                        <div class="filter-group">
+                            <label>Status:</label>
+                            <div class="custom-dropdown" id="projectsFilterStatus">
+                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                <div class="dropdown-options">
+                                    <div class="dropdown-option" data-value="">All</div>
+                                    <div class="dropdown-option" data-value="Planning">Planning</div>
+                                    <div class="dropdown-option" data-value="In Progress">In Progress</div>
+                                    <div class="dropdown-option" data-value="On Hold">On Hold</div>
+                                    <div class="dropdown-option" data-value="Completed">Completed</div>
+                                    <div class="dropdown-option" data-value="Cancelled">Cancelled</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="data-table-container">
                         <table class="data-table" id="projectsTable">
                             <thead>
@@ -329,6 +456,35 @@
                 <!-- Purchase Orders Subsection -->
                 <div class="subsection-content" id="purchaseOrdersContent">
                     <h4>Purchase Orders</h4>
+                    <button class="controls-toggle-btn">
+                        <span>Filters & Sort</span>
+                        <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
+                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
+                    <div class="controls-container visible-by-default">
+                        <div class="filter-group">
+                            <label>Vendor:</label>
+                            <div class="custom-dropdown" id="poFilterVendor">
+                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Vendors</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                <div class="dropdown-options"><div class="dropdown-option" data-value="">All Vendors</div></div>
+                            </div>
+                        </div>
+                        <div class="filter-group">
+                            <label>Status:</label>
+                            <div class="custom-dropdown" id="poFilterStatus">
+                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                <div class="dropdown-options">
+                                    <div class="dropdown-option" data-value="">All</div>
+                                    <div class="dropdown-option" data-value="Draft">Draft</div>
+                                    <div class="dropdown-option" data-value="Submitted">Submitted</div>
+                                    <div class="dropdown-option" data-value="Approved">Approved</div>
+                                    <div class="dropdown-option" data-value="Received">Received</div>
+                                    <div class="dropdown-option" data-value="Closed">Closed</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="data-table-container">
                         <table class="data-table" id="purchaseOrdersTable">
                             <thead>
@@ -353,6 +509,28 @@
                 <!-- Inventory Subsection -->
                 <div class="subsection-content" id="inventoryContent">
                     <h4>Inventory</h4>
+                    <button class="controls-toggle-btn">
+                        <span>Filters & Sort</span>
+                        <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
+                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
+                    <div class="controls-container visible-by-default">
+                        <div class="filter-group">
+                            <label>Category:</label>
+                            <div class="custom-dropdown" id="inventoryFilterCategory">
+                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Categories</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                <div class="dropdown-options"><div class="dropdown-option" data-value="">All Categories</div></div>
+                            </div>
+                        </div>
+                        <div class="filter-group">
+                            <label>Location:</label>
+                            <div class="custom-dropdown" id="inventoryFilterLocation">
+                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Locations</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                <div class="dropdown-options"><div class="dropdown-option" data-value="">All Locations</div></div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="data-table-container">
                         <table class="data-table" id="inventoryTable">
                             <thead>
@@ -377,6 +555,21 @@
                 <!-- Fixed Assets Subsection -->
                 <div class="subsection-content" id="fixedAssetsContent">
                     <h4>Fixed Assets</h4>
+                    <button class="controls-toggle-btn">
+                        <span>Filters & Sort</span>
+                        <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
+                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
+                    <div class="controls-container visible-by-default">
+                        <div class="filter-group">
+                            <label>Property:</label>
+                            <div class="custom-dropdown" id="fixedAssetsFilterProperty">
+                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Properties</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                <div class="dropdown-options"><div class="dropdown-option" data-value="">All Properties</div></div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="data-table-container">
                         <table class="data-table" id="fixedAssetsTable">
                             <thead>
@@ -665,6 +858,16 @@
         let listenersInitialized = {}; // To track if onValue listeners are set for subsections
         let workOrderStatusChartInstance = null; // To hold the chart instance
 
+        // Data cache for each subsection
+        let workOrdersData = [];
+        let recurringWorkOrdersData = [];
+        let inspectionsData = [];
+        let unitTurnsData = [];
+        let projectsData = [];
+        let purchaseOrdersData = [];
+        let inventoryData = [];
+        let fixedAssetsData = [];
+
         // Cache DOM elements for each subsection for efficiency
         const pageDOMElements = {
             addItemBtn: document.getElementById('addItemBtn'),
@@ -732,28 +935,39 @@
             initializeSubNav();
             initializePropertiesListener();
             initializeVendorsListener(); 
-            initializeMaintenanceFilters(); // Initialize and attach listeners for filters
+            initializeAllFilters();
             
             loadDataForActiveSubsection();
             setupEventListeners();
             setupSmartMaintenanceButtons(); 
 
-            if (pageDOMElements.controlsToggleBtn) {
-                pageDOMElements.controlsToggleBtn.addEventListener('click', () => {
-                    const controlsContainer = pageDOMElements.controlsToggleBtn.nextElementSibling;
-                    const arrowIcon = pageDOMElements.controlsToggleBtn.querySelector('.arrow-icon');
-                    if (controlsContainer.style.display === 'none' || controlsContainer.style.display === '') {
-                        controlsContainer.style.display = 'flex';
-                        arrowIcon.style.transform = 'rotate(0deg)';
-                    } else {
+            document.querySelectorAll('.controls-toggle-btn').forEach(btn => {
+                const controlsContainer = btn.nextElementSibling;
+                const arrowIcon = btn.querySelector('.arrow-icon');
+
+                if (!controlsContainer || !controlsContainer.classList.contains('controls-container')) return;
+
+                btn.addEventListener('click', () => {
+                    const isExpanded = controlsContainer.style.display === 'flex';
+                    if (isExpanded) {
                         controlsContainer.style.display = 'none';
-                        arrowIcon.style.transform = 'rotate(-90deg)';
+                        if (arrowIcon) arrowIcon.style.transform = 'rotate(-90deg)';
+                    } else {
+                        controlsContainer.style.display = 'flex';
+                        if (arrowIcon) arrowIcon.style.transform = 'rotate(0deg)';
                     }
                 });
-                 // Initially hide filters
-                pageDOMElements.controlsToggleBtn.nextElementSibling.style.display = 'none';
-                pageDOMElements.controlsToggleBtn.querySelector('.arrow-icon').style.transform = 'rotate(-90deg)';
-            }
+
+                // Set initial state
+                const isVisibleByDefault = controlsContainer.classList.contains('visible-by-default');
+                if (isVisibleByDefault && window.innerWidth > 768) {
+                    controlsContainer.style.display = 'flex';
+                    if (arrowIcon) arrowIcon.style.transform = 'rotate(0deg)';
+                } else {
+                    controlsContainer.style.display = 'none';
+                    if (arrowIcon) arrowIcon.style.transform = 'rotate(-90deg)';
+                }
+            });
             
             pageDOMElements.addItemBtn.addEventListener('click', () => {
                 const activeSubSection = document.querySelector('#maintenanceSubNav .sub-nav-item.active').dataset.subsection;
@@ -841,13 +1055,30 @@
             }
         }
         
+        function renderActiveSubsectionData() {
+            const activeSubSection = document.querySelector('#maintenanceSubNav .sub-nav-item.active').dataset.subsection;
+            switch (activeSubSection) {
+                case 'workOrders': renderWorkOrders(); break;
+                case 'recurringWorkOrders': renderRecurringWorkOrders(); break;
+                case 'inspections': renderInspections(); break;
+                case 'unitTurns': renderUnitTurns(); break;
+                case 'projects': renderProjects(); break;
+                case 'purchaseOrders': renderPurchaseOrders(); break;
+                case 'inventory': renderInventory(); break;
+                case 'fixedAssets': renderFixedAssets(); break;
+            }
+        }
+
         function initializePropertiesListener() {
             if (!pageCurrentUserId || !pageDatabase) return;
             const propertiesRef = commonDependencies.fbRef(pageDatabase, `properties/${pageCurrentUserId}`);
             onValue(commonDependencies.fbQuery(propertiesRef, commonDependencies.fbOrderByChild('address')), (snapshot) => {
                 localPropertiesMap = {};
+                snapshot.forEach(childSnapshot => {
+                    localPropertiesMap[childSnapshot.key] = childSnapshot.val().address;
+                });
                 
-                // Populate Work Order Property Select
+                // Populate Work Order Property Select (in modal)
                 if (pageDOMElements.workOrderPropertySelect) {
                     const currentWOPropertyValue = pageDOMElements.workOrderPropertySelect.value;
                     pageDOMElements.workOrderPropertySelect.innerHTML = '<option value="">Select Property (Optional)</option>';
@@ -855,7 +1086,6 @@
                         const key = childSnapshot.key;
                         const prop = childSnapshot.val();
                         if (prop && prop.address) {
-                            localPropertiesMap[key] = prop.address;
                             const modalOption = document.createElement('option');
                             modalOption.value = key;
                             modalOption.textContent = prop.address;
@@ -865,57 +1095,53 @@
                     pageDOMElements.workOrderPropertySelect.value = currentWOPropertyValue; // Restore selection
                 }
 
-                // Populate Filter Property Dropdown (for Work Orders)
-                const filterPropertyDropdown = pageDOMElements.filterProperty;
-                if (filterPropertyDropdown) {
-                    const optionsContainer = filterPropertyDropdown.querySelector('.dropdown-options');
-                    const selectedValueSpan = filterPropertyDropdown.querySelector('.selected-value');
-                    const currentValue = filterPropertyDropdown.dataset.value; // Current filter value
-                    optionsContainer.innerHTML = ''; 
+                // Populate ALL property filter dropdowns
+                const propertyFilterIds = [
+                    'customFilterProperty',
+                    'recurringFilterProperty',
+                    'inspectionsFilterProperty',
+                    'unitTurnsFilterProperty',
+                    'projectsFilterProperty',
+                    'fixedAssetsFilterProperty'
+                ];
 
-                    const allOptionEl = document.createElement('div');
-                    allOptionEl.classList.add('dropdown-option');
-                    allOptionEl.dataset.value = '';
-                    allOptionEl.textContent = 'All Properties';
-                    optionsContainer.appendChild(allOptionEl);
+                propertyFilterIds.forEach(filterId => {
+                    const dropdown = document.getElementById(filterId);
+                    if (dropdown) {
+                        const optionsContainer = dropdown.querySelector('.dropdown-options');
+                        const selectedValueSpan = dropdown.querySelector('.selected-value');
+                        const currentValue = dropdown.dataset.value || '';
 
-                    snapshot.forEach(childSnapshot => {
-                        const key = childSnapshot.key;
-                        const prop = childSnapshot.val();
-                        if (prop && prop.address) { // Already mapped in localPropertiesMap
+                        optionsContainer.innerHTML = '';
+                        const allOptionEl = document.createElement('div');
+                        allOptionEl.classList.add('dropdown-option');
+                        allOptionEl.dataset.value = '';
+                        allOptionEl.textContent = 'All Properties';
+                        optionsContainer.appendChild(allOptionEl);
+
+                        for (const key in localPropertiesMap) {
                             const filterOptionEl = document.createElement('div');
                             filterOptionEl.classList.add('dropdown-option');
                             filterOptionEl.dataset.value = key;
-                            filterOptionEl.textContent = prop.address;
+                            filterOptionEl.textContent = localPropertiesMap[key];
                             optionsContainer.appendChild(filterOptionEl);
                         }
-                    });
-                    
-                    // Reset selection for the filter dropdown
-                    let newSelectedText = 'All Properties';
-                    let newSelectedValue = '';
-                    let foundCurrent = false;
-                    optionsContainer.querySelectorAll('.dropdown-option').forEach(opt => {
-                         opt.classList.remove('selected');
-                        if (opt.dataset.value === currentValue) {
-                            newSelectedText = opt.textContent;
-                            newSelectedValue = opt.dataset.value;
-                            opt.classList.add('selected');
-                            foundCurrent = true;
+                        
+                        const currentOption = optionsContainer.querySelector(`.dropdown-option[data-value="${currentValue}"]`);
+                        if (currentOption) {
+                            selectedValueSpan.textContent = currentOption.textContent;
+                            if (optionsContainer.querySelector('.selected')) {
+                                optionsContainer.querySelector('.selected').classList.remove('selected');
+                            }
+                            currentOption.classList.add('selected');
+                        } else {
+                            selectedValueSpan.textContent = 'All Properties';
+                            dropdown.dataset.value = '';
+                            const defaultOpt = optionsContainer.querySelector('.dropdown-option[data-value=""]');
+                            if (defaultOpt) defaultOpt.classList.add('selected');
                         }
-                    });
-                    if (!foundCurrent) { // If previous selection is no longer valid, default to "All Properties"
-                        const defaultOpt = optionsContainer.querySelector('.dropdown-option[data-value=""]');
-                        if (defaultOpt) defaultOpt.classList.add('selected');
-                    } else {
-                         //Ensure the currently selected option is marked, if it still exists
-                        const currentOpt = optionsContainer.querySelector(`.dropdown-option[data-value="${currentValue}"]`);
-                        if(currentOpt) currentOpt.classList.add('selected');
                     }
-
-                    selectedValueSpan.textContent = newSelectedText;
-                    filterPropertyDropdown.dataset.value = newSelectedValue;
-                }
+                });
 
                 // Populate property dropdowns in other modals
                 const propertySelects = [
@@ -998,51 +1224,64 @@
             }
         }
 
+        let workOrdersUnsubscribe = null;
         function loadWorkOrders() {
             if (!pageCurrentUserId || !pageDatabase || !pageDOMElements.workOrderTableBody) return;
-            const workOrdersRef = commonDependencies.fbRef(pageDatabase, `workOrders/${pageCurrentUserId}`);
             
-            // Firebase queries are limited. We can order by one child. 
-            // For more complex sorting/filtering, retrieve all and process client-side, or use Firestore.
-            // For now, let's sort by the chosen field (default createdAt) and do filtering client-side.
+            if (workOrdersUnsubscribe) {
+                workOrdersUnsubscribe(); // Unsubscribe from the old listener
+            }
+
+            const workOrdersRef = commonDependencies.fbRef(pageDatabase, `workOrders/${pageCurrentUserId}`);
             let queryRef = commonDependencies.fbQuery(workOrdersRef, commonDependencies.fbOrderByChild(workOrderSort.by));
 
-            onValue(queryRef, (snapshot) => {
-                pageDOMElements.workOrderTableBody.innerHTML = '';
-                let hasData = false;
-                let workOrdersArray = [];
+            workOrdersUnsubscribe = onValue(queryRef, (snapshot) => {
+                workOrdersData = [];
                 snapshot.forEach(childSnapshot => {
-                    workOrdersArray.push({ id: childSnapshot.key, ...childSnapshot.val() });
+                    workOrdersData.push({ id: childSnapshot.key, ...childSnapshot.val() });
                 });
-
-                // Client-side filtering
-                const filteredWorkOrders = workOrdersArray.filter(wo => {
-                    const matchesProperty = !workOrderFilters.propertyId || wo.propertyId === workOrderFilters.propertyId;
-                    const matchesPriority = !workOrderFilters.priority || wo.priority === workOrderFilters.priority;
-                    const matchesStatus = !workOrderFilters.status || wo.status === workOrderFilters.status;
-                    return matchesProperty && matchesPriority && matchesStatus;
-                });
-
-                // Client-side sorting if not handled by Firebase query (or secondary sort)
-                if (workOrderSort.order === 'desc') {
-                    if(workOrderSort.by !== 'createdAt') { // Firebase sorts asc by default for strings, desc for numbers. Assume createdAt is timestamp (number).
-                         filteredWorkOrders.sort((a, b) => (b[workOrderSort.by] > a[workOrderSort.by]) ? 1 : ((a[workOrderSort.by] > b[workOrderSort.by]) ? -1 : 0));
-                    } else {
-                        filteredWorkOrders.reverse(); // if ordered by createdAt (timestamp) via Firebase, reverse for desc.
-                    }
-                } else if (workOrderSort.by !== 'createdAt') { // asc and not timestamp
-                     filteredWorkOrders.sort((a, b) => (a[workOrderSort.by] > b[workOrderSort.by]) ? 1 : ((b[workOrderSort.by] > a[workOrderSort.by]) ? -1 : 0));
-                }
-                // If by createdAt and asc, Firebase already handles it.
-
-                filteredWorkOrders.forEach(wo => {
-                    hasData = true;
-                    populateWorkOrderRow(wo);
-                });
-                pageDOMElements.noWorkOrdersMessage.style.display = hasData ? 'none' : 'flex';
-            }, { onlyOnce: false }); // Keep listening for real-time updates
+                renderWorkOrders();
+            });
         }
         
+        function renderWorkOrders() {
+             if (!pageDOMElements.workOrderTableBody) return;
+            pageDOMElements.workOrderTableBody.innerHTML = '';
+            let hasData = false;
+
+            // Update filter and sort objects from DOM
+            workOrderFilters.propertyId = document.getElementById('customFilterProperty')?.dataset.value || '';
+            workOrderFilters.priority = document.getElementById('customFilterPriority')?.dataset.value || '';
+            workOrderFilters.status = document.getElementById('customFilterStatus')?.dataset.value || '';
+            workOrderSort.order = document.getElementById('customSortOrder')?.dataset.value || 'desc';
+            // workOrderSort.by is updated in its own specific listener
+
+            // Client-side filtering
+            const filteredWorkOrders = workOrdersData.filter(wo => {
+                const matchesProperty = !workOrderFilters.propertyId || wo.propertyId === workOrderFilters.propertyId;
+                const matchesPriority = !workOrderFilters.priority || wo.priority === workOrderFilters.priority;
+                const matchesStatus = !workOrderFilters.status || wo.status === workOrderFilters.status;
+                return matchesProperty && matchesPriority && matchesStatus;
+            });
+
+            // Client-side sorting
+            if (workOrderSort.order === 'desc') {
+                if(workOrderSort.by !== 'createdAt') {
+                     filteredWorkOrders.sort((a, b) => (b[workOrderSort.by] > a[workOrderSort.by]) ? 1 : ((a[workOrderSort.by] > b[workOrderSort.by]) ? -1 : 0));
+                } else {
+                    filteredWorkOrders.reverse();
+                }
+            } else if (workOrderSort.by !== 'createdAt') {
+                 filteredWorkOrders.sort((a, b) => (a[workOrderSort.by] > b[workOrderSort.by]) ? 1 : ((b[workOrderSort.by] > a[workOrderSort.by]) ? -1 : 0));
+            }
+
+            filteredWorkOrders.forEach(wo => {
+                hasData = true;
+                populateWorkOrderRow(wo);
+            });
+            pageDOMElements.noWorkOrdersMessage.style.display = hasData ? 'none' : 'flex';
+        }
+
         function populateWorkOrderRow(wo) {
             if(!pageDOMElements.workOrderTableBody) return;
             const row = pageDOMElements.workOrderTableBody.insertRow();
@@ -1135,14 +1374,34 @@
 
             const dataRef = commonDependencies.fbRef(pageDatabase, `recurringWorkOrders/${pageCurrentUserId}`);
             onValue(dataRef, (snapshot) => {
-                pageDOMElements.recurringWorkOrderTableBody.innerHTML = '';
-                let hasData = false;
+                recurringWorkOrdersData = [];
                 snapshot.forEach(child => {
-                    hasData = true;
-                    populateRecurringWorkOrderRow({ id: child.key, ...child.val() });
+                    recurringWorkOrdersData.push({ id: child.key, ...child.val() });
                 });
-                pageDOMElements.noRecurringWorkOrdersMessage.style.display = hasData ? 'none' : 'block';
+                renderRecurringWorkOrders();
             });
+        }
+
+        function renderRecurringWorkOrders() {
+            pageDOMElements.recurringWorkOrderTableBody.innerHTML = '';
+            let hasData = false;
+
+            const propertyFilter = document.getElementById('recurringFilterProperty')?.dataset.value;
+            const frequencyFilter = document.getElementById('recurringFilterFrequency')?.dataset.value;
+            const statusFilter = document.getElementById('recurringFilterStatus')?.dataset.value;
+
+            const filteredItems = recurringWorkOrdersData.filter(item => {
+                const matchesProperty = !propertyFilter || item.propertyId === propertyFilter;
+                const matchesFrequency = !frequencyFilter || item.frequency === frequencyFilter;
+                const matchesStatus = !statusFilter || item.status === statusFilter;
+                return matchesProperty && matchesFrequency && matchesStatus;
+            });
+
+            filteredItems.forEach(item => {
+                hasData = true;
+                populateRecurringWorkOrderRow(item);
+            });
+            pageDOMElements.noRecurringWorkOrdersMessage.style.display = hasData ? 'none' : 'block';
         }
 
         function populateRecurringWorkOrderRow(data) {
@@ -1264,14 +1523,33 @@
 
             const inspectionsRef = commonDependencies.fbRef(pageDatabase, `inspections/${pageCurrentUserId}`);
             onValue(commonDependencies.fbQuery(inspectionsRef, commonDependencies.fbOrderByChild('scheduledDate')), (snapshot) => {
-                pageDOMElements.inspectionsTableBody.innerHTML = '';
-                let hasData = false;
+                inspectionsData = [];
                 snapshot.forEach(childSnapshot => {
-                    hasData = true;
-                    populateInspectionRow({ id: childSnapshot.key, ...childSnapshot.val() });
+                    inspectionsData.push({ id: childSnapshot.key, ...childSnapshot.val() });
                 });
-                pageDOMElements.noInspectionsMessage.style.display = hasData ? 'none' : 'flex';
+                renderInspections();
             });
+        }
+
+        function renderInspections() {
+            pageDOMElements.inspectionsTableBody.innerHTML = '';
+            let hasData = false;
+            
+            const propertyFilter = document.getElementById('inspectionsFilterProperty')?.dataset.value;
+            const statusFilter = document.getElementById('inspectionsFilterStatus')?.dataset.value;
+
+            const filteredItems = inspectionsData.filter(item => {
+                const matchesProperty = !propertyFilter || item.propertyId === propertyFilter;
+                const matchesStatus = !statusFilter || item.status === statusFilter;
+                return matchesProperty && matchesStatus;
+            }).reverse(); // Reverse to show most recent first, as query is asc
+
+            filteredItems.forEach(item => {
+                hasData = true;
+                populateInspectionRow(item);
+            });
+
+            pageDOMElements.noInspectionsMessage.style.display = hasData ? 'none' : 'flex';
         }
 
         function populateInspectionRow(data) {
@@ -1376,14 +1654,33 @@
 
             const unitTurnsRef = commonDependencies.fbRef(pageDatabase, `unitTurns/${pageCurrentUserId}`);
             onValue(commonDependencies.fbQuery(unitTurnsRef, commonDependencies.fbOrderByChild('targetMoveInDate')), (snapshot) => {
-                pageDOMElements.unitTurnsTableBody.innerHTML = '';
-                let hasData = false;
+                unitTurnsData = [];
                 snapshot.forEach(childSnapshot => {
-                    hasData = true;
-                    populateUnitTurnRow({ id: childSnapshot.key, ...childSnapshot.val() });
+                    unitTurnsData.push({ id: childSnapshot.key, ...childSnapshot.val() });
                 });
-                pageDOMElements.noUnitTurnsMessage.style.display = hasData ? 'none' : 'flex';
+                renderUnitTurns();
             });
+        }
+
+        function renderUnitTurns() {
+            pageDOMElements.unitTurnsTableBody.innerHTML = '';
+            let hasData = false;
+
+            const propertyFilter = document.getElementById('unitTurnsFilterProperty')?.dataset.value;
+            const statusFilter = document.getElementById('unitTurnsFilterStatus')?.dataset.value;
+
+            const filteredItems = unitTurnsData.filter(item => {
+                const matchesProperty = !propertyFilter || item.propertyId === propertyFilter;
+                const matchesStatus = !statusFilter || item.status === statusFilter;
+                return matchesProperty && matchesStatus;
+            }).reverse(); // Reverse to show most recent first
+
+            filteredItems.forEach(item => {
+                hasData = true;
+                populateUnitTurnRow(item);
+            });
+
+            pageDOMElements.noUnitTurnsMessage.style.display = hasData ? 'none' : 'flex';
         }
 
         function populateUnitTurnRow(data) {
@@ -1467,14 +1764,33 @@
 
             const dataRef = commonDependencies.fbRef(pageDatabase, `projects/${pageCurrentUserId}`);
             onValue(dataRef, (snapshot) => {
-                pageDOMElements.projectsTableBody.innerHTML = '';
-                let hasData = false;
+                projectsData = [];
                 snapshot.forEach(child => {
-                    hasData = true;
-                    populateProjectRow({ id: child.key, ...child.val() });
+                    projectsData.push({ id: child.key, ...child.val() });
                 });
-                pageDOMElements.noProjectsMessage.style.display = hasData ? 'none' : 'block';
+                renderProjects();
             });
+        }
+
+        function renderProjects() {
+            pageDOMElements.projectsTableBody.innerHTML = '';
+            let hasData = false;
+
+            const propertyFilter = document.getElementById('projectsFilterProperty')?.dataset.value;
+            const statusFilter = document.getElementById('projectsFilterStatus')?.dataset.value;
+
+            const filteredItems = projectsData.filter(item => {
+                const matchesProperty = !propertyFilter || item.propertyId === propertyFilter;
+                const matchesStatus = !statusFilter || item.status === statusFilter;
+                return matchesProperty && matchesStatus;
+            });
+
+            filteredItems.forEach(item => {
+                hasData = true;
+                populateProjectRow(item);
+            });
+
+            pageDOMElements.noProjectsMessage.style.display = hasData ? 'none' : 'block';
         }
 
         function populateProjectRow(data) {
@@ -1549,14 +1865,32 @@
 
             const dataRef = commonDependencies.fbRef(pageDatabase, `purchaseOrders/${pageCurrentUserId}`);
             onValue(dataRef, (snapshot) => {
-                pageDOMElements.purchaseOrdersTableBody.innerHTML = '';
-                let hasData = false;
+                purchaseOrdersData = [];
                 snapshot.forEach(child => {
-                    hasData = true;
-                    populatePurchaseOrderRow({ id: child.key, ...child.val() });
+                    purchaseOrdersData.push({ id: child.key, ...child.val() });
                 });
-                pageDOMElements.noPurchaseOrdersMessage.style.display = hasData ? 'none' : 'block';
+                renderPurchaseOrders();
             });
+        }
+
+        function renderPurchaseOrders() {
+            pageDOMElements.purchaseOrdersTableBody.innerHTML = '';
+            let hasData = false;
+
+            const vendorFilter = document.getElementById('poFilterVendor')?.dataset.value;
+            const statusFilter = document.getElementById('poFilterStatus')?.dataset.value;
+
+            const filteredItems = purchaseOrdersData.filter(item => {
+                const matchesVendor = !vendorFilter || item.vendorId === vendorFilter;
+                const matchesStatus = !statusFilter || item.status === statusFilter;
+                return matchesVendor && matchesStatus;
+            });
+
+            filteredItems.forEach(item => {
+                hasData = true;
+                populatePurchaseOrderRow(item);
+            });
+            pageDOMElements.noPurchaseOrdersMessage.style.display = hasData ? 'none' : 'block';
         }
 
         function populatePurchaseOrderRow(data) {
@@ -1629,14 +1963,42 @@
 
             const dataRef = commonDependencies.fbRef(pageDatabase, `inventory/${pageCurrentUserId}`);
             onValue(dataRef, (snapshot) => {
-                pageDOMElements.inventoryTableBody.innerHTML = '';
-                let hasData = false;
+                inventoryData = [];
+                const categories = new Set();
+                const locations = new Set();
                 snapshot.forEach(child => {
-                    hasData = true;
-                    populateInventoryRow({ id: child.key, ...child.val() });
+                    const item = { id: child.key, ...child.val() };
+                    inventoryData.push(item);
+                    if (item.category) categories.add(item.category);
+                    if (item.location) locations.add(item.location);
                 });
-                pageDOMElements.noInventoryMessage.style.display = hasData ? 'none' : 'block';
+
+                // Populate Category and Location filters
+                populateDynamicDropdown('inventoryFilterCategory', categories, 'All Categories');
+                populateDynamicDropdown('inventoryFilterLocation', locations, 'All Locations');
+                
+                renderInventory();
             });
+        }
+
+        function renderInventory() {
+            pageDOMElements.inventoryTableBody.innerHTML = '';
+            let hasData = false;
+
+            const categoryFilter = document.getElementById('inventoryFilterCategory')?.dataset.value;
+            const locationFilter = document.getElementById('inventoryFilterLocation')?.dataset.value;
+
+            const filteredItems = inventoryData.filter(item => {
+                const matchesCategory = !categoryFilter || item.category === categoryFilter;
+                const matchesLocation = !locationFilter || item.location === locationFilter;
+                return matchesCategory && matchesLocation;
+            });
+
+            filteredItems.forEach(item => {
+                hasData = true;
+                populateInventoryRow(item);
+            });
+            pageDOMElements.noInventoryMessage.style.display = hasData ? 'none' : 'block';
         }
 
         function populateInventoryRow(data) {
@@ -1662,6 +2024,41 @@
             pageDOMElements.inventoryForm.quantity.value = data.quantity || 0;
             pageDOMElements.inventoryForm.location.value = data.location || '';
             pageDOMElements.inventoryModal.style.display = 'flex';
+        }
+
+        function populateDynamicDropdown(dropdownId, optionsSet, allText) {
+            const dropdown = document.getElementById(dropdownId);
+            if (!dropdown) return;
+
+            const optionsContainer = dropdown.querySelector('.dropdown-options');
+            const selectedValueSpan = dropdown.querySelector('.selected-value');
+            const currentValue = dropdown.dataset.value || '';
+
+            optionsContainer.innerHTML = '';
+
+            const allOption = document.createElement('div');
+            allOption.className = 'dropdown-option';
+            allOption.dataset.value = '';
+            allOption.textContent = allText;
+            optionsContainer.appendChild(allOption);
+
+            Array.from(optionsSet).sort().forEach(optionValue => {
+                const option = document.createElement('div');
+                option.className = 'dropdown-option';
+                option.dataset.value = optionValue;
+                option.textContent = optionValue;
+                optionsContainer.appendChild(option);
+            });
+
+            const currentOption = optionsContainer.querySelector(`.dropdown-option[data-value="${currentValue}"]`);
+            if (currentOption) {
+                selectedValueSpan.textContent = currentOption.textContent;
+                currentOption.classList.add('selected');
+            } else {
+                selectedValueSpan.textContent = allText;
+                dropdown.dataset.value = '';
+                optionsContainer.firstChild.classList.add('selected');
+            }
         }
 
 
@@ -1711,14 +2108,29 @@
 
             const dataRef = commonDependencies.fbRef(pageDatabase, `fixedAssets/${pageCurrentUserId}`);
             onValue(dataRef, (snapshot) => {
-                pageDOMElements.fixedAssetsTableBody.innerHTML = '';
-                let hasData = false;
+                fixedAssetsData = [];
                 snapshot.forEach(child => {
-                    hasData = true;
-                    populateFixedAssetRow({ id: child.key, ...child.val() });
+                    fixedAssetsData.push({ id: child.key, ...child.val() });
                 });
-                pageDOMElements.noFixedAssetsMessage.style.display = hasData ? 'none' : 'block';
+                renderFixedAssets();
             });
+        }
+
+        function renderFixedAssets() {
+            pageDOMElements.fixedAssetsTableBody.innerHTML = '';
+            let hasData = false;
+
+            const propertyFilter = document.getElementById('fixedAssetsFilterProperty')?.dataset.value;
+
+            const filteredItems = fixedAssetsData.filter(item => {
+                return !propertyFilter || item.propertyId === propertyFilter;
+            });
+
+            filteredItems.forEach(item => {
+                hasData = true;
+                populateFixedAssetRow(item);
+            });
+            pageDOMElements.noFixedAssetsMessage.style.display = hasData ? 'none' : 'block';
         }
 
         function populateFixedAssetRow(data) {
@@ -2096,35 +2508,25 @@
         }
 
         // --- Maintenance Filters Listener ---
-        function initializeMaintenanceFilters() {
-            // Set up filter and sort dropdowns for Work Orders
-            const filterPropertyDropdown = pageDOMElements.filterProperty;
-            const filterPriorityDropdown = pageDOMElements.filterPriority;
-            const filterStatusDropdown = pageDOMElements.filterStatus;
-            const sortByDropdown = pageDOMElements.sortBy;
-            const sortOrderDropdown = pageDOMElements.sortOrder;
+        function initializeAllFilters() {
+            const renderActiveData = () => renderActiveSubsectionData();
 
-            // Helper to reload work orders with new filters
-            function reloadWorkOrdersWithFilters() {
-                // Update global filter/sort variables if they exist
-                if (typeof workOrderFilters !== 'undefined') {
-                    workOrderFilters.propertyId = filterPropertyDropdown?.dataset.value || '';
-                    workOrderFilters.priority = filterPriorityDropdown?.dataset.value || '';
-                    workOrderFilters.status = filterStatusDropdown?.dataset.value || '';
-                }
-                if (typeof workOrderSort !== 'undefined') {
-                    workOrderSort.by = sortByDropdown?.dataset.value || 'createdAt';
-                    workOrderSort.order = sortOrderDropdown?.dataset.value || 'desc';
-                }
-                if (typeof loadWorkOrders === 'function') loadWorkOrders();
+            // Special handling for Work Order sort dropdown because it requires a new Firebase query
+            const workOrderSortByDropdown = document.getElementById('customSortBy');
+            if (workOrderSortByDropdown) {
+                initializeSimpleDropdown(workOrderSortByDropdown, () => {
+                    workOrderSort.by = workOrderSortByDropdown.dataset.value || 'createdAt';
+                    loadWorkOrders(); // Re-query Firebase
+                });
             }
 
-            // Initialize dropdowns with custom handler
-            if (filterPropertyDropdown) initializeSimpleDropdown(filterPropertyDropdown, reloadWorkOrdersWithFilters);
-            if (filterPriorityDropdown) initializeSimpleDropdown(filterPriorityDropdown, reloadWorkOrdersWithFilters);
-            if (filterStatusDropdown) initializeSimpleDropdown(filterStatusDropdown, reloadWorkOrdersWithFilters);
-            if (sortByDropdown) initializeSimpleDropdown(sortByDropdown, reloadWorkOrdersWithFilters);
-            if (sortOrderDropdown) initializeSimpleDropdown(sortOrderDropdown, reloadWorkOrdersWithFilters);
+            // Initialize all other dropdowns to just re-render the current data
+            document.querySelectorAll('.controls-container .custom-dropdown').forEach(dropdown => {
+                // Skip the one we just handled
+                if (dropdown.id === 'customSortBy') return;
+                
+                initializeSimpleDropdown(dropdown, renderActiveData);
+            });
         }
 
         // --- Setup All Event Listeners ---
