@@ -727,8 +727,8 @@ function getSubNavSelector(itemType) {
     return map[itemType] || null;
 }
 
-// Helper function to initialize custom dropdowns
-function initializeCustomDropdown(dropdownElement, onChangeCallback, isDynamic = false) {
+// Helper function to initialize searchable dropdowns
+function initializeSearchableDropdown(dropdownElement, onChangeCallback, isDynamic = false) {
     if (!dropdownElement) return;
 
     const textInput = dropdownElement.querySelector('.dropdown-input');
@@ -834,38 +834,37 @@ function initializeCustomDropdown(dropdownElement, onChangeCallback, isDynamic =
 }
 
 // Helper function to initialize simple dropdowns (without text input)
-function initializeSimpleDropdown(dropdownElement, onChangeCallback) {
-    if (!dropdownElement) return;
+function initializeSimpleDropdown(dropdown, onChangeCallback) {
+    if (!dropdown) return;
 
-    const selectedElement = dropdownElement.querySelector('.dropdown-selected');
-    const selectedValueSpan = dropdownElement.querySelector('.selected-value');
-    const optionsContainer = dropdownElement.querySelector('.dropdown-options');
+    const selectedElement = dropdown.querySelector('.dropdown-selected');
+    const selectedValueSpan = dropdown.querySelector('.selected-value');
+    const optionsContainer = dropdown.querySelector('.dropdown-options');
     
     if (!selectedElement || !selectedValueSpan || !optionsContainer) {
-        console.error('Simple dropdown is missing required elements.', dropdownElement);
+        console.error('Simple dropdown is missing required elements.', dropdown);
         return;
     }
 
-    const toggleDropdown = () => {
-        const isOpen = dropdownElement.classList.contains('open');
-        if (isOpen) {
-            dropdownElement.classList.remove('open');
-        } else {
-            dropdownElement.classList.add('open');
-        }
+    const toggleDropdown = (e) => {
+        e.stopPropagation();
+        const isOpen = dropdown.classList.contains('open');
+        // Close all other dropdowns first
+        document.querySelectorAll('.custom-dropdown.open').forEach(d => {
+            if (d !== dropdown) d.classList.remove('open');
+        });
+        // Then toggle the current one
+        dropdown.classList.toggle('open', !isOpen);
     };
 
-    selectedElement.addEventListener('click', (e) => {
-        e.stopPropagation();
-        toggleDropdown();
-    });
+    selectedElement.addEventListener('click', toggleDropdown);
 
     selectedElement.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
-            toggleDropdown();
-        } else if (e.key === 'Escape' && dropdownElement.classList.contains('open')) {
-            dropdownElement.classList.remove('open');
+            toggleDropdown(e);
+        } else if (e.key === 'Escape' && dropdown.classList.contains('open')) {
+            dropdown.classList.remove('open');
         }
     });
 
@@ -874,7 +873,7 @@ function initializeSimpleDropdown(dropdownElement, onChangeCallback) {
         if (option) {
             // Update selected value
             selectedValueSpan.textContent = option.textContent;
-            dropdownElement.dataset.value = option.dataset.value;
+            dropdown.dataset.value = option.dataset.value;
             
             // Update selected state
             optionsContainer.querySelectorAll('.dropdown-option').forEach(opt => {
@@ -883,7 +882,7 @@ function initializeSimpleDropdown(dropdownElement, onChangeCallback) {
             option.classList.add('selected');
             
             // Close dropdown
-            dropdownElement.classList.remove('open');
+            dropdown.classList.remove('open');
             
             // Call callback if provided
             if (onChangeCallback && typeof onChangeCallback === 'function') {
@@ -1020,7 +1019,7 @@ onAuthStateChanged(auth, async (user) => {
         
         // If a page-specific init function is waiting, call it now that we're authenticated.
         if (typeof pageInitCallback === 'function') {
-            pageInitCallback(user.uid, database, ref, push, set, remove, serverTimestamp, query, orderByChild, equalTo, getDbData, updateDbData, showAlert, showConfirm, editIconSVG, deleteIconSVG, initializeCustomDropdown, getFunctions, httpsCallable);
+            pageInitCallback(user.uid, database, ref, push, set, remove, serverTimestamp, query, orderByChild, equalTo, getDbData, updateDbData, showAlert, showConfirm, editIconSVG, deleteIconSVG, initializeSearchableDropdown, getFunctions, httpsCallable);
         }
     } else {
         currentUserId = null;
@@ -1051,7 +1050,7 @@ async function updateDbData(dataRef, values) {
     return fbUpdate(dataRef, values);
 }
 
-// Ensure DOMElements is globally accessible for initializeCustomDropdown if it's not already
+// Ensure DOMElements is globally accessible for initializeSearchableDropdown if it's not already
 if (typeof window.DOMElements === 'undefined') {
     window.DOMElements = DOMElements;
 }
@@ -1064,7 +1063,7 @@ export {
     getDbData, updateDbData,
     initializeAuth,
     ref, push, set, remove, serverTimestamp, query, orderByChild, equalTo,
-    initializeCustomDropdown,
+    initializeSearchableDropdown,
     initializeSimpleDropdown,
     getFunctions, httpsCallable
 }; 

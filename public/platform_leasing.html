@@ -328,7 +328,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script type="module">
-        import { initializeAuth, showAlert, showConfirm, editIconSVG, deleteIconSVG, getDbData, initializeCustomDropdown } from './js/platform_common.js';
+        import { initializeAuth, showAlert, showConfirm, editIconSVG, deleteIconSVG, getDbData, initializeSimpleDropdown } from './js/platform_common.js';
         import { getDatabase, ref, push, onValue, set, remove, serverTimestamp, query, orderByChild, equalTo } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
 
         let pageCurrentUserId, pageDatabase;
@@ -360,8 +360,8 @@
 
         function pageInit(userId, db, ...allCommonDeps) {
             pageCurrentUserId = userId; pageDatabase = db;
-            const [ fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbData, fbUpdateDbData, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon, commonInitializeCustomDropdown ] = allCommonDeps;
-            commonDependencies = { fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbData, fbUpdateDbData, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon, commonInitializeCustomDropdown };
+            const [ fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbData, fbUpdateDbData, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon, commonInitializeSimpleDropdown ] = allCommonDeps;
+            commonDependencies = { fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbData, fbUpdateDbData, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon, initializeSimpleDropdown: commonInitializeSimpleDropdown };
 
             initializeSubNav();
             initializePropertiesListener();
@@ -455,7 +455,7 @@
 
         function initializeFilterControls() {
             document.querySelectorAll('.controls-container .custom-dropdown').forEach(dropdown => {
-                initializeCustomDropdown(dropdown, () => renderActiveSubsectionData());
+                initializeSimpleDropdown(dropdown, () => renderActiveSubsectionData());
             });
 
              document.querySelectorAll('.controls-toggle-btn').forEach(btn => {

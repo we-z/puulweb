@@ -125,7 +125,7 @@
     <div id="customConfirmModal" class="modal"><div class="modal-content confirm-modal-content"><div class="modal-header"><h3 id="customConfirmTitle"></h3><button class="close-btn" data-modal-id="customConfirmModal">&times;</button></div><div class="modal-body"><p id="customConfirmMessage"></p></div><div class="modal-footer"><button class="cancel-btn-confirm" id="customConfirmCancel">Cancel</button><button class="confirm-btn" id="customConfirmOk">OK</button></div></div></div>
 
     <script type="module">
-        import { initializeAuth, showAlert, showConfirm, editIconSVG, deleteIconSVG, getDbData, initializeCustomDropdown } from './js/platform_common.js';
+        import { initializeAuth, showAlert, showConfirm, editIconSVG, deleteIconSVG, getDbData, initializeSearchableDropdown, initializeSimpleDropdown } from './js/platform_common.js';
         import { getDatabase, ref, push, onValue, set, remove, serverTimestamp, query, orderByChild, equalTo } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
 
         let pageCurrentUserId, pageDatabase;
@@ -151,8 +151,8 @@
 
         function pageInit(userId, db, ...allCommonDeps) {
             pageCurrentUserId = userId; pageDatabase = db;
-            const [ fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbData, fbUpdateDbData, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon, commonInitializeCustomDropdown ] = allCommonDeps;
-            commonDependencies = { fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbData, fbUpdateDbData, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon, commonInitializeCustomDropdown };
+            const [ fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbData, fbUpdateDbData, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon, commonInitializeSearchableDropdown, commonInitializeSimpleDropdown ] = allCommonDeps;
+            commonDependencies = { fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbData, fbUpdateDbData, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon, initializeSearchableDropdown: commonInitializeSearchableDropdown, initializeSimpleDropdown: commonInitializeSimpleDropdown };
 
             initializeSubNav();
             initializePropertiesListener(); // For property dropdown in tenant modal
@@ -252,7 +252,7 @@
             dropdownConfigs.forEach(config => {
                 const dropdown = document.getElementById(config.id);
                 if (dropdown) {
-                    commonDependencies.commonInitializeCustomDropdown(dropdown, (value) => {
+                    commonDependencies.initializeSearchableDropdown(dropdown, (value) => {
                         // The dropdown's parent form group contains the hidden input
                         const hiddenInput = dropdown.closest('.form-group').querySelector(`input[name="${config.inputName}"]`);
                         if (hiddenInput) {
@@ -344,7 +344,7 @@
 
         function initializeFilterControls() {
             document.querySelectorAll('.controls-container .custom-dropdown').forEach(dropdown => {
-                initializeCustomDropdown(dropdown, () => renderActiveSubsectionData());
+                commonDependencies.initializeSimpleDropdown(dropdown, () => renderActiveSubsectionData());
             });
 
             document.querySelectorAll('.controls-toggle-btn').forEach(btn => {
