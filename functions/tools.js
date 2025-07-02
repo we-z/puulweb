@@ -2,6 +2,7 @@ const admin = require("firebase-admin");
 
 /**
  * A generic function to retrieve data from the Firebase Realtime Database.
+ * It now supports partial string matching for filters.
  * @param {object} params The parameters for the function call.
  * @param {string} params.dataType The top-level key for the data (e.g., 'workOrders', 'properties').
  * @param {object} [params.filters] Key-value pairs to filter the data.
@@ -11,32 +12,45 @@ const admin = require("firebase-admin");
 async function getData({ dataType, filters }, uid) {
     try {
         const db = admin.database();
-        let dataRef = db.ref(`/${dataType}/${uid}`);
+        const dataRef = db.ref(`/${dataType}/${uid}`);
 
-        if (filters && Object.keys(filters).length > 0) {
-            // This is a simplified filtering mechanism. For more complex queries,
-            // you might need to adjust this. It assumes the first filter is the primary one.
-            const [field, value] = Object.entries(filters)[0];
-            dataRef = dataRef.orderByChild(field).equalTo(value);
-        }
-
+        // Get all data of the specified type first.
         const snapshot = await dataRef.once('value');
-        const data = snapshot.val();
+        const allData = snapshot.val();
 
-        if (!data) {
-            return { result: `No data found for ${dataType} with the specified filters.` };
+        if (!allData) {
+            return { result: `No data found for ${dataType}.` };
         }
-        
-        // If multiple filters were intended, apply the rest on the backend
-        if (filters && Object.keys(filters).length > 1) {
-             const allData = Object.values(data);
-             const filteredData = allData.filter(item => {
-                 return Object.entries(filters).every(([key, val]) => item[key] === val);
-             });
-             return { result: filteredData, count: filteredData.length };
+
+        // If no filters are provided, return everything.
+        if (!filters || Object.keys(filters).length === 0) {
+            return { result: allData, count: Object.keys(allData).length };
         }
+
+        // If filters are provided, filter the data on the server.
+        const allDataWithIds = Object.entries(allData).map(([id, value]) => ({ ...value, id }));
         
-        return { result: data, count: Object.keys(data).length };
+        const filteredData = allDataWithIds.filter(item => {
+            return Object.entries(filters).every(([key, filterValue]) => {
+                const itemValue = item[key];
+                if (itemValue === undefined || itemValue === null) {
+                    return false;
+                }
+                // Perform case-insensitive partial match for strings.
+                if (typeof itemValue === 'string' && typeof filterValue === 'string') {
+                    return itemValue.toLowerCase().includes(filterValue.toLowerCase());
+                }
+                // Perform an exact match for other types (numbers, booleans).
+                return itemValue === filterValue;
+            });
+        });
+        
+        if (filteredData.length === 0) {
+            return { result: `No ${dataType} found matching the criteria.` };
+        }
+
+        return { result: filteredData, count: filteredData.length };
+
     } catch (error) {
         console.error(`Error in getData for dataType ${dataType}:`, error);
         return { error: `Failed to retrieve data. Details: ${error.message}` };

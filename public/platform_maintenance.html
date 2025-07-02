@@ -208,6 +208,7 @@
                         <table class="data-table" id="workOrderTable">
                             <thead>
                                 <tr>
+                                    <th>ID</th>
                                     <th>Title</th>
                                     <th>Property</th>
                                     <th>Status</th>
@@ -1286,6 +1287,13 @@
             if(!pageDOMElements.workOrderTableBody) return;
             const row = pageDOMElements.workOrderTableBody.insertRow();
             row.setAttribute('data-id', wo.id);
+
+            const idCell = row.insertCell();
+            idCell.textContent = wo.id ? wo.id.substring(wo.id.length - 6).toUpperCase() : 'N/A';
+            idCell.title = wo.id; // Show full ID on hover
+            idCell.style.fontFamily = 'monospace';
+            idCell.style.fontSize = '0.85em';
+            idCell.style.color = '#555';
 
             row.insertCell().textContent = wo.title || 'N/A';
             row.insertCell().textContent = wo.propertyId ? (localPropertiesMap[wo.propertyId] || 'Unknown Property') : 'N/A';
