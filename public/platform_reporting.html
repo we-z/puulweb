@@ -74,6 +74,27 @@
 
                 <div class="subsection-content" id="scheduledReportsContent">
                     <h4>Scheduled Reports</h4>
+                    <div class="controls-container visible-by-default">
+                        <div class="filter-group">
+                            <label>Report Name:</label>
+                            <div class="custom-dropdown" id="scheduledFilterName">
+                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Reports</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                <div class="dropdown-options"><div class="dropdown-option" data-value="">All Reports</div></div>
+                            </div>
+                        </div>
+                        <div class="filter-group">
+                            <label>Frequency:</label>
+                            <div class="custom-dropdown" id="scheduledFilterFrequency">
+                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Frequencies</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                <div class="dropdown-options">
+                                    <div class="dropdown-option" data-value="">All Frequencies</div>
+                                    <div class="dropdown-option" data-value="Daily">Daily</div>
+                                    <div class="dropdown-option" data-value="Weekly">Weekly</div>
+                                    <div class="dropdown-option" data-value="Monthly">Monthly</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                      <div class="data-table-container">
                         <table class="data-table" id="scheduledReportsTable">
                             <thead><tr><th>Report Name</th><th>Frequency</th><th>Next Run Date</th><th>Recipients</th><th>Status</th><th>Actions</th></tr></thead>
@@ -127,6 +148,32 @@
 
                 <div class="subsection-content" id="surveysContent">
                     <h4>Surveys</h4>
+                    <div class="controls-container visible-by-default">
+                        <div class="filter-group">
+                            <label>Target Audience:</label>
+                            <div class="custom-dropdown" id="surveysFilterAudience">
+                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                <div class="dropdown-options">
+                                    <div class="dropdown-option" data-value="">All</div>
+                                    <div class="dropdown-option" data-value="Tenants">Tenants</div>
+                                    <div class="dropdown-option" data-value="Owners">Owners</div>
+                                    <div class="dropdown-option" data-value="All">All</div>
+                                </div>
+                            </div>
+                        </div>
+                         <div class="filter-group">
+                            <label>Status:</label>
+                            <div class="custom-dropdown" id="surveysFilterStatus">
+                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Statuses</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                <div class="dropdown-options">
+                                    <div class="dropdown-option" data-value="">All Statuses</div>
+                                    <div class="dropdown-option" data-value="Draft">Draft</div>
+                                    <div class="dropdown-option" data-value="Active">Active</div>
+                                    <div class="dropdown-option" data-value="Closed">Closed</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="data-table-container">
                         <table class="data-table" id="surveysTable">
                             <thead><tr><th>Survey Title</th><th>Target Audience</th><th>Date Created</th><th>Responses</th><th>Status</th><th>Actions</th></tr></thead>
@@ -157,6 +204,10 @@
         let pageCurrentUserId, pageDatabase; let commonDependencies = {};
         let activeCharts = {};
 
+        // Data caches
+        let scheduledReportsData = [];
+        let surveysData = [];
+
         const DOMElements = {
             addItemBtn: document.getElementById('addItemBtn'),
             scheduledReportModal: document.getElementById('scheduledReportModal'), scheduledReportForm: document.getElementById('scheduledReportForm'),
@@ -185,6 +236,7 @@
             loadDataForActiveSubsection();
             setupEventListeners();
             setupReportAndMetricsDOMElements();
+            initializeFilterControls();
             
             DOMElements.addItemBtn.addEventListener('click', () => {
                 const activeSubSection = document.querySelector('#reportingSubNav .sub-nav-item.active').dataset.subsection;
@@ -227,6 +279,70 @@
             // Initial FAB state based on default active tab
             const defaultActive = subNavContainer.querySelector('.sub-nav-item.active').dataset.subsection;
             if (defaultActive === 'scheduledReports' || defaultActive === 'surveys') fab.style.display = 'flex'; else fab.style.display = 'none';
+        }
+
+        function renderActiveSubsectionData() {
+            const activeSubSection = document.querySelector('#reportingSubNav .sub-nav-item.active').dataset.subsection;
+            switch(activeSubSection) {
+                case 'scheduledReports': renderScheduledReports(); break;
+                case 'surveys': renderSurveys(); break;
+            }
+        }
+
+        function initializeFilterControls() {
+            document.querySelectorAll('.controls-container .custom-dropdown').forEach(dropdown => {
+                initializeCustomDropdown(dropdown, () => renderActiveSubsectionData());
+            });
+
+             document.querySelectorAll('.controls-toggle-btn').forEach(btn => {
+                const controlsContainer = btn.nextElementSibling;
+                const arrowIcon = btn.querySelector('.arrow-icon');
+                if (!controlsContainer || !controlsContainer.classList.contains('controls-container')) return;
+                btn.addEventListener('click', () => {
+                    const isExpanded = controlsContainer.style.display === 'flex';
+                    controlsContainer.style.display = isExpanded ? 'none' : 'flex';
+                    if(arrowIcon) arrowIcon.style.transform = isExpanded ? 'rotate(-90deg)' : 'rotate(0deg)';
+                });
+                const isVisibleByDefault = controlsContainer.classList.contains('visible-by-default');
+                if (isVisibleByDefault && window.innerWidth > 768) {
+                    controlsContainer.style.display = 'flex';
+                    if(arrowIcon) arrowIcon.style.transform = 'rotate(0deg)';
+                } else {
+                    controlsContainer.style.display = 'none';
+                    if(arrowIcon) arrowIcon.style.transform = 'rotate(-90deg)';
+                }
+            });
+        }
+
+        function populateDynamicDropdown(dropdownId, optionsSet, allText) {
+            const dropdown = document.getElementById(dropdownId);
+            if (!dropdown) return;
+            const optionsContainer = dropdown.querySelector('.dropdown-options');
+            const selectedValueSpan = dropdown.querySelector('.selected-value');
+            const currentValue = dropdown.dataset.value || '';
+            optionsContainer.innerHTML = '';
+            const allOption = document.createElement('div');
+            allOption.className = 'dropdown-option';
+            allOption.dataset.value = '';
+            allOption.textContent = allText;
+            optionsContainer.appendChild(allOption);
+            Array.from(optionsSet).sort().forEach(optionValue => {
+                const option = document.createElement('div');
+                option.className = 'dropdown-option';
+                option.dataset.value = optionValue;
+                option.textContent = optionValue;
+                optionsContainer.appendChild(option);
+            });
+            const currentOption = optionsContainer.querySelector(`.dropdown-option[data-value="${currentValue}"]`);
+            if (currentOption) {
+                selectedValueSpan.textContent = currentOption.textContent;
+                if(optionsContainer.querySelector('.selected')) optionsContainer.querySelector('.selected').classList.remove('selected');
+                currentOption.classList.add('selected');
+            } else {
+                selectedValueSpan.textContent = allText;
+                dropdown.dataset.value = '';
+                if(optionsContainer.firstChild) optionsContainer.firstChild.classList.add('selected');
+            }
         }
 
         function loadDataForActiveSubsection() {
@@ -312,10 +428,30 @@
         function loadScheduledReports() {
             const dataRef = commonDependencies.fbRef(pageDatabase, `scheduledReports/${pageCurrentUserId}`);
             onValue(commonDependencies.fbQuery(dataRef, commonDependencies.fbOrderByChild('reportType')), (snapshot) => {
-                DOMElements.scheduledReportsTableBody.innerHTML = ''; let hasData = false;
-                snapshot.forEach(child => { hasData = true; populateScheduledReportRow({id: child.key, ...child.val()}); });
-                DOMElements.noScheduledReportsMessage.style.display = hasData ? 'none' : 'block';
+                scheduledReportsData = [];
+                const reportNames = new Set();
+                snapshot.forEach(child => {
+                    const report = {id: child.key, ...child.val()};
+                    scheduledReportsData.push(report);
+                    if(report.reportType) reportNames.add(report.reportType);
+                });
+                populateDynamicDropdown('scheduledFilterName', reportNames, 'All Reports');
+                renderScheduledReports();
             });
+        }
+        function renderScheduledReports() {
+            DOMElements.scheduledReportsTableBody.innerHTML = ''; let hasData = false;
+            const nameFilter = document.getElementById('scheduledFilterName')?.dataset.value;
+            const frequencyFilter = document.getElementById('scheduledFilterFrequency')?.dataset.value;
+            
+            const filteredData = scheduledReportsData.filter(item => {
+                const matchesName = !nameFilter || item.reportType === nameFilter;
+                const matchesFrequency = !frequencyFilter || item.frequency === frequencyFilter;
+                return matchesName && matchesFrequency;
+            });
+            
+            filteredData.forEach(item => { hasData = true; populateScheduledReportRow(item); });
+            DOMElements.noScheduledReportsMessage.style.display = hasData ? 'none' : 'block';
         }
         function populateScheduledReportRow(data) {
             const row = DOMElements.scheduledReportsTableBody.insertRow();
@@ -335,10 +471,24 @@
         function loadSurveys() {
             const dataRef = commonDependencies.fbRef(pageDatabase, `surveys/${pageCurrentUserId}`);
             onValue(commonDependencies.fbQuery(dataRef, commonDependencies.fbOrderByChild('surveyTitle')), (snapshot) => {
-                DOMElements.surveysTableBody.innerHTML = ''; let hasData = false;
-                snapshot.forEach(child => { hasData = true; populateSurveyRow({id: child.key, ...child.val()}); });
-                DOMElements.noSurveysMessage.style.display = hasData ? 'none' : 'block';
+                surveysData = [];
+                snapshot.forEach(child => { surveysData.push({id: child.key, ...child.val()}); });
+                renderSurveys();
             });
+        }
+        function renderSurveys() {
+            DOMElements.surveysTableBody.innerHTML = ''; let hasData = false;
+            const audienceFilter = document.getElementById('surveysFilterAudience')?.dataset.value;
+            const statusFilter = document.getElementById('surveysFilterStatus')?.dataset.value;
+
+            const filteredData = surveysData.filter(item => {
+                const matchesAudience = !audienceFilter || item.targetAudience === audienceFilter;
+                const matchesStatus = !statusFilter || item.status === statusFilter;
+                return matchesAudience && matchesStatus;
+            });
+
+            filteredData.forEach(item => { hasData = true; populateSurveyRow(item); });
+            DOMElements.noSurveysMessage.style.display = hasData ? 'none' : 'block';
         }
         function populateSurveyRow(data) {
             const row = DOMElements.surveysTableBody.insertRow();

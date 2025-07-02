@@ -271,6 +271,33 @@
 
                 <div class="subsection-content active" id="lettersContent">
                     <h4>Letters & Notices</h4>
+                    <div class="controls-container visible-by-default">
+                        <div class="filter-group">
+                            <label>Recipient Type:</label>
+                            <div class="custom-dropdown" id="lettersFilterType">
+                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Types</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                <div class="dropdown-options">
+                                    <div class="dropdown-option" data-value="">All Types</div>
+                                    <div class="dropdown-option" data-value="Tenant">Tenant</div>
+                                    <div class="dropdown-option" data-value="Owner">Owner</div>
+                                    <div class="dropdown-option" data-value="Vendor">Vendor</div>
+                                    <div class="dropdown-option" data-value="Group">Group</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="filter-group">
+                            <label>Status:</label>
+                            <div class="custom-dropdown" id="lettersFilterStatus">
+                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Statuses</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                <div class="dropdown-options">
+                                    <div class="dropdown-option" data-value="">All Statuses</div>
+                                    <div class="dropdown-option" data-value="Draft">Draft</div>
+                                    <div class="dropdown-option" data-value="Sent">Sent</div>
+                                    <div class="dropdown-option" data-value="Archived">Archived</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="data-table-container">
                         <table class="data-table" id="lettersTable">
                             <thead><tr><th>Title/Subject</th><th>Recipient(s)</th><th>Date Sent</th><th>Status</th><th>Actions</th></tr></thead>
@@ -282,6 +309,15 @@
 
                 <div class="subsection-content" id="formsContent">
                     <h4>Forms & Templates</h4>
+                    <div class="controls-container visible-by-default">
+                        <div class="filter-group">
+                            <label>Category:</label>
+                            <div class="custom-dropdown" id="formsFilterCategory">
+                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Categories</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                <div class="dropdown-options"><div class="dropdown-option" data-value="">All Categories</div></div>
+                            </div>
+                        </div>
+                    </div>
                      <div class="data-table-container">
                         <table class="data-table" id="formsTable">
                             <thead><tr><th>Form/Template Name</th><th>Category</th><th>Last Updated</th><th>Usage Count</th><th>Actions</th></tr></thead>
@@ -412,6 +448,10 @@
         let messagesListener = null;    // To store onValue listener for messages
         let allUsers = []; // Cache for user list
 
+        // Data Caches
+        let lettersData = [];
+        let formsData = [];
+
         function pageInit(userId, db, ...allCommonDeps) {
             pageCurrentUserId = userId; pageDatabase = db;
             const [ fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbData, fbUpdateDbData, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon, commonInitializeCustomDropdown ] = allCommonDeps;
@@ -419,6 +459,7 @@
 
             initializeSubNav();
             loadDataForActiveSubsection(); 
+            initializeFilterControls();
             
             // Initialize Messaging with Firebase
             loadUserConversations(); 
@@ -470,6 +511,70 @@
             });
             const defaultActive = subNavContainer.querySelector('.sub-nav-item.active').dataset.subsection;
             if (defaultActive === 'messages') fab.style.display = 'none'; else fab.style.display = 'flex';
+        }
+
+        function renderActiveSubsectionData() {
+            const activeSubSection = document.querySelector('#communicationSubNav .sub-nav-item.active').dataset.subsection;
+            switch(activeSubSection) {
+                case 'letters': renderLetters(); break;
+                case 'forms': renderForms(); break;
+            }
+        }
+
+        function initializeFilterControls() {
+            document.querySelectorAll('.controls-container .custom-dropdown').forEach(dropdown => {
+                initializeCustomDropdown(dropdown, () => renderActiveSubsectionData());
+            });
+
+             document.querySelectorAll('.controls-toggle-btn').forEach(btn => {
+                const controlsContainer = btn.nextElementSibling;
+                const arrowIcon = btn.querySelector('.arrow-icon');
+                if (!controlsContainer || !controlsContainer.classList.contains('controls-container')) return;
+                btn.addEventListener('click', () => {
+                    const isExpanded = controlsContainer.style.display === 'flex';
+                    controlsContainer.style.display = isExpanded ? 'none' : 'flex';
+                    if(arrowIcon) arrowIcon.style.transform = isExpanded ? 'rotate(-90deg)' : 'rotate(0deg)';
+                });
+                const isVisibleByDefault = controlsContainer.classList.contains('visible-by-default');
+                if (isVisibleByDefault && window.innerWidth > 768) {
+                    controlsContainer.style.display = 'flex';
+                    if(arrowIcon) arrowIcon.style.transform = 'rotate(0deg)';
+                } else {
+                    controlsContainer.style.display = 'none';
+                    if(arrowIcon) arrowIcon.style.transform = 'rotate(-90deg)';
+                }
+            });
+        }
+        
+        function populateDynamicDropdown(dropdownId, optionsSet, allText) {
+            const dropdown = document.getElementById(dropdownId);
+            if (!dropdown) return;
+            const optionsContainer = dropdown.querySelector('.dropdown-options');
+            const selectedValueSpan = dropdown.querySelector('.selected-value');
+            const currentValue = dropdown.dataset.value || '';
+            optionsContainer.innerHTML = '';
+            const allOption = document.createElement('div');
+            allOption.className = 'dropdown-option';
+            allOption.dataset.value = '';
+            allOption.textContent = allText;
+            optionsContainer.appendChild(allOption);
+            Array.from(optionsSet).sort().forEach(optionValue => {
+                const option = document.createElement('div');
+                option.className = 'dropdown-option';
+                option.dataset.value = optionValue;
+                option.textContent = optionValue;
+                optionsContainer.appendChild(option);
+            });
+            const currentOption = optionsContainer.querySelector(`.dropdown-option[data-value="${currentValue}"]`);
+            if (currentOption) {
+                selectedValueSpan.textContent = currentOption.textContent;
+                if(optionsContainer.querySelector('.selected')) optionsContainer.querySelector('.selected').classList.remove('selected');
+                currentOption.classList.add('selected');
+            } else {
+                selectedValueSpan.textContent = allText;
+                dropdown.dataset.value = '';
+                if(optionsContainer.firstChild) optionsContainer.firstChild.classList.add('selected');
+            }
         }
 
         function loadDataForActiveSubsection() {
@@ -826,10 +931,24 @@
         function loadLetters() {
             const dataRef = commonDependencies.fbRef(pageDatabase, `letters/${pageCurrentUserId}`);
             onValue(commonDependencies.fbQuery(dataRef, commonDependencies.fbOrderByChild('updatedAt')), (snapshot) => {
-                DOMElements.lettersTableBody.innerHTML = ''; let hasData = false;
-                snapshot.forEach(child => { hasData = true; populateLetterRow({id: child.key, ...child.val()}); });
-                DOMElements.noLettersMessage.style.display = hasData ? 'none' : 'block';
+                lettersData = [];
+                snapshot.forEach(child => { lettersData.push({id: child.key, ...child.val()}); });
+                renderLetters();
             });
+        }
+        function renderLetters() {
+            DOMElements.lettersTableBody.innerHTML = ''; let hasData = false;
+            const typeFilter = document.getElementById('lettersFilterType')?.dataset.value;
+            const statusFilter = document.getElementById('lettersFilterStatus')?.dataset.value;
+
+            const filteredData = lettersData.filter(item => {
+                const matchesType = !typeFilter || item.recipientType === typeFilter;
+                const matchesStatus = !statusFilter || item.status === statusFilter;
+                return matchesType && matchesStatus;
+            }).reverse();
+
+            filteredData.forEach(item => { hasData = true; populateLetterRow(item); });
+            DOMElements.noLettersMessage.style.display = hasData ? 'none' : 'block';
         }
         function populateLetterRow(data) {
             const row = DOMElements.lettersTableBody.insertRow();
@@ -848,10 +967,27 @@
         function loadForms() {
             const dataRef = commonDependencies.fbRef(pageDatabase, `forms/${pageCurrentUserId}`);
             onValue(commonDependencies.fbQuery(dataRef, commonDependencies.fbOrderByChild('formName')), (snapshot) => {
-                DOMElements.formsTableBody.innerHTML = ''; let hasData = false;
-                snapshot.forEach(child => { hasData = true; populateFormRow({id: child.key, ...child.val()}); });
-                DOMElements.noFormsMessage.style.display = hasData ? 'none' : 'block';
+                formsData = [];
+                const categories = new Set();
+                snapshot.forEach(child => { 
+                    const form = {id: child.key, ...child.val()};
+                    formsData.push(form);
+                    if(form.category) categories.add(form.category);
+                });
+                populateDynamicDropdown('formsFilterCategory', categories, 'All Categories');
+                renderForms();
             });
+        }
+        function renderForms() {
+            DOMElements.formsTableBody.innerHTML = ''; let hasData = false;
+            const categoryFilter = document.getElementById('formsFilterCategory')?.dataset.value;
+
+            const filteredData = formsData.filter(item => {
+                return !categoryFilter || item.category === categoryFilter;
+            });
+
+            filteredData.forEach(item => { hasData = true; populateFormRow(item); });
+            DOMElements.noFormsMessage.style.display = hasData ? 'none' : 'block';
         }
         function populateFormRow(data) {
             const row = DOMElements.formsTableBody.insertRow();

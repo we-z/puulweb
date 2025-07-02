@@ -245,6 +245,7 @@
         let pageCurrentUserId;
         let pageDatabase;
         let commonDependencies = {}; // To store common functions and icons
+        let propertiesData = []; // Data cache for properties
 
         function pageInit(userId, db, fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbData, fbUpdateDbData, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon) {
             pageCurrentUserId = userId;
@@ -260,7 +261,7 @@
             loadProperties();
 
             // Initialize custom dropdowns for properties page
-            const propertiesCommonOnChange = () => loadProperties();
+            const propertiesCommonOnChange = () => renderProperties();
             initializeSimpleDropdown(pageDOMElements.filterPropertyType, propertiesCommonOnChange);
             initializeSimpleDropdown(pageDOMElements.sortPropertiesBy, propertiesCommonOnChange);
             initializeSimpleDropdown(pageDOMElements.sortPropertiesOrder, propertiesCommonOnChange);
@@ -268,9 +269,22 @@
             // Initialize controls toggle button for Properties page
             if (pageDOMElements.controlsToggleBtn && pageDOMElements.controlsContainer) {
                 pageDOMElements.controlsToggleBtn.addEventListener('click', () => {
-                    pageDOMElements.controlsContainer.classList.toggle('expanded');
-                    pageDOMElements.controlsToggleBtn.classList.toggle('expanded');
+                    const isExpanded = pageDOMElements.controlsContainer.style.display === 'flex';
+                    pageDOMElements.controlsContainer.style.display = isExpanded ? 'none' : 'flex';
+                    const arrowIcon = pageDOMElements.controlsToggleBtn.querySelector('.arrow-icon');
+                    if(arrowIcon) arrowIcon.style.transform = isExpanded ? 'rotate(-90deg)' : 'rotate(0deg)';
                 });
+                
+                const isVisibleByDefault = pageDOMElements.controlsContainer.classList.contains('visible-by-default');
+                 if (isVisibleByDefault && window.innerWidth > 768) {
+                    pageDOMElements.controlsContainer.style.display = 'flex';
+                    const arrowIcon = pageDOMElements.controlsToggleBtn.querySelector('.arrow-icon');
+                    if(arrowIcon) arrowIcon.style.transform = 'rotate(0deg)';
+                } else {
+                    pageDOMElements.controlsContainer.style.display = 'none';
+                    const arrowIcon = pageDOMElements.controlsToggleBtn.querySelector('.arrow-icon');
+                    if(arrowIcon) arrowIcon.style.transform = 'rotate(-90deg)';
+                }
             }
 
             if (pageDOMElements.addItemBtn) {
@@ -354,38 +368,45 @@
             const propertiesRef = commonDependencies.fbRef(pageDatabase, `properties/${pageCurrentUserId}`);
             
             onValue(propertiesRef, (snapshot) => {
-                pageDOMElements.propertiesTableBody.innerHTML = '';
-                let propertiesArray = [];
+                propertiesData = [];
                 snapshot.forEach(childSnapshot => {
-                    propertiesArray.push({ id: childSnapshot.key, ...childSnapshot.val() });
+                    propertiesData.push({ id: childSnapshot.key, ...childSnapshot.val() });
                 });
-
-                // Apply filters
-                const filterType = pageDOMElements.filterPropertyType.dataset.value;
-                if (filterType) {
-                    propertiesArray = propertiesArray.filter(p => p.type === filterType);
-                }
-
-                // Apply sorting
-                const sortBy = pageDOMElements.sortPropertiesBy.dataset.value || 'address';
-                const sortOrder = pageDOMElements.sortPropertiesOrder.dataset.value || 'asc';
-                
-                propertiesArray.sort((a, b) => {
-                    let valA = a[sortBy] ? a[sortBy].toString().toLowerCase() : '';
-                    let valB = b[sortBy] ? b[sortBy].toString().toLowerCase() : '';
-                    let comparison = 0;
-                    if (valA > valB) comparison = 1;
-                    else if (valA < valB) comparison = -1;
-                    return sortOrder === 'desc' ? comparison * -1 : comparison;
-                });
-
-                if (propertiesArray.length === 0) {
-                    pageDOMElements.noPropertiesMessage.style.display = 'flex';
-                } else {
-                    pageDOMElements.noPropertiesMessage.style.display = 'none';
-                    propertiesArray.forEach(prop => populatePropertyRow(prop));
-                }
+                renderProperties();
             }, { onlyOnce: false }); // Listen for real-time updates
+        }
+
+        function renderProperties() {
+            if (!pageDOMElements.propertiesTableBody) return;
+            pageDOMElements.propertiesTableBody.innerHTML = '';
+            
+            let filteredProperties = [...propertiesData];
+
+            // Apply filters
+            const filterType = pageDOMElements.filterPropertyType.dataset.value;
+            if (filterType) {
+                filteredProperties = filteredProperties.filter(p => p.type === filterType);
+            }
+
+            // Apply sorting
+            const sortBy = pageDOMElements.sortPropertiesBy.dataset.value || 'address';
+            const sortOrder = pageDOMElements.sortPropertiesOrder.dataset.value || 'asc';
+            
+            filteredProperties.sort((a, b) => {
+                let valA = a[sortBy] ? a[sortBy].toString().toLowerCase() : '';
+                let valB = b[sortBy] ? b[sortBy].toString().toLowerCase() : '';
+                let comparison = 0;
+                if (valA > valB) comparison = 1;
+                else if (valA < valB) comparison = -1;
+                return sortOrder === 'desc' ? comparison * -1 : comparison;
+            });
+
+            if (filteredProperties.length === 0) {
+                pageDOMElements.noPropertiesMessage.style.display = 'flex';
+            } else {
+                pageDOMElements.noPropertiesMessage.style.display = 'none';
+                filteredProperties.forEach(prop => populatePropertyRow(prop));
+            }
         }
 
         function populatePropertyRow(data) {

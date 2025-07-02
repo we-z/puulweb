@@ -141,12 +141,12 @@
                     <div class="sub-nav-item" data-subsection="diagnostics">Diagnostics</div>
                 </div>
 
-                <div class="subsection-content active" id="receivablesContent"><h4>Receivables</h4><div class="data-table-container"><table class="data-table" id="receivablesTable"><thead><tr><th>Date</th><th>Tenant/Payer</th><th>Property</th><th>Description</th><th>Amount Due</th><th>Amount Paid</th><th>Status</th><th>Actions</th></tr></thead><tbody id="receivablesTableBody"></tbody></table><div id="noReceivablesMessage" class="no-data-message"><div class="icon">💸</div><p>No receivables recorded.</p></div></div></div>
-                <div class="subsection-content" id="payablesContent"><h4>Payables</h4><div class="data-table-container"><table class="data-table" id="payablesTable"><thead><tr><th>Due Date</th><th>Vendor/Payee</th><th>Property (Optional)</th><th>Description</th><th>Amount</th><th>Status</th><th>Actions</th></tr></thead><tbody id="payablesTableBody"></tbody></table><div id="noPayablesMessage" class="no-data-message"><div class="icon">🧾</div><p>No payables recorded.</p></div></div></div>
-                <div class="subsection-content" id="bankAccountsContent"><h4>Bank Accounts</h4><div class="data-table-container"><table class="data-table" id="bankAccountsTable"><thead><tr><th>Account Name</th><th>Bank Name</th><th>Account Number (Last 4)</th><th>Type</th><th>Current Balance</th><th>Actions</th></tr></thead><tbody id="bankAccountsTableBody"></tbody></table><div id="noBankAccountsMessage" class="no-data-message"><div class="icon">🏦</div><p>No bank accounts set up.</p></div></div></div>
-                <div class="subsection-content" id="journalEntriesContent"><h4>Journal Entries</h4><div class="data-table-container"><table class="data-table" id="journalEntriesTable"><thead><tr><th>Date</th><th>Entry ID</th><th>Description</th><th>Total Debits</th><th>Total Credits</th><th>Actions</th></tr></thead><tbody id="journalEntriesTableBody"></tbody></table><div id="noJournalEntriesMessage" class="no-data-message"><div class="icon">📓</div><p>No journal entries found.</p></div></div></div>
-                <div class="subsection-content" id="bankTransfersContent"><h4>Bank Transfers</h4><div class="data-table-container"><table class="data-table" id="bankTransfersTable"><thead><tr><th>Date</th><th>From Account</th><th>To Account</th><th>Amount</th><th>Memo</th><th>Status</th><th>Actions</th></tr></thead><tbody id="bankTransfersTableBody"></tbody></table><div id="noBankTransfersMessage" class="no-data-message"><div class="icon">↔️</div><p>No bank transfers recorded.</p></div></div></div>
-                <div class="subsection-content" id="glAccountsContent"><h4>GL Accounts (Chart of Accounts)</h4><div class="data-table-container"><table class="data-table" id="glAccountsTable"><thead><tr><th>Account Number</th><th>Account Name</th><th>Type</th><th>Sub-Type</th><th>Balance (Calculated)</th><th>Actions</th></tr></thead><tbody id="glAccountsTableBody"></tbody></table><div id="noGLAccountsMessage" class="no-data-message"><div class="icon">📊</div><p>Chart of Accounts is empty.</p></div></div></div>
+                <div class="subsection-content active" id="receivablesContent"><h4>Receivables</h4><div class="controls-container visible-by-default"><div class="filter-group"><label>Property:</label><div class="custom-dropdown" id="receivablesFilterProperty"><div class="dropdown-selected" tabindex="0"><span class="selected-value">All Properties</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div><div class="dropdown-options"><div class="dropdown-option" data-value="">All Properties</div></div></div></div><div class="filter-group"><label>Status:</label><div class="custom-dropdown" id="receivablesFilterStatus"><div class="dropdown-selected" tabindex="0"><span class="selected-value">All Statuses</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div><div class="dropdown-options"><div class="dropdown-option" data-value="">All Statuses</div><div class="dropdown-option" data-value="Due">Due</div><div class="dropdown-option" data-value="Paid">Paid</div><div class="dropdown-option" data-value="Overdue">Overdue</div><div class="dropdown-option" data-value="Partial">Partial</div></div></div></div></div><div class="data-table-container"><table class="data-table" id="receivablesTable"><thead><tr><th>Date</th><th>Tenant/Payer</th><th>Property</th><th>Description</th><th>Amount Due</th><th>Amount Paid</th><th>Status</th><th>Actions</th></tr></thead><tbody id="receivablesTableBody"></tbody></table><div id="noReceivablesMessage" class="no-data-message"><div class="icon">💸</div><p>No receivables recorded.</p></div></div></div>
+                <div class="subsection-content" id="payablesContent"><h4>Payables</h4><div class="controls-container visible-by-default"><div class="filter-group"><label>Property:</label><div class="custom-dropdown" id="payablesFilterProperty"><div class="dropdown-selected" tabindex="0"><span class="selected-value">All Properties</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div><div class="dropdown-options"><div class="dropdown-option" data-value="">All Properties</div></div></div></div><div class="filter-group"><label>Status:</label><div class="custom-dropdown" id="payablesFilterStatus"><div class="dropdown-selected" tabindex="0"><span class="selected-value">All Statuses</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div><div class="dropdown-options"><div class="dropdown-option" data-value="">All Statuses</div><div class="dropdown-option" data-value="Unpaid">Unpaid</div><div class="dropdown-option" data-value="Paid">Paid</div><div class="dropdown-option" data-value="Pending">Pending</div></div></div></div></div><div class="data-table-container"><table class="data-table" id="payablesTable"><thead><tr><th>Due Date</th><th>Vendor/Payee</th><th>Property (Optional)</th><th>Description</th><th>Amount</th><th>Status</th><th>Actions</th></tr></thead><tbody id="payablesTableBody"></tbody></table><div id="noPayablesMessage" class="no-data-message"><div class="icon">🧾</div><p>No payables recorded.</p></div></div></div>
+                <div class="subsection-content" id="bankAccountsContent"><h4>Bank Accounts</h4><div class="controls-container visible-by-default"><div class="filter-group"><label>Type:</label><div class="custom-dropdown" id="bankAccountsFilterType"><div class="dropdown-selected" tabindex="0"><span class="selected-value">All Types</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div><div class="dropdown-options"><div class="dropdown-option" data-value="">All Types</div><div class="dropdown-option" data-value="Checking">Checking</div><div class="dropdown-option" data-value="Savings">Savings</div><div class="dropdown-option" data-value="Credit Card">Credit Card</div><div class="dropdown-option" data-value="Loan">Loan</div><div class="dropdown-option" data-value="Other">Other</div></div></div></div></div><div class="data-table-container"><table class="data-table" id="bankAccountsTable"><thead><tr><th>Account Name</th><th>Bank Name</th><th>Account Number (Last 4)</th><th>Type</th><th>Current Balance</th><th>Actions</th></tr></thead><tbody id="bankAccountsTableBody"></tbody></table><div id="noBankAccountsMessage" class="no-data-message"><div class="icon">🏦</div><p>No bank accounts set up.</p></div></div></div>
+                <div class="subsection-content" id="journalEntriesContent"><h4>Journal Entries</h4><div class="controls-container visible-by-default"><div class="filter-group"><label>Start Date:</label><input type="date" id="journalEntriesFilterStartDate" class="form-control"></div><div class="filter-group"><label>End Date:</label><input type="date" id="journalEntriesFilterEndDate" class="form-control"></div></div><div class="data-table-container"><table class="data-table" id="journalEntriesTable"><thead><tr><th>Date</th><th>Entry ID</th><th>Description</th><th>Total Debits</th><th>Total Credits</th><th>Actions</th></tr></thead><tbody id="journalEntriesTableBody"></tbody></table><div id="noJournalEntriesMessage" class="no-data-message"><div class="icon">📓</div><p>No journal entries found.</p></div></div></div>
+                <div class="subsection-content" id="bankTransfersContent"><h4>Bank Transfers</h4><div class="controls-container visible-by-default"><div class="filter-group"><label>Status:</label><div class="custom-dropdown" id="bankTransfersFilterStatus"><div class="dropdown-selected" tabindex="0"><span class="selected-value">All Statuses</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div><div class="dropdown-options"><div class="dropdown-option" data-value="">All Statuses</div><div class="dropdown-option" data-value="Pending">Pending</div><div class="dropdown-option" data-value="Completed">Completed</div><div class="dropdown-option" data-value="Failed">Failed</div></div></div></div></div><div class="data-table-container"><table class="data-table" id="bankTransfersTable"><thead><tr><th>Date</th><th>From Account</th><th>To Account</th><th>Amount</th><th>Memo</th><th>Status</th><th>Actions</th></tr></thead><tbody id="bankTransfersTableBody"></tbody></table><div id="noBankTransfersMessage" class="no-data-message"><div class="icon">↔️</div><p>No bank transfers recorded.</p></div></div></div>
+                <div class="subsection-content" id="glAccountsContent"><h4>GL Accounts (Chart of Accounts)</h4><div class="controls-container visible-by-default"><div class="filter-group"><label>Type:</label><div class="custom-dropdown" id="glAccountsFilterType"><div class="dropdown-selected" tabindex="0"><span class="selected-value">All Types</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div><div class="dropdown-options"><div class="dropdown-option" data-value="">All Types</div><div class="dropdown-option" data-value="Asset">Asset</div><div class="dropdown-option" data-value="Liability">Liability</div><div class="dropdown-option" data-value="Equity">Equity</div><div class="dropdown-option" data-value="Income">Income</div><div class="dropdown-option" data-value="Expense">Expense</div></div></div></div></div><div class="data-table-container"><table class="data-table" id="glAccountsTable"><thead><tr><th>Account Number</th><th>Account Name</th><th>Type</th><th>Sub-Type</th><th>Balance (Calculated)</th><th>Actions</th></tr></thead><tbody id="glAccountsTableBody"></tbody></table><div id="noGLAccountsMessage" class="no-data-message"><div class="icon">📊</div><p>Chart of Accounts is empty.</p></div></div></div>
                 <div class="subsection-content" id="diagnosticsContent">
                     <h4>Accounting Diagnostics</h4>
                     <div class="diagnostics-overview">
@@ -260,6 +260,10 @@
         let localBankAccountsMap = {};
         let localGLAccountsMap = {};
 
+        // Data Caches
+        let receivablesData = [], payablesData = [], bankAccountsData = [], 
+            journalEntriesData = [], bankTransfersData = [], glAccountsData = [];
+
         const DOMElements = {
             addItemBtn: document.getElementById('addItemBtn'),
             receivableModal: document.getElementById('receivableModal'), receivableForm: document.getElementById('receivableForm'),
@@ -300,6 +304,7 @@
             initializePropertiesListener();
             initializeBankAccountsListener();
             initializeGLAccountsListener();
+            initializeFilterControls();
             loadDataForActiveSubsection();
             setupEventListeners();
             setupDiagnosticButtons();
@@ -353,6 +358,9 @@
                         select.value = currentVal;
                     }
                 });
+                populateDynamicDropdown('receivablesFilterProperty', new Set(Object.values(localPropertiesMap)), 'All Properties', localPropertiesMap, true);
+                populateDynamicDropdown('payablesFilterProperty', new Set(Object.values(localPropertiesMap)), 'All Properties', localPropertiesMap, true);
+                renderActiveSubsectionData();
             });
         }
         function initializeBankAccountsListener() {
@@ -374,6 +382,7 @@
                         select.value = currentVal;
                     }
                 });
+                renderActiveSubsectionData();
             });
         }
         function initializeGLAccountsListener() {
@@ -382,7 +391,78 @@
             onValue(commonDependencies.fbQuery(glAccountsRef, commonDependencies.fbOrderByChild('accountNumber')), (snapshot) => {
                 localGLAccountsMap = {};
                 snapshot.forEach(glSnapshot => { localGLAccountsMap[glSnapshot.key] = { name: glSnapshot.val().accountName, number: glSnapshot.val().accountNumber }; });
+                renderActiveSubsectionData();
             });
+        }
+
+        function initializeFilterControls() {
+             document.querySelectorAll('.controls-container .custom-dropdown').forEach(dropdown => {
+                initializeCustomDropdown(dropdown, () => renderActiveSubsectionData());
+            });
+
+             document.querySelectorAll('.controls-toggle-btn').forEach(btn => {
+                const controlsContainer = btn.nextElementSibling;
+                const arrowIcon = btn.querySelector('.arrow-icon');
+                if (!controlsContainer || !controlsContainer.classList.contains('controls-container')) return;
+                btn.addEventListener('click', () => {
+                    const isExpanded = controlsContainer.style.display === 'flex';
+                    controlsContainer.style.display = isExpanded ? 'none' : 'flex';
+                    if(arrowIcon) arrowIcon.style.transform = isExpanded ? 'rotate(-90deg)' : 'rotate(0deg)';
+                });
+                const isVisibleByDefault = controlsContainer.classList.contains('visible-by-default');
+                if (isVisibleByDefault && window.innerWidth > 768) {
+                    controlsContainer.style.display = 'flex';
+                    if(arrowIcon) arrowIcon.style.transform = 'rotate(0deg)';
+                } else {
+                    controlsContainer.style.display = 'none';
+                    if(arrowIcon) arrowIcon.style.transform = 'rotate(-90deg)';
+                }
+            });
+
+            // Date range filters
+            const startDateInput = document.getElementById('journalEntriesFilterStartDate');
+            const endDateInput = document.getElementById('journalEntriesFilterEndDate');
+            [startDateInput, endDateInput].forEach(input => {
+                if (input) {
+                    input.addEventListener('change', () => renderJournalEntries());
+                }
+            });
+        }
+
+        function populateDynamicDropdown(dropdownId, optionsSet, allText, valueMap = null, mapIsReversed = false) {
+            const dropdown = document.getElementById(dropdownId);
+            if (!dropdown) return;
+            const optionsContainer = dropdown.querySelector('.dropdown-options');
+            const selectedValueSpan = dropdown.querySelector('.selected-value');
+            const currentValue = dropdown.dataset.value || '';
+            optionsContainer.innerHTML = '';
+            const allOption = document.createElement('div');
+            allOption.className = 'dropdown-option';
+            allOption.dataset.value = '';
+            allOption.textContent = allText;
+            optionsContainer.appendChild(allOption);
+            Array.from(optionsSet).sort().forEach(optionText => {
+                const option = document.createElement('div');
+                option.className = 'dropdown-option';
+                if (valueMap) {
+                    const key = mapIsReversed ? Object.keys(valueMap).find(k => valueMap[k] === optionText) : optionText;
+                    option.dataset.value = key;
+                } else {
+                    option.dataset.value = optionText;
+                }
+                option.textContent = optionText;
+                optionsContainer.appendChild(option);
+            });
+            const currentOption = optionsContainer.querySelector(`.dropdown-option[data-value="${currentValue}"]`);
+            if (currentOption) {
+                selectedValueSpan.textContent = currentOption.textContent;
+                if(optionsContainer.querySelector('.selected')) optionsContainer.querySelector('.selected').classList.remove('selected');
+                currentOption.classList.add('selected');
+            } else {
+                selectedValueSpan.textContent = allText;
+                dropdown.dataset.value = '';
+                if(optionsContainer.firstChild) optionsContainer.firstChild.classList.add('selected');
+            }
         }
 
         function loadDataForActiveSubsection() {
@@ -518,10 +598,24 @@
             if (!pageCurrentUserId || !pageDatabase || !commonDependencies.fbRef) return;
             const dataRef = commonDependencies.fbRef(pageDatabase, `receivables/${pageCurrentUserId}`);
             onValue(commonDependencies.fbQuery(dataRef, commonDependencies.fbOrderByChild('date')), (snapshot) => {
-                DOMElements.receivablesTableBody.innerHTML = ''; let hasData = false;
-                snapshot.forEach(child => { hasData = true; populateReceivableRow({id: child.key, ...child.val()}); });
-                DOMElements.noReceivablesMessage.style.display = hasData ? 'none' : 'block';
+                receivablesData = [];
+                snapshot.forEach(child => { receivablesData.push({id: child.key, ...child.val()}); });
+                renderReceivables();
             });
+        }
+        function renderReceivables() {
+            DOMElements.receivablesTableBody.innerHTML = ''; let hasData = false;
+            const propertyFilter = document.getElementById('receivablesFilterProperty')?.dataset.value;
+            const statusFilter = document.getElementById('receivablesFilterStatus')?.dataset.value;
+
+            const filteredData = receivablesData.filter(item => {
+                const matchesProperty = !propertyFilter || item.propertyId === propertyFilter;
+                const matchesStatus = !statusFilter || item.status === statusFilter;
+                return matchesProperty && matchesStatus;
+            }).reverse();
+
+            filteredData.forEach(item => { hasData = true; populateReceivableRow(item); });
+            DOMElements.noReceivablesMessage.style.display = hasData ? 'none' : 'block';
         }
         function populateReceivableRow(data) {
             const row = DOMElements.receivablesTableBody.insertRow();
@@ -542,10 +636,24 @@
             if (!pageCurrentUserId || !pageDatabase || !commonDependencies.fbRef) return;
             const dataRef = commonDependencies.fbRef(pageDatabase, `payables/${pageCurrentUserId}`);
             onValue(commonDependencies.fbQuery(dataRef, commonDependencies.fbOrderByChild('dueDate')), (snapshot) => {
-                DOMElements.payablesTableBody.innerHTML = ''; let hasData = false;
-                snapshot.forEach(child => { hasData = true; populatePayableRow({id: child.key, ...child.val()}); });
-                DOMElements.noPayablesMessage.style.display = hasData ? 'none' : 'block';
+                payablesData = [];
+                snapshot.forEach(child => { payablesData.push({id: child.key, ...child.val()}); });
+                renderPayables();
             });
+        }
+        function renderPayables() {
+            DOMElements.payablesTableBody.innerHTML = ''; let hasData = false;
+            const propertyFilter = document.getElementById('payablesFilterProperty')?.dataset.value;
+            const statusFilter = document.getElementById('payablesFilterStatus')?.dataset.value;
+
+            const filteredData = payablesData.filter(item => {
+                const matchesProperty = !propertyFilter || !item.propertyId || item.propertyId === propertyFilter;
+                const matchesStatus = !statusFilter || item.status === statusFilter;
+                return matchesProperty && matchesStatus;
+            }).reverse();
+
+            filteredData.forEach(child => { hasData = true; populatePayableRow(child); });
+            DOMElements.noPayablesMessage.style.display = hasData ? 'none' : 'block';
         }
         function populatePayableRow(data) {
             const row = DOMElements.payablesTableBody.insertRow();
@@ -565,10 +673,22 @@
             if (!pageCurrentUserId || !pageDatabase || !commonDependencies.fbRef) return;
             const dataRef = commonDependencies.fbRef(pageDatabase, `bankAccounts/${pageCurrentUserId}`);
             onValue(commonDependencies.fbQuery(dataRef, commonDependencies.fbOrderByChild('accountName')), (snapshot) => {
-                DOMElements.bankAccountsTableBody.innerHTML = ''; let hasData = false;
-                snapshot.forEach(child => { hasData = true; populateBankAccountRow({id: child.key, ...child.val()}); });
-                DOMElements.noBankAccountsMessage.style.display = hasData ? 'none' : 'block';
+                bankAccountsData = [];
+                snapshot.forEach(child => { bankAccountsData.push({id: child.key, ...child.val()}); });
+                renderBankAccounts();
             });
+        }
+        function renderBankAccounts() {
+            DOMElements.bankAccountsTableBody.innerHTML = ''; let hasData = false;
+            const typeFilter = document.getElementById('bankAccountsFilterType')?.dataset.value;
+            
+            const filteredData = bankAccountsData.filter(item => {
+                const matchesType = !typeFilter || item.accountType === typeFilter;
+                return matchesType;
+            });
+            
+            filteredData.forEach(child => { hasData = true; populateBankAccountRow(child); });
+            DOMElements.noBankAccountsMessage.style.display = hasData ? 'none' : 'block';
         }
         function populateBankAccountRow(data) {
             const row = DOMElements.bankAccountsTableBody.insertRow();
@@ -667,10 +787,26 @@
             if (!pageCurrentUserId || !pageDatabase || !commonDependencies.fbRef) return;
             const dataRef = commonDependencies.fbRef(pageDatabase, `journalEntries/${pageCurrentUserId}`);
             onValue(commonDependencies.fbQuery(dataRef, commonDependencies.fbOrderByChild('date')), (snapshot) => {
-                DOMElements.journalEntriesTableBody.innerHTML = ''; let hasData = false;
-                snapshot.forEach(child => { hasData = true; populateJournalEntryRow({id: child.key, ...child.val()}); });
-                DOMElements.noJournalEntriesMessage.style.display = hasData ? 'none' : 'block';
+                journalEntriesData = [];
+                snapshot.forEach(child => { journalEntriesData.push({id: child.key, ...child.val()}); });
+                renderJournalEntries();
             });
+        }
+        function renderJournalEntries() {
+            DOMElements.journalEntriesTableBody.innerHTML = ''; let hasData = false;
+            const startDateFilter = document.getElementById('journalEntriesFilterStartDate')?.value;
+            const endDateFilter = document.getElementById('journalEntriesFilterEndDate')?.value;
+            
+            const filteredData = journalEntriesData.filter(item => {
+                if (!item.date) return false;
+                const itemDate = new Date(item.date + 'T00:00:00');
+                const matchesStart = !startDateFilter || itemDate >= new Date(startDateFilter + 'T00:00:00');
+                const matchesEnd = !endDateFilter || itemDate <= new Date(endDateFilter + 'T00:00:00');
+                return matchesStart && matchesEnd;
+            }).reverse();
+
+            filteredData.forEach(child => { hasData = true; populateJournalEntryRow(child); });
+            DOMElements.noJournalEntriesMessage.style.display = hasData ? 'none' : 'block';
         }
         function populateJournalEntryRow(data) {
             const row = DOMElements.journalEntriesTableBody.insertRow();
@@ -689,10 +825,22 @@
             if (!pageCurrentUserId || !pageDatabase || !commonDependencies.fbRef) return;
             const dataRef = commonDependencies.fbRef(pageDatabase, `bankTransfers/${pageCurrentUserId}`);
             onValue(commonDependencies.fbQuery(dataRef, commonDependencies.fbOrderByChild('date')), (snapshot) => {
-                DOMElements.bankTransfersTableBody.innerHTML = ''; let hasData = false;
-                snapshot.forEach(child => { hasData = true; populateBankTransferRow({id: child.key, ...child.val()}); });
-                DOMElements.noBankTransfersMessage.style.display = hasData ? 'none' : 'block';
+                bankTransfersData = [];
+                snapshot.forEach(child => { bankTransfersData.push({id: child.key, ...child.val()}); });
+                renderBankTransfers();
             });
+        }
+        function renderBankTransfers() {
+            DOMElements.bankTransfersTableBody.innerHTML = ''; let hasData = false;
+            const statusFilter = document.getElementById('bankTransfersFilterStatus')?.dataset.value;
+
+            const filteredData = bankTransfersData.filter(item => {
+                const matchesStatus = !statusFilter || item.status === statusFilter;
+                return matchesStatus;
+            }).reverse();
+
+            filteredData.forEach(child => { hasData = true; populateBankTransferRow(child); });
+            DOMElements.noBankTransfersMessage.style.display = hasData ? 'none' : 'block';
         }
         function populateBankTransferRow(data) {
             const row = DOMElements.bankTransfersTableBody.insertRow();
@@ -712,10 +860,22 @@
             if (!pageCurrentUserId || !pageDatabase || !commonDependencies.fbRef) return;
             const dataRef = commonDependencies.fbRef(pageDatabase, `glAccounts/${pageCurrentUserId}`);
             onValue(commonDependencies.fbQuery(dataRef, commonDependencies.fbOrderByChild('accountNumber')), (snapshot) => {
-                DOMElements.glAccountsTableBody.innerHTML = ''; let hasData = false;
-                snapshot.forEach(child => { hasData = true; populateGLAccountRow({id: child.key, ...child.val()}); });
-                DOMElements.noGLAccountsMessage.style.display = hasData ? 'none' : 'block';
+                glAccountsData = [];
+                snapshot.forEach(child => { glAccountsData.push({id: child.key, ...child.val()}); });
+                renderGLAccounts();
             });
+        }
+        function renderGLAccounts() {
+            DOMElements.glAccountsTableBody.innerHTML = ''; let hasData = false;
+            const typeFilter = document.getElementById('glAccountsFilterType')?.dataset.value;
+            
+            const filteredData = glAccountsData.filter(item => {
+                const matchesType = !typeFilter || item.type === typeFilter;
+                return matchesType;
+            });
+
+            filteredData.forEach(child => { hasData = true; populateGLAccountRow(child); });
+            DOMElements.noGLAccountsMessage.style.display = hasData ? 'none' : 'block';
         }
         function populateGLAccountRow(data) {
             const row = DOMElements.glAccountsTableBody.insertRow();
@@ -962,6 +1122,20 @@
             });
 
             renderFindings(resultsDiv, 'Data Integrity Check', findings, 'No data integrity issues found.');
+        }
+
+        function renderActiveSubsectionData() {
+            const activeNavItem = document.querySelector('#accountingSubNav .sub-nav-item.active');
+            if (!activeNavItem) return;
+            const activeSubSection = activeNavItem.dataset.subsection;
+            switch (activeSubSection) {
+                case 'receivables': renderReceivables(); break;
+                case 'payables': renderPayables(); break;
+                case 'bankAccounts': renderBankAccounts(); break;
+                case 'journalEntries': renderJournalEntries(); break;
+                case 'bankTransfers': renderBankTransfers(); break;
+                case 'glAccounts': renderGLAccounts(); break;
+            }
         }
 
         initializeAuth(pageInit);

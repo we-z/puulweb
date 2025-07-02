@@ -106,6 +106,19 @@
                 <!-- Vacancies Subsection -->
                 <div class="subsection-content active" id="vacanciesContent">
                     <h4>Vacancies</h4>
+                    <button class="controls-toggle-btn">
+                        <span>Filters & Sort</span>
+                        <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                    </button>
+                    <div class="controls-container visible-by-default">
+                        <div class="filter-group">
+                            <label>Property:</label>
+                            <div class="custom-dropdown" id="vacanciesFilterProperty">
+                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Properties</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                <div class="dropdown-options"><div class="dropdown-option" data-value="">All Properties</div></div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="data-table-container">
                         <table class="data-table" id="vacanciesTable">
                             <thead><tr><th>Property/Unit</th><th>Address</th><th>Status</th><th>Available Date</th><th>Market Rent</th><th>Actions</th></tr></thead>
@@ -118,6 +131,33 @@
                 <!-- Guest Cards Subsection -->
                 <div class="subsection-content" id="guestCardsContent">
                     <h4>Guest Cards</h4>
+                    <button class="controls-toggle-btn">
+                        <span>Filters & Sort</span>
+                        <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                    </button>
+                    <div class="controls-container visible-by-default">
+                        <div class="filter-group">
+                            <label>Property:</label>
+                            <div class="custom-dropdown" id="guestCardsFilterProperty">
+                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Properties</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                <div class="dropdown-options"><div class="dropdown-option" data-value="">All Properties</div></div>
+                            </div>
+                        </div>
+                        <div class="filter-group">
+                            <label>Status:</label>
+                            <div class="custom-dropdown" id="guestCardsFilterStatus">
+                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Statuses</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                <div class="dropdown-options">
+                                    <div class="dropdown-option" data-value="">All Statuses</div>
+                                    <div class="dropdown-option" data-value="New">New</div>
+                                    <div class="dropdown-option" data-value="Contacted">Contacted</div>
+                                    <div class="dropdown-option" data-value="Showing Scheduled">Showing Scheduled</div>
+                                    <div class="dropdown-option" data-value="Applied">Applied</div>
+                                    <div class="dropdown-option" data-value="Inactive">Inactive</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="data-table-container">
                         <table class="data-table" id="guestCardsTable">
                             <thead><tr><th>Name</th><th>Phone</th><th>Email</th><th>Property Interested In</th><th>Date Created</th><th>Status</th><th>Actions</th></tr></thead>
@@ -130,6 +170,33 @@
                 <!-- Rental Applications Subsection -->
                 <div class="subsection-content" id="rentalApplicationsContent">
                     <h4>Rental Applications</h4>
+                    <button class="controls-toggle-btn">
+                        <span>Filters & Sort</span>
+                        <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                    </button>
+                    <div class="controls-container visible-by-default">
+                        <div class="filter-group">
+                            <label>Property:</label>
+                            <div class="custom-dropdown" id="applicationsFilterProperty">
+                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Properties</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                <div class="dropdown-options"><div class="dropdown-option" data-value="">All Properties</div></div>
+                            </div>
+                        </div>
+                        <div class="filter-group">
+                            <label>Status:</label>
+                            <div class="custom-dropdown" id="applicationsFilterStatus">
+                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Statuses</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                <div class="dropdown-options">
+                                    <div class="dropdown-option" data-value="">All Statuses</div>
+                                    <div class="dropdown-option" data-value="Submitted">Submitted</div>
+                                    <div class="dropdown-option" data-value="Processing">Processing</div>
+                                    <div class="dropdown-option" data-value="Approved">Approved</div>
+                                    <div class="dropdown-option" data-value="Denied">Denied</div>
+                                    <div class="dropdown-option" data-value="Withdrawn">Withdrawn</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="data-table-container">
                         <table class="data-table" id="rentalApplicationsTable">
                             <thead><tr><th>Applicant Name</th><th>Property Applied For</th><th>Submission Date</th><th>Status</th><th>Credit Score</th><th>Actions</th></tr></thead>
@@ -142,6 +209,32 @@
                 <!-- Leases Subsection -->
                 <div class="subsection-content" id="leasesContent">
                     <h4>Leases</h4>
+                    <button class="controls-toggle-btn">
+                        <span>Filters & Sort</span>
+                        <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                    </button>
+                    <div class="controls-container visible-by-default">
+                        <div class="filter-group">
+                            <label>Property:</label>
+                            <div class="custom-dropdown" id="leasesFilterProperty">
+                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Properties</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                <div class="dropdown-options"><div class="dropdown-option" data-value="">All Properties</div></div>
+                            </div>
+                        </div>
+                        <div class="filter-group">
+                            <label>Status:</label>
+                            <div class="custom-dropdown" id="leasesFilterStatus">
+                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Statuses</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                <div class="dropdown-options">
+                                    <div class="dropdown-option" data-value="">All Statuses</div>
+                                    <div class="dropdown-option" data-value="Active">Active</div>
+                                    <div class="dropdown-option" data-value="Expired">Expired</div>
+                                    <div class="dropdown-option" data-value="Terminated">Terminated</div>
+                                    <div class="dropdown-option" data-value="Future">Future</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="data-table-container">
                         <table class="data-table" id="leasesTable">
                             <thead><tr><th>Lease ID</th><th>Tenant(s)</th><th>Property/Unit</th><th>Start Date</th><th>End Date</th><th>Rent Amount</th><th>Status</th><th>Actions</th></tr></thead>
@@ -154,6 +247,19 @@
                  <!-- Renewals Subsection -->
                 <div class="subsection-content" id="renewalsContent">
                     <h4>Renewals</h4>
+                    <button class="controls-toggle-btn">
+                        <span>Filters & Sort</span>
+                        <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                    </button>
+                    <div class="controls-container visible-by-default">
+                        <div class="filter-group">
+                            <label>Property:</label>
+                            <div class="custom-dropdown" id="renewalsFilterProperty">
+                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Properties</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                <div class="dropdown-options"><div class="dropdown-option" data-value="">All Properties</div></div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="data-table-container">
                         <table class="data-table" id="renewalsTable">
                             <thead><tr><th>Lease ID</th><th>Tenant(s)</th><th>Property/Unit</th><th>Current End Date</th><th>Renewal Offer Date</th><th>Status</th><th>Actions</th></tr></thead>
@@ -229,6 +335,13 @@
         let commonDependencies = {};
         let localPropertiesMap = {};
 
+        // Data Caches
+        let vacanciesData = [];
+        let guestCardsData = [];
+        let rentalApplicationsData = [];
+        let leasesData = [];
+        let renewalsData = [];
+
         const DOMElements = {
             addItemBtn: document.getElementById('addItemBtn'),
             // Subsection Modals & Forms
@@ -252,6 +365,7 @@
 
             initializeSubNav();
             initializePropertiesListener();
+            initializeFilterControls();
 
             loadDataForActiveSubsection(); // Load data for default active tab (Vacancies)
             setupEventListeners();
@@ -282,6 +396,17 @@
             });
         }
         
+        function renderActiveSubsectionData() {
+            const activeSubSection = document.querySelector('#leasingSubNav .sub-nav-item.active').dataset.subsection;
+            switch (activeSubSection) {
+                case 'vacancies': renderVacancies(); break;
+                case 'guestCards': renderGuestCards(); break;
+                case 'rentalApplications': renderRentalApplications(); break;
+                case 'leases': renderLeases(); break;
+                case 'renewals': renderRenewals(); break;
+            }
+        }
+
         function initializePropertiesListener() {
             if (!pageCurrentUserId || !pageDatabase) return;
             const propertiesRef = commonDependencies.fbRef(pageDatabase, `properties/${pageCurrentUserId}`);
@@ -310,7 +435,91 @@
                         select.value = currentVal;
                     }
                 });
+
+                // Populate all property filter dropdowns
+                const propertyFilterIds = [
+                    'vacanciesFilterProperty', 'guestCardsFilterProperty', 
+                    'applicationsFilterProperty', 'leasesFilterProperty', 'renewalsFilterProperty'
+                ];
+                propertyFilterIds.forEach(filterId => {
+                    const dropdown = document.getElementById(filterId);
+                    if(dropdown) {
+                         populateDynamicDropdown(filterId, new Set(Object.values(localPropertiesMap)), 'All Properties', localPropertiesMap, true);
+                    }
+                });
+
+                // Re-render data if the active tab uses properties
+                renderActiveSubsectionData();
             });
+        }
+
+        function initializeFilterControls() {
+            document.querySelectorAll('.controls-container .custom-dropdown').forEach(dropdown => {
+                initializeCustomDropdown(dropdown, () => renderActiveSubsectionData());
+            });
+
+             document.querySelectorAll('.controls-toggle-btn').forEach(btn => {
+                const controlsContainer = btn.nextElementSibling;
+                const arrowIcon = btn.querySelector('.arrow-icon');
+                if (!controlsContainer || !controlsContainer.classList.contains('controls-container')) return;
+                btn.addEventListener('click', () => {
+                    const isExpanded = controlsContainer.style.display === 'flex';
+                    controlsContainer.style.display = isExpanded ? 'none' : 'flex';
+                    if(arrowIcon) arrowIcon.style.transform = isExpanded ? 'rotate(-90deg)' : 'rotate(0deg)';
+                });
+                const isVisibleByDefault = controlsContainer.classList.contains('visible-by-default');
+                if (isVisibleByDefault && window.innerWidth > 768) {
+                    controlsContainer.style.display = 'flex';
+                    if(arrowIcon) arrowIcon.style.transform = 'rotate(0deg)';
+                } else {
+                    controlsContainer.style.display = 'none';
+                    if(arrowIcon) arrowIcon.style.transform = 'rotate(-90deg)';
+                }
+            });
+        }
+        
+        function populateDynamicDropdown(dropdownId, optionsSet, allText, valueMap = null, mapIsReversed = false) {
+            const dropdown = document.getElementById(dropdownId);
+            if (!dropdown) return;
+
+            const optionsContainer = dropdown.querySelector('.dropdown-options');
+            const selectedValueSpan = dropdown.querySelector('.selected-value');
+            const currentValue = dropdown.dataset.value || '';
+            optionsContainer.innerHTML = '';
+
+            const allOption = document.createElement('div');
+            allOption.className = 'dropdown-option';
+            allOption.dataset.value = '';
+            allOption.textContent = allText;
+            optionsContainer.appendChild(allOption);
+
+            Array.from(optionsSet).sort().forEach(optionText => {
+                const option = document.createElement('div');
+                option.className = 'dropdown-option';
+                
+                if (valueMap) {
+                    const key = mapIsReversed 
+                        ? Object.keys(valueMap).find(k => valueMap[k] === optionText)
+                        : optionText;
+                    option.dataset.value = key;
+                } else {
+                    option.dataset.value = optionText;
+                }
+                
+                option.textContent = optionText;
+                optionsContainer.appendChild(option);
+            });
+
+            const currentOption = optionsContainer.querySelector(`.dropdown-option[data-value="${currentValue}"]`);
+            if (currentOption) {
+                selectedValueSpan.textContent = currentOption.textContent;
+                if(optionsContainer.querySelector('.selected')) optionsContainer.querySelector('.selected').classList.remove('selected');
+                currentOption.classList.add('selected');
+            } else {
+                selectedValueSpan.textContent = allText;
+                dropdown.dataset.value = '';
+                if(optionsContainer.firstChild) optionsContainer.firstChild.classList.add('selected');
+            }
         }
 
         function loadDataForActiveSubsection() {
@@ -472,19 +681,32 @@
         function loadVacancies() {
             const dataRef = commonDependencies.fbRef(pageDatabase, `properties/${pageCurrentUserId}`); // Vacancies are derived from properties
             onValue(commonDependencies.fbQuery(dataRef, commonDependencies.fbOrderByChild('address')), (snapshot) => {
-                DOMElements.vacanciesTableBody.innerHTML = '';
-                let hasVacancies = false;
+                vacanciesData = [];
                 snapshot.forEach(child => {
                     const prop = {id: child.key, ...child.val()};
-                    // Basic vacancy logic: if not explicitly marked as 'Rented' or has no active lease covering today
-                    // This is a simplified placeholder. Real vacancy tracking is more complex.
-                    if (prop.status !== 'Rented') { // Assume a 'status' field on property for simplicity
-                        hasVacancies = true;
-                        populateVacancyRow(prop);
+                    if (prop.status !== 'Rented') { 
+                        vacanciesData.push(prop);
                     }
                 });
-                DOMElements.noVacanciesMessage.style.display = hasVacancies ? 'none' : 'block';
+                renderVacancies();
             });
+        }
+        function renderVacancies() {
+            DOMElements.vacanciesTableBody.innerHTML = '';
+            let hasVacancies = false;
+
+            const propertyFilter = document.getElementById('vacanciesFilterProperty')?.dataset.value;
+
+            const filteredData = vacanciesData.filter(prop => {
+                const matchesProperty = !propertyFilter || prop.id === propertyFilter;
+                return matchesProperty;
+            });
+
+            filteredData.forEach(prop => {
+                hasVacancies = true;
+                populateVacancyRow(prop);
+            });
+            DOMElements.noVacanciesMessage.style.display = hasVacancies ? 'none' : 'block';
         }
         function populateVacancyRow(data) {
             const row = DOMElements.vacanciesTableBody.insertRow();
@@ -504,11 +726,29 @@
         function loadGuestCards() {
             const dataRef = commonDependencies.fbRef(pageDatabase, `guestCards/${pageCurrentUserId}`);
             onValue(commonDependencies.fbQuery(dataRef, commonDependencies.fbOrderByChild('createdAt')), (snapshot) => {
-                DOMElements.guestCardsTableBody.innerHTML = '';
-                let hasData = false;
-                snapshot.forEach(child => { hasData = true; populateGuestCardRow({id: child.key, ...child.val()}); });
-                DOMElements.noGuestCardsMessage.style.display = hasData ? 'none' : 'block';
+                guestCardsData = [];
+                snapshot.forEach(child => { guestCardsData.push({id: child.key, ...child.val()}); });
+                renderGuestCards();
             });
+        }
+        function renderGuestCards() {
+            DOMElements.guestCardsTableBody.innerHTML = '';
+            let hasData = false;
+
+            const propertyFilter = document.getElementById('guestCardsFilterProperty')?.dataset.value;
+            const statusFilter = document.getElementById('guestCardsFilterStatus')?.dataset.value;
+
+            const filteredData = guestCardsData.filter(card => {
+                const matchesProperty = !propertyFilter || card.propertyId === propertyFilter;
+                const matchesStatus = !statusFilter || card.status === statusFilter;
+                return matchesProperty && matchesStatus;
+            }).reverse(); // Show newest first
+
+            filteredData.forEach(card => {
+                hasData = true;
+                populateGuestCardRow(card);
+            });
+            DOMElements.noGuestCardsMessage.style.display = hasData ? 'none' : 'block';
         }
         function populateGuestCardRow(data) {
             const row = DOMElements.guestCardsTableBody.insertRow();
@@ -529,11 +769,29 @@
         function loadRentalApplications() {
             const dataRef = commonDependencies.fbRef(pageDatabase, `rentalApplications/${pageCurrentUserId}`);
             onValue(commonDependencies.fbQuery(dataRef, commonDependencies.fbOrderByChild('submissionDate')), (snapshot) => {
-                DOMElements.rentalApplicationsTableBody.innerHTML = '';
-                let hasData = false;
-                snapshot.forEach(child => { hasData = true; populateRentalApplicationRow({id: child.key, ...child.val()}); });
-                DOMElements.noRentalApplicationsMessage.style.display = hasData ? 'none' : 'block';
+                rentalApplicationsData = [];
+                snapshot.forEach(child => { rentalApplicationsData.push({id: child.key, ...child.val()}); });
+                renderRentalApplications();
             });
+        }
+        function renderRentalApplications() {
+             DOMElements.rentalApplicationsTableBody.innerHTML = '';
+            let hasData = false;
+
+            const propertyFilter = document.getElementById('applicationsFilterProperty')?.dataset.value;
+            const statusFilter = document.getElementById('applicationsFilterStatus')?.dataset.value;
+
+            const filteredData = rentalApplicationsData.filter(app => {
+                const matchesProperty = !propertyFilter || app.propertyId === propertyFilter;
+                const matchesStatus = !statusFilter || app.status === statusFilter;
+                return matchesProperty && matchesStatus;
+            }).reverse();
+
+            filteredData.forEach(app => {
+                hasData = true;
+                populateRentalApplicationRow(app);
+            });
+            DOMElements.noRentalApplicationsMessage.style.display = hasData ? 'none' : 'block';
         }
         function populateRentalApplicationRow(data) {
             const row = DOMElements.rentalApplicationsTableBody.insertRow();
@@ -553,12 +811,30 @@
         function loadLeases() {
             const dataRef = commonDependencies.fbRef(pageDatabase, `leases/${pageCurrentUserId}`);
             onValue(commonDependencies.fbQuery(dataRef, commonDependencies.fbOrderByChild('startDate')), (snapshot) => {
-                DOMElements.leasesTableBody.innerHTML = '';
-                let hasData = false;
-                snapshot.forEach(child => { hasData = true; populateLeaseRow({id: child.key, ...child.val()}); });
-                DOMElements.noLeasesMessage.style.display = hasData ? 'none' : 'block';
+                leasesData = [];
+                snapshot.forEach(child => { leasesData.push({id: child.key, ...child.val()}); });
+                renderLeases();
                 loadRenewals(); // Refresh renewals based on new lease data
             });
+        }
+        function renderLeases() {
+            DOMElements.leasesTableBody.innerHTML = '';
+            let hasData = false;
+
+            const propertyFilter = document.getElementById('leasesFilterProperty')?.dataset.value;
+            const statusFilter = document.getElementById('leasesFilterStatus')?.dataset.value;
+
+            const filteredData = leasesData.filter(lease => {
+                const matchesProperty = !propertyFilter || lease.propertyId === propertyFilter;
+                const matchesStatus = !statusFilter || lease.status === statusFilter;
+                return matchesProperty && matchesStatus;
+            }).reverse();
+
+            filteredData.forEach(lease => {
+                hasData = true;
+                populateLeaseRow(lease);
+            });
+            DOMElements.noLeasesMessage.style.display = hasData ? 'none' : 'block';
         }
         function populateLeaseRow(data) {
             const row = DOMElements.leasesTableBody.insertRow();
@@ -582,8 +858,7 @@
         function loadRenewals() {
             const dataRef = commonDependencies.fbRef(pageDatabase, `leases/${pageCurrentUserId}`);
             onValue(commonDependencies.fbQuery(dataRef, commonDependencies.fbOrderByChild('endDate')), (snapshot) => {
-                DOMElements.renewalsTableBody.innerHTML = '';
-                let hasRenewals = false;
+                renewalsData = [];
                 const today = new Date();
                 const renewalWindowDays = 90; // Leases ending in next 90 days
 
@@ -593,14 +868,31 @@
                         const endDate = new Date(lease.endDate);
                         const diffTime = endDate - today;
                         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                        if (diffDays <= renewalWindowDays && diffDays >= 0) { // Within renewal window and not past
-                             hasRenewals = true;
-                             populateRenewalRow(lease);
+                        if (diffDays <= renewalWindowDays && diffDays >= 0) {
+                             renewalsData.push(lease);
                         }
                     }
                 });
-                DOMElements.noRenewalsMessage.style.display = hasRenewals ? 'none' : 'block';
+                renderRenewals();
             });
+        }
+        function renderRenewals() {
+            DOMElements.renewalsTableBody.innerHTML = '';
+            let hasRenewals = false;
+            
+            const propertyFilter = document.getElementById('renewalsFilterProperty')?.dataset.value;
+            
+            const filteredData = renewalsData.filter(lease => {
+                const matchesProperty = !propertyFilter || lease.propertyId === propertyFilter;
+                return matchesProperty;
+            });
+
+            filteredData.forEach(lease => {
+                hasRenewals = true;
+                populateRenewalRow(lease);
+            });
+
+            DOMElements.noRenewalsMessage.style.display = hasRenewals ? 'none' : 'block';
         }
         function populateRenewalRow(data) {
             const row = DOMElements.renewalsTableBody.insertRow();

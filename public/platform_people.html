@@ -37,6 +37,19 @@
                 <!-- Tenants Subsection -->
                 <div class="subsection-content active" id="tenantsContent">
                     <h4>Tenants</h4>
+                    <button class="controls-toggle-btn">
+                        <span>Filters & Sort</span>
+                        <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                    </button>
+                    <div class="controls-container visible-by-default">
+                        <div class="filter-group">
+                            <label>Property:</label>
+                            <div class="custom-dropdown" id="tenantsFilterProperty">
+                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Properties</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                <div class="dropdown-options"><div class="dropdown-option" data-value="">All Properties</div></div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="data-table-container">
                         <table class="data-table" id="tenantsTable">
                             <thead><tr><th>Name</th><th>Primary Email</th><th>Primary Phone</th><th>Property/Unit</th><th>Lease End Date</th><th>Actions</th></tr></thead>
@@ -49,6 +62,19 @@
                 <!-- Owners Subsection -->
                 <div class="subsection-content" id="ownersContent">
                     <h4>Owners</h4>
+                    <button class="controls-toggle-btn">
+                        <span>Filters & Sort</span>
+                        <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                    </button>
+                    <div class="controls-container visible-by-default">
+                        <div class="filter-group">
+                            <label>Property Owned:</label>
+                            <div class="custom-dropdown" id="ownersFilterProperty">
+                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Properties</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                <div class="dropdown-options"><div class="dropdown-option" data-value="">All Properties</div></div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="data-table-container">
                         <table class="data-table" id="ownersTable">
                             <thead><tr><th>Name</th><th>Primary Email</th><th>Primary Phone</th><th>Properties Owned</th><th>Actions</th></tr></thead>
@@ -61,6 +87,19 @@
                 <!-- Vendors Subsection -->
                 <div class="subsection-content" id="vendorsContent">
                     <h4>Vendors</h4>
+                    <button class="controls-toggle-btn">
+                        <span>Filters & Sort</span>
+                        <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                    </button>
+                    <div class="controls-container visible-by-default">
+                        <div class="filter-group">
+                            <label>Service Type:</label>
+                            <div class="custom-dropdown" id="vendorsFilterServiceType">
+                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Services</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                <div class="dropdown-options"><div class="dropdown-option" data-value="">All Services</div></div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="data-table-container">
                         <table class="data-table" id="vendorsTable">
                             <thead><tr><th>Company Name</th><th>Contact Name</th><th>Service Type</th><th>Primary Email</th><th>Primary Phone</th><th>Actions</th></tr></thead>
@@ -95,6 +134,11 @@
         let localLeasesMap = {}; // For tenant lease end dates
         let allPlatformUsers = {}; // Cache for all discoverable users
 
+        // Data Caches
+        let tenantsData = [];
+        let ownersData = [];
+        let vendorsData = [];
+
         const DOMElements = {
             addItemBtn: document.getElementById('addItemBtn'),
             tenantModal: document.getElementById('tenantModal'), tenantForm: document.getElementById('tenantForm'),
@@ -115,6 +159,7 @@
             initializeLeasesListener(); // For tenant lease end dates
             initializeUsersListener(); // For linking accounts in modals
             initializeSearchableDropdowns(); // Setup the new searchable dropdowns
+            initializeFilterControls();
             loadDataForActiveSubsection();
             setupEventListeners();
             
@@ -161,7 +206,10 @@
                     });
                     tenantPropertySelect.value = currentVal;
                 }
-                // If Owners can be linked to properties, populate their dropdowns here too
+                
+                // Populate property filter dropdowns
+                populateDynamicDropdown('tenantsFilterProperty', new Set(Object.values(localPropertiesMap)), 'All Properties', localPropertiesMap, true);
+                populateDynamicDropdown('ownersFilterProperty', new Set(Object.values(localPropertiesMap)), 'All Properties', localPropertiesMap, true);
             });
         }
 
@@ -175,7 +223,7 @@
                 });
                 // If tenants table is already loaded, re-render to show updated lease end dates
                 if(document.querySelector('#peopleSubNav .sub-nav-item[data-subsection="tenants"].active')){
-                    loadTenants();
+                    renderTenants();
                 }
             });
         }
@@ -248,6 +296,84 @@
                     optionsContainer.appendChild(optionDiv);
                 }
             });
+        }
+
+        function populateDynamicDropdown(dropdownId, optionsSet, allText, valueMap = null, mapIsReversed = false) {
+            const dropdown = document.getElementById(dropdownId);
+            if (!dropdown) return;
+
+            const optionsContainer = dropdown.querySelector('.dropdown-options');
+            const selectedValueSpan = dropdown.querySelector('.selected-value');
+            const currentValue = dropdown.dataset.value || '';
+            optionsContainer.innerHTML = '';
+
+            const allOption = document.createElement('div');
+            allOption.className = 'dropdown-option';
+            allOption.dataset.value = '';
+            allOption.textContent = allText;
+            optionsContainer.appendChild(allOption);
+
+            Array.from(optionsSet).sort().forEach(optionText => {
+                const option = document.createElement('div');
+                option.className = 'dropdown-option';
+                
+                if (valueMap) {
+                    const key = mapIsReversed 
+                        ? Object.keys(valueMap).find(k => valueMap[k] === optionText)
+                        : optionText;
+                    option.dataset.value = key;
+                } else {
+                    option.dataset.value = optionText;
+                }
+                
+                option.textContent = optionText;
+                optionsContainer.appendChild(option);
+            });
+
+            const currentOption = optionsContainer.querySelector(`.dropdown-option[data-value="${currentValue}"]`);
+            if (currentOption) {
+                selectedValueSpan.textContent = currentOption.textContent;
+                if(optionsContainer.querySelector('.selected')) optionsContainer.querySelector('.selected').classList.remove('selected');
+                currentOption.classList.add('selected');
+            } else {
+                selectedValueSpan.textContent = allText;
+                dropdown.dataset.value = '';
+                if(optionsContainer.firstChild) optionsContainer.firstChild.classList.add('selected');
+            }
+        }
+
+        function initializeFilterControls() {
+            document.querySelectorAll('.controls-container .custom-dropdown').forEach(dropdown => {
+                initializeCustomDropdown(dropdown, () => renderActiveSubsectionData());
+            });
+
+            document.querySelectorAll('.controls-toggle-btn').forEach(btn => {
+                const controlsContainer = btn.nextElementSibling;
+                const arrowIcon = btn.querySelector('.arrow-icon');
+                if (!controlsContainer || !controlsContainer.classList.contains('controls-container')) return;
+                btn.addEventListener('click', () => {
+                    const isExpanded = controlsContainer.style.display === 'flex';
+                    controlsContainer.style.display = isExpanded ? 'none' : 'flex';
+                    if(arrowIcon) arrowIcon.style.transform = isExpanded ? 'rotate(-90deg)' : 'rotate(0deg)';
+                });
+                const isVisibleByDefault = controlsContainer.classList.contains('visible-by-default');
+                if (isVisibleByDefault && window.innerWidth > 768) {
+                    controlsContainer.style.display = 'flex';
+                    if(arrowIcon) arrowIcon.style.transform = 'rotate(0deg)';
+                } else {
+                    controlsContainer.style.display = 'none';
+                    if(arrowIcon) arrowIcon.style.transform = 'rotate(-90deg)';
+                }
+            });
+        }
+
+        function renderActiveSubsectionData() {
+            const activeSubSection = document.querySelector('#peopleSubNav .sub-nav-item.active').dataset.subsection;
+            switch (activeSubSection) {
+                case 'tenants': renderTenants(); break;
+                case 'owners': renderOwners(); break;
+                case 'vendors': renderVendors(); break;
+            }
         }
 
         function loadDataForActiveSubsection() {
@@ -355,14 +481,29 @@
             if (!pageCurrentUserId || !pageDatabase || !DOMElements.tenantsTableBody) return;
             const tenantsRef = commonDependencies.fbRef(pageDatabase, `tenants/${pageCurrentUserId}`);
             onValue(commonDependencies.fbQuery(tenantsRef, commonDependencies.fbOrderByChild('fullName')), (snapshot) => {
-                DOMElements.tenantsTableBody.innerHTML = '';
-                let hasData = false;
+                tenantsData = [];
                 snapshot.forEach(childSnapshot => {
-                    hasData = true;
-                    populateTenantRow({ id: childSnapshot.key, ...childSnapshot.val() });
+                    tenantsData.push({ id: childSnapshot.key, ...childSnapshot.val() });
                 });
-                DOMElements.noTenantsMessage.style.display = hasData ? 'none' : 'flex';
+                renderTenants();
             });
+        }
+
+        function renderTenants() {
+            DOMElements.tenantsTableBody.innerHTML = '';
+            let hasData = false;
+
+            const propertyFilter = document.getElementById('tenantsFilterProperty')?.dataset.value;
+            const filteredData = tenantsData.filter(tenant => {
+                const matchesProperty = !propertyFilter || tenant.propertyId === propertyFilter;
+                return matchesProperty;
+            });
+
+            filteredData.forEach(tenant => {
+                hasData = true;
+                populateTenantRow(tenant);
+            });
+            DOMElements.noTenantsMessage.style.display = hasData ? 'none' : 'flex';
         }
 
         function populateTenantRow(data) {
@@ -398,14 +539,33 @@
             if (!pageCurrentUserId || !pageDatabase || !DOMElements.ownersTableBody) return;
             const ownersRef = commonDependencies.fbRef(pageDatabase, `owners/${pageCurrentUserId}`);
             onValue(commonDependencies.fbQuery(ownersRef, commonDependencies.fbOrderByChild('fullName')), (snapshot) => {
-                DOMElements.ownersTableBody.innerHTML = '';
-                let hasData = false;
+                ownersData = [];
                 snapshot.forEach(childSnapshot => {
-                    hasData = true;
-                    populateOwnerRow({ id: childSnapshot.key, ...childSnapshot.val() });
+                    ownersData.push({ id: childSnapshot.key, ...childSnapshot.val() });
                 });
-                DOMElements.noOwnersMessage.style.display = hasData ? 'none' : 'flex';
+                renderOwners();
             });
+        }
+
+        function renderOwners() {
+            DOMElements.ownersTableBody.innerHTML = '';
+            let hasData = false;
+            
+            // Note: Owner to Property link is not yet established in data model.
+            // This filter is ready for when that link exists (e.g., owner.propertyIds array)
+            const propertyFilter = document.getElementById('ownersFilterProperty')?.dataset.value;
+
+            const filteredData = ownersData.filter(owner => {
+                // const matchesProperty = !propertyFilter || (owner.propertyIds && owner.propertyIds.includes(propertyFilter));
+                // return matchesProperty;
+                return true; // Placeholder until data model is updated
+            });
+
+            filteredData.forEach(owner => {
+                hasData = true;
+                populateOwnerRow(owner);
+            });
+            DOMElements.noOwnersMessage.style.display = hasData ? 'none' : 'flex';
         }
 
         function populateOwnerRow(data) {
@@ -428,14 +588,33 @@
             if (!pageCurrentUserId || !pageDatabase || !DOMElements.vendorsTableBody) return;
             const vendorsRef = commonDependencies.fbRef(pageDatabase, `vendors/${pageCurrentUserId}`);
             onValue(commonDependencies.fbQuery(vendorsRef, commonDependencies.fbOrderByChild('companyName')), (snapshot) => {
-                DOMElements.vendorsTableBody.innerHTML = '';
-                let hasData = false;
+                vendorsData = [];
+                const serviceTypes = new Set();
                 snapshot.forEach(childSnapshot => {
-                    hasData = true;
-                    populateVendorRow({ id: childSnapshot.key, ...childSnapshot.val() });
+                    const vendor = { id: childSnapshot.key, ...childSnapshot.val() };
+                    vendorsData.push(vendor);
+                    if (vendor.serviceType) serviceTypes.add(vendor.serviceType);
                 });
-                DOMElements.noVendorsMessage.style.display = hasData ? 'none' : 'flex';
+                populateDynamicDropdown('vendorsFilterServiceType', serviceTypes, 'All Services');
+                renderVendors();
             });
+        }
+
+        function renderVendors() {
+            DOMElements.vendorsTableBody.innerHTML = '';
+            let hasData = false;
+
+            const serviceTypeFilter = document.getElementById('vendorsFilterServiceType')?.dataset.value;
+            const filteredData = vendorsData.filter(vendor => {
+                const matchesService = !serviceTypeFilter || vendor.serviceType === serviceTypeFilter;
+                return matchesService;
+            });
+
+            filteredData.forEach(vendor => {
+                hasData = true;
+                populateVendorRow(vendor);
+            });
+            DOMElements.noVendorsMessage.style.display = hasData ? 'none' : 'flex';
         }
 
         function populateVendorRow(data) {
