@@ -82,12 +82,62 @@ async function updateData({ dataType, itemId, updates }, uid) {
     }
 }
 
+/**
+ * A generic function to create a new data record in the Firebase Realtime Database.
+ * @param {object} params The parameters for the function call.
+ * @param {string} params.dataType The top-level key for the data.
+ * @param {object} params.newData The data for the new record.
+ * @param {string} uid The user's UID.
+ * @returns {Promise<object>} A promise that resolves to the new item's ID or an error message.
+ */
+async function createData({ dataType, newData }, uid) {
+    try {
+        const db = admin.database();
+        const listRef = db.ref(`/${dataType}/${uid}`);
+        
+        // Add timestamps for creation and update
+        const timestamp = admin.database.ServerValue.TIMESTAMP;
+        newData.createdAt = timestamp;
+        newData.updatedAt = timestamp;
+
+        const newItemRef = listRef.push();
+        await newItemRef.set(newData);
+        
+        return { result: `Successfully created new ${dataType} with ID ${newItemRef.key}.`, newItemId: newItemRef.key };
+    } catch (error) {
+        console.error(`Error in createData for dataType ${dataType}:`, error);
+        return { error: `Failed to create new data. Details: ${error.message}` };
+    }
+}
+
+/**
+ * A generic function to delete a data record from the Firebase Realtime Database.
+ * @param {object} params The parameters for the function call.
+ * @param {string} params.dataType The top-level key for the data.
+ * @param {string} params.itemId The ID of the item to delete.
+ * @param {string} uid The user's UID.
+ * @returns {Promise<object>} A promise that resolves to a success or error message.
+ */
+async function deleteData({ dataType, itemId }, uid) {
+    try {
+        const db = admin.database();
+        const itemRef = db.ref(`/${dataType}/${uid}/${itemId}`);
+        
+        await itemRef.remove();
+        return { result: `Successfully deleted ${dataType} with ID ${itemId}.` };
+    } catch (error) {
+        console.error(`Error in deleteData for dataType ${dataType}:`, error);
+        return { error: `Failed to delete data. Details: ${error.message}` };
+    }
+}
+
 
 // This map holds the actual functions that will be executed.
 const toolImplementations = {
     getData,
     updateData,
-    // You can add createData and deleteData here in the future.
+    createData,
+    deleteData,
 };
 
 module.exports = { toolImplementations }; 

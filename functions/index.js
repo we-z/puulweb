@@ -77,6 +77,43 @@ const serverSideTools = [
             },
             "required": ["dataType", "itemId", "updates"]
         }
+    },
+    {
+        "name": "createData",
+        "description": "Creates a new data record in the user's database.",
+        "parameters": {
+            "type": "OBJECT",
+            "properties": {
+                "dataType": {
+                    "type": "STRING",
+                    "description": "The type of data to create, e.g., 'workOrders', 'tenants'."
+                },
+                "newData": {
+                    "type": "OBJECT",
+                    "description": "An object representing the new record to create.",
+                    "properties": {}
+                }
+            },
+            "required": ["dataType", "newData"]
+        }
+    },
+    {
+        "name": "deleteData",
+        "description": "Deletes a specific data record from the user's database.",
+        "parameters": {
+            "type": "OBJECT",
+            "properties": {
+                "dataType": {
+                    "type": "STRING",
+                    "description": "The type of data to delete, e.g., 'workOrders', 'leases'."
+                },
+                "itemId": {
+                    "type": "STRING",
+                    "description": "The unique ID of the item to be deleted."
+                }
+            },
+            "required": ["dataType", "itemId"]
+        }
     }
 ];
 
