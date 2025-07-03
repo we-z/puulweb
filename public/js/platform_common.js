@@ -859,7 +859,7 @@ onAuthStateChanged(auth, async (user) => {
         
         // If a page-specific init function is waiting, call it now that we're authenticated.
         if (typeof pageInitCallback === 'function') {
-            pageInitCallback(user.uid, database, ref, push, set, remove, serverTimestamp, query, orderByChild, equalTo, getDbData, updateDbData, showAlert, showConfirm, editIconSVG, deleteIconSVG, initializeSearchableDropdown, getFunctions, httpsCallable);
+            pageInitCallback(user.uid, database, ref, push, set, remove, serverTimestamp, query, orderByChild, equalTo, getDbData, updateDbData, showAlert, showConfirm, editIconSVG, deleteIconSVG, initializeSearchableDropdown, initializeSimpleDropdown, getFunctions, httpsCallable);
         }
     } else {
         currentUserId = null;
