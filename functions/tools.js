@@ -100,6 +100,24 @@ async function createData({ dataType, newData }, uid) {
         newData.createdAt = timestamp;
         newData.updatedAt = timestamp;
 
+        if (dataType === 'workOrders') {
+            const snapshot = await listRef.once('value');
+            const allWorkOrders = snapshot.val() || {};
+            let maxId = 0;
+            Object.keys(allWorkOrders).forEach(id => {
+                if (id.toLowerCase().startsWith('wo_')) {
+                    const numPart = parseInt(id.substring(3), 10);
+                    if (!isNaN(numPart) && numPart > maxId) {
+                        maxId = numPart;
+                    }
+                }
+            });
+            const newWorkOrderId = `wo_${maxId + 1}`;
+            const newItemRef = db.ref(`/${dataType}/${uid}/${newWorkOrderId}`);
+            await newItemRef.set(newData);
+            return { result: `Successfully created new ${dataType} with ID ${newWorkOrderId}.`, newItemId: newWorkOrderId };
+        }
+
         const newItemRef = listRef.push();
         await newItemRef.set(newData);
         

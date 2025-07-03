@@ -1211,8 +1211,20 @@
                             showAlert('Work order updated successfully!');
                         } else { 
                             workOrderData.createdAt = commonDependencies.fbServerTimestamp();
-                            const workOrdersRef = commonDependencies.fbRef(pageDatabase, `workOrders/${pageCurrentUserId}`);
-                            await commonDependencies.fbPush(workOrdersRef, workOrderData);
+                            
+                            let maxId = 0;
+                            workOrdersData.forEach(wo => {
+                                if (wo.id && wo.id.toLowerCase().startsWith('wo_')) {
+                                    const numPart = parseInt(wo.id.substring(3), 10);
+                                    if (!isNaN(numPart) && numPart > maxId) {
+                                        maxId = numPart;
+                                    }
+                                }
+                            });
+                            const newWorkOrderId = `wo_${maxId + 1}`;
+
+                            const workOrdersRef = commonDependencies.fbRef(pageDatabase, `workOrders/${pageCurrentUserId}/${newWorkOrderId}`);
+                            await commonDependencies.fbSet(workOrdersRef, workOrderData);
                             showAlert('Work order added successfully!');
                         }
                         if(pageDOMElements.workOrderModal) pageDOMElements.workOrderModal.style.display = 'none';
@@ -1289,7 +1301,7 @@
             row.setAttribute('data-id', wo.id);
 
             const idCell = row.insertCell();
-            idCell.textContent = wo.id ? wo.id.substring(wo.id.length - 6).toUpperCase() : 'N/A';
+            idCell.textContent = wo.id || 'N/A';
             idCell.title = wo.id; // Show full ID on hover
             idCell.style.fontFamily = 'monospace';
             idCell.style.fontSize = '0.85em';
