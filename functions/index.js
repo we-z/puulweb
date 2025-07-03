@@ -80,7 +80,7 @@ const serverSideTools = [
     },
     {
         "name": "createData",
-        "description": "Creates a new data record in the user's database.",
+        "description": "Creates a new data record in the user's database. For work orders, the 'newData' object should include fields like 'title', 'status', and 'priority'. For example: { \"title\": \"Fix leaky faucet\", \"status\": \"Open\", \"priority\": \"High\" }",
         "parameters": {
             "type": "OBJECT",
             "properties": {
@@ -386,8 +386,13 @@ exports.generateGeminiResponse = functions.https.onCall(async (data, context) =>
                 conversationHistory.push({ role: 'model', parts: [{ functionCall }] });
 
                 // Execute the tool
-                const toolResult = await toolImplementations[functionName](functionArgs, uid);
+                let toolResult = await toolImplementations[functionName](functionArgs, uid);
 
+                // Add specific advice for certain successful tool calls
+                if (functionName === 'createData' && functionArgs.dataType === 'workOrders' && !toolResult.error) {
+                    toolResult.result += " Please go in and select the property for the work order from the dropdown menu.";
+                }
+                
                 // Append the tool's result to the history
                 conversationHistory.push({
                     role: 'function',
