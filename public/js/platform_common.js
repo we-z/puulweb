@@ -492,15 +492,6 @@ function setupPageLayoutAndInteractivity() {
 
     // Remove the FOUC-prevention class now that the JS has loaded and can take over.
     document.documentElement.classList.remove('js-loading');
-    
-    // Check for and execute any post-navigation actions requested by the AI
-    const nextActionJSON = sessionStorage.getItem('aiNextAction');
-    if (nextActionJSON) {
-        sessionStorage.removeItem('aiNextAction'); // Clear the action so it doesn't run again
-        const nextAction = JSON.parse(nextActionJSON);
-        console.log('[AI Agent] Executing post-navigation action:', nextAction);
-        executeTool(nextAction.tool, nextAction.args);
-    }
 }
 
 // --- AI Agent Chat Logic ---
@@ -555,26 +546,7 @@ async function handleAgentQuery(history) {
             set(ref(database, `aiConversations/${currentUserId}/${conversationId}`), conversationHistory);
         }
 
-        if (result.data.functionCall) {
-            // This is a UI-only tool that needs to be executed on the client.
-            const functionCall = result.data.functionCall;
-            const functionName = functionCall.name;
-            const args = functionCall.args;
-
-            let friendlyMessage = `Executing ${functionName}...`;
-            if (functionName === 'navigateToPage') {
-                friendlyMessage = `Navigating to the ${args.pageName} page...`;
-            } else if (functionName === 'filterTable') {
-                friendlyMessage = `Okay, filtering ${args.page} by ${args.filterBy} for '${args.value}'.`;
-            } else if (functionName === 'openAddItemModal') {
-                friendlyMessage = `Okay, opening the form to add a new ${args.itemType}.`;
-            }
-            addMessageToChat(friendlyMessage, 'agent');
-            
-            // Execute the client-side tool.
-            await executeTool(functionName, args);
-
-        } else if (result.data.response) {
+        if (result.data.response) {
             // The server has done all the work and returned a final text response.
             const agentResponse = result.data.response;
             addMessageToChat(agentResponse, 'agent');
@@ -593,138 +565,6 @@ async function handleAgentQuery(history) {
         AI_DOMElements.input.disabled = false;
         AI_DOMElements.input.focus();
     }
-}
-
-// --- Client-Side Tool/Function Execution ---
-async function executeTool(functionName, args) {
-    console.log(`[AI Agent] Attempting to execute tool: ${functionName}`, args);
-    let result = { success: true, message: `Executed ${functionName}` };
-    try {
-        switch (functionName) {
-            case 'navigateToPage':
-                const page = args.pageName.toLowerCase();
-                const validPages = ['dashboard', 'calendar', 'leasing', 'properties', 'people', 'accounting', 'maintenance', 'reporting', 'communication', 'settings'];
-                if (validPages.includes(page)) {
-                    window.location.assign(`/platform_${page}.html`);
-                } else {
-                    console.error(`[AI Agent] Navigation failed: Page '${page}' not found.`);
-                    result = { success: false, message: `Page '${page}' not found.` };
-                }
-                break;
-            
-            case 'filterTable':
-                const { page: filterPage, filterBy, value } = args;
-                const dropdownIdMap = {
-                    maintenance: {
-                        status: 'customFilterStatus',
-                        priority: 'customFilterPriority',
-                        property: 'customFilterProperty'
-                    },
-                    properties: {
-                        type: 'customFilterPropertyType'
-                    }
-                };
-                const dropdownId = dropdownIdMap[filterPage.toLowerCase()]?.[filterBy.toLowerCase()];
-                
-                if (dropdownId) {
-                    const dropdown = document.getElementById(dropdownId);
-                    if (dropdown) {
-                        const option = dropdown.querySelector(`.dropdown-option[data-value="${value}"]`);
-                        if (option) {
-                            // This is a direct simulation of the simple dropdown's logic
-                            const selectedValueSpan = dropdown.querySelector('.selected-value');
-                            const allOptions = dropdown.querySelectorAll('.dropdown-option');
-                            
-                            if (selectedValueSpan) selectedValueSpan.textContent = option.textContent;
-                            dropdown.dataset.value = option.dataset.value;
-                            
-                            allOptions.forEach(opt => opt.classList.remove('selected'));
-                            option.classList.add('selected');
-                            
-                            // Manually trigger the reload logic associated with the filter
-                            const reloadFunction = window.loadWorkOrders || window.loadProperties;
-                            if (typeof reloadFunction === 'function') {
-                                reloadFunction();
-                                result.message = `Successfully filtered ${filterPage} by ${filterBy} for '${value}'`;
-                            } else {
-                                console.warn("[AI Agent] Could not find a data reload function on the window object.");
-                                result = { success: false, message: "Could not visually update the table, but filter was set."};
-                            }
-                        } else {
-                            console.error(`[AI Agent] Filter failed: Value '${value}' not found in dropdown '${dropdownId}'.`);
-                            result = { success: false, message: `Value '${value}' not found for filter '${filterBy}'` };
-                        }
-                    } else {
-                        console.error(`[AI Agent] Filter failed: Dropdown element '${dropdownId}' not found.`);
-                        result = { success: false, message: `Filter dropdown '${dropdownId}' not found on page '${filterPage}'` };
-                    }
-                } else {
-                     console.error(`[AI Agent] Filter failed: No filter mapping for page '${filterPage}' and filterBy '${filterBy}'.`);
-                     result = { success: false, message: `Filter '${filterBy}' not available on page '${filterPage}'` };
-                }
-                break;
-
-            case 'openAddItemModal':
-                const { itemType } = args;
-
-                // If the user isn't on the right page, navigate first and queue this action.
-                const requiredPage = getPageForItemType(itemType);
-                if (requiredPage && currentPageContext !== requiredPage) {
-                    sessionStorage.setItem('aiNextAction', JSON.stringify({ tool: 'openAddItemModal', args: { itemType } }));
-                    await executeTool('navigateToPage', { pageName: requiredPage });
-                    return { success: true, message: `Navigating to ${requiredPage} to open modal...` };
-                }
-
-                // If on the correct page, find the right sub-tab and click the FAB.
-                const subNavSelector = getSubNavSelector(itemType);
-                if (subNavSelector) {
-                    const subNavItem = document.querySelector(subNavSelector);
-                    if (subNavItem) subNavItem.click();
-                    await new Promise(r => setTimeout(r, 150)); // Wait for UI
-                }
-                
-                const fab = document.getElementById('addItemBtn');
-                if (fab) {
-                    fab.click();
-                } else {
-                    result = { success: false, message: "Could not find the 'Add' button." };
-                }
-                break;
-
-            default:
-                console.error(`[AI Agent] Unknown function call: ${functionName}`);
-                result = { success: false, message: `Unknown function: ${functionName}` };
-        }
-    } catch(e) {
-        console.error(`Error executing tool ${functionName}:`, e);
-        result = { success: false, message: `Client-side error executing ${functionName}: ${e.message}`};
-    }
-    return result;
-}
-
-function getPageForItemType(itemType) {
-    if (itemType.includes('workOrder') || itemType.includes('inspection')) return 'maintenance';
-    if (itemType.includes('tenant') || itemType.includes('owner') || itemType.includes('vendor')) return 'people';
-    if (itemType.includes('lease') || itemType.includes('propert')) return 'leasing';
-    if (itemType.includes('receivable') || itemType.includes('payable') || itemType.includes('journal')) return 'accounting';
-    return null;
-}
-
-function getSubNavSelector(itemType) {
-    const map = {
-        workOrders: '#maintenanceSubNav .sub-nav-item[data-subsection="workOrders"]',
-        recurringWorkOrders: '#maintenanceSubNav .sub-nav-item[data-subsection="recurringWorkOrders"]',
-        inspections: '#maintenanceSubNav .sub-nav-item[data-subsection="inspections"]',
-        tenants: '#peopleSubNav .sub-nav-item[data-subsection="tenants"]',
-        owners: '#peopleSubNav .sub-nav-item[data-subsection="owners"]',
-        vendors: '#peopleSubNav .sub-nav-item[data-subsection="vendors"]',
-        properties: '#leasingSubNav .sub-nav-item[data-subsection="vacancies"]',
-        leases: '#leasingSubNav .sub-nav-item[data-subsection="leases"]',
-        receivables: '#accountingSubNav .sub-nav-item[data-subsection="receivables"]',
-        payables: '#accountingSubNav .sub-nav-item[data-subsection="payables"]',
-        journalEntries: '#accountingSubNav .sub-nav-item[data-subsection="journalEntries"]'
-    };
-    return map[itemType] || null;
 }
 
 // Helper function to initialize searchable dropdowns

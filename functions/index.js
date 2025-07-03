@@ -35,59 +35,6 @@ try {
 const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
 // Define the tools the AI can use. We separate them into client-side and server-side.
-const clientSideTools = [
-    {
-        "name": "navigateToPage",
-        "description": "Navigates the user to a specific page in the application.",
-        "parameters": {
-            "type": "OBJECT",
-            "properties": {
-                "pageName": {
-                    "type": "STRING",
-                    "description": "The name of the page to navigate to. Must be one of: dashboard, calendar, leasing, properties, people, accounting, maintenance, reporting, communication, settings."
-                }
-            },
-            "required": ["pageName"]
-        }
-    },
-    {
-        "name": "filterTable",
-        "description": "Applies a filter to the data table currently visible on the page.",
-        "parameters": {
-            "type": "OBJECT",
-            "properties": {
-                 "page": {
-                    "type": "STRING",
-                    "description": "The page the user is currently on, to identify the correct table. E.g., 'maintenance', 'leasing'."
-                },
-                "filterBy": {
-                    "type": "STRING",
-                    "description": "The field or category to filter by (e.g., 'status', 'priority')."
-                },
-                "value": {
-                    "type": "STRING",
-                    "description": "The specific value to filter for (e.g., 'Open', 'High', 'Active')."
-                }
-            },
-            "required": ["page", "filterBy", "value"]
-        }
-    },
-    {
-        "name": "openAddItemModal",
-        "description": "Opens the modal window used to add a new item on the current page.",
-        "parameters": {
-             "type": "OBJECT",
-            "properties": {
-                "itemType": {
-                    "type": "STRING",
-                    "description": "The type of item to add, which corresponds to the subsection on a page. E.g., 'workOrders', 'tenants', 'leases', 'properties'."
-                }
-            },
-            "required": ["itemType"]
-        }
-    }
-];
-
 const serverSideTools = [
     {
         "name": "getData",
@@ -135,7 +82,7 @@ const serverSideTools = [
 
 
 const allTools = [{
-    "functionDeclarations": [...clientSideTools, ...serverSideTools]
+    "functionDeclarations": [...serverSideTools]
 }];
 
 exports.onUserCreate = functions.auth.user().onCreate(async (user) => {
@@ -412,12 +359,11 @@ exports.generateGeminiResponse = functions.https.onCall(async (data, context) =>
 
                 // Continue to the next iteration of the loop to get the final text response
             } else {
-                 // If it's not a server-side tool, assume it's a client-side tool.
-                 // Return it to the client for execution.
-                 console.log(`Returning client-side tool to client: ${functionName}`, functionArgs);
-                 // Append the function call to history before returning it to the client
-                 conversationHistory.push({ role: 'model', parts: [{ functionCall }] });
-                 return { functionCall: functionCall, updatedHistory: conversationHistory };
+                 // The model tried to call a tool that doesn't exist on the server.
+                 console.error(`Error: Model attempted to call unimplemented tool: ${functionName}`);
+                 const finalResponse = "I'm sorry, I can't perform that action. I can only read and update data from your database.";
+                 conversationHistory.push({ role: 'model', parts: [{ text: finalResponse }] });
+                 return { response: finalResponse, updatedHistory: conversationHistory };
             }
         }
         
