@@ -1504,19 +1504,19 @@ html.ai-agent-is-open .ai-agent-toggle-btn .icon {
     padding: 20px;
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 20px;
 }
 
 .ai-message {
     display: flex;
-    max-width: 90%;
+    max-width: 100%;
 }
 
 .ai-message .message-content {
     background-color: transparent;
-    padding: 10px 15px;
+    padding: 0px;
     border-radius: 21px;
-    font-size: 0.95rem;
+    font-size: 1rem;
     color: #000000;
 }
 
@@ -1528,6 +1528,7 @@ html.ai-agent-is-open .ai-agent-toggle-btn .icon {
 .ai-message.user .message-content {
     background-color: #000000;
     color: #ffffff;
+    padding: 10px 15px;
 }
 
 .suggestion-card {
