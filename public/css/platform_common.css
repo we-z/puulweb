@@ -705,10 +705,6 @@ html.ai-agent-is-open .fab {
     margin-right: 15px; /* Spacing between button and title */
 }
 
-.sidebar-toggle-btn:hover {
-    background-color: #f0f2f5; /* A light hover effect */
-}
-
 /* State 1: Sidebar is COLLAPSED. Button has '.open' class (hamburger icon). */
 /* No special positioning needed anymore. */
 
