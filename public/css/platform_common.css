@@ -1206,7 +1206,7 @@ html.ai-agent-is-open .fab {
     border-left: 1px solid #e0e0e0;
     display: flex;
     flex-direction: column;
-    transition: padding 0.3s ease;
+    transition: width 0.3s ease, padding 0.3s ease;
     box-sizing: border-box;
     position: relative;
     box-shadow: -2px 0 5px rgba(0,0,0,0.05);
