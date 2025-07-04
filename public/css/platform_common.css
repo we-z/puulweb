@@ -1509,22 +1509,7 @@ html.ai-agent-is-open .ai-agent-toggle-btn .icon {
 
 .ai-message {
     display: flex;
-    gap: 10px;
     max-width: 90%;
-}
-
-.ai-message .avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background-color: #e9ecef;
-    color: #495057;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 500;
-    font-size: 0.9rem;
-    flex-shrink: 0;
 }
 
 .ai-message .message-content {
@@ -1543,10 +1528,6 @@ html.ai-agent-is-open .ai-agent-toggle-btn .icon {
 .ai-message.user .message-content {
     background-color: #000000;
     color: #ffffff;
-}
-.ai-message.user .avatar {
-    background-color: #ced4da;
-    color: #343a40;
 }
 
 .suggestion-card {

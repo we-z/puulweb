@@ -505,10 +505,6 @@ function addMessageToChat(content, type, isSuggestion = false) {
 
     const messageDiv = document.createElement('div');
     messageDiv.classList.add('ai-message', type);
-    
-    const avatar = document.createElement('div');
-    avatar.className = 'avatar';
-    avatar.textContent = type === 'user' ? 'You' : 'AI';
 
     const messageContent = document.createElement('div');
     messageContent.className = 'message-content';
@@ -522,7 +518,6 @@ function addMessageToChat(content, type, isSuggestion = false) {
         messageContent.appendChild(p);
     }
     
-    messageDiv.appendChild(avatar);
     messageDiv.appendChild(messageContent);
     AI_DOMElements.chatArea.appendChild(messageDiv);
     AI_DOMElements.chatArea.scrollTop = AI_DOMElements.chatArea.scrollHeight;
