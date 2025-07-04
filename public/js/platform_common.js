@@ -202,18 +202,32 @@ function renderConversation(history) {
     const messagesToRender = history.slice(1);
 
     messagesToRender.forEach(message => {
-        // We only render user messages and model's text responses.
-        // Function call requests/responses are part of the logic but not explicitly rendered.
         if (message.role === 'user') {
             addMessageToChat(message.parts[0].text, 'user');
-        } else if (message.role === 'model' && message.parts[0].text) {
-            // It's possible the loading indicator is still there if an error occurs
-            // before it's normally removed. Let's check and remove it.
-            const existingLoading = AI_DOMElements.chatArea.querySelector('.loading-dots');
-            if(existingLoading) existingLoading.closest('.ai-message').remove();
-            
-            addMessageToChat(message.parts[0].text, 'agent');
+        } else if (message.role === 'model') {
+            const part = message.parts[0];
+            if (part.text) {
+                const existingLoading = AI_DOMElements.chatArea.querySelector('.loading-dots');
+                if(existingLoading) existingLoading.closest('.ai-message').remove();
+                addMessageToChat(part.text, 'agent');
+            } else if (part.functionCall) {
+                const toolName = part.functionCall.name;
+                const toolArgs = part.functionCall.args;
+                // Using a simple icon for now.
+                const toolIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="width: 1.2em; height: 1.2em; margin-right: 8px; flex-shrink: 0;"><path fill-rule="evenodd" d="M10 3a1 1 0 00-1 1v1.172l-3.414 3.414A2 2 0 005 10.172V13a1 1 0 102 0v-2.828l2.586-2.586a1 1 0 011.414 0L13 9.172V12a1 1 0 102 0V8.586a2 2 0 00-.586-1.414L11.707 4.46A1.002 1.002 0 0011 4.172V4a1 1 0 00-1-1zM4.293 13.293a1 1 0 011.414 0L7 14.586l1.293-1.293a1 1 0 111.414 1.414L8.414 16l1.293 1.293a1 1 0 01-1.414 1.414L7 17.414l-1.293 1.293a1 1 0 01-1.414-1.414L5.586 16 4.293 14.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>`;
+                const toolDisplay = `
+                    <div class="tool-call" style="padding: 12px; background-color: rgba(0,0,0,0.05); border-radius: 8px;">
+                        <div class="tool-call-header" style="display: flex; align-items: center; font-weight: 500; color: #333;">
+                            ${toolIcon}
+                            <span>Using tool: <strong>${toolName}</strong></span>
+                        </div>
+                        <pre class="tool-args" style="background-color: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.1); border-radius: 4px; padding: 8px; margin-top: 8px; font-family: monospace; font-size: 0.85em; white-space: pre-wrap; word-break: break-all;"><code>${JSON.stringify(toolArgs, null, 2)}</code></pre>
+                    </div>
+                `;
+                addMessageToChat(toolDisplay, 'agent', true);
+            }
         }
+        // We explicitly do not render function *responses* to keep the chat clean.
     });
 }
 
@@ -551,13 +565,10 @@ async function handleAgentQuery(history) {
             conversationHistory = serverHistory;
             // Save the complete history to Firebase.
             set(ref(database, `aiConversations/${currentUserId}/${conversationId}`), conversationHistory);
-        }
-
-        if (result.data.response) {
-            // The server has done all the work and returned a final text response.
-            const agentResponse = result.data.response;
-            addMessageToChat(agentResponse, 'agent');
-            // The history, including this final message, has already been updated and saved.
+             // Re-render the conversation to show all steps, including tool calls.
+            renderConversation(conversationHistory);
+        } else if (result.data.response) { // Fallback for old format or errors
+            addMessageToChat(result.data.response, 'agent');
         } else {
             addMessageToChat("I'm not sure how to respond to that. Can you try rephrasing?", 'agent');
         }
