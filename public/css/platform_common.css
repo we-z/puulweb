@@ -1515,7 +1515,7 @@ html.ai-agent-is-open .ai-agent-toggle-btn .icon {
 .ai-message .message-content {
     background-color: transparent;
     padding: 10px 15px;
-    border-radius: 12px;
+    border-radius: 21px;
     font-size: 0.95rem;
     color: #000000;
 }
