@@ -213,12 +213,12 @@ function renderConversation(history) {
             } else if (part.functionCall) {
                 const toolName = part.functionCall.name;
                 const toolArgs = part.functionCall.args;
-                // Using a simple icon for now.
-                const toolIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="width: 1.2em; height: 1.2em; margin-right: 8px; flex-shrink: 0;"><path fill-rule="evenodd" d="M10 3a1 1 0 00-1 1v1.172l-3.414 3.414A2 2 0 005 10.172V13a1 1 0 102 0v-2.828l2.586-2.586a1 1 0 011.414 0L13 9.172V12a1 1 0 102 0V8.586a2 2 0 00-.586-1.414L11.707 4.46A1.002 1.002 0 0011 4.172V4a1 1 0 00-1-1zM4.293 13.293a1 1 0 011.414 0L7 14.586l1.293-1.293a1 1 0 111.414 1.414L8.414 16l1.293 1.293a1 1 0 01-1.414 1.414L7 17.414l-1.293 1.293a1 1 0 01-1.414-1.414L5.586 16 4.293 14.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>`;
+                // Using a simple gear emoji to avoid all SVG rendering and cropping issues.
+                const toolEmoji = '⚙️';
                 const toolDisplay = `
                     <div class="tool-call" style="padding: 12px; background-color: rgba(0,0,0,0.05); border-radius: 8px;">
                         <div class="tool-call-header" style="display: flex; align-items: center; font-weight: 500; color: #333;">
-                            ${toolIcon}
+                            <span style="font-size: 1.3em; margin-right: 8px; line-height: 1;">${toolEmoji}</span>
                             <span>Using tool: <strong>${toolName}</strong></span>
                         </div>
                         <pre class="tool-args" style="background-color: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.1); border-radius: 4px; padding: 8px; margin-top: 8px; font-family: monospace; font-size: 0.85em; white-space: pre-wrap; word-break: break-all;"><code>${JSON.stringify(toolArgs, null, 2)}</code></pre>
@@ -565,8 +565,39 @@ async function handleAgentQuery(history) {
             conversationHistory = serverHistory;
             // Save the complete history to Firebase.
             set(ref(database, `aiConversations/${currentUserId}/${conversationId}`), conversationHistory);
-             // Re-render the conversation to show all steps, including tool calls.
-            renderConversation(conversationHistory);
+
+            // Find if a tool was used in the latest turn to provide better UX
+            let lastUserIndex = -1;
+            for (let i = serverHistory.length - 1; i >= 0; i--) {
+                if (serverHistory[i].role === 'user') {
+                    lastUserIndex = i;
+                    break;
+                }
+            }
+            const turnHistory = lastUserIndex !== -1 ? serverHistory.slice(lastUserIndex) : [];
+            const functionCallMsg = turnHistory.find(msg => msg.role === 'model' && msg.parts[0].functionCall);
+
+            if (functionCallMsg) {
+                // A tool was used. Animate the display for better UX.
+                const toolName = functionCallMsg.parts[0].functionCall.name;
+                const toolLoadingMessage = addMessageToChat(
+                    `<div style="display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 4px;">
+                        <div>Calling <strong>${toolName}</strong></div>
+                        <div class="loading-dots" style="margin: 0 auto;"><span></span><span></span><span></span></div>
+                     </div>`,
+                    'agent',
+                    true
+                );
+                
+                // Wait a moment to simulate the call before showing the result.
+                await new Promise(res => setTimeout(res, 1200));
+                
+                toolLoadingMessage.remove();
+                renderConversation(conversationHistory); // Render the final state
+            } else {
+                // No tool was used, just render the final state immediately.
+                renderConversation(conversationHistory);
+            }
         } else if (result.data.response) { // Fallback for old format or errors
             addMessageToChat(result.data.response, 'agent');
         } else {
