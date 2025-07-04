@@ -1580,10 +1580,10 @@ html.ai-agent-is-open .ai-agent-toggle-btn .icon {
     max-height: 120px; /* Limit max height */
     box-sizing: border-box;
 }
+
 #ai-message-input:focus {
     outline: none;
-    border-color: #86b7fe;
-    box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.25);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 1);
 }
 
 #ai-send-btn {
@@ -1799,11 +1799,6 @@ html.js-loading #sidebar-container {
 
 .suggestion-card p {
     margin: 0 0 10px 0;
-}
-#ai-message-input:focus {
-    outline: none;
-    border-color: #a0aec0;
-    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.25);
 }
 
 #ai-send-btn {
