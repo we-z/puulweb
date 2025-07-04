@@ -432,20 +432,14 @@ function setupPageLayoutAndInteractivity() {
         menuToggleBtn.setAttribute('aria-expanded', 'true');
         menuToggleBtn.innerHTML = `<div class="menu-icon"><span></span><span></span><span></span></div>`;
         
-        // Ensure the wrapper exists and prepend the main sidebar toggle to it
-        let toggleWrapper = contentHeader.querySelector('.toggle-button-wrapper');
-        if (!toggleWrapper) {
-            toggleWrapper = document.createElement('div');
-            toggleWrapper.className = 'toggle-button-wrapper';
-            toggleWrapper.style.display = 'flex';
-            toggleWrapper.style.alignItems = 'center';
-            toggleWrapper.style.gap = '10px';
-             contentHeader.appendChild(toggleWrapper);
+        // Place the button directly in the header, before the title.
+        const titleElement = contentHeader.querySelector('h2');
+        if (titleElement) {
+            titleElement.insertAdjacentElement('beforebegin', menuToggleBtn);
+        } else {
+            // Fallback: if no h2, put it at the start of the header.
+            contentHeader.prepend(menuToggleBtn);
         }
-        toggleWrapper.prepend(menuToggleBtn); // Prepend so it appears before the AI toggle
-
-        // Adjust the header to accommodate the wrapper
-        contentHeader.insertBefore(toggleWrapper, contentHeader.querySelector('h2').nextSibling);
     }
 
     menuToggleBtn.addEventListener('click', () => {

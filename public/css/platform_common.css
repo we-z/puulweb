@@ -199,13 +199,8 @@ body {
     justify-content: space-between; /* This will push the agent toggle to the right */
 }
 
-/* Add left padding to content-header when sidebar is collapsed to make space for the fixed toggle button */
-html.sidebar-is-collapsed .content-header {
-    padding-left: 70px; /* 15px (button left) + 40px (button width) + 15px (gap) */
-}
-
 .content-header h2 {
-    margin: 0; /* Remove left margin, button is out of flow */
+    margin: 0;
     font-size: 1.8rem;
     font-weight: 600;
     color: #1a202c;
@@ -695,43 +690,30 @@ html.ai-agent-is-open .fab {
 
 /* Sidebar Toggle Button */
 .sidebar-toggle-btn {
-    /* Original kept: */
     border: none;
     cursor: pointer;
-    padding: 0px; 
-    width: 40px; 
-    height: 40px; 
+    padding: 0;
+    width: 40px;
+    height: 40px;
     outline: none;
-    /* display: flex; flex-direction: column; justify-content: space-around; */ /* No longer needed for this structure */
-
-    /* Adopted from mobile / new requirements: */
-    position: fixed;
-    top: 15px;
-    z-index: 1010; 
-    background: rgba(255, 255, 255, 0.8); /* Default appearance, overridden by :not(.open) */
-    backdrop-filter: blur(5px); /* Default appearance, overridden by :not(.open) */
-    border-radius: 50%; /* Default appearance */
+    background: transparent;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    /* margin-right: 15px; -- REMOVED */
-    /* position: relative; -- REMOVED */
+    transition: background-color 0.2s ease;
+    margin-right: 15px; /* Spacing between button and title */
+}
+
+.sidebar-toggle-btn:hover {
+    background-color: #f0f2f5; /* A light hover effect */
 }
 
 /* State 1: Sidebar is COLLAPSED. Button has '.open' class (hamburger icon). */
-.sidebar-toggle-btn.open {
-    left: 15px; /* Positioned at the left edge of the screen */
-    /* Inherits background, backdrop-filter, border-radius from the main .sidebar-toggle-btn rule */
-}
+/* No special positioning needed anymore. */
 
 /* State 2: Sidebar is OPEN. Button does NOT have '.open' class (chevron icon). */
-.sidebar-toggle-btn:not(.open) {
-    left: calc(240px - 40px - 15px); /* Position inside the open sidebar */
-    background: transparent; /* Specific for this state */
-    backdrop-filter: none; /* Remove blur if it was inherited */
-    box-shadow: none; /* Specific for this state */
-    /* border-radius is inherited, so it remains 50% */
-}
+/* No special positioning needed anymore. */
 
 /* Hamburger icon bars from index.html, adapted for sidebar toggle */
 .sidebar-toggle-btn .menu-icon {
