@@ -1191,214 +1191,6 @@ html.ai-agent-is-open .fab {
     color: #fff;
 }
 
-/* --- Dark Mode Styles --- */
-body.dark {
-    background-color: #1a202c; /* Dark background for the whole page */
-    color: #e2e8f0; /* Lighter text for dark mode */
-}
-
-.dark #sidebar-container,
-.dark .sidebar {
-    background-color: #2d3748; /* Darker sidebar */
-    border-right-color: #4a5568;
-    color: #e2e8f0;
-}
-
-.dark .logo {
-    color: #ffffff;
-}
-
-.dark .nav-menu li a {
-    color: #cbd5e0; /* Lighter gray for nav links */
-}
-
-.dark .nav-menu li a:hover,
-.dark .nav-menu li a.active {
-    background-color: #4a5568; /* Slightly lighter dark for hover/active */
-    color: #ffffff;
-}
-
-.dark .user-profile {
-    border-top-color: #4a5568;
-}
-
-.dark .user-profile .welcome-message {
-    color: #a0aec0; /* Muted text color */
-}
-
-.dark .sign-out-btn {
-    background-color: #e2e8f0;
-    color: #1a202c;
-}
-.dark .sign-out-btn:hover {
-    background-color: #ffffff;
-}
-
-.dark .main-content {
-    background-color: #1a202c;
-}
-
-.dark .content-header {
-    background-color: #2d3748;
-    border-bottom-color: #4a5568;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
-}
-
-.dark .content-header h2 {
-    color: #ffffff;
-}
-
-.dark .page-container {
-    color: #cbd5e0;
-}
-
-.dark .data-table-container,
-.dark .controls-container {
-    background-color: #2d3748;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    border-color: #4a5568;
-}
-
-.dark table.data-table th,
-.dark table.data-table td {
-    border-bottom-color: #4a5568;
-    color: #cbd5e0;
-}
-
-.dark table.data-table th {
-    background-color: #1a202c;
-    color: #e2e8f0;
-}
-
-.dark table.data-table tr:hover {
-    background-color: #4a5568;
-}
-
-.dark .status-open { background-color: #5c1a1a; color: #ffcdd2; }
-.dark .status-in-progress { background-color: #6d4c41; color: #ffccbc; }
-.dark .status-closed { background-color: #1b5e20; color: #c8e6c9; }
-.dark .priority-high { border-color: #ef9a9a; color: #ef9a9a; }
-.dark .priority-medium { border-color: #ffcc80; color: #ffcc80; }
-.dark .priority-low { border-color: #a5d6a7; color: #a5d6a7; }
-
-.dark .actions-cell button {
-    color: #a0aec0;
-}
-.dark .actions-cell button:hover {
-    color: #e2e8f0;
-}
-
-.dark .fab {
-    background-color: #e2e8f0;
-    color: #1a202c;
-}
-.dark .fab:hover {
-    background-color: #ffffff;
-}
-
-.dark .modal-content {
-    background-color: #2d3748;
-    color: #e2e8f0;
-}
-
-.dark .modal-header {
-    border-bottom-color: #4a5568;
-}
-
-.dark .modal-header h3 {
-    color: #ffffff;
-}
-
-.dark .close-btn {
-    color: #a0aec0;
-}
-.dark .close-btn:hover {
-    color: #ffffff;
-}
-
-.dark .form-group label,
-.dark .checkbox-container {
-    color: #cbd5e0;
-}
-
-.dark .form-group input[type="text"],
-.dark .form-group input[type="email"],
-.dark .form-group input[type="tel"],
-.dark .form-group textarea,
-.dark .form-group select {
-    background-color: #1a202c;
-    border-color: #4a5568;
-    color: #e2e8f0;
-}
-
-.dark .form-group input[type="text"]:focus,
-.dark .form-group input[type="email"]:focus,
-.dark .form-group input[type="tel"]:focus,
-.dark .form-group textarea:focus,
-.dark .form-group select:focus {
-    border-color: #a0aec0;
-    box-shadow: 0 0 0 3px rgba(160, 174, 192, 0.15);
-}
-
-.dark .checkbox-custom {
-    background-color: #4a5568;
-    border-color: #718096;
-}
-.dark .checkbox-container:hover .checkbox-custom {
-    border-color: #a0aec0;
-}
-.dark .checkbox-container input:checked ~ .checkbox-custom {
-    background-color: #e2e8f0;
-    border-color: #e2e8f0;
-}
-.dark .checkbox-custom::after {
-    border-color: #1a202c; /* Checkmark is dark */
-}
-
-.dark .btn-primary {
-    background-color: #e2e8f0;
-    color: #1a202c;
-    border-color: #e2e8f0;
-}
-.dark .btn-primary:hover {
-    background-color: #ffffff;
-    border-color: #ffffff;
-}
-
-.dark .custom-alert {
-    background-color: #e2e8f0;
-    color: #1a202c;
-}
-
-.dark .sidebar-toggle-btn .menu-icon span {
-    background-color: #fff; /* or any other suitable color */
-}
-.dark .sidebar-toggle-btn:not(.open) {
-    background: transparent;
-}
-.dark .sidebar-toggle-btn.open {
-    background: rgba(45, 55, 72, 0.8);
-}
-
-.dark .controls-container select {
-    background-color: #374151;
-    border-color: #4b5563;
-    color: #d1d5db;
-}
-.dark .controls-container select:hover {
-    border-color: #6b7280;
-}
-.dark .controls-container select:focus {
-    border-color: #9ca3af;
-    box-shadow: 0 0 0 2px rgba(156, 163, 175, 0.3);
-}
-.dark .settings-section {
-    border-color: #374151;
-}
-.dark .settings-section h4 {
-    color: #e5e7eb;
-}
-
 /* --- AI Agent Sidebar Styles --- */
 #ai-agent-container {
     position: relative;
@@ -1539,11 +1331,6 @@ html.ai-agent-is-open .ai-agent-toggle-btn .icon {
     margin-top: 8px;
 }
 
-.dark .ai-message.user .message-content {
-    background-color: #3b82f6; /* Example: Blue for user message in dark mode */
-    color: #ffffff;
-}
-
 .suggestion-card p {
     margin: 0 0 10px 0;
     font-size: 0.9rem;
@@ -1608,45 +1395,6 @@ html.ai-agent-is-open .ai-agent-toggle-btn .icon {
     height: 30px;
 }
 
-.dark .custom-alert {
-  background-color: #333;
-  color: #fff;
-}
-
-.dark .ai-agent {
-    background-color: #1f2937; /* Dark gray */
-    border-left-color: #374151; /* Slightly lighter gray */
-}
-
-.dark .ai-agent-header, .dark .ai-input-area {
-    border-color: #374151;
-}
-
-.dark .ai-agent-header h5 {
-    color: #e5e7eb; /* Light gray text */
-}
-
-.dark .ai-message .message-content {
-    background-color: #374151;
-    color: #d1d5db;
-}
-
-.dark #ai-message-input {
-    background-color: #374151;
-    border-color: #4b5563;
-    color: #d1d5db;
-}
-
-.dark #ai-send-btn {
-    background: #4b5563;
-}
-.dark #ai-send-btn:hover {
-    background: #6b7280;
-}
-.dark .sidebar-toggle-btn .menu-icon span {
-  background-color: #fff; /* or any other suitable color */
-}
-
 .ai-header-buttons {
     display: flex;
     gap: 8px;
@@ -1705,22 +1453,6 @@ html.js-loading #sidebar-container {
     border-color: #4a5568;
 }
 
-.dark .ai-history-item {
-    color: #cbd5e0;
-}
-
-.dark .ai-history-item:hover {
-    background-color: #4a5568;
-}
-
-.dark .ai-history-item.active {
-    background-color: #4a5568;
-}
-
-.dark .ai-agent-header h5 {
-    color: #e5e7eb; /* Light gray text */
-}
-
 .ai-header-buttons .custom-dropdown {
     min-width: initial; /* Reset min-width to prevent squeezing header title */
 } .status-badge {
@@ -1777,24 +1509,9 @@ html.js-loading #sidebar-container {
 .confirm-modal-content .cancel-btn-confirm {
     background-color: #dc3545; 
 }
-.dark .status-open { background-color: #5c1a1a; color: #ffcdd2; }
-.dark .status-in-progress { background-color: #6d4c41; color: #ffccbc; }
-.dark .status-closed { background-color: #4a5568; color: #cbd5e0; }
-.dark .priority-high { border-color: #ef9a9a; color: #ef9a9a; }
-.dark .priority-medium { border-color: #ffcc80; color: #ffcc80; }
-.dark .priority-low { border-color: #a0aec0; color: #a0aec0; }
-
-.dark .actions-cell button {
-    color: #a0aec0;
-}
 .ai-resizer:hover {
     background-color: #6b7280;
     opacity: 0.2;
-}
-
-.dark .ai-message.user .message-content {
-    background-color: #4a5568;
-    color: #ffffff;
 }
 
 .suggestion-card p {
@@ -1852,9 +1569,4 @@ html.js-loading #sidebar-container {
         opacity: 0.2;
         transform: scale(0.8);
     }
-}
-
-/* In dark mode, the dots can be a bit lighter to stand out */
-.dark .loading-dots span {
-    background-color: #cbd5e0;
 }
