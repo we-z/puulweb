@@ -1360,6 +1360,7 @@ html.ai-agent-is-open .ai-agent-toggle-btn .icon {
     border-radius: 18px;
     padding: 8px 15px;
     font-size: 1rem;
+    font-family: inherit;
     resize: none;
     transition: border-color 0.2s;
     line-height: 22px;
