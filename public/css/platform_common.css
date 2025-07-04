@@ -1275,8 +1275,7 @@ html.ai-agent-is-open .fab {
     transition: all 0.2s ease-in-out;
 }
 .ai-agent-toggle-btn:hover {
-    background-color: #f7f8fc;
-    border-color: #c0c4cc;
+    background-color: #e0e0e0;
 }
 
 .ai-agent-toggle-btn .icon {
