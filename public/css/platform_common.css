@@ -1513,11 +1513,11 @@ html.ai-agent-is-open .ai-agent-toggle-btn .icon {
 }
 
 .ai-message .message-content {
-    background-color: #f1f3f5;
+    background-color: transparent;
     padding: 10px 15px;
     border-radius: 12px;
     font-size: 0.95rem;
-    color: #333;
+    color: #000000;
 }
 
 .ai-message.user {
