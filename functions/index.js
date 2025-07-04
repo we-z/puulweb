@@ -47,9 +47,17 @@ const serverSideTools = [
                     "description": "The type of data to retrieve. Must be one of the top-level keys in the database, e.g., 'properties', 'workOrders', 'tenants', 'leases', 'inspections'."
                 },
                 "filters": {
-                    "type": "OBJECT",
-                    "description": "An object of key-value pairs to filter the data. The key should be a field name and the value is what to filter by.",
-                    "properties": {} // Define specific properties if you want to be more restrictive
+                    "type": "ARRAY",
+                    "description": "An array of filter objects to apply to the data. All filters are applied with AND logic. Each object must contain 'field', 'operator', and 'value'. Supported operators are: 'eq' (equal), 'neq' (not equal), 'gt' (greater than), 'gte' (greater than or equal), 'lt' (less than), 'lte' (less than or equal), 'contains' (for strings), 'notContains' (for strings). Example: [{ \"field\": \"status\", \"operator\": \"eq\", \"value\": \"Open\" }]",
+                    "items": {
+                        "type": "OBJECT",
+                        "properties": {
+                            "field": { "type": "STRING" },
+                            "operator": { "type": "STRING" },
+                            "value": {}
+                        },
+                        "required": ["field", "operator", "value"]
+                    }
                 }
             },
             "required": ["dataType"]

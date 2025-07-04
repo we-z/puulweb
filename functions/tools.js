@@ -2,10 +2,10 @@ const admin = require("firebase-admin");
 
 /**
  * A generic function to retrieve data from the Firebase Realtime Database.
- * It now supports partial string matching for filters.
+ * It now supports complex filtering with multiple operators.
  * @param {object} params The parameters for the function call.
  * @param {string} params.dataType The top-level key for the data (e.g., 'workOrders', 'properties').
- * @param {object} [params.filters] Key-value pairs to filter the data.
+ * @param {Array<object>} [params.filters] An array of filter objects, e.g., [{field: 'status', operator: 'eq', value: 'Open'}].
  * @param {string} uid The user's UID to query the correct data path.
  * @returns {Promise<object>} A promise that resolves to the retrieved data.
  */
@@ -22,26 +22,55 @@ async function getData({ dataType, filters }, uid) {
             return { result: `No data found for ${dataType}.` };
         }
 
-        // If no filters are provided, return everything.
-        if (!filters || Object.keys(filters).length === 0) {
-            return { result: allData, count: Object.keys(allData).length };
+        const allDataWithIds = Object.entries(allData).map(([id, value]) => ({ ...value, id }));
+
+        // If no filters are provided, or filters is not a valid array, return everything.
+        if (!filters || !Array.isArray(filters) || filters.length === 0) {
+            return { result: allDataWithIds, count: allDataWithIds.length };
         }
 
         // If filters are provided, filter the data on the server.
-        const allDataWithIds = Object.entries(allData).map(([id, value]) => ({ ...value, id }));
-        
         const filteredData = allDataWithIds.filter(item => {
-            return Object.entries(filters).every(([key, filterValue]) => {
-                const itemValue = item[key];
+            // 'every' implements an AND logic between all filters.
+            return filters.every(filter => {
+                const { field, operator, value: filterValue } = filter;
+                const itemValue = item[field];
+
                 if (itemValue === undefined || itemValue === null) {
-                    return false;
+                    // If the field doesn't exist on the item, it can't be equal, greater, or less than a value.
+                    // It can be considered "not equal" or "not contains".
+                    return operator === 'neq' || operator === 'notContains';
                 }
-                // Perform case-insensitive partial match for strings.
-                if (typeof itemValue === 'string' && typeof filterValue === 'string') {
-                    return itemValue.toLowerCase().includes(filterValue.toLowerCase());
+                
+                switch (operator) {
+                    case 'eq':
+                        if (typeof itemValue === 'string' && typeof filterValue === 'string') {
+                            return itemValue.toLowerCase() === filterValue.toLowerCase();
+                        }
+                        return itemValue === filterValue;
+                    case 'neq':
+                        if (typeof itemValue === 'string' && typeof filterValue === 'string') {
+                            return itemValue.toLowerCase() !== filterValue.toLowerCase();
+                        }
+                        return itemValue !== filterValue;
+                    case 'gt':
+                        return typeof itemValue === 'number' && typeof filterValue === 'number' && itemValue > filterValue;
+                    case 'gte':
+                        return typeof itemValue === 'number' && typeof filterValue === 'number' && itemValue >= filterValue;
+                    case 'lt':
+                        return typeof itemValue === 'number' && typeof filterValue === 'number' && itemValue < filterValue;
+                    case 'lte':
+                        return typeof itemValue === 'number' && typeof filterValue === 'number' && itemValue <= filterValue;
+                    case 'contains':
+                        if (typeof itemValue !== 'string' || typeof filterValue !== 'string') return false;
+                        return itemValue.toLowerCase().includes(filterValue.toLowerCase());
+                    case 'notContains':
+                         if (typeof itemValue !== 'string' || typeof filterValue !== 'string') return false;
+                        return !itemValue.toLowerCase().includes(filterValue.toLowerCase());
+                    default:
+                        console.warn(`Unknown filter operator: ${operator}`);
+                        return false; 
                 }
-                // Perform an exact match for other types (numbers, booleans).
-                return itemValue === filterValue;
             });
         });
         
