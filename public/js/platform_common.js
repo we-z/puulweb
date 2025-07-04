@@ -261,6 +261,8 @@ function generateSidebarHTML(activePage) {
 
 // Wrapped in a function to be called on DOMContentLoaded
 function setupPageLayoutAndInteractivity() {
+    const filledSparkleIcon = `<svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M10,0 Q11.75,8.25,20,10 Q11.75,11.75,10,20 Q8.25,11.75,0,10 Q8.25,8.25,10,0 Z" /></svg>`;
+    const outlineSparkleIcon = `<svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10,0 Q11.75,8.25,20,10 Q11.75,11.75,10,20 Q8.25,11.75,0,10 Q8.25,8.25,10,0 Z" stroke-linejoin="round" stroke-linecap="round" /></svg>`;
     console.log('[platform_common.js] Executing setupPageLayoutAndInteractivity for page:', window.location.pathname);
     const sidebarContainer = document.getElementById('sidebar-container');
     const mainContent = document.querySelector('.main-content'); // Get main content
@@ -314,7 +316,10 @@ function setupPageLayoutAndInteractivity() {
             AI_DOMElements.toggleBtn = document.createElement('button');
             AI_DOMElements.toggleBtn.id = 'aiAgentToggleBtn';
             AI_DOMElements.toggleBtn.className = 'ai-agent-toggle-btn';
-            AI_DOMElements.toggleBtn.innerHTML = `<svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" /></svg>`;
+            
+            // Set initial icon state when creating the button, before adding the event listener.
+            const isInitiallyCollapsed = localStorage.getItem('aiAgentCollapsed') !== 'false';
+            AI_DOMElements.toggleBtn.innerHTML = isInitiallyCollapsed ? outlineSparkleIcon : filledSparkleIcon;
             
             // Create a wrapper for both toggle buttons
             let toggleWrapper = contentHeader.querySelector('.toggle-button-wrapper');
@@ -335,6 +340,7 @@ function setupPageLayoutAndInteractivity() {
                 if (isCurrentlyCollapsed) {
                     // --- EXPANDING ---
                     agent.classList.remove('collapsed');
+                    AI_DOMElements.toggleBtn.innerHTML = filledSparkleIcon; // Change to filled icon when open
                     // Restore width from localStorage
                     const savedWidth = localStorage.getItem('aiAgentWidth');
                     if (savedWidth) {
@@ -348,6 +354,7 @@ function setupPageLayoutAndInteractivity() {
                     // The resizer already saved the width to localStorage on mouse up.
                     agent.style.width = '';
                     agent.classList.add('collapsed');
+                    AI_DOMElements.toggleBtn.innerHTML = outlineSparkleIcon; // Change to outline icon when closed
                     document.documentElement.classList.remove('ai-agent-is-open');
                     localStorage.setItem('aiAgentCollapsed', 'true');
                 }
