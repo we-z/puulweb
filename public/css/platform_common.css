@@ -1832,3 +1832,52 @@ html.js-loading #sidebar-container {
     border-color: #4a5568;
     box-shadow: 0 0 0 3px rgba(74, 85, 104, 0.15);
 }
+
+/* Loading dots animation for AI agent response */
+.loading-dots {
+    display: flex;
+    align-items: center;
+    /* The container itself has padding from .message-content, so we might not need extra here. */
+    /* Let's keep it clean unless visual adjustment is needed. */
+}
+
+.loading-dots span {
+    animation-name: blink;
+    animation-duration: 1.4s;
+    animation-iteration-count: infinite;
+    animation-fill-mode: both;
+    width: 8px; /* Slightly larger for better visibility */
+    height: 8px; /* Slightly larger for better visibility */
+    border-radius: 50%;
+    background-color: #a0aec0; /* A neutral gray, works on light bg */
+    margin: 0 3px; /* A bit more spacing */
+    display: inline-block;
+}
+
+.loading-dots span:nth-of-type(2) {
+    animation-delay: 0.2s;
+}
+
+.loading-dots span:nth-of-type(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes blink {
+    0% {
+        opacity: 0.2;
+        transform: scale(0.8);
+    }
+    20% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 0.2;
+        transform: scale(0.8);
+    }
+}
+
+/* In dark mode, the dots can be a bit lighter to stand out */
+.dark .loading-dots span {
+    background-color: #cbd5e0;
+}

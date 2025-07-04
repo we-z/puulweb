@@ -207,6 +207,11 @@ function renderConversation(history) {
         if (message.role === 'user') {
             addMessageToChat(message.parts[0].text, 'user');
         } else if (message.role === 'model' && message.parts[0].text) {
+            // It's possible the loading indicator is still there if an error occurs
+            // before it's normally removed. Let's check and remove it.
+            const existingLoading = AI_DOMElements.chatArea.querySelector('.loading-dots');
+            if(existingLoading) existingLoading.closest('.ai-message').remove();
+            
             addMessageToChat(message.parts[0].text, 'agent');
         }
     });
@@ -526,7 +531,7 @@ function addMessageToChat(content, type, isSuggestion = false) {
 }
 
 async function handleAgentQuery(history) {
-    const loadingMessage = addMessageToChat('...', 'agent');
+    const loadingMessage = addMessageToChat('<div class="loading-dots"><span></span><span></span><span></span></div>', 'agent', true);
     AI_DOMElements.sendBtn.disabled = true;
     AI_DOMElements.input.disabled = true;
 
