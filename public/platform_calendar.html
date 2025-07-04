@@ -123,7 +123,7 @@
     </div>
 
     <script type="module">
-        import { initializeAuth, showAlert, showConfirm, editIconSVG, deleteIconSVG, getDbData, updateDbData, initializeCustomDropdown } from './js/platform_common.js';
+        import { initializeAuth, showAlert, showConfirm, editIconSVG, deleteIconSVG, getDbData, updateDbData } from './js/platform_common.js';
         import { getDatabase, ref, push, onValue, set, remove, serverTimestamp, query, orderByChild, equalTo } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
 
         let pageCurrentUserId;
@@ -146,13 +146,12 @@
         function pageInit(userId, db, ...allCommonDeps) {
             pageCurrentUserId = userId;
             pageDatabase = db;
-            const [ fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbDataExt, fbUpdateDbDataExt, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon, commonInitializeCustomDropdownExt ] = allCommonDeps;
+            const [ fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbDataExt, fbUpdateDbDataExt, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon ] = allCommonDeps;
             commonDependencies = { 
                 fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, 
                 getDbData: fbGetDbDataExt, 
                 updateDbData: fbUpdateDbDataExt, 
-                commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon, 
-                initializeCustomDropdown: commonInitializeCustomDropdownExt 
+                commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon
             };
 
             console.log("Calendar page initialized for user:", userId);
