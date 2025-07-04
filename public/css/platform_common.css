@@ -1449,10 +1449,6 @@ html.js-loading #sidebar-container {
     height: 20px;
 }
 
-.ai-header-btn:hover {
-    border-color: #4a5568;
-}
-
 .ai-header-buttons .custom-dropdown {
     min-width: initial; /* Reset min-width to prevent squeezing header title */
 } .status-badge {
