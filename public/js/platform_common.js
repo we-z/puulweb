@@ -86,6 +86,16 @@ function startNewConversation() {
     // Save the initial state to the new conversation ID
     set(newConversationRef, conversationHistory);
     renderConversation(conversationHistory);
+
+    // If the agent panel is collapsed, expand it to make input visible.
+    if (AI_DOMElements.agent && AI_DOMElements.agent.classList.contains('collapsed')) {
+        AI_DOMElements.toggleBtn.click();
+    }
+
+    // Focus the input field for immediate typing.
+    if (AI_DOMElements.input) {
+        AI_DOMElements.input.focus();
+    }
 }
 
 function generateAgentSidebarHTML() {
