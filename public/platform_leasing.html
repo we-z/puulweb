@@ -91,229 +91,230 @@
     <div id="sidebar-container"></div>
 
     <div class="main-content">
-        <div id="leasingView">
-            <div class="content-header"><h2>Leasing</h2></div>
-            <div class="page-container">
-                <div class="sub-nav" id="leasingSubNav">
-                    <div class="sub-nav-item active" data-subsection="vacancies">Vacancies</div>
-                    <div class="sub-nav-item" data-subsection="guestCards">Guest Cards</div>
-                    <div class="sub-nav-item" data-subsection="rentalApplications">Rental Applications</div>
-                    <div class="sub-nav-item" data-subsection="leases">Leases</div>
-                    <div class="sub-nav-item" data-subsection="renewals">Renewals</div>
-                    <div class="sub-nav-item" data-subsection="signals">Signals</div>
-                </div>
+        <div class="content-scroll-wrapper">
+            <div id="leasingView">
+                <div class="content-header"><h2>Leasing</h2></div>
+                <div class="page-container">
+                    <div class="sub-nav" id="leasingSubNav">
+                        <div class="sub-nav-item active" data-subsection="vacancies">Vacancies</div>
+                        <div class="sub-nav-item" data-subsection="guestCards">Guest Cards</div>
+                        <div class="sub-nav-item" data-subsection="rentalApplications">Rental Applications</div>
+                        <div class="sub-nav-item" data-subsection="leases">Leases</div>
+                        <div class="sub-nav-item" data-subsection="renewals">Renewals</div>
+                        <div class="sub-nav-item" data-subsection="signals">Signals</div>
+                    </div>
 
-                <!-- Vacancies Subsection -->
-                <div class="subsection-content active" id="vacanciesContent">
-                    <h4>Vacancies</h4>
-                    <button class="controls-toggle-btn">
-                        <span>Filters & Sort</span>
-                        <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-                    </button>
-                    <div class="controls-container visible-by-default">
-                        <div class="filter-group">
-                            <label>Property:</label>
-                            <div class="custom-dropdown" id="vacanciesFilterProperty">
-                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Properties</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
-                                <div class="dropdown-options"><div class="dropdown-option" data-value="">All Properties</div></div>
+                    <!-- Vacancies Subsection -->
+                    <div class="subsection-content active" id="vacanciesContent">
+                        <h4>Vacancies</h4>
+                        <button class="controls-toggle-btn">
+                            <span>Filters & Sort</span>
+                            <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                        </button>
+                        <div class="controls-container visible-by-default">
+                            <div class="filter-group">
+                                <label>Property:</label>
+                                <div class="custom-dropdown" id="vacanciesFilterProperty">
+                                    <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Properties</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                    <div class="dropdown-options"><div class="dropdown-option" data-value="">All Properties</div></div>
+                                </div>
                             </div>
                         </div>
+                        <div class="data-table-container">
+                            <table class="data-table" id="vacanciesTable">
+                                <thead><tr><th>Property/Unit</th><th>Address</th><th>Status</th><th>Available Date</th><th>Market Rent</th><th>Actions</th></tr></thead>
+                                <tbody id="vacanciesTableBody"></tbody>
+                            </table>
+                            <div id="noVacanciesMessage" class="no-data-message"><div class="icon">🚪</div><p>No current vacancies.</p></div>
+                        </div>
                     </div>
-                    <div class="data-table-container">
-                        <table class="data-table" id="vacanciesTable">
-                            <thead><tr><th>Property/Unit</th><th>Address</th><th>Status</th><th>Available Date</th><th>Market Rent</th><th>Actions</th></tr></thead>
-                            <tbody id="vacanciesTableBody"></tbody>
-                        </table>
-                        <div id="noVacanciesMessage" class="no-data-message"><div class="icon">🚪</div><p>No current vacancies.</p></div>
-                    </div>
-                </div>
 
-                <!-- Guest Cards Subsection -->
-                <div class="subsection-content" id="guestCardsContent">
-                    <h4>Guest Cards</h4>
-                    <button class="controls-toggle-btn">
-                        <span>Filters & Sort</span>
-                        <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-                    </button>
-                    <div class="controls-container visible-by-default">
-                        <div class="filter-group">
-                            <label>Property:</label>
-                            <div class="custom-dropdown" id="guestCardsFilterProperty">
-                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Properties</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
-                                <div class="dropdown-options"><div class="dropdown-option" data-value="">All Properties</div></div>
+                    <!-- Guest Cards Subsection -->
+                    <div class="subsection-content" id="guestCardsContent">
+                        <h4>Guest Cards</h4>
+                        <button class="controls-toggle-btn">
+                            <span>Filters & Sort</span>
+                            <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                        </button>
+                        <div class="controls-container visible-by-default">
+                            <div class="filter-group">
+                                <label>Property:</label>
+                                <div class="custom-dropdown" id="guestCardsFilterProperty">
+                                    <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Properties</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                    <div class="dropdown-options"><div class="dropdown-option" data-value="">All Properties</div></div>
+                                </div>
+                            </div>
+                            <div class="filter-group">
+                                <label>Status:</label>
+                                <div class="custom-dropdown" id="guestCardsFilterStatus">
+                                    <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Statuses</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                    <div class="dropdown-options">
+                                        <div class="dropdown-option" data-value="">All Statuses</div>
+                                        <div class="dropdown-option" data-value="New">New</div>
+                                        <div class="dropdown-option" data-value="Contacted">Contacted</div>
+                                        <div class="dropdown-option" data-value="Showing Scheduled">Showing Scheduled</div>
+                                        <div class="dropdown-option" data-value="Applied">Applied</div>
+                                        <div class="dropdown-option" data-value="Inactive">Inactive</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="filter-group">
-                            <label>Status:</label>
-                            <div class="custom-dropdown" id="guestCardsFilterStatus">
-                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Statuses</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
-                                <div class="dropdown-options">
-                                    <div class="dropdown-option" data-value="">All Statuses</div>
-                                    <div class="dropdown-option" data-value="New">New</div>
-                                    <div class="dropdown-option" data-value="Contacted">Contacted</div>
-                                    <div class="dropdown-option" data-value="Showing Scheduled">Showing Scheduled</div>
-                                    <div class="dropdown-option" data-value="Applied">Applied</div>
-                                    <div class="dropdown-option" data-value="Inactive">Inactive</div>
+                        <div class="data-table-container">
+                            <table class="data-table" id="guestCardsTable">
+                                <thead><tr><th>Name</th><th>Phone</th><th>Email</th><th>Property Interested In</th><th>Date Created</th><th>Status</th><th>Actions</th></tr></thead>
+                                <tbody id="guestCardsTableBody"></tbody>
+                            </table>
+                            <div id="noGuestCardsMessage" class="no-data-message"><div class="icon">📇</div><p>No guest cards recorded.</p></div>
+                        </div>
+                    </div>
+
+                    <!-- Rental Applications Subsection -->
+                    <div class="subsection-content" id="rentalApplicationsContent">
+                        <h4>Rental Applications</h4>
+                        <button class="controls-toggle-btn">
+                            <span>Filters & Sort</span>
+                            <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                        </button>
+                        <div class="controls-container visible-by-default">
+                            <div class="filter-group">
+                                <label>Property:</label>
+                                <div class="custom-dropdown" id="applicationsFilterProperty">
+                                    <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Properties</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                    <div class="dropdown-options"><div class="dropdown-option" data-value="">All Properties</div></div>
+                                </div>
+                            </div>
+                            <div class="filter-group">
+                                <label>Status:</label>
+                                <div class="custom-dropdown" id="applicationsFilterStatus">
+                                    <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Statuses</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                    <div class="dropdown-options">
+                                        <div class="dropdown-option" data-value="">All Statuses</div>
+                                        <div class="dropdown-option" data-value="Submitted">Submitted</div>
+                                        <div class="dropdown-option" data-value="Processing">Processing</div>
+                                        <div class="dropdown-option" data-value="Approved">Approved</div>
+                                        <div class="dropdown-option" data-value="Denied">Denied</div>
+                                        <div class="dropdown-option" data-value="Withdrawn">Withdrawn</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="data-table-container">
+                            <table class="data-table" id="rentalApplicationsTable">
+                                <thead><tr><th>Applicant Name</th><th>Property Applied For</th><th>Submission Date</th><th>Status</th><th>Credit Score</th><th>Actions</th></tr></thead>
+                                <tbody id="rentalApplicationsTableBody"></tbody>
+                            </table>
+                            <div id="noRentalApplicationsMessage" class="no-data-message"><div class="icon">📋</div><p>No rental applications found.</p></div>
+                        </div>
+                    </div>
+
+                    <!-- Leases Subsection -->
+                    <div class="subsection-content" id="leasesContent">
+                        <h4>Leases</h4>
+                        <button class="controls-toggle-btn">
+                            <span>Filters & Sort</span>
+                            <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                        </button>
+                        <div class="controls-container visible-by-default">
+                            <div class="filter-group">
+                                <label>Property:</label>
+                                <div class="custom-dropdown" id="leasesFilterProperty">
+                                    <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Properties</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                    <div class="dropdown-options"><div class="dropdown-option" data-value="">All Properties</div></div>
+                                </div>
+                            </div>
+                            <div class="filter-group">
+                                <label>Status:</label>
+                                <div class="custom-dropdown" id="leasesFilterStatus">
+                                    <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Statuses</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                    <div class="dropdown-options">
+                                        <div class="dropdown-option" data-value="">All Statuses</div>
+                                        <div class="dropdown-option" data-value="Active">Active</div>
+                                        <div class="dropdown-option" data-value="Expired">Expired</div>
+                                        <div class="dropdown-option" data-value="Terminated">Terminated</div>
+                                        <div class="dropdown-option" data-value="Future">Future</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="data-table-container">
+                            <table class="data-table" id="leasesTable">
+                                <thead><tr><th>Lease ID</th><th>Tenant(s)</th><th>Property/Unit</th><th>Start Date</th><th>End Date</th><th>Rent Amount</th><th>Status</th><th>Actions</th></tr></thead>
+                                <tbody id="leasesTableBody"></tbody>
+                            </table>
+                            <div id="noLeasesMessage" class="no-data-message"><div class="icon">📜</div><p>No leases recorded.</p></div>
+                        </div>
+                    </div>
+
+                     <!-- Renewals Subsection -->
+                    <div class="subsection-content" id="renewalsContent">
+                        <h4>Renewals</h4>
+                        <button class="controls-toggle-btn">
+                            <span>Filters & Sort</span>
+                            <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                        </button>
+                        <div class="controls-container visible-by-default">
+                            <div class="filter-group">
+                                <label>Property:</label>
+                                <div class="custom-dropdown" id="renewalsFilterProperty">
+                                    <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Properties</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                    <div class="dropdown-options"><div class="dropdown-option" data-value="">All Properties</div></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="data-table-container">
+                            <table class="data-table" id="renewalsTable">
+                                <thead><tr><th>Lease ID</th><th>Tenant(s)</th><th>Property/Unit</th><th>Current End Date</th><th>Renewal Offer Date</th><th>Status</th><th>Actions</th></tr></thead>
+                                <tbody id="renewalsTableBody"></tbody>
+                            </table>
+                            <div id="noRenewalsMessage" class="no-data-message"><div class="icon">🔁</div><p>No pending or processed renewals.</p></div>
+                        </div>
+                    </div>
+
+                    <!-- Signals Subsection -->
+                    <div class="subsection-content" id="signalsContent">
+                        <h4>Leasing Signals & Insights</h4>
+                        <div class="signals-overview">
+                            <p>This section provides data-driven insights to optimize your leasing strategy, based on market trends, prospect behavior, and property performance.</p>
+                        </div>
+                        <div class="signals-grid">
+                            <div class="signal-item">
+                                <h5>Market Rent Analysis</h5>
+                                <p class="signal-desc">Bar chart comparing your current asking rents with prevailing market rates for similar properties in the area.</p>
+                                <div class="chart-wrapper" style="height: 280px;">
+                                    <canvas id="signalChartMarketRent"></canvas>
+                                </div>
+                            </div>
+                            <div class="signal-item">
+                                <h5>Vacancy Rate Trends</h5>
+                                <p class="signal-desc">Line chart showing your portfolio's vacancy rate over time compared to local market averages.</p>
+                                <div class="chart-wrapper" style="height: 280px;">
+                                    <canvas id="signalChartVacancyTrends"></canvas>
+                                </div>
+                            </div>
+                            <div class="signal-item">
+                                <h5>Prospect Conversion Funnel</h5>
+                                <p class="signal-desc">Bar chart visualizing the journey from guest card to lease signing, highlighting conversion at each stage.</p>
+                                <div class="chart-wrapper" style="height: 280px;">
+                                    <canvas id="signalChartConversionFunnel"></canvas>
+                                </div>
+                            </div>
+                            <div class="signal-item">
+                                <h5>Lease Expiration Hotspots</h5>
+                                <p class="signal-desc">Pie chart showing the distribution of upcoming lease expirations by month.</p>
+                                <div class="chart-wrapper" style="height: 280px;">
+                                    <canvas id="signalChartExpirationHotspots"></canvas>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="data-table-container">
-                        <table class="data-table" id="guestCardsTable">
-                            <thead><tr><th>Name</th><th>Phone</th><th>Email</th><th>Property Interested In</th><th>Date Created</th><th>Status</th><th>Actions</th></tr></thead>
-                            <tbody id="guestCardsTableBody"></tbody>
-                        </table>
-                        <div id="noGuestCardsMessage" class="no-data-message"><div class="icon">📇</div><p>No guest cards recorded.</p></div>
-                    </div>
-                </div>
 
-                <!-- Rental Applications Subsection -->
-                <div class="subsection-content" id="rentalApplicationsContent">
-                    <h4>Rental Applications</h4>
-                    <button class="controls-toggle-btn">
-                        <span>Filters & Sort</span>
-                        <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-                    </button>
-                    <div class="controls-container visible-by-default">
-                        <div class="filter-group">
-                            <label>Property:</label>
-                            <div class="custom-dropdown" id="applicationsFilterProperty">
-                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Properties</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
-                                <div class="dropdown-options"><div class="dropdown-option" data-value="">All Properties</div></div>
-                            </div>
-                        </div>
-                        <div class="filter-group">
-                            <label>Status:</label>
-                            <div class="custom-dropdown" id="applicationsFilterStatus">
-                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Statuses</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
-                                <div class="dropdown-options">
-                                    <div class="dropdown-option" data-value="">All Statuses</div>
-                                    <div class="dropdown-option" data-value="Submitted">Submitted</div>
-                                    <div class="dropdown-option" data-value="Processing">Processing</div>
-                                    <div class="dropdown-option" data-value="Approved">Approved</div>
-                                    <div class="dropdown-option" data-value="Denied">Denied</div>
-                                    <div class="dropdown-option" data-value="Withdrawn">Withdrawn</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="data-table-container">
-                        <table class="data-table" id="rentalApplicationsTable">
-                            <thead><tr><th>Applicant Name</th><th>Property Applied For</th><th>Submission Date</th><th>Status</th><th>Credit Score</th><th>Actions</th></tr></thead>
-                            <tbody id="rentalApplicationsTableBody"></tbody>
-                        </table>
-                        <div id="noRentalApplicationsMessage" class="no-data-message"><div class="icon">📋</div><p>No rental applications found.</p></div>
-                    </div>
                 </div>
-
-                <!-- Leases Subsection -->
-                <div class="subsection-content" id="leasesContent">
-                    <h4>Leases</h4>
-                    <button class="controls-toggle-btn">
-                        <span>Filters & Sort</span>
-                        <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-                    </button>
-                    <div class="controls-container visible-by-default">
-                        <div class="filter-group">
-                            <label>Property:</label>
-                            <div class="custom-dropdown" id="leasesFilterProperty">
-                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Properties</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
-                                <div class="dropdown-options"><div class="dropdown-option" data-value="">All Properties</div></div>
-                            </div>
-                        </div>
-                        <div class="filter-group">
-                            <label>Status:</label>
-                            <div class="custom-dropdown" id="leasesFilterStatus">
-                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Statuses</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
-                                <div class="dropdown-options">
-                                    <div class="dropdown-option" data-value="">All Statuses</div>
-                                    <div class="dropdown-option" data-value="Active">Active</div>
-                                    <div class="dropdown-option" data-value="Expired">Expired</div>
-                                    <div class="dropdown-option" data-value="Terminated">Terminated</div>
-                                    <div class="dropdown-option" data-value="Future">Future</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="data-table-container">
-                        <table class="data-table" id="leasesTable">
-                            <thead><tr><th>Lease ID</th><th>Tenant(s)</th><th>Property/Unit</th><th>Start Date</th><th>End Date</th><th>Rent Amount</th><th>Status</th><th>Actions</th></tr></thead>
-                            <tbody id="leasesTableBody"></tbody>
-                        </table>
-                        <div id="noLeasesMessage" class="no-data-message"><div class="icon">📜</div><p>No leases recorded.</p></div>
-                    </div>
-                </div>
-
-                 <!-- Renewals Subsection -->
-                <div class="subsection-content" id="renewalsContent">
-                    <h4>Renewals</h4>
-                    <button class="controls-toggle-btn">
-                        <span>Filters & Sort</span>
-                        <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-                    </button>
-                    <div class="controls-container visible-by-default">
-                        <div class="filter-group">
-                            <label>Property:</label>
-                            <div class="custom-dropdown" id="renewalsFilterProperty">
-                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Properties</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
-                                <div class="dropdown-options"><div class="dropdown-option" data-value="">All Properties</div></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="data-table-container">
-                        <table class="data-table" id="renewalsTable">
-                            <thead><tr><th>Lease ID</th><th>Tenant(s)</th><th>Property/Unit</th><th>Current End Date</th><th>Renewal Offer Date</th><th>Status</th><th>Actions</th></tr></thead>
-                            <tbody id="renewalsTableBody"></tbody>
-                        </table>
-                        <div id="noRenewalsMessage" class="no-data-message"><div class="icon">🔁</div><p>No pending or processed renewals.</p></div>
-                    </div>
-                </div>
-
-                <!-- Signals Subsection -->
-                <div class="subsection-content" id="signalsContent">
-                    <h4>Leasing Signals & Insights</h4>
-                    <div class="signals-overview">
-                        <p>This section provides data-driven insights to optimize your leasing strategy, based on market trends, prospect behavior, and property performance.</p>
-                    </div>
-                    <div class="signals-grid">
-                        <div class="signal-item">
-                            <h5>Market Rent Analysis</h5>
-                            <p class="signal-desc">Bar chart comparing your current asking rents with prevailing market rates for similar properties in the area.</p>
-                            <div class="chart-wrapper" style="height: 280px;">
-                                <canvas id="signalChartMarketRent"></canvas>
-                            </div>
-                        </div>
-                        <div class="signal-item">
-                            <h5>Vacancy Rate Trends</h5>
-                            <p class="signal-desc">Line chart showing your portfolio's vacancy rate over time compared to local market averages.</p>
-                            <div class="chart-wrapper" style="height: 280px;">
-                                <canvas id="signalChartVacancyTrends"></canvas>
-                            </div>
-                        </div>
-                        <div class="signal-item">
-                            <h5>Prospect Conversion Funnel</h5>
-                            <p class="signal-desc">Bar chart visualizing the journey from guest card to lease signing, highlighting conversion at each stage.</p>
-                            <div class="chart-wrapper" style="height: 280px;">
-                                <canvas id="signalChartConversionFunnel"></canvas>
-                            </div>
-                        </div>
-                        <div class="signal-item">
-                            <h5>Lease Expiration Hotspots</h5>
-                            <p class="signal-desc">Pie chart showing the distribution of upcoming lease expirations by month.</p>
-                            <div class="chart-wrapper" style="height: 280px;">
-                                <canvas id="signalChartExpirationHotspots"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </div>
+        <button class="fab" id="addItemBtn" aria-label="Add new item">+</button>
     </div>
 
     <div id="ai-agent-container"></div>
-
-    <button class="fab" id="addItemBtn" aria-label="Add new item">+</button>
 
     <!-- Modals -->
     <div id="vacancyModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>Add/Edit Vacancy</h3><button class="close-btn" data-modal-id="vacancyModal">&times;</button></div><form id="vacancyForm"><input type="hidden" id="vacancyId"><div class="form-group"><label>Property/Unit</label><select name="propertyId" required></select></div><div class="form-group"><label>Available Date</label><input type="date" name="availableDate"></div><div class="form-group"><label>Market Rent ($)</label><input type="number" name="marketRent" step="0.01"></div><div class="form-group"><label>Status</label><select name="status"><option>Available</option><option>Pending</option><option>Rented</option></select></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="vacancyModal">Cancel</button><button type="submit" class="submit-btn">Save</button></div></form></div></div>

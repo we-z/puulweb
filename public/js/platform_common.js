@@ -190,12 +190,6 @@ function initializeAgentResizer(agentElement) {
             styleSheet.id = 'ai-dynamic-styles';
             document.head.appendChild(styleSheet);
         }
-        const fabRightOffset = agentWidth + 40; // 40px original offset
-        styleSheet.innerHTML = `
-            html.ai-agent-is-open .fab {
-                right: ${fabRightOffset}px !important;
-            }
-        `;
     }
 
     // Initial style update

@@ -110,539 +110,541 @@
     <div id="sidebar-container"></div>
 
     <div class="main-content">
-        <div id="maintenanceView">
-            <div class="content-header">
-                <h2>Maintenance</h2>
-            </div>
-            <div class="page-container">
-                <div class="sub-nav" id="maintenanceSubNav">
-                    <div class="sub-nav-item active" data-subsection="workOrders">Work Orders</div>
-                    <div class="sub-nav-item" data-subsection="recurringWorkOrders">Recurring Work Orders</div>
-                    <div class="sub-nav-item" data-subsection="inspections">Inspections</div>
-                    <div class="sub-nav-item" data-subsection="unitTurns">Unit Turns</div>
-                    <div class="sub-nav-item" data-subsection="projects">Projects</div>
-                    <div class="sub-nav-item" data-subsection="purchaseOrders">Purchase Orders</div>
-                    <div class="sub-nav-item" data-subsection="inventory">Inventory</div>
-                    <div class="sub-nav-item" data-subsection="fixedAssets">Fixed Assets</div>
-                    <div class="sub-nav-item" data-subsection="smartMaintenance">Smart Maintenance</div>
+        <div class="content-scroll-wrapper">
+            <div id="maintenanceView">
+                <div class="content-header">
+                    <h2>Maintenance</h2>
                 </div>
+                <div class="page-container">
+                    <div class="sub-nav" id="maintenanceSubNav">
+                        <div class="sub-nav-item active" data-subsection="workOrders">Work Orders</div>
+                        <div class="sub-nav-item" data-subsection="recurringWorkOrders">Recurring Work Orders</div>
+                        <div class="sub-nav-item" data-subsection="inspections">Inspections</div>
+                        <div class="sub-nav-item" data-subsection="unitTurns">Unit Turns</div>
+                        <div class="sub-nav-item" data-subsection="projects">Projects</div>
+                        <div class="sub-nav-item" data-subsection="purchaseOrders">Purchase Orders</div>
+                        <div class="sub-nav-item" data-subsection="inventory">Inventory</div>
+                        <div class="sub-nav-item" data-subsection="fixedAssets">Fixed Assets</div>
+                        <div class="sub-nav-item" data-subsection="smartMaintenance">Smart Maintenance</div>
+                    </div>
 
-                <!-- Work Orders Subsection -->
-                <div class="subsection-content active" id="workOrdersContent">
-                    <button class="controls-toggle-btn" id="controlsToggleBtn">
-                        <span>Filters & Sort</span>
-                        <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
-                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                        </svg>
-                    </button>
-                    <div class="controls-container visible-by-default" style="margin-bottom: 20px; padding: 15px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
-                        <div class="filter-group">
-                            <label for="filterProperty">Property:</label>
-                            <div class="custom-dropdown" id="customFilterProperty">
-                                <div class="dropdown-selected" tabindex="0">
-                                    <span class="selected-value">All Properties</span>
-                                    <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                    <!-- Work Orders Subsection -->
+                    <div class="subsection-content active" id="workOrdersContent">
+                        <button class="controls-toggle-btn" id="controlsToggleBtn">
+                            <span>Filters & Sort</span>
+                            <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                        <div class="controls-container visible-by-default" style="margin-bottom: 20px; padding: 15px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
+                            <div class="filter-group">
+                                <label for="filterProperty">Property:</label>
+                                <div class="custom-dropdown" id="customFilterProperty">
+                                    <div class="dropdown-selected" tabindex="0">
+                                        <span class="selected-value">All Properties</span>
+                                        <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                                    </div>
+                                    <div class="dropdown-options">
+                                        <div class="dropdown-option" data-value="">All Properties</div>
+                                    </div>
                                 </div>
-                                <div class="dropdown-options">
-                                    <div class="dropdown-option" data-value="">All Properties</div>
+                            </div>
+                            <div class="filter-group">
+                                <label for="filterPriority">Priority:</label>
+                                <div class="custom-dropdown" id="customFilterPriority">
+                                    <div class="dropdown-selected" tabindex="0">
+                                        <span class="selected-value">All Priorities</span>
+                                        <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                                    </div>
+                                    <div class="dropdown-options">
+                                        <div class="dropdown-option" data-value="">All Priorities</div>
+                                        <div class="dropdown-option" data-value="Low">Low</div>
+                                        <div class="dropdown-option" data-value="Medium">Medium</div>
+                                        <div class="dropdown-option" data-value="High">High</div>
+                                    </div>
+                                </div>
+                            </div>
+                             <div class="filter-group">
+                                <label for="filterStatus">Status:</label>
+                                <div class="custom-dropdown" id="customFilterStatus">
+                                    <div class="dropdown-selected" tabindex="0">
+                                        <span class="selected-value">All Statuses</span>
+                                        <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                                    </div>
+                                    <div class="dropdown-options">
+                                        <div class="dropdown-option" data-value="">All Statuses</div>
+                                        <div class="dropdown-option" data-value="Open">Open</div>
+                                        <div class="dropdown-option" data-value="In Progress">In Progress</div>
+                                        <div class="dropdown-option" data-value="Closed">Closed</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="sort-group">
+                                <label for="sortBy">Sort by:</label>
+                                <div class="custom-dropdown" id="customSortBy">
+                                    <div class="dropdown-selected" tabindex="0">
+                                        <span class="selected-value">Date Created</span>
+                                        <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                                    </div>
+                                    <div class="dropdown-options">
+                                        <div class="dropdown-option selected" data-value="createdAt">Date Created</div>
+                                        <div class="dropdown-option" data-value="title">Title</div>
+                                        <div class="dropdown-option" data-value="status">Status</div>
+                                        <div class="dropdown-option" data-value="priority">Priority</div>
+                                    </div>
+                                </div>
+                                <div class="custom-dropdown" id="customSortOrder">
+                                    <div class="dropdown-selected" tabindex="0">
+                                        <span class="selected-value">Descending</span>
+                                        <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                                    </div>
+                                    <div class="dropdown-options">
+                                        <div class="dropdown-option selected" data-value="desc">Descending</div>
+                                        <div class="dropdown-option" data-value="asc">Ascending</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="filter-group">
-                            <label for="filterPriority">Priority:</label>
-                            <div class="custom-dropdown" id="customFilterPriority">
-                                <div class="dropdown-selected" tabindex="0">
-                                    <span class="selected-value">All Priorities</span>
-                                    <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
-                                </div>
-                                <div class="dropdown-options">
-                                    <div class="dropdown-option" data-value="">All Priorities</div>
-                                    <div class="dropdown-option" data-value="Low">Low</div>
-                                    <div class="dropdown-option" data-value="Medium">Medium</div>
-                                    <div class="dropdown-option" data-value="High">High</div>
-                                </div>
-                            </div>
-                        </div>
-                         <div class="filter-group">
-                            <label for="filterStatus">Status:</label>
-                            <div class="custom-dropdown" id="customFilterStatus">
-                                <div class="dropdown-selected" tabindex="0">
-                                    <span class="selected-value">All Statuses</span>
-                                    <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
-                                </div>
-                                <div class="dropdown-options">
-                                    <div class="dropdown-option" data-value="">All Statuses</div>
-                                    <div class="dropdown-option" data-value="Open">Open</div>
-                                    <div class="dropdown-option" data-value="In Progress">In Progress</div>
-                                    <div class="dropdown-option" data-value="Closed">Closed</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="sort-group">
-                            <label for="sortBy">Sort by:</label>
-                            <div class="custom-dropdown" id="customSortBy">
-                                <div class="dropdown-selected" tabindex="0">
-                                    <span class="selected-value">Date Created</span>
-                                    <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
-                                </div>
-                                <div class="dropdown-options">
-                                    <div class="dropdown-option selected" data-value="createdAt">Date Created</div>
-                                    <div class="dropdown-option" data-value="title">Title</div>
-                                    <div class="dropdown-option" data-value="status">Status</div>
-                                    <div class="dropdown-option" data-value="priority">Priority</div>
-                                </div>
-                            </div>
-                            <div class="custom-dropdown" id="customSortOrder">
-                                <div class="dropdown-selected" tabindex="0">
-                                    <span class="selected-value">Descending</span>
-                                    <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
-                                </div>
-                                <div class="dropdown-options">
-                                    <div class="dropdown-option selected" data-value="desc">Descending</div>
-                                    <div class="dropdown-option" data-value="asc">Ascending</div>
-                                </div>
+                        <div class="data-table-container work-order-table-container">
+                            <table class="data-table" id="workOrderTable">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Title</th>
+                                        <th>Property</th>
+                                        <th>Status</th>
+                                        <th>Priority</th>
+                                        <th>Created At</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="workOrderTableBody">
+                                </tbody>
+                            </table>
+                            <div id="noWorkOrdersMessage" class="no-data-message" style="display: none;">
+                                <div class="icon">📝</div>
+                                <p>No work orders yet.</p>
+                                <span>Click the '+' button to add your first one!</span>
                             </div>
                         </div>
                     </div>
-                    <div class="data-table-container work-order-table-container">
-                        <table class="data-table" id="workOrderTable">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Title</th>
-                                    <th>Property</th>
-                                    <th>Status</th>
-                                    <th>Priority</th>
-                                    <th>Created At</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="workOrderTableBody">
-                            </tbody>
-                        </table>
-                        <div id="noWorkOrdersMessage" class="no-data-message" style="display: none;">
-                            <div class="icon">📝</div>
-                            <p>No work orders yet.</p>
-                            <span>Click the '+' button to add your first one!</span>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Recurring Work Orders Subsection -->
-                <div class="subsection-content" id="recurringWorkOrdersContent">
-                    <h4>Recurring Work Orders</h4>
-                    <button class="controls-toggle-btn">
-                        <span>Filters & Sort</span>
-                        <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
-                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                        </svg>
-                    </button>
-                    <div class="controls-container visible-by-default">
-                        <div class="filter-group">
-                            <label>Property:</label>
-                            <div class="custom-dropdown" id="recurringFilterProperty">
-                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Properties</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
-                                <div class="dropdown-options"><div class="dropdown-option" data-value="">All Properties</div></div>
+                    <!-- Recurring Work Orders Subsection -->
+                    <div class="subsection-content" id="recurringWorkOrdersContent">
+                        <h4>Recurring Work Orders</h4>
+                        <button class="controls-toggle-btn">
+                            <span>Filters & Sort</span>
+                            <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                        <div class="controls-container visible-by-default">
+                            <div class="filter-group">
+                                <label>Property:</label>
+                                <div class="custom-dropdown" id="recurringFilterProperty">
+                                    <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Properties</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                    <div class="dropdown-options"><div class="dropdown-option" data-value="">All Properties</div></div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="filter-group">
-                            <label>Frequency:</label>
-                            <div class="custom-dropdown" id="recurringFilterFrequency">
-                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
-                                <div class="dropdown-options">
-                                    <div class="dropdown-option" data-value="">All</div>
-                                    <div class="dropdown-option" data-value="Daily">Daily</div>
-                                    <div class="dropdown-option" data-value="Weekly">Weekly</div>
-                                    <div class="dropdown-option" data-value="Bi-Weekly">Bi-Weekly</div>
-                                    <div class="dropdown-option" data-value="Monthly">Monthly</div>
-                                    <div class="dropdown-option" data-value="Quarterly">Quarterly</div>
-                                    <div class="dropdown-option" data-value="Annually">Annually</div>
+                            <div class="filter-group">
+                                <label>Frequency:</label>
+                                <div class="custom-dropdown" id="recurringFilterFrequency">
+                                    <div class="dropdown-selected" tabindex="0"><span class="selected-value">All</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                    <div class="dropdown-options">
+                                        <div class="dropdown-option" data-value="">All</div>
+                                        <div class="dropdown-option" data-value="Daily">Daily</div>
+                                        <div class="dropdown-option" data-value="Weekly">Weekly</div>
+                                        <div class="dropdown-option" data-value="Bi-Weekly">Bi-Weekly</div>
+                                        <div class="dropdown-option" data-value="Monthly">Monthly</div>
+                                        <div class="dropdown-option" data-value="Quarterly">Quarterly</div>
+                                        <div class="dropdown-option" data-value="Annually">Annually</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="filter-group">
+                                <label>Status:</label>
+                                <div class="custom-dropdown" id="recurringFilterStatus">
+                                    <div class="dropdown-selected" tabindex="0"><span class="selected-value">All</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                    <div class="dropdown-options">
+                                        <div class="dropdown-option" data-value="">All</div>
+                                        <div class="dropdown-option" data-value="Active">Active</div>
+                                        <div class="dropdown-option" data-value="Paused">Paused</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="filter-group">
-                            <label>Status:</label>
-                            <div class="custom-dropdown" id="recurringFilterStatus">
-                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
-                                <div class="dropdown-options">
-                                    <div class="dropdown-option" data-value="">All</div>
-                                    <div class="dropdown-option" data-value="Active">Active</div>
-                                    <div class="dropdown-option" data-value="Paused">Paused</div>
+                        <div class="data-table-container">
+                            <table class="data-table" id="recurringWorkOrderTable">
+                                <thead>
+                                    <tr>
+                                        <th>Task Name</th>
+                                        <th>Property</th>
+                                        <th>Frequency</th>
+                                        <th>Next Due Date</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recurringWorkOrderTableBody">
+                                    <!-- Rows will be populated by JS -->
+                                </tbody>
+                            </table>
+                            <div id="noRecurringWorkOrdersMessage" class="no-data-message">
+                                <div class="icon">🔄</div>
+                                <p>No recurring work orders set up yet.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Inspections Subsection -->
+                    <div class="subsection-content" id="inspectionsContent">
+                        <h4>Inspections</h4>
+                        <button class="controls-toggle-btn">
+                            <span>Filters & Sort</span>
+                            <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                        <div class="controls-container visible-by-default">
+                            <div class="filter-group">
+                                <label>Property:</label>
+                                <div class="custom-dropdown" id="inspectionsFilterProperty">
+                                    <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Properties</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                    <div class="dropdown-options"><div class="dropdown-option" data-value="">All Properties</div></div>
+                                </div>
+                            </div>
+                            <div class="filter-group">
+                                <label>Status:</label>
+                                <div class="custom-dropdown" id="inspectionsFilterStatus">
+                                    <div class="dropdown-selected" tabindex="0"><span class="selected-value">All</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                    <div class="dropdown-options">
+                                        <div class="dropdown-option" data-value="">All</div>
+                                        <div class="dropdown-option" data-value="Scheduled">Scheduled</div>
+                                        <div class="dropdown-option" data-value="In Progress">In Progress</div>
+                                        <div class="dropdown-option" data-value="Completed">Completed</div>
+                                        <div class="dropdown-option" data-value="Cancelled">Cancelled</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="data-table-container">
-                        <table class="data-table" id="recurringWorkOrderTable">
-                            <thead>
-                                <tr>
-                                    <th>Task Name</th>
-                                    <th>Property</th>
-                                    <th>Frequency</th>
-                                    <th>Next Due Date</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="recurringWorkOrderTableBody">
-                                <!-- Rows will be populated by JS -->
-                            </tbody>
-                        </table>
-                        <div id="noRecurringWorkOrdersMessage" class="no-data-message">
-                            <div class="icon">🔄</div>
-                            <p>No recurring work orders set up yet.</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Inspections Subsection -->
-                <div class="subsection-content" id="inspectionsContent">
-                    <h4>Inspections</h4>
-                    <button class="controls-toggle-btn">
-                        <span>Filters & Sort</span>
-                        <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
-                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                        </svg>
-                    </button>
-                    <div class="controls-container visible-by-default">
-                        <div class="filter-group">
-                            <label>Property:</label>
-                            <div class="custom-dropdown" id="inspectionsFilterProperty">
-                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Properties</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
-                                <div class="dropdown-options"><div class="dropdown-option" data-value="">All Properties</div></div>
+                         <div class="data-table-container">
+                            <table class="data-table" id="inspectionsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Inspection Name/ID</th>
+                                        <th>Property</th>
+                                        <th>Date Scheduled</th>
+                                        <th>Inspector</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="inspectionsTableBody"></tbody>
+                            </table>
+                            <div id="noInspectionsMessage" class="no-data-message">
+                                <div class="icon">🧐</div>
+                                <p>No inspections scheduled or recorded.</p>
                             </div>
                         </div>
-                        <div class="filter-group">
-                            <label>Status:</label>
-                            <div class="custom-dropdown" id="inspectionsFilterStatus">
-                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
-                                <div class="dropdown-options">
-                                    <div class="dropdown-option" data-value="">All</div>
-                                    <div class="dropdown-option" data-value="Scheduled">Scheduled</div>
-                                    <div class="dropdown-option" data-value="In Progress">In Progress</div>
-                                    <div class="dropdown-option" data-value="Completed">Completed</div>
-                                    <div class="dropdown-option" data-value="Cancelled">Cancelled</div>
+                    </div>
+
+                    <!-- Unit Turns Subsection -->
+                    <div class="subsection-content" id="unitTurnsContent">
+                         <h4>Unit Turns</h4>
+                        <button class="controls-toggle-btn">
+                            <span>Filters & Sort</span>
+                            <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                        <div class="controls-container visible-by-default">
+                            <div class="filter-group">
+                                <label>Property:</label>
+                                <div class="custom-dropdown" id="unitTurnsFilterProperty">
+                                    <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Properties</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                    <div class="dropdown-options"><div class="dropdown-option" data-value="">All Properties</div></div>
+                                </div>
+                            </div>
+                            <div class="filter-group">
+                                <label>Status:</label>
+                                <div class="custom-dropdown" id="unitTurnsFilterStatus">
+                                    <div class="dropdown-selected" tabindex="0"><span class="selected-value">All</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                    <div class="dropdown-options">
+                                        <div class="dropdown-option" data-value="">All</div>
+                                        <div class="dropdown-option" data-value="Pending">Pending</div>
+                                        <div class="dropdown-option" data-value="Cleaning">Cleaning</div>
+                                        <div class="dropdown-option" data-value="Repairs">Repairs</div>
+                                        <div class="dropdown-option" data-value="Ready">Ready</div>
+                                        <div class="dropdown-option" data-value="Completed">Completed</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                     <div class="data-table-container">
-                        <table class="data-table" id="inspectionsTable">
-                            <thead>
-                                <tr>
-                                    <th>Inspection Name/ID</th>
-                                    <th>Property</th>
-                                    <th>Date Scheduled</th>
-                                    <th>Inspector</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="inspectionsTableBody"></tbody>
-                        </table>
-                        <div id="noInspectionsMessage" class="no-data-message">
-                            <div class="icon">🧐</div>
-                            <p>No inspections scheduled or recorded.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Unit Turns Subsection -->
-                <div class="subsection-content" id="unitTurnsContent">
-                     <h4>Unit Turns</h4>
-                    <button class="controls-toggle-btn">
-                        <span>Filters & Sort</span>
-                        <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
-                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                        </svg>
-                    </button>
-                    <div class="controls-container visible-by-default">
-                        <div class="filter-group">
-                            <label>Property:</label>
-                            <div class="custom-dropdown" id="unitTurnsFilterProperty">
-                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Properties</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
-                                <div class="dropdown-options"><div class="dropdown-option" data-value="">All Properties</div></div>
+                         <div class="data-table-container">
+                            <table class="data-table" id="unitTurnsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Unit/Property</th>
+                                        <th>Move-Out Date</th>
+                                        <th>Target Move-In Date</th>
+                                        <th>Status</th>
+                                        <th>Assigned To</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="unitTurnsTableBody"></tbody>
+                            </table>
+                            <div id="noUnitTurnsMessage" class="no-data-message">
+                                <div class="icon">📦</div>
+                                <p>No unit turns in progress.</p>
                             </div>
                         </div>
-                        <div class="filter-group">
-                            <label>Status:</label>
-                            <div class="custom-dropdown" id="unitTurnsFilterStatus">
-                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
-                                <div class="dropdown-options">
-                                    <div class="dropdown-option" data-value="">All</div>
-                                    <div class="dropdown-option" data-value="Pending">Pending</div>
-                                    <div class="dropdown-option" data-value="Cleaning">Cleaning</div>
-                                    <div class="dropdown-option" data-value="Repairs">Repairs</div>
-                                    <div class="dropdown-option" data-value="Ready">Ready</div>
-                                    <div class="dropdown-option" data-value="Completed">Completed</div>
+                    </div>
+
+                    <!-- Projects Subsection -->
+                    <div class="subsection-content" id="projectsContent">
+                        <h4>Projects</h4>
+                        <button class="controls-toggle-btn">
+                            <span>Filters & Sort</span>
+                            <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                        <div class="controls-container visible-by-default">
+                            <div class="filter-group">
+                                <label>Property:</label>
+                                <div class="custom-dropdown" id="projectsFilterProperty">
+                                    <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Properties</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                    <div class="dropdown-options"><div class="dropdown-option" data-value="">All Properties</div></div>
+                                </div>
+                            </div>
+                            <div class="filter-group">
+                                <label>Status:</label>
+                                <div class="custom-dropdown" id="projectsFilterStatus">
+                                    <div class="dropdown-selected" tabindex="0"><span class="selected-value">All</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                    <div class="dropdown-options">
+                                        <div class="dropdown-option" data-value="">All</div>
+                                        <div class="dropdown-option" data-value="Planning">Planning</div>
+                                        <div class="dropdown-option" data-value="In Progress">In Progress</div>
+                                        <div class="dropdown-option" data-value="On Hold">On Hold</div>
+                                        <div class="dropdown-option" data-value="Completed">Completed</div>
+                                        <div class="dropdown-option" data-value="Cancelled">Cancelled</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                     <div class="data-table-container">
-                        <table class="data-table" id="unitTurnsTable">
-                            <thead>
-                                <tr>
-                                    <th>Unit/Property</th>
-                                    <th>Move-Out Date</th>
-                                    <th>Target Move-In Date</th>
-                                    <th>Status</th>
-                                    <th>Assigned To</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="unitTurnsTableBody"></tbody>
-                        </table>
-                        <div id="noUnitTurnsMessage" class="no-data-message">
-                            <div class="icon">📦</div>
-                            <p>No unit turns in progress.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Projects Subsection -->
-                <div class="subsection-content" id="projectsContent">
-                    <h4>Projects</h4>
-                    <button class="controls-toggle-btn">
-                        <span>Filters & Sort</span>
-                        <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
-                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                        </svg>
-                    </button>
-                    <div class="controls-container visible-by-default">
-                        <div class="filter-group">
-                            <label>Property:</label>
-                            <div class="custom-dropdown" id="projectsFilterProperty">
-                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Properties</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
-                                <div class="dropdown-options"><div class="dropdown-option" data-value="">All Properties</div></div>
+                        <div class="data-table-container">
+                            <table class="data-table" id="projectsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Project Name</th>
+                                        <th>Property</th>
+                                        <th>Start Date</th>
+                                        <th>End Date (Est.)</th>
+                                        <th>Budget</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="projectsTableBody"></tbody>
+                            </table>
+                            <div id="noProjectsMessage" class="no-data-message">
+                                <div class="icon">🏗️</div>
+                                <p>No projects currently tracked.</p>
                             </div>
                         </div>
-                        <div class="filter-group">
-                            <label>Status:</label>
-                            <div class="custom-dropdown" id="projectsFilterStatus">
-                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
-                                <div class="dropdown-options">
-                                    <div class="dropdown-option" data-value="">All</div>
-                                    <div class="dropdown-option" data-value="Planning">Planning</div>
-                                    <div class="dropdown-option" data-value="In Progress">In Progress</div>
-                                    <div class="dropdown-option" data-value="On Hold">On Hold</div>
-                                    <div class="dropdown-option" data-value="Completed">Completed</div>
-                                    <div class="dropdown-option" data-value="Cancelled">Cancelled</div>
+                    </div>
+
+                    <!-- Purchase Orders Subsection -->
+                    <div class="subsection-content" id="purchaseOrdersContent">
+                        <h4>Purchase Orders</h4>
+                        <button class="controls-toggle-btn">
+                            <span>Filters & Sort</span>
+                            <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                        <div class="controls-container visible-by-default">
+                            <div class="filter-group">
+                                <label>Vendor:</label>
+                                <div class="custom-dropdown" id="poFilterVendor">
+                                    <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Vendors</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                    <div class="dropdown-options"><div class="dropdown-option" data-value="">All Vendors</div></div>
+                                </div>
+                            </div>
+                            <div class="filter-group">
+                                <label>Status:</label>
+                                <div class="custom-dropdown" id="poFilterStatus">
+                                    <div class="dropdown-selected" tabindex="0"><span class="selected-value">All</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                    <div class="dropdown-options">
+                                        <div class="dropdown-option" data-value="">All</div>
+                                        <div class="dropdown-option" data-value="Draft">Draft</div>
+                                        <div class="dropdown-option" data-value="Submitted">Submitted</div>
+                                        <div class="dropdown-option" data-value="Approved">Approved</div>
+                                        <div class="dropdown-option" data-value="Received">Received</div>
+                                        <div class="dropdown-option" data-value="Closed">Closed</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="data-table-container">
-                        <table class="data-table" id="projectsTable">
-                            <thead>
-                                <tr>
-                                    <th>Project Name</th>
-                                    <th>Property</th>
-                                    <th>Start Date</th>
-                                    <th>End Date (Est.)</th>
-                                    <th>Budget</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="projectsTableBody"></tbody>
-                        </table>
-                        <div id="noProjectsMessage" class="no-data-message">
-                            <div class="icon">🏗️</div>
-                            <p>No projects currently tracked.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Purchase Orders Subsection -->
-                <div class="subsection-content" id="purchaseOrdersContent">
-                    <h4>Purchase Orders</h4>
-                    <button class="controls-toggle-btn">
-                        <span>Filters & Sort</span>
-                        <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
-                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                        </svg>
-                    </button>
-                    <div class="controls-container visible-by-default">
-                        <div class="filter-group">
-                            <label>Vendor:</label>
-                            <div class="custom-dropdown" id="poFilterVendor">
-                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Vendors</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
-                                <div class="dropdown-options"><div class="dropdown-option" data-value="">All Vendors</div></div>
+                        <div class="data-table-container">
+                            <table class="data-table" id="purchaseOrdersTable">
+                                <thead>
+                                    <tr>
+                                        <th>PO Number</th>
+                                        <th>Vendor</th>
+                                        <th>Order Date</th>
+                                        <th>Total Amount</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="purchaseOrdersTableBody"></tbody>
+                            </table>
+                            <div id="noPurchaseOrdersMessage" class="no-data-message">
+                                <div class="icon">🛒</div>
+                                <p>No purchase orders found.</p>
                             </div>
                         </div>
-                        <div class="filter-group">
-                            <label>Status:</label>
-                            <div class="custom-dropdown" id="poFilterStatus">
-                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
-                                <div class="dropdown-options">
-                                    <div class="dropdown-option" data-value="">All</div>
-                                    <div class="dropdown-option" data-value="Draft">Draft</div>
-                                    <div class="dropdown-option" data-value="Submitted">Submitted</div>
-                                    <div class="dropdown-option" data-value="Approved">Approved</div>
-                                    <div class="dropdown-option" data-value="Received">Received</div>
-                                    <div class="dropdown-option" data-value="Closed">Closed</div>
+                    </div>
+
+                    <!-- Inventory Subsection -->
+                    <div class="subsection-content" id="inventoryContent">
+                        <h4>Inventory</h4>
+                        <button class="controls-toggle-btn">
+                            <span>Filters & Sort</span>
+                            <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                        <div class="controls-container visible-by-default">
+                            <div class="filter-group">
+                                <label>Category:</label>
+                                <div class="custom-dropdown" id="inventoryFilterCategory">
+                                    <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Categories</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                    <div class="dropdown-options"><div class="dropdown-option" data-value="">All Categories</div></div>
+                                </div>
+                            </div>
+                            <div class="filter-group">
+                                <label>Location:</label>
+                                <div class="custom-dropdown" id="inventoryFilterLocation">
+                                    <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Locations</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                    <div class="dropdown-options"><div class="dropdown-option" data-value="">All Locations</div></div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="data-table-container">
-                        <table class="data-table" id="purchaseOrdersTable">
-                            <thead>
-                                <tr>
-                                    <th>PO Number</th>
-                                    <th>Vendor</th>
-                                    <th>Order Date</th>
-                                    <th>Total Amount</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="purchaseOrdersTableBody"></tbody>
-                        </table>
-                        <div id="noPurchaseOrdersMessage" class="no-data-message">
-                            <div class="icon">🛒</div>
-                            <p>No purchase orders found.</p>
+                        <div class="data-table-container">
+                            <table class="data-table" id="inventoryTable">
+                                <thead>
+                                    <tr>
+                                        <th>Item Name</th>
+                                        <th>SKU/ID</th>
+                                        <th>Category</th>
+                                        <th>Quantity on Hand</th>
+                                        <th>Location</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="inventoryTableBody"></tbody>
+                            </table>
+                            <div id="noInventoryMessage" class="no-data-message">
+                                <div class="icon">🔩</div>
+                                <p>No inventory items tracked.</p>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Inventory Subsection -->
-                <div class="subsection-content" id="inventoryContent">
-                    <h4>Inventory</h4>
-                    <button class="controls-toggle-btn">
-                        <span>Filters & Sort</span>
-                        <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
-                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                        </svg>
-                    </button>
-                    <div class="controls-container visible-by-default">
-                        <div class="filter-group">
-                            <label>Category:</label>
-                            <div class="custom-dropdown" id="inventoryFilterCategory">
-                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Categories</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
-                                <div class="dropdown-options"><div class="dropdown-option" data-value="">All Categories</div></div>
+                    <!-- Fixed Assets Subsection -->
+                    <div class="subsection-content" id="fixedAssetsContent">
+                        <h4>Fixed Assets</h4>
+                        <button class="controls-toggle-btn">
+                            <span>Filters & Sort</span>
+                            <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                        <div class="controls-container visible-by-default">
+                            <div class="filter-group">
+                                <label>Property:</label>
+                                <div class="custom-dropdown" id="fixedAssetsFilterProperty">
+                                    <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Properties</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                    <div class="dropdown-options"><div class="dropdown-option" data-value="">All Properties</div></div>
+                                </div>
                             </div>
                         </div>
-                        <div class="filter-group">
-                            <label>Location:</label>
-                            <div class="custom-dropdown" id="inventoryFilterLocation">
-                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Locations</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
-                                <div class="dropdown-options"><div class="dropdown-option" data-value="">All Locations</div></div>
+                        <div class="data-table-container">
+                            <table class="data-table" id="fixedAssetsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Asset Name</th>
+                                        <th>Asset ID</th>
+                                        <th>Property</th>
+                                        <th>Purchase Date</th>
+                                        <th>Purchase Cost</th>
+                                        <th>Current Value</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="fixedAssetsTableBody"></tbody>
+                            </table>
+                            <div id="noFixedAssetsMessage" class="no-data-message">
+                                <div class="icon">📠</div>
+                                <p>No fixed assets recorded.</p>
                             </div>
                         </div>
                     </div>
-                    <div class="data-table-container">
-                        <table class="data-table" id="inventoryTable">
-                            <thead>
-                                <tr>
-                                    <th>Item Name</th>
-                                    <th>SKU/ID</th>
-                                    <th>Category</th>
-                                    <th>Quantity on Hand</th>
-                                    <th>Location</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="inventoryTableBody"></tbody>
-                        </table>
-                        <div id="noInventoryMessage" class="no-data-message">
-                            <div class="icon">🔩</div>
-                            <p>No inventory items tracked.</p>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Fixed Assets Subsection -->
-                <div class="subsection-content" id="fixedAssetsContent">
-                    <h4>Fixed Assets</h4>
-                    <button class="controls-toggle-btn">
-                        <span>Filters & Sort</span>
-                        <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
-                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                        </svg>
-                    </button>
-                    <div class="controls-container visible-by-default">
-                        <div class="filter-group">
-                            <label>Property:</label>
-                            <div class="custom-dropdown" id="fixedAssetsFilterProperty">
-                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Properties</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
-                                <div class="dropdown-options"><div class="dropdown-option" data-value="">All Properties</div></div>
+                    <!-- Smart Maintenance Subsection -->
+                    <div class="subsection-content" id="smartMaintenanceContent">
+                        <h4>Smart Maintenance Insights</h4>
+                        <div class="smart-maintenance-overview">
+                            <p>Leverage AI and IoT data for proactive maintenance, cost optimization, and enhanced operational efficiency. This section provides predictive insights and actionable recommendations.</p>
+                        </div>
+                        <div class="smart-feature-list">
+                            <div class="smart-feature-item">
+                                <h5>Predictive Maintenance Alerts</h5>
+                                <p>Alerts based on sensor data or historical trends predicting potential equipment failures (e.g., HVAC, water heaters).</p>
+                                <ul class="alert-list" id="predictiveAlertsList"></ul>
+                                <div id="noPredictiveAlerts" style="display: none; text-align: center; padding: 20px; color: #777;">No predictive alerts at this time.</div>
+                                <button class="btn-secondary view-smart-details" id="refreshSmartMaintenanceBtn" style="width: 100%; margin-top: 10px;">Refresh Insights</button>
                             </div>
-                        </div>
-                    </div>
-                    <div class="data-table-container">
-                        <table class="data-table" id="fixedAssetsTable">
-                            <thead>
-                                <tr>
-                                    <th>Asset Name</th>
-                                    <th>Asset ID</th>
-                                    <th>Property</th>
-                                    <th>Purchase Date</th>
-                                    <th>Purchase Cost</th>
-                                    <th>Current Value</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="fixedAssetsTableBody"></tbody>
-                        </table>
-                        <div id="noFixedAssetsMessage" class="no-data-message">
-                            <div class="icon">📠</div>
-                            <p>No fixed assets recorded.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Smart Maintenance Subsection -->
-                <div class="subsection-content" id="smartMaintenanceContent">
-                    <h4>Smart Maintenance Insights</h4>
-                    <div class="smart-maintenance-overview">
-                        <p>Leverage AI and IoT data for proactive maintenance, cost optimization, and enhanced operational efficiency. This section provides predictive insights and actionable recommendations.</p>
-                    </div>
-                    <div class="smart-feature-list">
-                        <div class="smart-feature-item">
-                            <h5>Predictive Maintenance Alerts</h5>
-                            <p>Alerts based on sensor data or historical trends predicting potential equipment failures (e.g., HVAC, water heaters).</p>
-                            <ul class="alert-list" id="predictiveAlertsList"></ul>
-                            <div id="noPredictiveAlerts" style="display: none; text-align: center; padding: 20px; color: #777;">No predictive alerts at this time.</div>
-                            <button class="btn-secondary view-smart-details" id="refreshSmartMaintenanceBtn" style="width: 100%; margin-top: 10px;">Refresh Insights</button>
-                        </div>
-                        <div class="smart-feature-item">
-                            <h5>IoT Device Status & Connectivity</h5>
-                            <p>Overview of connected smart devices (thermostats, leak detectors, smart locks) and their operational status.</p>
-                            <div class="iot-status-summary" id="iotStatusSummary" style="margin-bottom: 15px;"></div>
-                            <ul class="iot-device-list" id="iotDeviceList"></ul>
-                            <div id="noIotDevices" style="display: none; text-align: center; padding: 20px; color: #777;">No IoT devices are being tracked.</div>
-                        </div>
-                        <div class="smart-feature-item">
-                            <h5>Maintenance Efficiency Scorecards</h5>
-                            <p>Analytics on maintenance team performance, work order completion times, and cost-effectiveness.</p>
-                            <div id="maintenanceScorecards">
-                                 <div id="scorecard-metrics"></div>
-                                 <div id="workOrderStatusChartContainer">
-                                    <canvas id="workOrderStatusChart"></canvas>
-                                 </div>
+                            <div class="smart-feature-item">
+                                <h5>IoT Device Status & Connectivity</h5>
+                                <p>Overview of connected smart devices (thermostats, leak detectors, smart locks) and their operational status.</p>
+                                <div class="iot-status-summary" id="iotStatusSummary" style="margin-bottom: 15px;"></div>
+                                <ul class="iot-device-list" id="iotDeviceList"></ul>
+                                <div id="noIotDevices" style="display: none; text-align: center; padding: 20px; color: #777;">No IoT devices are being tracked.</div>
                             </div>
-                            <div id="noMaintenanceDataForScorecard" style="display: none; text-align: center; padding: 20px; color: #777;">Not enough data to generate scorecards.</div>
-                        </div>
-                        <div class="smart-feature-item">
-                            <h5>Automated Work Order Generation (Suggestions)</h5>
-                            <p>AI suggests creating work orders based on detected anomalies or scheduled preventive maintenance derived from smart data.</p>
-                            <ul class="suggestion-list" id="workOrderSuggestionsList"></ul>
-                            <div id="noWorkOrderSuggestions" style="display: none; text-align: center; padding: 20px; color: #777;">No work order suggestions at this time.</div>
+                            <div class="smart-feature-item">
+                                <h5>Maintenance Efficiency Scorecards</h5>
+                                <p>Analytics on maintenance team performance, work order completion times, and cost-effectiveness.</p>
+                                <div id="maintenanceScorecards">
+                                     <div id="scorecard-metrics"></div>
+                                     <div id="workOrderStatusChartContainer">
+                                        <canvas id="workOrderStatusChart"></canvas>
+                                     </div>
+                                </div>
+                                <div id="noMaintenanceDataForScorecard" style="display: none; text-align: center; padding: 20px; color: #777;">Not enough data to generate scorecards.</div>
+                            </div>
+                            <div class="smart-feature-item">
+                                <h5>Automated Work Order Generation (Suggestions)</h5>
+                                <p>AI suggests creating work orders based on detected anomalies or scheduled preventive maintenance derived from smart data.</p>
+                                <ul class="suggestion-list" id="workOrderSuggestionsList"></ul>
+                                <div id="noWorkOrderSuggestions" style="display: none; text-align: center; padding: 20px; color: #777;">No work order suggestions at this time.</div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        <button class="fab" id="addItemBtn" aria-label="Add new item">
+            +
+        </button>
     </div>
 
     <div id="ai-agent-container"></div>
 
-    <button class="fab" id="addItemBtn" aria-label="Add new item">
-        +
-    </button>
-
+    
     <!-- Modal for Adding/Editing Work Orders -->
     <div id="workOrderModal" class="modal">
         <div class="modal-content">

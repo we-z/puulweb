@@ -11,92 +11,93 @@
     <div id="sidebar-container"></div>
 
     <div class="main-content">
-        <div id="propertiesView">
-            <div class="content-header">
-                <h2>Properties</h2>
-            </div>
-            <div class="page-container">
-                <button class="controls-toggle-btn" id="controlsToggleBtnProperties">
-                    <span>Filters & Sort</span>
-                    <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
-                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                    </svg>
-                </button>
-                <div class="controls-container visible-by-default">
-                    <div class="filter-group">
-                        <label for="customFilterPropertyType">Type:</label>
-                        <div class="custom-dropdown" id="customFilterPropertyType">
-                            <div class="dropdown-selected" tabindex="0">
-                                <span class="selected-value">All Types</span>
-                                <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
-                            </div>
-                            <div class="dropdown-options">
-                                <div class="dropdown-option selected" data-value="">All Types</div>
-                                <div class="dropdown-option" data-value="Single Family Home">Single Family Home</div>
-                                <div class="dropdown-option" data-value="Apartment Unit">Apartment Unit</div>
-                                <div class="dropdown-option" data-value="Multi-Family Building">Multi-Family Building</div>
-                                <div class="dropdown-option" data-value="Condominium">Condominium</div>
-                                <div class="dropdown-option" data-value="Townhouse">Townhouse</div>
-                                <div class="dropdown-option" data-value="Commercial Storefront">Commercial Storefront</div>
-                                <div class="dropdown-option" data-value="Office Space">Office Space</div>
-                                <div class="dropdown-option" data-value="Industrial Warehouse">Industrial Warehouse</div>
-                                <div class="dropdown-option" data-value="Vacant Land">Vacant Land</div>
-                                <div class="dropdown-option" data-value="Other">Other</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="sort-group">
-                        <label for="customSortPropertiesBy">Sort by:</label>
-                        <div class="custom-dropdown" id="customSortPropertiesBy">
-                            <div class="dropdown-selected" tabindex="0">
-                                <span class="selected-value">Address</span>
-                                <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
-                            </div>
-                            <div class="dropdown-options">
-                                <div class="dropdown-option selected" data-value="address">Address</div>
-                                <div class="dropdown-option" data-value="type">Type</div>
-                            </div>
-                        </div>
-                        <div class="custom-dropdown" id="customSortPropertiesOrder">
-                            <div class="dropdown-selected" tabindex="0">
-                                <span class="selected-value">Ascending</span>
-                                <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
-                            </div>
-                            <div class="dropdown-options">
-                                <div class="dropdown-option selected" data-value="asc">Ascending</div>
-                                <div class="dropdown-option" data-value="desc">Descending</div>
-                            </div>
-                        </div>
-                    </div>
+        <div class="content-scroll-wrapper">
+            <div id="propertiesView">
+                <div class="content-header">
+                    <h2>Properties</h2>
                 </div>
-                <div class="data-table-container properties-table-container">
-                    <table class="data-table" id="propertiesTable">
-                        <thead>
-                            <tr>
-                                <th>Address</th>
-                                <th>Type</th>
-                                <th>Work Orders (Open/Total)</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="propertiesTableBody">
-                        </tbody>
-                    </table>
-                    <div id="noPropertiesMessage" class="no-data-message" style="display: none;">
-                        <div class="icon">🏠</div>
-                        <p>No properties added yet.</p>
-                        <span>Click the '+' button to add your first one!</span>
+                <div class="page-container">
+                    <button class="controls-toggle-btn" id="controlsToggleBtnProperties">
+                        <span>Filters & Sort</span>
+                        <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
+                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <div class="controls-container visible-by-default">
+                        <div class="filter-group">
+                            <label for="customFilterPropertyType">Type:</label>
+                            <div class="custom-dropdown" id="customFilterPropertyType">
+                                <div class="dropdown-selected" tabindex="0">
+                                    <span class="selected-value">All Types</span>
+                                    <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                                </div>
+                                <div class="dropdown-options">
+                                    <div class="dropdown-option selected" data-value="">All Types</div>
+                                    <div class="dropdown-option" data-value="Single Family Home">Single Family Home</div>
+                                    <div class="dropdown-option" data-value="Apartment Unit">Apartment Unit</div>
+                                    <div class="dropdown-option" data-value="Multi-Family Building">Multi-Family Building</div>
+                                    <div class="dropdown-option" data-value="Condominium">Condominium</div>
+                                    <div class="dropdown-option" data-value="Townhouse">Townhouse</div>
+                                    <div class="dropdown-option" data-value="Commercial Storefront">Commercial Storefront</div>
+                                    <div class="dropdown-option" data-value="Office Space">Office Space</div>
+                                    <div class="dropdown-option" data-value="Industrial Warehouse">Industrial Warehouse</div>
+                                    <div class="dropdown-option" data-value="Vacant Land">Vacant Land</div>
+                                    <div class="dropdown-option" data-value="Other">Other</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sort-group">
+                            <label for="customSortPropertiesBy">Sort by:</label>
+                            <div class="custom-dropdown" id="customSortPropertiesBy">
+                                <div class="dropdown-selected" tabindex="0">
+                                    <span class="selected-value">Address</span>
+                                    <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                                </div>
+                                <div class="dropdown-options">
+                                    <div class="dropdown-option selected" data-value="address">Address</div>
+                                    <div class="dropdown-option" data-value="type">Type</div>
+                                </div>
+                            </div>
+                            <div class="custom-dropdown" id="customSortPropertiesOrder">
+                                <div class="dropdown-selected" tabindex="0">
+                                    <span class="selected-value">Ascending</span>
+                                    <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                                </div>
+                                <div class="dropdown-options">
+                                    <div class="dropdown-option selected" data-value="asc">Ascending</div>
+                                    <div class="dropdown-option" data-value="desc">Descending</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="data-table-container properties-table-container">
+                        <table class="data-table" id="propertiesTable">
+                            <thead>
+                                <tr>
+                                    <th>Address</th>
+                                    <th>Type</th>
+                                    <th>Work Orders (Open/Total)</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="propertiesTableBody">
+                            </tbody>
+                        </table>
+                        <div id="noPropertiesMessage" class="no-data-message" style="display: none;">
+                            <div class="icon">🏠</div>
+                            <p>No properties added yet.</p>
+                            <span>Click the '+' button to add your first one!</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+        <button class="fab" id="addItemBtn" aria-label="Add new property">
+            +
+        </button>
     </div>
 
     <div id="ai-agent-container"></div>
-
-    <button class="fab" id="addItemBtn" aria-label="Add new property">
-        +
-    </button>
 
     <!-- Modal for Adding/Editing Properties -->
     <div id="propertyModal" class="modal">

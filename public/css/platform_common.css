@@ -181,9 +181,14 @@ body {
     padding: 0; 
     display: flex;
     flex-direction: column;
-    overflow-y: auto; 
     background-color: #f7f8fc; 
     transition: margin-left 0.3s ease, margin-right 0.3s ease; /* Added margin-right transition */
+    position: relative;
+}
+
+.content-scroll-wrapper {
+    height: 100%;
+    overflow-y: auto;
 }
 
 .content-header {
@@ -311,7 +316,7 @@ table.data-table tr:hover {
 }
 
 .fab {
-    position: fixed;
+    position: absolute;
     bottom: 40px;
     right: 40px;
     background-color: #1a202c; 
@@ -326,17 +331,13 @@ table.data-table tr:hover {
     justify-content: center;
     cursor: pointer;
     box-shadow: 0 6px 12px rgba(0,0,0,0.2);
-    transition: transform 0.2s ease-in-out, background-color 0.2s, right 0.3s ease, visibility 0s;
+    transition: transform 0.2s ease-in-out, background-color 0.2s;
     z-index: 1000;
     visibility: visible; /* Default state */
 }
 
 html.js-loading .fab {
     visibility: hidden; /* Hide button while JS is loading state */
-}
-
-html.ai-agent-is-open .fab {
-    right: 360px; /* 320px for the sidebar + 40px original offset */
 }
 
 .fab:hover {

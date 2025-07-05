@@ -55,140 +55,141 @@
     <div id="sidebar-container"></div>
 
     <div class="main-content">
-        <div id="reportingView">
-            <div class="content-header"><h2>Reporting</h2></div>
-            <div class="page-container">
-                <div class="sub-nav" id="reportingSubNav">
-                    <div class="sub-nav-item active" data-subsection="reports">Reports</div>
-                    <div class="sub-nav-item" data-subsection="scheduledReports">Scheduled Reports</div>
-                    <div class="sub-nav-item" data-subsection="metrics">Metrics</div>
-                    <div class="sub-nav-item" data-subsection="surveys">Surveys</div>
-                </div>
+        <div class="content-scroll-wrapper">
+            <div id="reportingView">
+                <div class="content-header"><h2>Reporting</h2></div>
+                <div class="page-container">
+                    <div class="sub-nav" id="reportingSubNav">
+                        <div class="sub-nav-item active" data-subsection="reports">Reports</div>
+                        <div class="sub-nav-item" data-subsection="scheduledReports">Scheduled Reports</div>
+                        <div class="sub-nav-item" data-subsection="metrics">Metrics</div>
+                        <div class="sub-nav-item" data-subsection="surveys">Surveys</div>
+                    </div>
 
-                <div class="subsection-content active" id="reportsContent">
-                    <h4>Reports</h4>
-                    <p>Generate and view various financial, operational, and leasing reports.</p>
-                    <div class="report-placeholder"></div>
-                    <!-- Future: Filters for report types, date ranges, export options -->
-                </div>
+                    <div class="subsection-content active" id="reportsContent">
+                        <h4>Reports</h4>
+                        <p>Generate and view various financial, operational, and leasing reports.</p>
+                        <div class="report-placeholder"></div>
+                        <!-- Future: Filters for report types, date ranges, export options -->
+                    </div>
 
-                <div class="subsection-content" id="scheduledReportsContent">
-                    <h4>Scheduled Reports</h4>
-                    <div class="controls-container visible-by-default">
-                        <div class="filter-group">
-                            <label>Report Name:</label>
-                            <div class="custom-dropdown" id="scheduledFilterName">
-                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Reports</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
-                                <div class="dropdown-options"><div class="dropdown-option" data-value="">All Reports</div></div>
+                    <div class="subsection-content" id="scheduledReportsContent">
+                        <h4>Scheduled Reports</h4>
+                        <div class="controls-container visible-by-default">
+                            <div class="filter-group">
+                                <label>Report Name:</label>
+                                <div class="custom-dropdown" id="scheduledFilterName">
+                                    <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Reports</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                    <div class="dropdown-options"><div class="dropdown-option" data-value="">All Reports</div></div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="filter-group">
-                            <label>Frequency:</label>
-                            <div class="custom-dropdown" id="scheduledFilterFrequency">
-                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Frequencies</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
-                                <div class="dropdown-options">
-                                    <div class="dropdown-option" data-value="">All Frequencies</div>
-                                    <div class="dropdown-option" data-value="Daily">Daily</div>
-                                    <div class="dropdown-option" data-value="Weekly">Weekly</div>
-                                    <div class="dropdown-option" data-value="Monthly">Monthly</div>
+                            <div class="filter-group">
+                                <label>Frequency:</label>
+                                <div class="custom-dropdown" id="scheduledFilterFrequency">
+                                    <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Frequencies</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                    <div class="dropdown-options">
+                                        <div class="dropdown-option" data-value="">All Frequencies</div>
+                                        <div class="dropdown-option" data-value="Daily">Daily</div>
+                                        <div class="dropdown-option" data-value="Weekly">Weekly</div>
+                                        <div class="dropdown-option" data-value="Monthly">Monthly</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                         <div class="data-table-container">
+                            <table class="data-table" id="scheduledReportsTable">
+                                <thead><tr><th>Report Name</th><th>Frequency</th><th>Next Run Date</th><th>Recipients</th><th>Status</th><th>Actions</th></tr></thead>
+                                <tbody id="scheduledReportsTableBody"></tbody>
+                            </table>
+                            <div id="noScheduledReportsMessage" class="no-data-message"><div class="icon">🗓️</div><p>No reports currently scheduled.</p></div>
+                        </div>
                     </div>
-                     <div class="data-table-container">
-                        <table class="data-table" id="scheduledReportsTable">
-                            <thead><tr><th>Report Name</th><th>Frequency</th><th>Next Run Date</th><th>Recipients</th><th>Status</th><th>Actions</th></tr></thead>
-                            <tbody id="scheduledReportsTableBody"></tbody>
-                        </table>
-                        <div id="noScheduledReportsMessage" class="no-data-message"><div class="icon">🗓️</div><p>No reports currently scheduled.</p></div>
-                    </div>
-                </div>
 
-                <div class="subsection-content" id="metricsContent">
-                    <h4>Metrics & Analytics Dashboard</h4>
-                    <p>Visualize key performance indicators (KPIs) and trends across your portfolio to make data-driven decisions.</p>
-                    <div class="metrics-grid">
-                        <div class="metric-card">
-                            <h5>Occupancy Rate</h5>
-                            <div class="metric-value-large"></div>
-                            <div class="metric-trend"></div>
+                    <div class="subsection-content" id="metricsContent">
+                        <h4>Metrics & Analytics Dashboard</h4>
+                        <p>Visualize key performance indicators (KPIs) and trends across your portfolio to make data-driven decisions.</p>
+                        <div class="metrics-grid">
+                            <div class="metric-card">
+                                <h5>Occupancy Rate</h5>
+                                <div class="metric-value-large"></div>
+                                <div class="metric-trend"></div>
+                            </div>
+                            <div class="metric-card">
+                                <h5>Average Delinquency</h5>
+                                <div class="metric-value-large"></div>
+                                <div class="metric-trend"></div>
+                            </div>
+                            <div class="metric-card">
+                                <h5>Maintenance Costs (This Month)</h5>
+                                <div class="metric-value-large"></div>
+                                <div class="metric-trend"></div>
+                            </div>
+                            <div class="metric-card">
+                                <h5>Lease Renewals (Last 90d)</h5>
+                                <div class="metric-value-large"></div>
+                                <div class="metric-trend"></div>
+                            </div>
                         </div>
-                        <div class="metric-card">
-                            <h5>Average Delinquency</h5>
-                            <div class="metric-value-large"></div>
-                            <div class="metric-trend"></div>
-                        </div>
-                        <div class="metric-card">
-                            <h5>Maintenance Costs (This Month)</h5>
-                            <div class="metric-value-large"></div>
-                            <div class="metric-trend"></div>
-                        </div>
-                        <div class="metric-card">
-                            <h5>Lease Renewals (Last 90d)</h5>
-                            <div class="metric-value-large"></div>
-                            <div class="metric-trend"></div>
+                        <div class="charts-area">
+                            <div class="chart-container full-width">
+                                <h5>Revenue vs. Expenses (Last 12 Months)</h5>
+                                <canvas id="revenueExpensesChart"></canvas>
+                            </div>
+                            <div class="chart-container half-width">
+                                <h5>Work Order Completion by Priority</h5>
+                                 <canvas id="workOrderCompletionChart"></canvas>
+                            </div>
+                            <div class="chart-container half-width">
+                                <h5>Vacancy Duration Analysis (Days)</h5>
+                                <canvas id="vacancyDurationChart"></canvas>
+                            </div>
+                            <!-- More charts and KPI visualizations can be added here -->
                         </div>
                     </div>
-                    <div class="charts-area">
-                        <div class="chart-container full-width">
-                            <h5>Revenue vs. Expenses (Last 12 Months)</h5>
-                            <canvas id="revenueExpensesChart"></canvas>
-                        </div>
-                        <div class="chart-container half-width">
-                            <h5>Work Order Completion by Priority</h5>
-                             <canvas id="workOrderCompletionChart"></canvas>
-                        </div>
-                        <div class="chart-container half-width">
-                            <h5>Vacancy Duration Analysis (Days)</h5>
-                            <canvas id="vacancyDurationChart"></canvas>
-                        </div>
-                        <!-- More charts and KPI visualizations can be added here -->
-                    </div>
-                </div>
 
-                <div class="subsection-content" id="surveysContent">
-                    <h4>Surveys</h4>
-                    <div class="controls-container visible-by-default">
-                        <div class="filter-group">
-                            <label>Target Audience:</label>
-                            <div class="custom-dropdown" id="surveysFilterAudience">
-                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
-                                <div class="dropdown-options">
-                                    <div class="dropdown-option" data-value="">All</div>
-                                    <div class="dropdown-option" data-value="Tenants">Tenants</div>
-                                    <div class="dropdown-option" data-value="Owners">Owners</div>
-                                    <div class="dropdown-option" data-value="All">All</div>
+                    <div class="subsection-content" id="surveysContent">
+                        <h4>Surveys</h4>
+                        <div class="controls-container visible-by-default">
+                            <div class="filter-group">
+                                <label>Target Audience:</label>
+                                <div class="custom-dropdown" id="surveysFilterAudience">
+                                    <div class="dropdown-selected" tabindex="0"><span class="selected-value">All</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                    <div class="dropdown-options">
+                                        <div class="dropdown-option" data-value="">All</div>
+                                        <div class="dropdown-option" data-value="Tenants">Tenants</div>
+                                        <div class="dropdown-option" data-value="Owners">Owners</div>
+                                        <div class="dropdown-option" data-value="All">All</div>
+                                    </div>
+                                </div>
+                            </div>
+                             <div class="filter-group">
+                                <label>Status:</label>
+                                <div class="custom-dropdown" id="surveysFilterStatus">
+                                    <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Statuses</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                    <div class="dropdown-options">
+                                        <div class="dropdown-option" data-value="">All Statuses</div>
+                                        <div class="dropdown-option" data-value="Draft">Draft</div>
+                                        <div class="dropdown-option" data-value="Active">Active</div>
+                                        <div class="dropdown-option" data-value="Closed">Closed</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                         <div class="filter-group">
-                            <label>Status:</label>
-                            <div class="custom-dropdown" id="surveysFilterStatus">
-                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Statuses</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
-                                <div class="dropdown-options">
-                                    <div class="dropdown-option" data-value="">All Statuses</div>
-                                    <div class="dropdown-option" data-value="Draft">Draft</div>
-                                    <div class="dropdown-option" data-value="Active">Active</div>
-                                    <div class="dropdown-option" data-value="Closed">Closed</div>
-                                </div>
-                            </div>
+                        <div class="data-table-container">
+                            <table class="data-table" id="surveysTable">
+                                <thead><tr><th>Survey Title</th><th>Target Audience</th><th>Date Created</th><th>Responses</th><th>Status</th><th>Actions</th></tr></thead>
+                                <tbody id="surveysTableBody"></tbody>
+                            </table>
+                            <div id="noSurveysMessage" class="no-data-message"><div class="icon">❓</div><p>No surveys created yet.</p></div>
                         </div>
-                    </div>
-                    <div class="data-table-container">
-                        <table class="data-table" id="surveysTable">
-                            <thead><tr><th>Survey Title</th><th>Target Audience</th><th>Date Created</th><th>Responses</th><th>Status</th><th>Actions</th></tr></thead>
-                            <tbody id="surveysTableBody"></tbody>
-                        </table>
-                        <div id="noSurveysMessage" class="no-data-message"><div class="icon">❓</div><p>No surveys created yet.</p></div>
                     </div>
                 </div>
             </div>
         </div>
+        <button class="fab" id="addItemBtn" aria-label="Add new report/survey">+</button>
     </div>
 
     <div id="ai-agent-container"></div>
-
-    <button class="fab" id="addItemBtn" aria-label="Add new report/survey">+</button>
 
     <!-- Modals -->
     <div id="scheduledReportModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>Schedule New Report</h3><button class="close-btn" data-modal-id="scheduledReportModal">&times;</button></div><form id="scheduledReportForm"><input type="hidden" name="scheduledReportId"><div class="form-group"><label>Report Type</label><select name="reportType"><option>Occupancy Summary</option><option>Rent Roll</option><option>Delinquency Report</option></select></div><div class="form-group"><label>Frequency</label><select name="frequency"><option>Daily</option><option>Weekly</option><option>Monthly</option></select></div><div class="form-group"><label>Recipients (comma-separated emails)</label><input type="text" name="recipients"></div><div class="form-group"><label>Status</label><select name="status"><option>Active</option><option>Paused</option></select></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="scheduledReportModal">Cancel</button><button type="submit" class="submit-btn">Save Schedule</button></div></form></div></div>

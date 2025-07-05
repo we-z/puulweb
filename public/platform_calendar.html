@@ -23,51 +23,52 @@
     <div id="sidebar-container"></div>
 
     <div class="main-content">
-        <div id="calendarView">
-            <div class="content-header">
-                <h2>Calendar</h2>
-            </div>
-            <div class="page-container">
-                <p>This section displays events, reminders, and important dates such as lease expirations, maintenance schedules, and move-in/move-out dates.</p>
-                
-                <!-- Calendar controls can be integrated with FullCalendar's header or kept separate if desired -->
-                <!-- For now, we will use FullCalendar\'s built-in controls -->
-                <!-- 
-                <div class="calendar-controls">
-                    <button id="prevPeriodBtn" class="btn-secondary">&lt; Prev</button>
-                    <h3 id="currentPeriodDisplay">[Month, Year]</h3>
-                    <button id="nextPeriodBtn" class="btn-secondary">Next &gt;</button>
-                    <div class="view-options">
-                        <button id="dayViewBtn" class="btn-tertiary active">Day</button>
-                        <button id="weekViewBtn" class="btn-tertiary">Week</button>
-                        <button id="monthViewBtn" class="btn-tertiary">Month</button>
+        <div class="content-scroll-wrapper">
+            <div id="calendarView">
+                <div class="content-header">
+                    <h2>Calendar</h2>
+                </div>
+                <div class="page-container">
+                    <p>This section displays events, reminders, and important dates such as lease expirations, maintenance schedules, and move-in/move-out dates.</p>
+                    
+                    <!-- Calendar controls can be integrated with FullCalendar's header or kept separate if desired -->
+                    <!-- For now, we will use FullCalendar\'s built-in controls -->
+                    <!-- 
+                    <div class="calendar-controls">
+                        <button id="prevPeriodBtn" class="btn-secondary">&lt; Prev</button>
+                        <h3 id="currentPeriodDisplay">[Month, Year]</h3>
+                        <button id="nextPeriodBtn" class="btn-secondary">Next &gt;</button>
+                        <div class="view-options">
+                            <button id="dayViewBtn" class="btn-tertiary active">Day</button>
+                            <button id="weekViewBtn" class="btn-tertiary">Week</button>
+                            <button id="monthViewBtn" class="btn-tertiary">Month</button>
+                        </div>
+                        <button id="addEventBtnCalPage" class="btn-primary">Add Event</button> 
                     </div>
-                    <button id="addEventBtnCalPage" class="btn-primary">Add Event</button> 
-                </div>
-                -->
+                    -->
 
-                <div class="calendar-grid-container">
-                    <!-- FullCalendar will render here -->
-                    <div id="calendar"></div>
-                    <!-- Old placeholder removed -->
-                </div>
-                
-                <div class="calendar-sidebar">
-                    <h4>Upcoming Events</h4>
-                    <ul id="upcomingEventsList">
-                    </ul>
-                    <button id="filterEventsBtn" class="btn-secondary" style="display:none;">Filter Events (FullCalendar handles this)</button>
-                </div>
+                    <div class="calendar-grid-container">
+                        <!-- FullCalendar will render here -->
+                        <div id="calendar"></div>
+                        <!-- Old placeholder removed -->
+                    </div>
+                    
+                    <div class="calendar-sidebar">
+                        <h4>Upcoming Events</h4>
+                        <ul id="upcomingEventsList">
+                        </ul>
+                        <button id="filterEventsBtn" class="btn-secondary" style="display:none;">Filter Events (FullCalendar handles this)</button>
+                    </div>
 
+                </div>
             </div>
         </div>
+        <button class="fab" id="addItemBtn" aria-label="Add new calendar event"> <!-- Now always visible to trigger modal -->
+            +
+        </button>
     </div>
 
     <div id="ai-agent-container"></div>
-
-    <button class="fab" id="addItemBtn" aria-label="Add new calendar event"> <!-- Now always visible to trigger modal -->
-        +
-    </button>
 
     <!-- Modal for Adding/Editing Calendar Events -->
     <div id="eventModal" class="modal">

@@ -25,96 +25,97 @@
     <div id="sidebar-container"></div>
 
     <div class="main-content">
-        <div id="peopleView">
-            <div class="content-header"><h2>People</h2></div>
-            <div class="page-container">
-                <div class="sub-nav" id="peopleSubNav">
-                    <div class="sub-nav-item active" data-subsection="tenants">Tenants</div>
-                    <div class="sub-nav-item" data-subsection="owners">Owners</div>
-                    <div class="sub-nav-item" data-subsection="vendors">Vendors</div>
-                </div>
+        <div class="content-scroll-wrapper">
+            <div id="peopleView">
+                <div class="content-header"><h2>People</h2></div>
+                <div class="page-container">
+                    <div class="sub-nav" id="peopleSubNav">
+                        <div class="sub-nav-item active" data-subsection="tenants">Tenants</div>
+                        <div class="sub-nav-item" data-subsection="owners">Owners</div>
+                        <div class="sub-nav-item" data-subsection="vendors">Vendors</div>
+                    </div>
 
-                <!-- Tenants Subsection -->
-                <div class="subsection-content active" id="tenantsContent">
-                    <h4>Tenants</h4>
-                    <button class="controls-toggle-btn">
-                        <span>Filters & Sort</span>
-                        <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-                    </button>
-                    <div class="controls-container visible-by-default">
-                        <div class="filter-group">
-                            <label>Property:</label>
-                            <div class="custom-dropdown" id="tenantsFilterProperty">
-                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Properties</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
-                                <div class="dropdown-options"><div class="dropdown-option" data-value="">All Properties</div></div>
+                    <!-- Tenants Subsection -->
+                    <div class="subsection-content active" id="tenantsContent">
+                        <h4>Tenants</h4>
+                        <button class="controls-toggle-btn">
+                            <span>Filters & Sort</span>
+                            <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                        </button>
+                        <div class="controls-container visible-by-default">
+                            <div class="filter-group">
+                                <label>Property:</label>
+                                <div class="custom-dropdown" id="tenantsFilterProperty">
+                                    <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Properties</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                    <div class="dropdown-options"><div class="dropdown-option" data-value="">All Properties</div></div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="data-table-container">
-                        <table class="data-table" id="tenantsTable">
-                            <thead><tr><th>Name</th><th>Primary Email</th><th>Primary Phone</th><th>Property/Unit</th><th>Lease End Date</th><th>Actions</th></tr></thead>
-                            <tbody id="tenantsTableBody"></tbody>
-                        </table>
-                        <div id="noTenantsMessage" class="no-data-message"><div class="icon">🧑</div><p>No tenants recorded.</p></div>
-                    </div>
-                </div>
-
-                <!-- Owners Subsection -->
-                <div class="subsection-content" id="ownersContent">
-                    <h4>Owners</h4>
-                    <button class="controls-toggle-btn">
-                        <span>Filters & Sort</span>
-                        <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-                    </button>
-                    <div class="controls-container visible-by-default">
-                        <div class="filter-group">
-                            <label>Property Owned:</label>
-                            <div class="custom-dropdown" id="ownersFilterProperty">
-                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Properties</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
-                                <div class="dropdown-options"><div class="dropdown-option" data-value="">All Properties</div></div>
-                            </div>
+                        <div class="data-table-container">
+                            <table class="data-table" id="tenantsTable">
+                                <thead><tr><th>Name</th><th>Primary Email</th><th>Primary Phone</th><th>Property/Unit</th><th>Lease End Date</th><th>Actions</th></tr></thead>
+                                <tbody id="tenantsTableBody"></tbody>
+                            </table>
+                            <div id="noTenantsMessage" class="no-data-message"><div class="icon">🧑</div><p>No tenants recorded.</p></div>
                         </div>
                     </div>
-                    <div class="data-table-container">
-                        <table class="data-table" id="ownersTable">
-                            <thead><tr><th>Name</th><th>Primary Email</th><th>Primary Phone</th><th>Properties Owned</th><th>Actions</th></tr></thead>
-                            <tbody id="ownersTableBody"></tbody>
-                        </table>
-                        <div id="noOwnersMessage" class="no-data-message"><div class="icon">🕴️</div><p>No owners recorded.</p></div>
-                    </div>
-                </div>
 
-                <!-- Vendors Subsection -->
-                <div class="subsection-content" id="vendorsContent">
-                    <h4>Vendors</h4>
-                    <button class="controls-toggle-btn">
-                        <span>Filters & Sort</span>
-                        <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-                    </button>
-                    <div class="controls-container visible-by-default">
-                        <div class="filter-group">
-                            <label>Service Type:</label>
-                            <div class="custom-dropdown" id="vendorsFilterServiceType">
-                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Services</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
-                                <div class="dropdown-options"><div class="dropdown-option" data-value="">All Services</div></div>
+                    <!-- Owners Subsection -->
+                    <div class="subsection-content" id="ownersContent">
+                        <h4>Owners</h4>
+                        <button class="controls-toggle-btn">
+                            <span>Filters & Sort</span>
+                            <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                        </button>
+                        <div class="controls-container visible-by-default">
+                            <div class="filter-group">
+                                <label>Property Owned:</label>
+                                <div class="custom-dropdown" id="ownersFilterProperty">
+                                    <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Properties</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                    <div class="dropdown-options"><div class="dropdown-option" data-value="">All Properties</div></div>
+                                </div>
                             </div>
                         </div>
+                        <div class="data-table-container">
+                            <table class="data-table" id="ownersTable">
+                                <thead><tr><th>Name</th><th>Primary Email</th><th>Primary Phone</th><th>Properties Owned</th><th>Actions</th></tr></thead>
+                                <tbody id="ownersTableBody"></tbody>
+                            </table>
+                            <div id="noOwnersMessage" class="no-data-message"><div class="icon">🕴️</div><p>No owners recorded.</p></div>
+                        </div>
                     </div>
-                    <div class="data-table-container">
-                        <table class="data-table" id="vendorsTable">
-                            <thead><tr><th>Company Name</th><th>Contact Name</th><th>Service Type</th><th>Primary Email</th><th>Primary Phone</th><th>Actions</th></tr></thead>
-                            <tbody id="vendorsTableBody"></tbody>
-                        </table>
-                        <div id="noVendorsMessage" class="no-data-message"><div class="icon">🔧</div><p>No vendors recorded.</p></div>
+
+                    <!-- Vendors Subsection -->
+                    <div class="subsection-content" id="vendorsContent">
+                        <h4>Vendors</h4>
+                        <button class="controls-toggle-btn">
+                            <span>Filters & Sort</span>
+                            <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                        </button>
+                        <div class="controls-container visible-by-default">
+                            <div class="filter-group">
+                                <label>Service Type:</label>
+                                <div class="custom-dropdown" id="vendorsFilterServiceType">
+                                    <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Services</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                    <div class="dropdown-options"><div class="dropdown-option" data-value="">All Services</div></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="data-table-container">
+                            <table class="data-table" id="vendorsTable">
+                                <thead><tr><th>Company Name</th><th>Contact Name</th><th>Service Type</th><th>Primary Email</th><th>Primary Phone</th><th>Actions</th></tr></thead>
+                                <tbody id="vendorsTableBody"></tbody>
+                            </table>
+                            <div id="noVendorsMessage" class="no-data-message"><div class="icon">🔧</div><p>No vendors recorded.</p></div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+        <button class="fab" id="addItemBtn" aria-label="Add new person">+</button>
     </div>
 
     <div id="ai-agent-container"></div>
-
-    <button class="fab" id="addItemBtn" aria-label="Add new person">+</button>
 
     <!-- Modals -->
     <div id="tenantModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>Add/Edit Tenant</h3><button class="close-btn" data-modal-id="tenantModal">&times;</button></div><form id="tenantForm"><input type="hidden" id="tenantId" name="tenantId"><div class="form-group"><label>Full Name</label><input type="text" name="fullName" required></div><div class="form-group"><label>Primary Email</label><input type="email" name="email"></div><div class="form-group"><label>Primary Phone</label><input type="tel" name="phone"></div><div class="form-group"><label>Associated Property</label><select name="propertyId"></select></div><div class="form-group"><label>Unit Number</label><input type="text" name="unitNumber" placeholder="e.g., Apt 101"></div><div class="form-group"><label>Lease Start Date</label><input type="date" name="leaseStartDate"></div><div class="form-group"><label>Lease End Date</label><input type="date" name="leaseEndDate"></div><div class="form-group"><label>Rent Amount ($)</label><input type="number" name="rentAmount" step="0.01"></div><div class="form-group"><label>Lease ID (Optional, if linking to a separate lease record)</label><input type="text" name="leaseId"></div><div class="form-group"><label>Emergency Contact Name</label><input type="text" name="emergencyContactName"></div><div class="form-group"><label>Emergency Contact Phone</label><input type="tel" name="emergencyContactPhone"></div><div class="form-group"><label>Link to User Account (for Messaging)</label><div class="custom-dropdown" id="tenantUserDropdown"><input type="text" class="dropdown-input form-control" placeholder="Search by name or email..."><div class="dropdown-menu"><div class="dropdown-options"></div></div></div><input type="hidden" name="authUid"><small>The person must have logged in to the platform at least once to appear here.</small></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="tenantModal">Cancel</button><button type="submit" class="submit-btn">Save</button></div></form></div></div>
