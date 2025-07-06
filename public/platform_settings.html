@@ -36,96 +36,98 @@
     <div id="sidebar-container"></div>
 
     <div class="main-content">
-        <div class="content-header">
-            <h2>Settings</h2>
-        </div>
-        <div class="page-container">
-            <!-- Settings Section: User Profile -->
-            <div class="settings-section">
-                <h4>User Profile</h4>
-                <form id="userProfileForm">
-                    <div class="form-group">
-                        <label for="userName">Name</label>
-                        <input type="text" id="userName" name="userName" placeholder="Enter your name">
-                    </div>
-                    <div class="form-group">
-                        <label for="userEmail">Email</label>
-                        <input type="email" id="userEmail" name="userEmail" placeholder="user@example.com" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="userPhone">Phone</label>
-                        <input type="tel" id="userPhone" name="userPhone" placeholder="Enter your phone number">
-                    </div>
-                    <button type="submit" class="btn-primary">Save Profile</button>
-                </form>
+        <div class="content-scroll-wrapper">
+            <div class="content-header">
+                <h2>Settings</h2>
             </div>
-
-            <!-- Settings Section: Notification Preferences -->
-            <div class="settings-section">
-                <h4>Notification Preferences</h4>
-                <form id="notificationPrefsForm">
-                    <div class="form-group">
-                        <label>Receive email notifications for:</label>
-                        <div class="checkbox-group">
-                            <label class="checkbox-container">
-                                <input type="checkbox" id="notifyMaintenance" name="notifyMaintenance" checked>
-                                <span class="checkbox-custom"></span>
-                                Maintenance Updates
-                            </label>
-                            <label class="checkbox-container">
-                                <input type="checkbox" id="notifyLease" name="notifyLease" checked>
-                                <span class="checkbox-custom"></span>
-                                Lease Renewals
-                            </label>
-                            <label class="checkbox-container">
-                                <input type="checkbox" id="notifyPayments" name="notifyPayments">
-                                <span class="checkbox-custom"></span>
-                                Payment Confirmations
-                            </label>
+            <div class="page-container">
+                <!-- Settings Section: User Profile -->
+                <div class="settings-section">
+                    <h4>User Profile</h4>
+                    <form id="userProfileForm">
+                        <div class="form-group">
+                            <label for="userName">Name</label>
+                            <input type="text" id="userName" name="userName" placeholder="Enter your name">
                         </div>
-                    </div>
-                    <button type="submit" class="btn-primary">Save Preferences</button>
-                </form>
-            </div>
-
-            <!-- Settings Section: Application Settings -->
-            <div class="settings-section">
-                <h4>Application Settings</h4>
-                <form id="appSettingsForm">
-                     <div class="form-group">
-                        <label for="itemsPerPage">Default Items Per Page</label>
-                        <select id="itemsPerPage" name="itemsPerPage">
-                            <option value="10">10</option>
-                            <option value="25">25</option>
-                            <option value="50">50</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn-primary">Save App Settings</button>
-                </form>
-            </div>
-
-            <!-- Settings Section: Subscription Management -->
-            <div class="settings-section">
-                <h4>Subscription</h4>
-                <div class="form-group">
-                    <label>Manage Your Subscription</label>
-                    <p>Click the button below to view your subscription details, update your payment method, and view your invoice history.</p>
-                    <button id="manageSubscriptionBtn" class="btn-primary">Manage Subscription</button>
+                        <div class="form-group">
+                            <label for="userEmail">Email</label>
+                            <input type="email" id="userEmail" name="userEmail" placeholder="user@example.com" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="userPhone">Phone</label>
+                            <input type="tel" id="userPhone" name="userPhone" placeholder="Enter your phone number">
+                        </div>
+                        <button type="submit" class="btn-primary">Save Profile</button>
+                    </form>
                 </div>
-            </div>
 
-            <!-- Settings Section: Account Management -->
-            <div class="settings-section">
-                <h4>Account Management</h4>
-                <div class="form-group">
-                    <label>Password</label>
-                    <p>You can request a password reset email to be sent to your registered email address.</p>
-                    <button id="changePasswordBtn" class="btn-primary">Change Password</button>
+                <!-- Settings Section: Notification Preferences -->
+                <div class="settings-section">
+                    <h4>Notification Preferences</h4>
+                    <form id="notificationPrefsForm">
+                        <div class="form-group">
+                            <label>Receive email notifications for:</label>
+                            <div class="checkbox-group">
+                                <label class="checkbox-container">
+                                    <input type="checkbox" id="notifyMaintenance" name="notifyMaintenance" checked>
+                                    <span class="checkbox-custom"></span>
+                                    Maintenance Updates
+                                </label>
+                                <label class="checkbox-container">
+                                    <input type="checkbox" id="notifyLease" name="notifyLease" checked>
+                                    <span class="checkbox-custom"></span>
+                                    Lease Renewals
+                                </label>
+                                <label class="checkbox-container">
+                                    <input type="checkbox" id="notifyPayments" name="notifyPayments">
+                                    <span class="checkbox-custom"></span>
+                                    Payment Confirmations
+                                </label>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-primary">Save Preferences</button>
+                    </form>
                 </div>
-                <div class="form-group">
-                    <label>Delete Account</label>
-                    <p>Permanently delete your account and all associated data. This action cannot be undone.</p>
-                    <button id="deleteAccountBtn" class="btn-danger">Delete My Account</button>
+
+                <!-- Settings Section: Application Settings -->
+                <div class="settings-section">
+                    <h4>Application Settings</h4>
+                    <form id="appSettingsForm">
+                         <div class="form-group">
+                            <label for="itemsPerPage">Default Items Per Page</label>
+                            <select id="itemsPerPage" name="itemsPerPage">
+                                <option value="10">10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-primary">Save App Settings</button>
+                    </form>
+                </div>
+
+                <!-- Settings Section: Subscription Management -->
+                <div class="settings-section">
+                    <h4>Subscription</h4>
+                    <div class="form-group">
+                        <label>Manage Your Subscription</label>
+                        <p>Click the button below to view your subscription details, update your payment method, and view your invoice history.</p>
+                        <button id="manageSubscriptionBtn" class="btn-primary">Manage Subscription</button>
+                    </div>
+                </div>
+
+                <!-- Settings Section: Account Management -->
+                <div class="settings-section">
+                    <h4>Account Management</h4>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <p>You can request a password reset email to be sent to your registered email address.</p>
+                        <button id="changePasswordBtn" class="btn-primary">Change Password</button>
+                    </div>
+                    <div class="form-group">
+                        <label>Delete Account</label>
+                        <p>Permanently delete your account and all associated data. This action cannot be undone.</p>
+                        <button id="deleteAccountBtn" class="btn-danger">Delete My Account</button>
+                    </div>
                 </div>
             </div>
         </div>
