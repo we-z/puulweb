@@ -301,116 +301,77 @@
                         </div>
                         <div class="data-table-container">
                             <table class="data-table" id="lettersTable">
-        <div id="communicationView">
-            <div class="content-header"><h2>Communication</h2></div>
-            <div class="page-container">
-                <div class="sub-nav" id="communicationSubNav">
-                    <div class="sub-nav-item active" data-subsection="letters">Letters & Notices</div>
-                    <div class="sub-nav-item" data-subsection="forms">Forms & Templates</div>
-                    <div class="sub-nav-item" data-subsection="messages">Messages</div>
-                </div>
+                                <thead><tr><th>Title/Subject</th><th>Recipient(s)</th><th>Date Sent</th><th>Status</th><th>Actions</th></tr></thead>
+                                <tbody id="lettersTableBody"></tbody>
+                            </table>
+                            <div id="noLettersMessage" class="no-data-message"><div class="icon">✉️</div><p>No letters or notices found.</p></div>
+                        </div>
+                    </div>
 
-                <div class="subsection-content active" id="lettersContent">
-                    <h4>Letters & Notices</h4>
-                    <div class="controls-container visible-by-default">
-                        <div class="filter-group">
-                            <label>Recipient Type:</label>
-                            <div class="custom-dropdown" id="lettersFilterType">
-                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Types</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
-                                <div class="dropdown-options">
-                                    <div class="dropdown-option" data-value="">All Types</div>
-                                    <div class="dropdown-option" data-value="Tenant">Tenant</div>
-                                    <div class="dropdown-option" data-value="Owner">Owner</div>
-                                    <div class="dropdown-option" data-value="Vendor">Vendor</div>
-                                    <div class="dropdown-option" data-value="Group">Group</div>
+                    <div class="subsection-content" id="formsContent">
+                        <h4>Forms & Templates</h4>
+                        <div class="controls-container visible-by-default">
+                            <div class="filter-group">
+                                <label>Category:</label>
+                                <div class="custom-dropdown" id="formsFilterCategory">
+                                    <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Categories</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
+                                    <div class="dropdown-options"><div class="dropdown-option" data-value="">All Categories</div></div>
                                 </div>
                             </div>
                         </div>
-                        <div class="filter-group">
-                            <label>Status:</label>
-                            <div class="custom-dropdown" id="lettersFilterStatus">
-                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Statuses</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
-                                <div class="dropdown-options">
-                                    <div class="dropdown-option" data-value="">All Statuses</div>
-                                    <div class="dropdown-option" data-value="Draft">Draft</div>
-                                    <div class="dropdown-option" data-value="Sent">Sent</div>
-                                    <div class="dropdown-option" data-value="Archived">Archived</div>
+                         <div class="data-table-container">
+                            <table class="data-table" id="formsTable">
+                                <thead><tr><th>Form/Template Name</th><th>Category</th><th>Last Updated</th><th>Usage Count</th><th>Actions</th></tr></thead>
+                                <tbody id="formsTableBody"></tbody>
+                            </table>
+                            <div id="noFormsMessage" class="no-data-message"><div class="icon">📄</div><p>No forms or templates created.</p></div>
+                        </div>
+                    </div>
+
+                    <div class="subsection-content" id="messagesContent">
+                        <h4>Messages</h4>
+                        <p>Direct and group messaging with tenants, owners, and vendors.</p>
+                        
+                        <div class="messaging-layout">
+                            <div class="conversations-panel">
+                                <div class="panel-header">
+                                    <h5>Conversations</h5>
+                                    <button id="newConversationBtn" class="btn-icon" title="New Message">+</button>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="data-table-container">
-                        <table class="data-table" id="lettersTable">
-                            <thead><tr><th>Title/Subject</th><th>Recipient(s)</th><th>Date Sent</th><th>Status</th><th>Actions</th></tr></thead>
-                            <tbody id="lettersTableBody"></tbody>
-                        </table>
-                        <div id="noLettersMessage" class="no-data-message"><div class="icon">✉️</div><p>No letters or notices found.</p></div>
-                    </div>
-                </div>
-
-                <div class="subsection-content" id="formsContent">
-                    <h4>Forms & Templates</h4>
-                    <div class="controls-container visible-by-default">
-                        <div class="filter-group">
-                            <label>Category:</label>
-                            <div class="custom-dropdown" id="formsFilterCategory">
-                                <div class="dropdown-selected" tabindex="0"><span class="selected-value">All Categories</span><svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div>
-                                <div class="dropdown-options"><div class="dropdown-option" data-value="">All Categories</div></div>
-                            </div>
-                        </div>
-                    </div>
-                     <div class="data-table-container">
-                        <table class="data-table" id="formsTable">
-                            <thead><tr><th>Form/Template Name</th><th>Category</th><th>Last Updated</th><th>Usage Count</th><th>Actions</th></tr></thead>
-                            <tbody id="formsTableBody"></tbody>
-                        </table>
-                        <div id="noFormsMessage" class="no-data-message"><div class="icon">📄</div><p>No forms or templates created.</p></div>
-                    </div>
-                </div>
-
-                <div class="subsection-content" id="messagesContent">
-                    <h4>Messages</h4>
-                    <p>Direct and group messaging with tenants, owners, and vendors.</p>
-                    
-                    <div class="messaging-layout">
-                        <div class="conversations-panel">
-                            <div class="panel-header">
-                                <h5>Conversations</h5>
-                                <button id="newConversationBtn" class="btn-icon" title="New Message">+</button>
-                            </div>
-                            <div class="search-bar">
-                                <input type="search" placeholder="Search messages...">
-                            </div>
-                            <ul id="conversationList" class="item-list">
-                                <!-- Conversation items are dynamically loaded here -->
-                            </ul>
-                        </div>
-
-                        <div class="message-display-panel">
-                            <div class="panel-header message-header">
-                                <h5 id="conversationTitle">Select a Conversation</h5>
-                                <button id="messageActionsBtn" class="btn-icon" title="Conversation Actions">...</button> 
-                                <div id="messageActionsMenu">
-                                    <ul>
-                                        <li id="archiveConversationBtn">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 10px;"><path d="M.5 1a.5.5 0 0 0-1 0v11.586l1.293-1.293A.5.5 0 0 1 1.5 11H14.5a.5.5 0 0 1 .5.5v-1a.5.5 0 0 0-1 0v.5H1.707L1 11.207V1.5a.5.5 0 0 1 .5-.5H15.5a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 1 0v-3A1.5 1.5 0 0 0 15.5 0H.5z"/><path d="M16 11.5a.5.5 0 0 0-.5-.5h-15a.5.5 0 0 0 0 1h15a.5.5 0 0 0 .5-.5zM5 4.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5zm-2 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5zm-2 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5z"/></svg>
-                                            Archive Conversation
-                                        </li>
-                                        <li id="deleteConversationBtn">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 10px; color: #dc3545;"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg>
-                                            Delete Conversation
-                                        </li>
-                                    </ul>
+                                <div class="search-bar">
+                                    <input type="search" placeholder="Search messages...">
                                 </div>
+                                <ul id="conversationList" class="item-list">
+                                    <!-- Conversation items are dynamically loaded here -->
+                                </ul>
                             </div>
-                            <div id="messageList" class="message-list">
-                                <div class="communication-placeholder">Select a conversation to view messages.</div>
-                            </div>
-                            <div class="message-composer">
-                                <textarea id="messageInput" placeholder="Type your message..."></textarea>
-                                <button id="sendMessageBtn" title="Send Message">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16" style="width: 30px; height: 30px;"><path fill-rule="evenodd" d="M8 13a.5.5 0 0 0 .5-.5V5.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 5.707V12.5a.5.5 0 0 0 .5.5z"/></svg>
-                                </button>
+
+                            <div class="message-display-panel">
+                                <div class="panel-header message-header">
+                                    <h5 id="conversationTitle">Select a Conversation</h5>
+                                    <button id="messageActionsBtn" class="btn-icon" title="Conversation Actions">...</button> 
+                                    <div id="messageActionsMenu">
+                                        <ul>
+                                            <li id="archiveConversationBtn">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 10px;"><path d="M.5 1a.5.5 0 0 0-1 0v11.586l1.293-1.293A.5.5 0 0 1 1.5 11H14.5a.5.5 0 0 1 .5.5v-1a.5.5 0 0 0-1 0v.5H1.707L1 11.207V1.5a.5.5 0 0 1 .5-.5H15.5a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 1 0v-3A1.5 1.5 0 0 0 15.5 0H.5z"/><path d="M16 11.5a.5.5 0 0 0-.5-.5h-15a.5.5 0 0 0 0 1h15a.5.5 0 0 0 .5-.5zM5 4.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5zm-2 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5zm-2 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5z"/></svg>
+                                                Archive Conversation
+                                            </li>
+                                            <li id="deleteConversationBtn">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 10px; color: #dc3545;"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg>
+                                                Delete Conversation
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div id="messageList" class="message-list">
+                                    <div class="communication-placeholder">Select a conversation to view messages.</div>
+                                </div>
+                                <div class="message-composer">
+                                    <textarea id="messageInput" placeholder="Type your message..."></textarea>
+                                    <button id="sendMessageBtn" title="Send Message">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16" style="width: 30px; height: 30px;"><path fill-rule="evenodd" d="M8 13a.5.5 0 0 0 .5-.5V5.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 5.707V12.5a.5.5 0 0 0 .5.5z"/></svg>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
