@@ -109,6 +109,10 @@
                 <div class="settings-section">
                     <h4>Subscription</h4>
                     <div class="form-group">
+                        <label>Current Plan</label>
+                        <p id="currentPlan" class="plan-display-text">Loading...</p>
+                    </div>
+                    <div class="form-group">
                         <label>Manage Your Subscription</label>
                         <p>Click the button below to view your subscription details, update your payment method, and view your invoice history.</p>
                         <button id="manageSubscriptionBtn" class="btn-primary">Manage Subscription</button>
@@ -159,7 +163,7 @@
     </div>
     
     <script type="module">
-        import { initializeAuth, showAlert, showConfirm, getDbData, updateDbData } from './js/platform_common.js';
+        import { initializeAuth, showAlert, showConfirm, getDbData, updateDbData, currentUserPlan } from './js/platform_common.js';
         import { getDatabase, ref, set, get, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
         import { getAuth, sendPasswordResetEmail, deleteUser } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
         import { getFunctions, httpsCallable } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js';
@@ -181,7 +185,8 @@
             itemsPerPageSelect: document.getElementById('itemsPerPage'),
             changePasswordBtn: document.getElementById('changePasswordBtn'),
             deleteAccountBtn: document.getElementById('deleteAccountBtn'),
-            manageSubscriptionBtn: document.getElementById('manageSubscriptionBtn')
+            manageSubscriptionBtn: document.getElementById('manageSubscriptionBtn'),
+            currentPlanDisplay: document.getElementById('currentPlan')
         };
 
         function pageInit(userId, db, fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbDataExt, fbUpdateDbDataExt, commonShowAlert, commonShowConfirm) {
@@ -208,6 +213,12 @@
             loadUserProfile();
             loadNotificationPreferences();
             loadApplicationSettings();
+
+            // Display the current plan
+            if (DOMElements.currentPlanDisplay) {
+                const planName = currentUserPlan ? currentUserPlan.charAt(0).toUpperCase() + currentUserPlan.slice(1) : 'None';
+                DOMElements.currentPlanDisplay.textContent = planName;
+            }
 
             setupEventListeners();
         }

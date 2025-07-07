@@ -329,7 +329,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script type="module">
-        import { initializeAuth, showAlert, showConfirm, editIconSVG, deleteIconSVG, getDbData, initializeSimpleDropdown } from './js/platform_common.js';
+        import { initializeAuth, showAlert, showConfirm, editIconSVG, deleteIconSVG, getDbData, initializeSimpleDropdown, hasAccess, currentUserPlan } from './js/platform_common.js';
         import { getDatabase, ref, push, onValue, set, remove, serverTimestamp, query, orderByChild, equalTo } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
 
         let pageCurrentUserId, pageDatabase;
@@ -375,6 +375,15 @@
                 const activeSubSection = document.querySelector('#leasingSubNav .sub-nav-item.active').dataset.subsection;
                 openModalForSubsection(activeSubSection);
             });
+
+            // Gate features based on plan
+            if (!hasAccess('max')) {
+                const signalsNavItem = document.querySelector('[data-subsection="signals"]');
+                if (signalsNavItem) signalsNavItem.style.display = 'none';
+
+                const signalsContent = document.getElementById('signalsContent');
+                if (signalsContent) signalsContent.style.display = 'none';
+            }
         }
 
         function initializeSubNav() {

@@ -230,9 +230,9 @@
         const functions = getFunctions(app);
 
         const plans = {
-            core: { name: 'Core', priceId: 'price_1RdRNHFsHlNG9dReeT3H7E5S', price: '$1.49', description: 'An out-of-the-box solution giving you one powerful platform to run any property management business.', popular: false, minUnits: 'Residential pricing. Min. 50 units, $298/mo.' },
-            plus: { name: 'Plus', priceId: 'price_1RdRNEFsHlNG9dReGlp4CuTT', price: '$3.20', description: 'A configurable solution for growing businesses with complex portfolios looking to standardize processes.', popular: true, minUnits: 'Requires ~300 units, $960/mo minimum.' },
-            max: { name: 'Max', priceId: 'price_1RdRNAFsHlNG9dRewU27gn1i', price: '$5.00', description: 'An enterprise solution for large operators focused on customization, data insights, and driving revenue.', popular: false, minUnits: 'Min. 1,500 units, $7,500/mo minimum.' }
+            core: { name: 'Core', priceId: 'price_1RcNOUFsHlNG9dRePimNz27G', price: '$1.49', description: 'An out-of-the-box solution giving you one powerful platform to run any property management business.', popular: false, minUnits: 'Residential pricing. Min. 50 units, $298/mo.' },
+            plus: { name: 'Plus', priceId: 'price_1RcNOvFsHlNG9dReHwB7t69Q', price: '$3.20', description: 'A configurable solution for growing businesses with complex portfolios looking to standardize processes.', popular: true, minUnits: 'Requires ~300 units, $960/mo minimum.' },
+            max: { name: 'Max', priceId: 'price_1RcNPWFsHlNG9dReUWEWXkMJ', price: '$5.00', description: 'An enterprise solution for large operators focused on customization, data insights, and driving revenue.', popular: false, minUnits: 'Min. 1,500 units, $7,500/mo minimum.' }
         };
 
         const features = {
@@ -347,7 +347,7 @@
                     cancelUrl: window.location.href,
                 });
                 const { sessionId } = result.data;
-                const stripe = Stripe('pk_live_51MsgU4FsHlNG9dReFtd29taiKlYwR4U6cOQhARDDGQRe6gTYNresA8xhsqI2HmvtiMkLj0Sq4N6kjfzQ1WZ6RnWP00ZHyPsbHR');
+                const stripe = Stripe('pk_test_51MsgU4FsHlNG9dRekwHvnMWmsytNZ9Kgy78WYg5nI9uOm3HaZ0SGv73mTGE78A3WZs7ZwqmwtnvBdYIEaQalVzX700VYTSM77F');
                 await stripe.redirectToCheckout({ sessionId });
             } catch (error) {
                 console.error('Error creating checkout session:', error);

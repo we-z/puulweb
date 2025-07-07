@@ -199,7 +199,7 @@
     <div id="customConfirmModal" class="modal"><div class="modal-content confirm-modal-content"><div class="modal-header"><h3 id="customConfirmTitle"></h3><button class="close-btn" data-modal-id="customConfirmModal">&times;</button></div><div class="modal-body"><p id="customConfirmMessage"></p></div><div class="modal-footer"><button class="cancel-btn-confirm" id="customConfirmCancel">Cancel</button><button class="confirm-btn" id="customConfirmOk">OK</button></div></div></div>
 
     <script type="module">
-        import { initializeAuth, showAlert, showConfirm, editIconSVG, deleteIconSVG, getDbData, initializeSimpleDropdown } from './js/platform_common.js';
+        import { initializeAuth, showAlert, showConfirm, editIconSVG, deleteIconSVG, getDbData, initializeSimpleDropdown, hasAccess } from './js/platform_common.js';
         import { getDatabase, ref, push, onValue, set, remove, serverTimestamp, query, orderByChild, equalTo } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
 
         let pageCurrentUserId, pageDatabase; let commonDependencies = {};
@@ -230,8 +230,8 @@
 
         function pageInit(userId, db, ...allCommonDeps) {
             pageCurrentUserId = userId; pageDatabase = db;
-            const [ fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbData, fbUpdateDbData, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon, commonInitializeSimpleDropdown ] = allCommonDeps;
-            commonDependencies = { fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbData, fbUpdateDbData, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon, initializeSimpleDropdown };
+            const [ fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbData, fbUpdateDbData, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon, commonInitializeSimpleDropdown, commonHasAccess ] = allCommonDeps;
+            commonDependencies = { fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbData, fbUpdateDbData, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon, initializeSimpleDropdown, hasAccess: commonHasAccess };
 
             initializeSubNav();
             loadDataForActiveSubsection();
@@ -243,6 +243,15 @@
                 const activeSubSection = document.querySelector('#reportingSubNav .sub-nav-item.active').dataset.subsection;
                 openModalForSubsection(activeSubSection);
             });
+
+            // Gate features based on plan
+            if (!hasAccess('plus')) {
+                const metricsNavItem = document.querySelector('[data-subsection="metrics"]');
+                if (metricsNavItem) metricsNavItem.style.display = 'none';
+
+                const metricsContent = document.getElementById('metricsContent');
+                if (metricsContent) metricsContent.style.display = 'none';
+            }
         }
 
         function initializeSubNav() {
@@ -1115,7 +1124,7 @@
             if (DOMElements.kpiLeaseRenewalsTrend) DOMElements.kpiLeaseRenewalsTrend.textContent = data.renewals.trend;
         }
 
-        initializeAuth(pageInit);
+        initializeAuth((...args) => pageInit(...args, hasAccess));
     </script>
 </body>
 </html> 

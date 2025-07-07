@@ -153,7 +153,13 @@ body {
     /* overflow: hidden; Already handled by .sidebar.collapsed > * or specific targeting */
 }
 
+.user-profile .user-info {
+    flex-grow: 1;
+    text-align: center;
+}
+
 .user-profile .welcome-message {
+    font-weight: 500;
     font-size: 0.9rem;
     color: #555555; /* Medium Gray */
     margin-bottom: 10px;
@@ -1545,4 +1551,20 @@ html.js-loading #sidebar-container {
         opacity: 0.2;
         transform: scale(0.8);
     }
+}
+
+.plan-display-text {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #000; /* Primary blue color */
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    margin-top: 5px;
+    display: inline-block;
+}
+
+/* Specific styling for settings page sections */
+.settings-section {
+    background-color: #fff;
 }

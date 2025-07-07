@@ -851,12 +851,14 @@
             status: ''      // default: all statuses
         };
 
-        import { initializeAuth, showAlert, showConfirm, editIconSVG, deleteIconSVG, getDbData, updateDbData, initializeSimpleDropdown } from './js/platform_common.js';
-        import { getDatabase, ref, push, onValue, set, remove, serverTimestamp, query, orderByChild, equalTo } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
+        import { initializeAuth, showAlert, showConfirm, editIconSVG, deleteIconSVG, getDbData, updateDbData, initializeSimpleDropdown, hasAccess } from './js/platform_common.js';
+        import { getDatabase, ref, push, onValue, set, remove, serverTimestamp, query, orderByChild, equalTo, get } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
 
         let pageCurrentUserId;
         let pageDatabase;
         let localPropertiesMap = {}; // For mapping property IDs to names for this page
+        let localVendorsMap = {};
+        let localInventoryMap = {};
         let commonDependencies = {}; // To store common functions, icons, and Firebase utils
         let listenersInitialized = {}; // To track if onValue listeners are set for subsections
         let workOrderStatusChartInstance = null; // To hold the chart instance
@@ -928,12 +930,15 @@
             noFixedAssetsMessage: document.getElementById('noFixedAssetsMessage'),
             fixedAssetModal: document.getElementById('fixedAssetModal'),
             fixedAssetForm: document.getElementById('fixedAssetForm'),
+
+            smartMaintenanceContent: document.getElementById('smartMaintenanceContent'),
+            // ... add more as needed
         };
         
         function pageInit(userId, db, ...allCommonDeps) {
             pageCurrentUserId = userId; pageDatabase = db;
-            const [ fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGet, fbGetDbDataExt, fbUpdateDbDataExt, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon ] = allCommonDeps;
-            commonDependencies = { fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGet, fbGetDbData: fbGetDbDataExt, fbUpdateDbData: fbUpdateDbDataExt, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon };
+            const [ fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbData, fbUpdateDbData, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon, commonInitializeSimpleDropdown, commonHasAccess ] = allCommonDeps;
+            commonDependencies = { fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbData, fbUpdateDbData, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon, initializeSimpleDropdown, hasAccess: commonHasAccess };
 
             initializeSubNav();
             initializePropertiesListener();
@@ -976,6 +981,15 @@
                 const activeSubSection = document.querySelector('#maintenanceSubNav .sub-nav-item.active').dataset.subsection;
                 openModalForSubsection(activeSubSection);
             });
+
+            // Gate features based on plan
+            if (!commonDependencies.hasAccess('plus')) {
+                const smartMaintenanceNavItem = document.querySelector('[data-subsection="smartMaintenance"]');
+                if (smartMaintenanceNavItem) smartMaintenanceNavItem.style.display = 'none';
+
+                const smartMaintenanceContent = document.getElementById('smartMaintenanceContent');
+                if (smartMaintenanceContent) smartMaintenanceContent.style.display = 'none';
+            }
         }
 
         function initializeSubNav() {
@@ -2198,7 +2212,7 @@
             }
         }
         
-        initializeAuth(pageInit);
+        initializeAuth((...args) => pageInit(...args, hasAccess));
 
         function setupSmartMaintenanceButtons() {
             const refreshBtn = document.getElementById('refreshSmartMaintenanceBtn');

@@ -3,10 +3,15 @@ const admin = require("firebase-admin");
 const axios = require("axios");
 const { toolImplementations } = require("./tools");
 let stripe;
+
+console.log("Attempting to initialize Stripe...");
+console.log("Stripe secret key from config:", functions.config().stripe ? functions.config().stripe.secret : "Not found");
+
 try {
     stripe = require("stripe")(functions.config().stripe.secret);
+    console.log("Stripe initialized successfully.");
 } catch (e) {
-    console.warn('Stripe config not found, Stripe functionality will be disabled.');
+    console.warn('Stripe config not found or invalid, Stripe functionality will be disabled.', e);
     stripe = {
         checkout: { sessions: { create: () => { throw new Error('Stripe not configured'); } } },
         webhooks: { constructEvent: () => { throw new Error('Stripe not configured'); } },
@@ -179,8 +184,12 @@ exports.createCheckoutSession = functions.https.onCall(async (data, context) => 
     const { priceId, successUrl, cancelUrl } = data;
     const uid = context.auth.uid;
 
+    console.log(`[createCheckoutSession] Function called for user UID: ${uid}`);
+    console.log(`[createCheckoutSession] Attempting to create session with Price ID: ${priceId}`);
+
     try {
         const customer = await getOrCreateCustomer(uid);
+        console.log(`[createCheckoutSession] Using Stripe Customer ID: ${customer.id}`);
 
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
@@ -227,23 +236,42 @@ exports.stripeWebhook = functions.https.onRequest(async (req, res) => {
     switch (event.type) {
         case 'checkout.session.completed':
             const customerId = dataObject.customer;
-            const subscription = await stripe.subscriptions.retrieve(dataObject.subscription);
+            const subscription = await stripe.subscriptions.retrieve(dataObject.subscription, { expand: ['items'] });
             const userRef = admin.database().ref(`users/${dataObject.client_reference_id}`);
+            
+            // Assuming one subscription item per plan
+            const priceId = subscription.items.data[0]?.price.id;
+
             await userRef.update({
                 stripeCustomerId: customerId,
                 stripeSubscriptionId: subscription.id,
                 stripeSubscriptionStatus: subscription.status,
+                stripePriceId: priceId,
             });
             break;
         case 'customer.subscription.updated':
-        case 'customer.subscription.deleted':
             const subscriptionData = dataObject;
             const customer = await stripe.customers.retrieve(subscriptionData.customer);
             const user = await admin.database().ref(`users`).orderByChild('stripeCustomerId').equalTo(customer.id).once('value');
             if (user.exists()) {
                 const uid = Object.keys(user.val())[0];
+                const priceId = subscriptionData.items.data[0]?.price.id;
                 await admin.database().ref(`users/${uid}`).update({
                     stripeSubscriptionStatus: subscriptionData.status,
+                    stripePriceId: priceId,
+                });
+            }
+            break;
+        case 'customer.subscription.deleted':
+            const deletedSubscriptionData = dataObject;
+            const deletedCustomer = await stripe.customers.retrieve(deletedSubscriptionData.customer);
+            const deletedUser = await admin.database().ref(`users`).orderByChild('stripeCustomerId').equalTo(deletedCustomer.id).once('value');
+            if (deletedUser.exists()) {
+                const uid = Object.keys(deletedUser.val())[0];
+                await admin.database().ref(`users/${uid}`).update({
+                    stripeSubscriptionStatus: deletedSubscriptionData.status,
+                    // Optionally keep the price ID for historical purposes or set to null
+                    // stripePriceId: null 
                 });
             }
             break;

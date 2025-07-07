@@ -20,6 +20,7 @@ const functions = getFunctions(app);
 const database = getDatabase(app);
 let currentUserId = null;
 let cachedUserDisplayName = sessionStorage.getItem('puulUserDisplayName');
+let currentUserPlan = null;
 
 // DOM Elements Cache (Common) - some will be populated by initializeSidebar
 const DOMElements = {
@@ -238,22 +239,24 @@ function renderConversation(history) {
 // --- Sidebar Generation & Toggle ---
 function generateSidebarHTML(activePage) {
     const pages = [
-        { name: 'Dashboard', href: '/platform_dashboard.html', icon: '📊' },
-        { name: 'Calendar', href: '/platform_calendar.html', icon: '📅' },
-        { name: 'Leasing', href: '/platform_leasing.html', icon: '🔑' },
-        { name: 'Properties', href: '/platform_properties.html', icon: '🏠' },
-        { name: 'People', href: '/platform_people.html', icon: '👥' },
-        { name: 'Accounting', href: '/platform_accounting.html', icon: '💰' },
-        { name: 'Maintenance', href: '/platform_maintenance.html', icon: '🛠️' },
-        { name: 'Reporting', href: '/platform_reporting.html', icon: '📄' },
-        { name: 'Communication', href: '/platform_communication.html', icon: '💬' },
-        { name: 'Settings', href: '/platform_settings.html', icon: '⚙️' }
+        { name: 'Dashboard', href: '/platform_dashboard.html', icon: '📊', plan: 'core' },
+        { name: 'Calendar', href: '/platform_calendar.html', icon: '📅', plan: 'core' },
+        { name: 'Leasing', href: '/platform_leasing.html', icon: '🔑', plan: 'core' },
+        { name: 'Properties', href: '/platform_properties.html', icon: '🏠', plan: 'core' },
+        { name: 'People', href: '/platform_people.html', icon: '👥', plan: 'core' },
+        { name: 'Accounting', href: '/platform_accounting.html', icon: '💰', plan: 'core' },
+        { name: 'Maintenance', href: '/platform_maintenance.html', icon: '🛠️', plan: 'core' },
+        { name: 'Reporting', href: '/platform_reporting.html', icon: '📄', plan: 'core' },
+        { name: 'Communication', href: '/platform_communication.html', icon: '💬', plan: 'core' },
+        { name: 'Settings', href: '/platform_settings.html', icon: '⚙️', plan: 'core' }
     ];
 
     let navLinks = '';
     pages.forEach(page => {
-        const isActive = activePage === page.href;
-        navLinks += `<li><a href="${page.href}" class="${isActive ? 'active' : ''}"><span class="icon">${page.icon}</span><span class="link-text">${page.name}</span></a></li>`;
+        if (hasAccess(page.plan)) {
+            const isActive = activePage === page.href;
+            navLinks += `<li><a href="${page.href}" class="${isActive ? 'active' : ''}"><span class="icon">${page.icon}</span><span class="link-text">${page.name}</span></a></li>`;
+        }
     });
 
     return `
@@ -858,6 +861,31 @@ function showConfirm(message, title = "Confirm Action") {
     });
 }
 
+const plans = {
+    'price_1RcNOUFsHlNG9dRePimNz27G': 'core',
+    'price_1RcNOvFsHlNG9dReHwB7t69Q': 'plus',
+    'price_1RcNPWFsHlNG9dReUWEWXkMJ': 'max'
+};
+
+const planFeatures = {
+    core: ['dashboard', 'calendar', 'leasing', 'properties', 'people', 'accounting', 'maintenance', 'reporting', 'communication', 'settings'],
+    plus: ['core', 'advanced-budgeting', 'advanced-analysis', 'custom-fields', 'automated-workflows', 'premium-integrations', 'scale-control', 'api-read', 'enhanced-support', 'smart-maintenance'],
+    max: ['plus', 'leasing-crm', 'leasing-signals', 'api-write', 'dedicated-support']
+};
+
+function hasAccess(requiredPlan) {
+    if (!currentUserPlan) return false;
+    if (requiredPlan === 'core') return true; // all plans have core features
+
+    const planHierarchy = ['core', 'plus', 'max'];
+    const userPlanIndex = planHierarchy.indexOf(currentUserPlan);
+    const requiredPlanIndex = planHierarchy.indexOf(requiredPlan);
+
+    if (userPlanIndex === -1 || requiredPlanIndex === -1) return false;
+
+    return userPlanIndex >= requiredPlanIndex;
+}
+
 // --- Firebase Auth & Initialization Hook (to be called by each page) ---
 let pageInitCallback = null;
 
@@ -871,6 +899,17 @@ onAuthStateChanged(auth, async (user) => {
         const displayName = user.displayName || user.email.split('@')[0];
         cachedUserDisplayName = displayName;
         sessionStorage.setItem('puulUserDisplayName', displayName);
+
+        // Fetch user's subscription plan
+        const userDbRef = ref(database, `users/${user.uid}`);
+        const userSnapshot = await get(userDbRef);
+        const userData = userSnapshot.val();
+
+        if (userData && userData.stripePriceId) {
+            currentUserPlan = plans[userData.stripePriceId];
+        } else {
+            currentUserPlan = 'core'; // Default to core if no plan found to prevent UI breaking
+        }
 
         // Check if user has data, if not, populate it.
         const userRootRef = ref(database, `properties/${user.uid}`);
@@ -904,12 +943,16 @@ onAuthStateChanged(auth, async (user) => {
             DOMElements.welcomeMessage.textContent = `Welcome, ${displayName}!`;
         }
         
+        // Now that the user and plan are known, build the UI.
+        setupPageLayoutAndInteractivity();
+
         // If a page-specific init function is waiting, call it now that we're authenticated.
         if (typeof pageInitCallback === 'function') {
-            pageInitCallback(user.uid, database, ref, push, set, remove, serverTimestamp, query, orderByChild, equalTo, getDbData, updateDbData, showAlert, showConfirm, editIconSVG, deleteIconSVG, initializeSearchableDropdown, initializeSimpleDropdown, getFunctions, httpsCallable);
+            pageInitCallback(user.uid, database, ref, push, set, remove, serverTimestamp, query, orderByChild, equalTo, getDbData, updateDbData, showAlert, showConfirm, editIconSVG, deleteIconSVG, initializeSearchableDropdown, initializeSimpleDropdown, getFunctions, httpsCallable, hasAccess, currentUserPlan);
         }
     } else {
         currentUserId = null;
+        currentUserPlan = null;
         sessionStorage.removeItem('puulUserDisplayName');
         window.location.href = '/';
     }
@@ -922,7 +965,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Remove the FOUC-prevention class now that the JS has loaded and can take over.
     document.documentElement.classList.remove('js-loading');
-    setupPageLayoutAndInteractivity();
+    // setupPageLayoutAndInteractivity(); // This is now called after auth completes.
 });
 
 
@@ -952,7 +995,9 @@ export {
     ref, push, set, remove, serverTimestamp, query, orderByChild, equalTo,
     initializeSearchableDropdown,
     initializeSimpleDropdown,
-    getFunctions, httpsCallable
+    getFunctions, httpsCallable,
+    hasAccess,
+    currentUserPlan
 }; 
 
 // --- AI Chat History Dropdown ---
