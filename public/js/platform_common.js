@@ -206,6 +206,18 @@ function renderConversation(history) {
     // Skip the system prompt message at history[0].
     const messagesToRender = history.slice(1);
 
+    if (messagesToRender.length === 0) {
+        AI_DOMElements.chatArea.innerHTML = `
+            <div class="ai-chat-placeholder">
+                <p>Ask Puul anything to get started.</p>
+                <svg class="down-arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+            </div>
+        `;
+        return;
+    }
+
     messagesToRender.forEach(message => {
         if (message.role === 'user') {
             addMessageToChat(message.parts[0].text, 'user');

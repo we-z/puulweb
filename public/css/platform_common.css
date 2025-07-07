@@ -1304,6 +1304,30 @@ html.ai-agent-is-open .ai-agent-toggle-btn .icon {
     gap: 20px;
 }
 
+.ai-chat-placeholder {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-top: auto; /* Push to bottom */
+    padding-bottom: 20px; /* Space from input area */
+    text-align: left;
+    color: #000000;
+    font-size: 3rem;
+    gap: 8px;
+}
+
+.ai-chat-placeholder p {
+    margin: 0;
+}
+
+.down-arrow-icon {
+    width: 6rem;
+    height: 6rem;
+    color: #000000;
+    margin-top: auto;
+}
+
 .ai-message {
     display: flex;
     max-width: 100%;
