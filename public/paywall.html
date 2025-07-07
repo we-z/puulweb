@@ -147,9 +147,12 @@
         .price { font-size: 2.25rem; font-weight: 600; }
         .price-per { font-size: 1rem; color: #64748b; margin-left: 0.5rem; }
         .price-min { font-size: 0.9rem; color: #64748b; margin-top: 0.5rem; }
-        .cta-button { width: 100%; padding: 1rem; background-color: #000000; color: white; border: 1px solid #404040; border-radius: 8px; font-size: 1.1rem; font-weight: 500; cursor: pointer; transition: all 0.3s ease; margin-top: auto; text-align: center; text-decoration: none; }
+        .cta-button { width: 100%; padding: 1rem; background-color: #000000; color: white; border: 2px solid #404040; border-radius: 8px; font-size: 1.1rem; font-weight: 500; cursor: pointer; transition: all 0.3s ease; margin-top: auto; text-align: center; text-decoration: none; }
         .cta-button:hover { background-color: #ffffff; color: #000000; }
-        .cta-button:disabled { background-color: #94a3b8; cursor: not-allowed; }
+        .cta-button.disabled, .cta-button:disabled {
+            background-color: #626262;
+            cursor: not-allowed;
+        }
 
         .feature-comparison-section { margin-top: 4rem; }
         .feature-comparison-section h3 { text-align: center; font-size: 2rem; margin-bottom: 2rem;}
@@ -339,7 +342,10 @@
             }
 
             try {
-                document.querySelectorAll('.subscribe-btn').forEach(b => b.disabled = true);
+                document.querySelectorAll('.subscribe-btn').forEach(b => {
+                    b.disabled = true;
+                    b.classList.add('disabled');
+                });
                 const createCheckoutSession = httpsCallable(functions, 'createCheckoutSession');
                 const result = await createCheckoutSession({ 
                     priceId: priceId,
@@ -352,7 +358,10 @@
             } catch (error) {
                 console.error('Error creating checkout session:', error);
                 alert('Error: ' + error.message);
-                document.querySelectorAll('.subscribe-btn').forEach(b => b.disabled = false);
+                document.querySelectorAll('.subscribe-btn').forEach(b => {
+                    b.disabled = false;
+                    b.classList.remove('disabled');
+                });
             }
         }
         
