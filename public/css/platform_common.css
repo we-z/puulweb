@@ -234,6 +234,7 @@ body {
 table.data-table {
     width: 100%;
     border-collapse: collapse;
+    table-layout: fixed; /* Added for predictable column resizing */
 }
 
 table.data-table th,
@@ -243,6 +244,7 @@ table.data-table td {
     border-bottom: 1px solid #e0e0e0; 
     font-size: 0.95rem;
     color: #4a5568; 
+    position: relative; /* For resizer */
 }
 
 table.data-table th {
@@ -252,6 +254,24 @@ table.data-table th {
     text-transform: uppercase;
     font-size: 0.8rem;
     letter-spacing: 0.05em;
+}
+
+.resizer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 6px; /* A bit wider */
+    cursor: col-resize;
+    user-select: none;
+    height: 100%;
+    /* Add a subtle visual cue */
+    background-color: rgba(0, 0, 0, 0.05);
+    transition: background-color 0.2s ease;
+}
+
+.resizer:hover, .resizing {
+    /* Make it more prominent on hover/drag */
+    background-color: #007bff;
 }
 
 table.data-table tr:last-child td {

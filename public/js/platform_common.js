@@ -519,6 +519,9 @@ function setupPageLayoutAndInteractivity() {
 
     // Remove the FOUC-prevention class now that the JS has loaded and can take over.
     document.documentElement.classList.remove('js-loading');
+
+    // Initialize resizable tables
+    initializeResizableTables();
 }
 
 // --- AI Agent Chat Logic ---
@@ -999,6 +1002,69 @@ export {
     hasAccess,
     currentUserPlan
 }; 
+
+function initializeResizableTables() {
+    const tables = document.querySelectorAll('.data-table');
+
+    tables.forEach(table => {
+        const headers = table.querySelectorAll('th');
+        headers.forEach(header => {
+            // Check if a resizer already exists
+            if (header.querySelector('.resizer')) {
+                return;
+            }
+            const resizer = document.createElement('div');
+            resizer.className = 'resizer';
+            header.appendChild(resizer);
+            addResizerListener(header, resizer);
+        });
+    });
+}
+
+function addResizerListener(header, resizer) {
+    let x = 0;
+    let w = 0;
+
+    const mouseDownHandler = function (e) {
+        // Prevent event from bubbling up to header text selection, etc.
+        e.preventDefault();
+        e.stopPropagation();
+
+        x = e.clientX;
+
+        const styles = window.getComputedStyle(header);
+        w = parseInt(styles.width, 10);
+
+        document.addEventListener('mousemove', mouseMoveHandler);
+        document.addEventListener('mouseup', mouseUpHandler);
+        
+        resizer.classList.add('resizing');
+        // Also add a class to the body to prevent text selection everywhere during resize
+        document.body.style.userSelect = 'none';
+        document.body.style.cursor = 'col-resize';
+    };
+
+    const mouseMoveHandler = function (e) {
+        const dx = e.clientX - x;
+        const newWidth = w + dx;
+        // Optional: add a minimum width
+        if (newWidth > 50) {
+            header.style.width = `${newWidth}px`;
+        }
+    };
+
+    const mouseUpHandler = function () {
+        document.removeEventListener('mousemove', mouseMoveHandler);
+        document.removeEventListener('mouseup', mouseUpHandler);
+        resizer.classList.remove('resizing');
+        // Restore body styles
+        document.body.style.userSelect = '';
+        document.body.style.cursor = '';
+    };
+
+    resizer.addEventListener('mousedown', mouseDownHandler);
+}
+
 
 // --- AI Chat History Dropdown ---
 let isHistoryDropdownOpen = false;
