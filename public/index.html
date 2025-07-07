@@ -1260,22 +1260,48 @@
       margin-top: 1rem;
       text-align: center;
     }
+
+    /* On-load animations */
+    body.content-loading .animate-in {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    .animate-in {
+        transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+
+    /* Staggered delays */
+    .animate-in.d1 { transition-delay: 0.1s; }
+    .animate-in.d2 { transition-delay: 0.2s; }
+    .animate-in.d3 { transition-delay: 0.3s; }
+    .animate-in.d4 { transition-delay: 0.4s; }
+    .animate-in.d5 { transition-delay: 0.5s; }
+
+    /* Hero image fade-in (no transform) */
+    body.content-loading .hero-image-animate {
+        opacity: 0;
+    }
+
+    .hero-image-animate {
+        transition: opacity 1s ease-out 0.5s;
+    }
   </style>
 </head>
-<body>
+<body class="content-loading">
   <header>
-    <a href="#" id="logo-link" style="display: flex; align-items: center; text-decoration: none; color: inherit;">
+    <a href="#" id="logo-link" style="display: flex; align-items: center; text-decoration: none; color: inherit;" class="animate-in d1">
       <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/puul-logo.svg?alt=media&token=aac48fcb-cc8d-4af8-9744-c7eca1e7cf04" alt="Puul Logo" class="site-logo" width="40" height="40" />
       <h1>Puul</h1>
     </a>
-    <div class="header-buttons">
+    <div class="header-buttons animate-in d2">
       <button class="secondary-btn" data-scroll-to="about-flex">About</button>
       <button class="secondary-btn" data-scroll-to="features">Features</button>
       <button class="secondary-btn" data-scroll-to="pricing">Pricing</button>
       <button class="secondary-btn" data-scroll-to="contact-section">Contact</button>
       <button class="main-btn" data-scroll-to="contact-section">Sign in</button>
     </div>
-    <button id="mobileMenuBtn" aria-label="Toggle menu">
+    <button id="mobileMenuBtn" aria-label="Toggle menu" class="animate-in d2">
       <div class="menu-icon">
         <span></span>
         <span></span>
@@ -1291,13 +1317,13 @@
     </div>
   </header>
   <main>
-    <h1>AI for Property Managers</h1>
-    <p>
+    <h1 class="animate-in d3">AI for Property Managers</h1>
+    <p class="animate-in d4">
       Automate screening, leasing, accounting, communications and maintenance to increase cash flow.
     </p>
   </main>
   <div class="image-container">
-    <button class="main-btn" data-scroll-to="pricing">
+    <button class="main-btn animate-in d5" data-scroll-to="pricing">
       <span class="css-cmnm65">
         <span class="movingText" style="left:0px">Get Started</span>
         <svg aria-hidden="false" role="img" aria-label="arrow right" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1305,7 +1331,7 @@
         </svg>
       </span>
     </button>
-    <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/price-solar-desktop.png?alt=media&token=b4933d35-41a6-4f96-961a-5ca710ed093c" alt="Price Solar Desktop" width="1200" height="675" />
+    <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/price-solar-desktop.png?alt=media&token=b4933d35-41a6-4f96-961a-5ca710ed093c" alt="Price Solar Desktop" width="1200" height="675" class="hero-image-animate" />
   </div>
   
   <!-- New separate section for logo carousel and cards -->
@@ -1795,6 +1821,26 @@
 
     // Merge DOMContentLoaded events: set initial states, attach scroll buttons and form events
     document.addEventListener("DOMContentLoaded", () => {
+      document.body.classList.add('content-loading');
+
+      const logoImg = document.querySelector('.site-logo');
+      const heroImg = document.querySelector('.image-container img');
+
+      const logoPromise = new Promise((resolve) => {
+        if (logoImg.complete) return resolve();
+        logoImg.addEventListener('load', resolve);
+        logoImg.addEventListener('error', resolve); // Don't block on error
+      });
+
+      const heroPromise = new Promise((resolve) => {
+        if (heroImg.complete) return resolve();
+        heroImg.addEventListener('load', resolve);
+        heroImg.addEventListener('error', resolve); // Don't block on error
+      });
+
+      Promise.all([logoPromise, heroPromise]).then(() => {
+        document.body.classList.remove('content-loading');
+      });
       // Activate initial About sections
       document.getElementById("section1").classList.add("active");
       document.getElementById("image1").classList.add("active");
