@@ -326,26 +326,32 @@
             glAccountsTableBody: document.getElementById('glAccountsTableBody'), noGLAccountsMessage: document.getElementById('noGLAccountsMessage'),
         };
 
-        function pageInit(userId, db, fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbDataExt, fbUpdateDbDataExt, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon, commonInitializeSimpleDropdown, commonHasAccess) {
+        function pageInit(userId, db, ...allCommonDeps) {
             pageCurrentUserId = userId;
             pageDatabase = db;
             
-            commonDependencies.fbRef = fbRef;
-            commonDependencies.fbPush = fbPush;
-            commonDependencies.fbSet = fbSet;
-            commonDependencies.fbRemove = fbRemove;
-            commonDependencies.fbServerTimestamp = fbServerTimestamp;
-            commonDependencies.fbQuery = fbQuery;
-            commonDependencies.fbOrderByChild = fbOrderByChild;
-            commonDependencies.fbEqualTo = fbEqualTo;
-            commonDependencies.fbGetDbData = fbGetDbDataExt;
-            commonDependencies.fbUpdateDbData = fbUpdateDbDataExt;
-            commonDependencies.commonShowAlert = commonShowAlert;
-            commonDependencies.commonShowConfirm = commonShowConfirm;
-            commonDependencies.commonEditIcon = commonEditIcon;
-            commonDependencies.commonDeleteIcon = commonDeleteIcon;
-            commonDependencies.initializeSimpleDropdown = commonInitializeSimpleDropdown;
-            commonDependencies.hasAccess = commonHasAccess;
+            const [
+                fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery,
+                fbOrderByChild, fbEqualTo, fbGetDbData, fbUpdateDbData,
+                commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon,
+                _initializeSearchableDropdown, // We get this but don't use it directly here
+                commonInitializeSimpleDropdown,
+                _getFunctions, _httpsCallable,
+                commonHasAccess
+            ] = allCommonDeps;
+
+            commonDependencies = {
+                fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery,
+                fbOrderByChild, fbEqualTo,
+                fbGetDbData: fbGetDbData,
+                fbUpdateDbData: fbUpdateDbData,
+                commonShowAlert,
+                commonShowConfirm,
+                commonEditIcon,
+                commonDeleteIcon,
+                initializeSimpleDropdown: commonInitializeSimpleDropdown,
+                hasAccess: commonHasAccess
+            };
 
             initializeSubNav();
             initializePropertiesListener();
@@ -453,7 +459,7 @@
 
         function initializeFilterControls() {
              document.querySelectorAll('.controls-container .custom-dropdown').forEach(dropdown => {
-                initializeSimpleDropdown(dropdown, () => renderActiveSubsectionData());
+                commonDependencies.initializeSimpleDropdown(dropdown, () => renderActiveSubsectionData());
             });
 
              document.querySelectorAll('.controls-toggle-btn').forEach(btn => {
@@ -979,13 +985,13 @@
                 propertiesSnap,
                 bankTransfersSnap
             ] = await Promise.all([
-                getDbData(commonDependencies.fbRef(pageDatabase, `receivables/${pageCurrentUserId}`)),
-                getDbData(commonDependencies.fbRef(pageDatabase, `payables/${pageCurrentUserId}`)),
-                getDbData(commonDependencies.fbRef(pageDatabase, `glAccounts/${pageCurrentUserId}`)),
-                getDbData(commonDependencies.fbRef(pageDatabase, `journalEntries/${pageCurrentUserId}`)),
-                getDbData(commonDependencies.fbRef(pageDatabase, `bankAccounts/${pageCurrentUserId}`)),
-                getDbData(commonDependencies.fbRef(pageDatabase, `properties/${pageCurrentUserId}`)),
-                getDbData(commonDependencies.fbRef(pageDatabase, `bankTransfers/${pageCurrentUserId}`))
+                commonDependencies.fbGetDbData(commonDependencies.fbRef(pageDatabase, `receivables/${pageCurrentUserId}`)),
+                commonDependencies.fbGetDbData(commonDependencies.fbRef(pageDatabase, `payables/${pageCurrentUserId}`)),
+                commonDependencies.fbGetDbData(commonDependencies.fbRef(pageDatabase, `glAccounts/${pageCurrentUserId}`)),
+                commonDependencies.fbGetDbData(commonDependencies.fbRef(pageDatabase, `journalEntries/${pageCurrentUserId}`)),
+                commonDependencies.fbGetDbData(commonDependencies.fbRef(pageDatabase, `bankAccounts/${pageCurrentUserId}`)),
+                commonDependencies.fbGetDbData(commonDependencies.fbRef(pageDatabase, `properties/${pageCurrentUserId}`)),
+                commonDependencies.fbGetDbData(commonDependencies.fbRef(pageDatabase, `bankTransfers/${pageCurrentUserId}`))
             ]);
 
             const receivables = receivablesSnap.val() || {};
@@ -1194,7 +1200,7 @@
             }
         }
 
-        initializeAuth((...args) => pageInit(...args, hasAccess));
+        initializeAuth(pageInit);
     </script>
 </body>
 </html> 

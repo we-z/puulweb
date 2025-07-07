@@ -76,6 +76,7 @@
                                 <tr>
                                     <th>Address</th>
                                     <th>Type</th>
+                                    <th>Last Paid Period</th>
                                     <th>Work Orders (Open/Total)</th>
                                     <th>Actions</th>
                                 </tr>
@@ -247,6 +248,7 @@
         let pageDatabase;
         let commonDependencies = {}; // To store common functions and icons
         let propertiesData = []; // Data cache for properties
+        let receivablesData = []; // Data cache for receivables
 
         function pageInit(userId, db, fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbData, fbUpdateDbData, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon) {
             pageCurrentUserId = userId;
@@ -260,6 +262,7 @@
             };
 
             loadProperties();
+            loadReceivables();
 
             // Initialize custom dropdowns for properties page
             const propertiesCommonOnChange = () => renderProperties();
@@ -363,6 +366,20 @@
             }
         }
 
+        function loadReceivables() {
+            if (!pageCurrentUserId || !pageDatabase) return;
+
+            const receivablesRef = commonDependencies.fbRef(pageDatabase, `receivables/${pageCurrentUserId}`);
+            
+            onValue(receivablesRef, (snapshot) => {
+                receivablesData = [];
+                snapshot.forEach(childSnapshot => {
+                    receivablesData.push({ id: childSnapshot.key, ...childSnapshot.val() });
+                });
+                renderProperties();
+            }, { onlyOnce: false });
+        }
+
         function loadProperties() {
             if (!pageCurrentUserId || !pageDatabase || !pageDOMElements.propertiesTableBody) return;
 
@@ -402,19 +419,34 @@
                 return sortOrder === 'desc' ? comparison * -1 : comparison;
             });
 
+            const lastPaidMap = {};
+            if (receivablesData && receivablesData.length > 0) {
+                receivablesData
+                    .filter(r => r.status === 'Paid' && r.propertyId && r.date)
+                    .forEach(r => {
+                        if (!lastPaidMap[r.propertyId] || new Date(r.date) > new Date(lastPaidMap[r.propertyId])) {
+                            lastPaidMap[r.propertyId] = r.date;
+                        }
+                    });
+            }
+
             if (filteredProperties.length === 0) {
                 pageDOMElements.noPropertiesMessage.style.display = 'flex';
             } else {
                 pageDOMElements.noPropertiesMessage.style.display = 'none';
-                filteredProperties.forEach(prop => populatePropertyRow(prop));
+                filteredProperties.forEach(prop => {
+                    const lastPaidDate = lastPaidMap[prop.id];
+                    populatePropertyRow(prop, lastPaidDate);
+                });
             }
         }
 
-        function populatePropertyRow(data) {
+        function populatePropertyRow(data, lastPaidDate) {
             if (!pageDOMElements.propertiesTableBody) return;
             const row = pageDOMElements.propertiesTableBody.insertRow();
             row.insertCell().textContent = data.address || 'N/A';
             row.insertCell().textContent = data.type || 'N/A';
+            row.insertCell().textContent = lastPaidDate ? new Date(lastPaidDate).toLocaleDateString() : 'N/A';
             row.insertCell().textContent = 'N/A'; // Placeholder for Work Orders (Open/Total)
             
             const actionsCell = row.insertCell();
