@@ -85,6 +85,73 @@
             margin: 0;
             font-size: 1rem;
         }
+        .static-details {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 12px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        .stripe-link-field {
+            background-color: #f0f0f0; /* Light grey */
+            border: 1px solid #dcdcdc; /* Darker grey border */
+            border-radius: 20px;
+            padding: 10px 15px;
+            font-family: 'Courier New', Courier, monospace;
+            color: #333; /* Dark grey text */
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .stripe-link-field:hover {
+            background-color: #e0e0e0;
+        }
+        #stripeLinkContainer > label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        /* Scoped styles for the Stripe Setup Modal for a more elegant design */
+        #stripeSetupModal .modal-content {
+            max-width: 550px;
+            padding: 24px 32px 32px 32px;
+        }
+        #stripeSetupForm {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        #stripeSetupForm p {
+            font-size: 0.95rem;
+            color: #6c757d;
+            text-align: center;
+            margin: -10px 0 0 0;
+        }
+        #stripeSetupForm .form-group {
+            margin-bottom: 0;
+        }
+        #stripeSetupForm .form-group > label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+        #stripeLinkContainer {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #dee2e6;
+            margin-top: 10px !important;
+        }
+        #stripePaymentLink.stripe-link-field {
+            width: 100%;
+            box-sizing: border-box;
+        }
+        #stripeLinkContainer .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+        }
     </style>
 </head>
 <body>
@@ -345,8 +412,8 @@
                 </div>
                 <div id="stripeLinkContainer" style="display: none; margin-top: 20px;">
                     <label>Stripe Payment Link</label>
-                    <input type="text" id="stripePaymentLink" readonly class="form-control">
-                    <div style="margin-top: 10px;">
+                    <input type="text" id="stripePaymentLink" readonly class="stripe-link-field">
+                    <div class="action-buttons">
                         <button id="copyStripeLinkBtn" class="btn-secondary">Copy</button>
                         <a id="emailStripeLinkBtn" href="#" class="btn-secondary" style="text-decoration: none;">Send Email</a>
                     </div>
@@ -613,12 +680,15 @@
             
             document.getElementById('generateStripeLinkBtn')?.addEventListener('click', handleGenerateStripeLink);
             
-            document.getElementById('copyStripeLinkBtn')?.addEventListener('click', () => {
+            const copyAction = () => {
                 const linkInput = document.getElementById('stripePaymentLink');
                 linkInput.select();
                 document.execCommand('copy');
                 commonDependencies.commonShowAlert('Link copied to clipboard!');
-            });
+            };
+
+            document.getElementById('copyStripeLinkBtn')?.addEventListener('click', copyAction);
+            document.getElementById('stripePaymentLink')?.addEventListener('click', copyAction);
         }
 
         async function handleGenerateStripeLink() {
