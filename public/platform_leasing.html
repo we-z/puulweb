@@ -238,7 +238,7 @@
                         </div>
                         <div class="data-table-container">
                             <table class="data-table" id="leasesTable">
-                                <thead><tr><th>Lease ID</th><th>Tenant(s)</th><th>Property/Unit</th><th>Start Date</th><th>End Date</th><th>Rent Amount</th><th>Status</th><th>Actions</th></tr></thead>
+                                <thead><tr><th>Lease ID</th><th>Tenant(s)</th><th>Property/Unit</th><th>Start Date</th><th>End Date</th><th>Rent Amount</th><th>Status</th><th>Auto-Pay</th><th>Actions</th></tr></thead>
                                 <tbody id="leasesTableBody"></tbody>
                             </table>
                             <div id="noLeasesMessage" class="no-data-message"><div class="icon">📜</div><p>No leases recorded.</p></div>
@@ -322,6 +322,38 @@
     <div id="rentalApplicationModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>Add/Edit Rental Application</h3><button class="close-btn" data-modal-id="rentalApplicationModal">&times;</button></div><form id="rentalApplicationForm"><input type="hidden" id="rentalApplicationId"><div class="form-group"><label>Applicant Name</label><input type="text" name="applicantName" required></div><div class="form-group"><label>Property Applied For</label><select name="propertyId" required></select></div><div class="form-group"><label>Submission Date</label><input type="date" name="submissionDate" required></div><div class="form-group"><label>Status</label><select name="status"><option>Submitted</option><option>Processing</option><option>Approved</option><option>Denied</option><option>Withdrawn</option></select></div><div class="form-group"><label>Notes</label><textarea name="notes"></textarea></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="rentalApplicationModal">Cancel</button><button type="submit" class="submit-btn">Save</button></div></form></div></div>
     <div id="leaseModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>Add/Edit Lease</h3><button class="close-btn" data-modal-id="leaseModal">&times;</button></div><form id="leaseForm"><input type="hidden" id="leaseId"><div class="form-group"><label>Tenant(s)</label><input type="text" name="tenants" required placeholder="Comma-separated names"></div><div class="form-group"><label>Property/Unit</label><select name="propertyId" required></select></div><div class="form-group"><label>Start Date</label><input type="date" name="startDate" required></div><div class="form-group"><label>End Date</label><input type="date" name="endDate" required></div><div class="form-group"><label>Rent Amount ($)</label><input type="number" name="rentAmount" step="0.01" required></div><div class="form-group"><label>Status</label><select name="status"><option>Active</option><option>Expired</option><option>Terminated</option><option>Future</option></select></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="leaseModal">Cancel</button><button type="submit" class="submit-btn">Save</button></div></form></div></div>
     <div id="renewalModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>Process Renewal</h3><button class="close-btn" data-modal-id="renewalModal">&times;</button></div><form id="renewalForm"><input type="hidden" id="renewalLeaseId"><div class="form-group"><label>Lease ID</label><input type="text" name="leaseDisplayId" readonly></div><div class="form-group"><label>Tenant(s)</label><input type="text" name="renewalTenants" readonly></div><div class="form-group"><label>Property/Unit</label><input type="text" name="renewalProperty" readonly></div><div class="form-group"><label>New End Date</label><input type="date" name="newEndDate" required></div><div class="form-group"><label>New Rent Amount ($)</label><input type="number" name="newRentAmount" step="0.01"></div><div class="form-group"><label>Status</label><select name="renewalStatus"><option>Offered</option><option>Accepted</option><option>Declined</option><option>Processing</option></select></div><div class="form-actions"><button type="button" class="cancel-btn" data-modal-id="renewalModal">Cancel</button><button type="submit" class="submit-btn">Save Renewal</button></div></form></div></div>
+    <div id="stripeSetupModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Set up Automatic Rent Payment</h3>
+                <button class="close-btn" data-modal-id="stripeSetupModal">&times;</button>
+            </div>
+            <div id="stripeSetupForm">
+                <input type="hidden" id="stripeLeaseId">
+                <p>Select a tenant to create a secure Stripe payment link for recurring rent payments.</p>
+                <div class="form-group">
+                    <label>Lease Details</label>
+                    <div id="stripeLeaseDetails" class="static-details"></div>
+                </div>
+                <div class="form-group">
+                    <label>Tenant to Set Up</label>
+                    <select id="stripeTenantSelect" class="form-control" name="tenantId" required></select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="cancel-btn" data-modal-id="stripeSetupModal">Cancel</button>
+                    <button type="button" id="generateStripeLinkBtn" class="submit-btn">Generate Link</button>
+                </div>
+                <div id="stripeLinkContainer" style="display: none; margin-top: 20px;">
+                    <label>Stripe Payment Link</label>
+                    <input type="text" id="stripePaymentLink" readonly class="form-control">
+                    <div style="margin-top: 10px;">
+                        <button id="copyStripeLinkBtn" class="btn-secondary">Copy</button>
+                        <a id="emailStripeLinkBtn" href="#" class="btn-secondary" style="text-decoration: none;">Send Email</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div id="customAlertModal"><div class="custom-alert"><p></p></div></div>
     <div id="customConfirmModal" class="modal"><div class="modal-content confirm-modal-content"><div class="modal-header"><h3 id="customConfirmTitle"></h3><button class="close-btn" data-modal-id="customConfirmModal">&times;</button></div><div class="modal-body"><p id="customConfirmMessage"></p></div><div class="modal-footer"><button class="cancel-btn-confirm" id="customConfirmCancel">Cancel</button><button class="confirm-btn" id="customConfirmOk">OK</button></div></div></div>
@@ -331,10 +363,12 @@
     <script type="module">
         import { initializeAuth, showAlert, showConfirm, editIconSVG, deleteIconSVG, getDbData, initializeSimpleDropdown, hasAccess, currentUserPlan } from './js/platform_common.js';
         import { getDatabase, ref, push, onValue, set, remove, serverTimestamp, query, orderByChild, equalTo } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
+        import { getFunctions, httpsCallable } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js';
 
         let pageCurrentUserId, pageDatabase;
         let commonDependencies = {};
         let localPropertiesMap = {};
+        let tenantsForLeases = {};
 
         // Data Caches
         let vacanciesData = [];
@@ -351,6 +385,7 @@
             rentalApplicationModal: document.getElementById('rentalApplicationModal'), rentalApplicationForm: document.getElementById('rentalApplicationForm'),
             leaseModal: document.getElementById('leaseModal'), leaseForm: document.getElementById('leaseForm'),
             renewalModal: document.getElementById('renewalModal'), renewalForm: document.getElementById('renewalForm'),
+            stripeSetupModal: document.getElementById('stripeSetupModal'),
             // Subsection Table Bodies & No Data Messages
             vacanciesTableBody: document.getElementById('vacanciesTableBody'), noVacanciesMessage: document.getElementById('noVacanciesMessage'),
             guestCardsTableBody: document.getElementById('guestCardsTableBody'), noGuestCardsMessage: document.getElementById('noGuestCardsMessage'),
@@ -361,11 +396,12 @@
 
         function pageInit(userId, db, ...allCommonDeps) {
             pageCurrentUserId = userId; pageDatabase = db;
-            const [ fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbData, fbUpdateDbData, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon, commonInitializeSimpleDropdown ] = allCommonDeps;
-            commonDependencies = { fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbData, fbUpdateDbData, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon, initializeSimpleDropdown: commonInitializeSimpleDropdown };
+            const [ fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbData, fbUpdateDbData, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon, initializeSearchableDropdown, initializeSimpleDropdown ] = allCommonDeps;
+            commonDependencies = { fbRef, fbPush, fbSet, fbRemove, fbServerTimestamp, fbQuery, fbOrderByChild, fbEqualTo, fbGetDbData, fbUpdateDbData, commonShowAlert, commonShowConfirm, commonEditIcon, commonDeleteIcon, initializeSimpleDropdown: initializeSimpleDropdown, initializeSearchableDropdown: initializeSearchableDropdown };
 
             initializeSubNav();
             initializePropertiesListener();
+            initializeTenantsListener();
             initializeFilterControls();
 
             loadDataForActiveSubsection(); // Load data for default active tab (Vacancies)
@@ -463,9 +499,26 @@
             });
         }
 
+        function initializeTenantsListener() {
+            if (!pageCurrentUserId || !pageDatabase) return;
+            const tenantsRef = commonDependencies.fbRef(pageDatabase, `tenants/${pageCurrentUserId}`);
+            onValue(tenantsRef, (snapshot) => {
+                tenantsForLeases = {};
+                snapshot.forEach(tenantSnapshot => {
+                    const tenant = tenantSnapshot.val();
+                    if (tenant.leaseId) {
+                        if (!tenantsForLeases[tenant.leaseId]) {
+                            tenantsForLeases[tenant.leaseId] = [];
+                        }
+                        tenantsForLeases[tenant.leaseId].push({ id: tenantSnapshot.key, ...tenant });
+                    }
+                });
+            });
+        }
+
         function initializeFilterControls() {
             document.querySelectorAll('.controls-container .custom-dropdown').forEach(dropdown => {
-                initializeSimpleDropdown(dropdown, () => renderActiveSubsectionData());
+                commonDependencies.initializeSimpleDropdown(dropdown, () => renderActiveSubsectionData());
             });
 
              document.querySelectorAll('.controls-toggle-btn').forEach(btn => {
@@ -557,6 +610,55 @@
                     f.form.addEventListener('submit', (e) => handleGenericFormSubmit(e, f.path, f.name, f.form.id.replace('Form','Modal')));
                 }
             });
+            
+            document.getElementById('generateStripeLinkBtn')?.addEventListener('click', handleGenerateStripeLink);
+            
+            document.getElementById('copyStripeLinkBtn')?.addEventListener('click', () => {
+                const linkInput = document.getElementById('stripePaymentLink');
+                linkInput.select();
+                document.execCommand('copy');
+                commonDependencies.commonShowAlert('Link copied to clipboard!');
+            });
+        }
+
+        async function handleGenerateStripeLink() {
+            const leaseId = document.getElementById('stripeLeaseId').value;
+            const tenantId = document.getElementById('stripeTenantSelect').value;
+            if (!leaseId || !tenantId) {
+                commonDependencies.commonShowAlert('Please select a tenant.', 'Error');
+                return;
+            }
+
+            const btn = document.getElementById('generateStripeLinkBtn');
+            btn.disabled = true;
+            btn.textContent = 'Generating...';
+
+            try {
+                const functions = getFunctions();
+                const createTenantRentSubscription = httpsCallable(functions, 'createTenantRentSubscription');
+                const result = await createTenantRentSubscription({ leaseId, tenantId });
+
+                if (result.data && result.data.checkoutUrl) {
+                    const linkInput = document.getElementById('stripePaymentLink');
+                    const linkContainer = document.getElementById('stripeLinkContainer');
+                    const emailBtn = document.getElementById('emailStripeLinkBtn');
+                    
+                    linkInput.value = result.data.checkoutUrl;
+                    linkContainer.style.display = 'block';
+
+                    const tenantEmail = document.getElementById('stripeTenantSelect').options[document.getElementById('stripeTenantSelect').selectedIndex].text.split('(')[1].replace(')','');
+                    emailBtn.href = `mailto:${tenantEmail}?subject=Setup%20Automatic%20Rent%20Payment&body=Hello,%0A%0APlease%20use%20the%20following%20secure%20link%20to%20set%20up%20automatic%20rent%20payments%20for%20your%20lease:%0A%0A${result.data.checkoutUrl}%0A%0AThank%20you!`;
+
+                } else {
+                    throw new Error('Could not retrieve payment link.');
+                }
+            } catch (error) {
+                console.error('Error creating Stripe checkout session:', error);
+                commonDependencies.commonShowAlert(`Error: ${error.message}`, 'Error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Generate Link';
+            }
         }
 
         async function handleGenericFormSubmit(e, firebasePath, itemName, modalId) {
@@ -855,6 +957,18 @@
             row.insertCell().textContent = data.endDate ? new Date(data.endDate).toLocaleDateString() : 'N/A';
             row.insertCell().textContent = data.rentAmount ? `$${parseFloat(data.rentAmount).toFixed(2)}` : 'N/A';
             row.insertCell().innerHTML = `<span class="status-badge status-${(data.status || 'active').toLowerCase().replace(' ','-')}">${data.status || 'Active'}</span>`;
+            
+            const autoPayCell = row.insertCell();
+            if (data.stripeSubscriptionId && data.stripeSubscriptionStatus === 'active') {
+                autoPayCell.innerHTML = `<span class="status-badge status-paid">Active</span>`;
+            } else {
+                autoPayCell.innerHTML = `<button class="btn-secondary btn-small setup-autopay-btn" data-lease-id="${data.id}">Setup</button>`;
+                autoPayCell.querySelector('.setup-autopay-btn').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openStripeSetupModal(data.id, data);
+                });
+            }
+
             const actionsCell = row.insertCell();
             // Add a specific "Renew" button for leases
             actionsCell.innerHTML = `<button class="edit-btn"><svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path></svg></button><button class="renew-btn" title="Process Renewal"></button><button class="delete-btn"><svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg></button>`;
@@ -916,6 +1030,33 @@
             actionsCell.innerHTML = `<button class="process-renewal-btn" title="Process Renewal">Process</button>`;
             actionsCell.querySelector('.process-renewal-btn').addEventListener('click', () => openModalForSubsection('renewals', data.id, data));
              row.addEventListener('click', () => openModalForSubsection('renewals', data.id, data));
+        }
+
+        function openStripeSetupModal(leaseId, leaseData) {
+            DOMElements.stripeSetupModal.style.display = 'flex';
+            document.getElementById('stripeLeaseId').value = leaseId;
+
+            const detailsDiv = document.getElementById('stripeLeaseDetails');
+            detailsDiv.innerHTML = `
+                <strong>Property:</strong> ${localPropertiesMap[leaseData.propertyId] || 'N/A'}<br>
+                <strong>Tenants:</strong> ${leaseData.tenants}<br>
+                <strong>Rent:</strong> $${parseFloat(leaseData.rentAmount).toFixed(2)} / month
+            `;
+            
+            const tenantSelect = document.getElementById('stripeTenantSelect');
+            tenantSelect.innerHTML = '<option value="">Select a tenant</option>';
+            const associatedTenants = tenantsForLeases[leaseId] || [];
+            if (associatedTenants.length > 0) {
+                associatedTenants.forEach(tenant => {
+                    const option = document.createElement('option');
+                    option.value = tenant.id;
+                    option.textContent = `${tenant.fullName} (${tenant.email})`;
+                    tenantSelect.appendChild(option);
+                });
+            } else {
+                tenantSelect.innerHTML = '<option value="">No tenants found for this lease</option>';
+                document.getElementById('generateStripeLinkBtn').disabled = true;
+            }
         }
 
         window.addEventListener('DOMContentLoaded', function() {

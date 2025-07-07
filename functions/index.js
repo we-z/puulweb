@@ -232,8 +232,93 @@ exports.stripeWebhook = functions.https.onRequest(async (req, res) => {
     }
 
     const dataObject = event.data.object;
+    const eventType = event.type;
+    
+    // Check for metadata to route to the correct handler
+    let metadata = dataObject.metadata;
+    if (eventType === 'checkout.session.completed') {
+        // For checkout sessions, the subscription metadata is nested
+        const subscription = await stripe.subscriptions.retrieve(dataObject.subscription);
+        metadata = subscription.metadata;
+    } else if (dataObject.object === 'subscription') {
+        metadata = dataObject.metadata;
+    } else if (dataObject.object === 'invoice') {
+        // For invoices, get metadata from the subscription line item
+        const subscriptionId = dataObject.subscription;
+        if (subscriptionId) {
+            const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+            metadata = subscription.metadata;
+        }
+    }
 
-    switch (event.type) {
+
+    if (metadata && metadata.type === 'tenant_rent') {
+        // It's a tenant rent event
+        await handleTenantRentWebhook(eventType, dataObject, metadata);
+    } else {
+        // Assume it's a platform subscription event
+        await handlePlatformSubscriptionWebhook(eventType, dataObject);
+    }
+
+
+    res.status(200).send();
+});
+
+async function handleTenantRentWebhook(eventType, dataObject, metadata) {
+    const { firebaseUID, leaseId, tenantId } = metadata;
+    const db = admin.database();
+
+    switch (eventType) {
+        case 'checkout.session.completed':
+            const subscriptionId = dataObject.subscription;
+            if (subscriptionId) {
+                await db.ref(`leases/${firebaseUID}/${leaseId}`).update({
+                    stripeSubscriptionId: subscriptionId,
+                    stripeTenantId: tenantId,
+                    stripeSubscriptionStatus: 'active'
+                });
+                console.log(`[Webhook] Activated auto-pay for lease ${leaseId}, subscription ${subscriptionId}`);
+            }
+            break;
+
+        case 'invoice.payment_succeeded':
+            // Only create a receivable if it's not the first payment (which is handled by checkout session)
+            if (dataObject.billing_reason === 'subscription_cycle') {
+                const leaseSnap = await db.ref(`leases/${firebaseUID}/${leaseId}`).once('value');
+                const lease = leaseSnap.val();
+                const tenantSnap = await db.ref(`tenants/${firebaseUID}/${tenantId}`).once('value');
+                const tenant = tenantSnap.val();
+
+                if (lease && tenant) {
+                    const receivable = {
+                        date: new Date(dataObject.created * 1000).toISOString().split('T')[0],
+                        payerName: tenant.fullName,
+                        propertyId: lease.propertyId,
+                        description: `Monthly Rent - ${new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}`,
+                        amountDue: lease.rentAmount,
+                        amountPaid: parseFloat(dataObject.amount_paid / 100).toFixed(2),
+                        status: 'Paid',
+                        userId: firebaseUID,
+                        createdAt: admin.database.ServerValue.TIMESTAMP,
+                        updatedAt: admin.database.ServerValue.TIMESTAMP,
+                    };
+                    await db.ref(`receivables/${firebaseUID}`).push(receivable);
+                    console.log(`[Webhook] Created receivable for lease ${leaseId} from invoice ${dataObject.id}`);
+                }
+            }
+            break;
+        
+        case 'customer.subscription.deleted':
+             await db.ref(`leases/${firebaseUID}/${leaseId}`).update({
+                stripeSubscriptionStatus: 'canceled'
+            });
+            console.log(`[Webhook] Canceled auto-pay for lease ${leaseId}`);
+            break;
+    }
+}
+
+async function handlePlatformSubscriptionWebhook(eventType, dataObject) {
+     switch (eventType) {
         case 'checkout.session.completed':
             const customerId = dataObject.customer;
             const subscription = await stripe.subscriptions.retrieve(dataObject.subscription, { expand: ['items'] });
@@ -277,10 +362,9 @@ exports.stripeWebhook = functions.https.onRequest(async (req, res) => {
             break;
         default:
             // Unhandled event type
+            console.log(`[Webhook] Unhandled platform event type: ${eventType}`);
     }
-
-    res.status(200).send();
-});
+}
 
 async function getOrCreateCustomer(uid) {
     const userRef = admin.database().ref(`users/${uid}`);
@@ -307,6 +391,152 @@ async function getOrCreateCustomer(uid) {
     await userRef.update({ stripeCustomerId: newCustomer.id });
     return newCustomer;
 }
+
+exports.createTenantRentSubscription = functions.https.onCall(async (data, context) => {
+    if (!context.auth) {
+        throw new functions.https.HttpsError('unauthenticated', 'The function must be called while authenticated.');
+    }
+    const uid = context.auth.uid;
+    const { leaseId, tenantId } = data;
+
+    if (!leaseId || !tenantId) {
+        throw new functions.https.HttpsError('invalid-argument', 'The function must be called with "leaseId" and "tenantId".');
+    }
+
+    try {
+        const db = admin.database();
+        
+        // 1. Fetch all necessary data from Firebase
+        const leaseSnap = await db.ref(`leases/${uid}/${leaseId}`).once('value');
+        const lease = leaseSnap.val();
+        if (!lease) throw new functions.https.HttpsError('not-found', 'Lease not found.');
+        
+        // Add robust validation for rent amount
+        const rentAmount = parseFloat(lease.rentAmount);
+        if (isNaN(rentAmount) || rentAmount <= 0) {
+            throw new functions.https.HttpsError('invalid-argument', `Lease has an invalid rent amount: "${lease.rentAmount}". Please set a valid, positive number.`);
+        }
+
+        const tenantSnap = await db.ref(`tenants/${uid}/${tenantId}`).once('value');
+        const tenant = tenantSnap.val();
+        if (!tenant) throw new functions.https.HttpsError('not-found', 'Tenant not found.');
+        
+        // Add validation for tenant's full name
+        if (!tenant.fullName || tenant.fullName.trim() === '') {
+            throw new functions.https.HttpsError('invalid-argument', `Tenant record with ID "${tenantId}" does not have a full name. Please add one in the People tab.`);
+        }
+        
+        // Add validation for tenant email
+        if (!tenant.email || !tenant.email.includes('@')) {
+            throw new functions.https.HttpsError('invalid-argument', `Tenant "${tenant.fullName || tenantId}" does not have a valid email address. Please add one in the People tab.`);
+        }
+        
+        // Validate that the lease end date is in the future.
+        const leaseEndDate = new Date(lease.endDate);
+        if (isNaN(leaseEndDate.getTime())) {
+            throw new functions.https.HttpsError('invalid-argument', 'Lease has an invalid end date format.');
+        }
+        // Set to the end of the day to ensure the entire day is included.
+        leaseEndDate.setUTCHours(23, 59, 59, 999);
+        if (leaseEndDate.getTime() <= Date.now()) {
+            throw new functions.https.HttpsError('failed-precondition', 'The lease end date must be in the future to set up auto-pay.');
+        }
+
+        const propertySnap = await db.ref(`properties/${uid}/${lease.propertyId}`).once('value');
+        const property = propertySnap.val();
+        if (!property) throw new functions.https.HttpsError('not-found', 'Property not found.');
+
+        // Add validation for property address
+        if (!property.address || property.address.trim() === '') {
+            throw new functions.https.HttpsError('invalid-argument', `The associated property does not have an address. Please add one in the Properties tab.`);
+        }
+
+        // 2. Get or Create Stripe Customer for the Tenant
+        let tenantStripeCustomerId = tenant.stripeCustomerId;
+        if (!tenantStripeCustomerId) {
+            const customer = await stripe.customers.create({
+                email: tenant.email,
+                name: tenant.fullName,
+                metadata: { firebaseUID: uid, tenantId: tenantId }
+            });
+            tenantStripeCustomerId = customer.id;
+            await db.ref(`tenants/${uid}/${tenantId}/stripeCustomerId`).set(tenantStripeCustomerId);
+        }
+
+        // 3. Create Stripe Product & Price for the rent
+        const product = await stripe.products.create({
+            name: `Rent for ${property.address}`,
+            metadata: { leaseId: leaseId, propertyId: lease.propertyId }
+        });
+
+        const price = await stripe.prices.create({
+            product: product.id,
+            unit_amount: Math.round(rentAmount * 100), // Stripe expects amount in cents
+            currency: 'usd',
+            recurring: { interval: 'month' },
+        });
+
+        // 4. Create a Subscription Schedule to handle the fixed term
+        const schedule = await stripe.subscriptionSchedules.create({
+          customer: tenantStripeCustomerId,
+          start_date: 'now',
+          end_behavior: 'cancel',
+          phases: [
+            {
+              items: [{ price: price.id, quantity: 1 }],
+              iterations: 12, // This will be calculated or managed differently in a real app
+            },
+          ],
+          metadata: {
+              type: 'tenant_rent',
+              leaseId: leaseId,
+              tenantId: tenantId,
+              firebaseUID: uid
+          }
+        });
+
+        // 5. Create a checkout session for the schedule
+        const successUrl = `https://puul.ai/platform_leasing.html?payment_success=true&leaseId=${leaseId}`;
+        const cancelUrl = `https://puul.ai/platform_leasing.html?payment_cancelled=true&leaseId=${leaseId}`;
+        
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            mode: 'subscription',
+            customer: tenantStripeCustomerId,
+            line_items: [{ price: price.id, quantity: 1 }],
+             subscription_data: {
+                metadata: {
+                    type: 'tenant_rent',
+                    leaseId: leaseId,
+                    tenantId: tenantId,
+                    firebaseUID: uid
+                }
+            },
+            success_url: successUrl,
+            cancel_url: cancelUrl,
+        });
+
+        return { checkoutUrl: session.url };
+
+    } catch (error) {
+        console.error("Full error object:", JSON.stringify(error, null, 2));
+        if (error instanceof functions.https.HttpsError) {
+            throw error;
+        }
+        
+        // Check if this is a Stripe-specific error and provide a more detailed message.
+        let errorMessage = 'An unexpected error occurred. Please check the function logs for more details.';
+        if (error.type === 'StripeInvalidRequestError' || error.type === 'StripeAPIError' || error.type === 'StripeCardError') {
+            errorMessage = error.message;
+        } else if (error.raw && error.raw.message) {
+            errorMessage = error.raw.message;
+        } else if (error.message) {
+            errorMessage = error.message;
+        }
+
+        throw new functions.https.HttpsError('internal', errorMessage, error);
+    }
+});
 
 exports.createStripePortalLink = functions.https.onCall(async (data, context) => {
     if (!context.auth) {
