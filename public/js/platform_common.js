@@ -411,6 +411,12 @@ function setupPageLayoutAndInteractivity() {
             const handleSend = () => {
                 const query = AI_DOMElements.input.value.trim();
                 if (query) {
+                    // If placeholder is visible, clear the chat area before adding the first message.
+                    const placeholder = AI_DOMElements.chatArea.querySelector('.ai-chat-placeholder');
+                    if (placeholder) {
+                        AI_DOMElements.chatArea.innerHTML = '';
+                    }
+
                     addMessageToChat(query, 'user');
                     conversationHistory.push({ role: "user", parts: [{ text: query }] });
                     set(ref(database, `aiConversations/${currentUserId}/${conversationId}`), conversationHistory);
