@@ -654,7 +654,8 @@
             `).join('');
         }
 
-        function viewApplicationDetails(applicationId) {
+        // Global function for viewing application details
+        window.viewApplicationDetails = function(applicationId) {
             const application = applicationsData.find(app => app.id === applicationId);
             if (!application) return;
 
