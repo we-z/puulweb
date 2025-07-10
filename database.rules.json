@@ -2,6 +2,15 @@
   "rules": {
     ".read": "auth != null",
     ".write": "auth != null",
+    "properties": {
+      ".read": true,
+      ".write": "auth != null",
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid",
+        ".indexOn": ["address", "createdAt", "updatedAt"]
+      }
+    },
     "users": {
       ".read": "auth != null",
       "$uid": {
@@ -91,13 +100,7 @@
         ".indexOn": ["assetName", "assetId", "propertyId", "purchaseDate", "updatedAt"]
       }
     },
-    "properties": {
-      "$uid": {
-        ".read": "$uid === auth.uid",
-        ".write": "$uid === auth.uid",
-        ".indexOn": ["address", "createdAt", "updatedAt"]
-      }
-    },
+
     "units": {
        "$uid": {
         ".read": "$uid === auth.uid",
@@ -260,6 +263,13 @@
         "$conversationId": {
           ".write": "$uid === auth.uid"
         }
+      }
+    },
+    "applications": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid",
+        ".indexOn": ["propertyId", "submittedAt", "status"]
       }
     }
   }

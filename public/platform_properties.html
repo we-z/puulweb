@@ -78,6 +78,7 @@
                                     <th>Type</th>
                                     <th>Last Paid Period</th>
                                     <th>Work Orders (Open/Total)</th>
+                                    <th>Applications</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -188,6 +189,49 @@
     <div id="customAlertModal">
         <div class="custom-alert">
             <p>This is an alert message.</p>
+        </div>
+    </div>
+
+    <!-- Applications Modal -->
+    <div id="applicationsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="applicationsModalTitle">Property Applications</h3>
+                <button class="close-btn" data-modal-id="applicationsModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="applications-header">
+                    <div class="application-link-section">
+                        <h4>Application Link</h4>
+                        <p>Share this unique link with potential tenants:</p>
+                        <div class="link-container">
+                            <input type="text" id="applicationLink" readonly>
+                            <button class="copy-btn" id="copyLinkBtn">Copy</button>
+                        </div>
+                    </div>
+                    <div class="applications-list">
+                        <h4>Submitted Applications</h4>
+                        <div id="applicationsList">
+                            <div class="no-applications">No applications submitted yet.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Details Modal -->
+    <div id="applicationDetailsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="applicationDetailsTitle">Application Details</h3>
+                <button class="close-btn" data-modal-id="applicationDetailsModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="applicationDetailsContent">
+                    <!-- Application details will be populated here -->
+                </div>
+            </div>
         </div>
     </div>
 
@@ -449,6 +493,20 @@
             row.insertCell().textContent = lastPaidDate ? new Date(lastPaidDate).toLocaleDateString() : 'N/A';
             row.insertCell().textContent = 'N/A'; // Placeholder for Work Orders (Open/Total)
             
+            // Applications column
+            const applicationsCell = row.insertCell();
+            applicationsCell.className = 'applications-cell';
+            applicationsCell.innerHTML = `
+                <button class="applications-btn-primary" data-property-id="${data.id}" data-property-data='${JSON.stringify(data).replace(/'/g, "&apos;")}'>
+                    <span class="btn-text">Applications</span>
+                </button>`;
+            
+            // Add event listener to applications button
+            applicationsCell.querySelector('.applications-btn-primary').addEventListener('click', (e) => {
+                e.stopPropagation();
+                openApplicationsModal(data.id, data);
+            });
+            
             const actionsCell = row.insertCell();
             actionsCell.className = 'actions-cell';
             actionsCell.innerHTML = `
@@ -518,6 +576,280 @@
             
             pageDOMElements.propertyModal.style.display = 'flex';
         }
+
+        // Applications functionality
+        let currentPropertyId = null;
+        let applicationsData = [];
+
+
+
+        function openApplicationsModal(propertyId, propertyData) {
+            currentPropertyId = propertyId;
+            const applicationsModal = document.getElementById('applicationsModal');
+            const applicationsModalTitle = document.getElementById('applicationsModalTitle');
+            const applicationLink = document.getElementById('applicationLink');
+            
+            applicationsModalTitle.textContent = `Applications - ${propertyData.address}`;
+            
+            // Generate unique application link
+            const baseUrl = window.location.origin;
+            const applicationUrl = `${baseUrl}/application.html?propertyId=${propertyId}&userId=${pageCurrentUserId}&applicationId=${generateUniqueId()}`;
+            applicationLink.value = applicationUrl;
+            
+            applicationsModal.style.display = 'flex';
+            loadApplications(propertyId);
+        }
+
+        function generateUniqueId() {
+            return 'app_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        function loadApplications(propertyId) {
+            if (!pageCurrentUserId || !pageDatabase) return;
+
+            const applicationsRef = commonDependencies.fbRef(pageDatabase, `applications/${pageCurrentUserId}/${propertyId}`);
+            
+            onValue(applicationsRef, (snapshot) => {
+                applicationsData = [];
+                snapshot.forEach(childSnapshot => {
+                    applicationsData.push({ id: childSnapshot.key, ...childSnapshot.val() });
+                });
+                renderApplications();
+            }, { onlyOnce: false });
+        }
+
+        function renderApplications() {
+            const applicationsList = document.getElementById('applicationsList');
+            if (!applicationsList) return;
+
+            if (applicationsData.length === 0) {
+                applicationsList.innerHTML = '<div class="no-applications">No applications submitted yet.</div>';
+                return;
+            }
+
+            applicationsList.innerHTML = applicationsData.map(app => `
+                <div class="application-item" data-application-id="${app.id}">
+                    <div class="application-header">
+                        <div class="applicant-name">${app.firstName} ${app.lastName}</div>
+                        <div class="application-date">${app.submittedAt ? new Date(app.submittedAt).toLocaleDateString() : 'N/A'}</div>
+                    </div>
+                    <div class="application-details">
+                        <div class="detail-item">
+                            <span class="label">Email:</span>
+                            <span class="value">${app.email || 'N/A'}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">Phone:</span>
+                            <span class="value">${app.phone || 'N/A'}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">Monthly Income:</span>
+                            <span class="value">${app.monthlyIncome ? `$${parseFloat(app.monthlyIncome).toLocaleString()}` : 'N/A'}</span>
+                        </div>
+                    </div>
+                    <div class="application-actions">
+                        <button class="view-btn" onclick="viewApplicationDetails('${app.id}')">View Details</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function viewApplicationDetails(applicationId) {
+            const application = applicationsData.find(app => app.id === applicationId);
+            if (!application) return;
+
+            const detailsModal = document.getElementById('applicationDetailsModal');
+            const detailsTitle = document.getElementById('applicationDetailsTitle');
+            const detailsContent = document.getElementById('applicationDetailsContent');
+
+            detailsTitle.textContent = `Application - ${application.firstName} ${application.lastName}`;
+
+            detailsContent.innerHTML = `
+                <div class="application-details-full">
+                    <div class="detail-section">
+                        <h4>Personal Information</h4>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <span class="label">Name:</span>
+                                <span class="value">${application.firstName} ${application.lastName}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Email:</span>
+                                <span class="value">${application.email}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Phone:</span>
+                                <span class="value">${application.phone}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Date of Birth:</span>
+                                <span class="value">${application.dateOfBirth}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">SSN:</span>
+                                <span class="value">${application.ssn}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Current Address:</span>
+                                <span class="value">${application.currentAddress}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <h4>Employment Information</h4>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <span class="label">Employer:</span>
+                                <span class="value">${application.employerName}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Job Title:</span>
+                                <span class="value">${application.jobTitle}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Employer Phone:</span>
+                                <span class="value">${application.employerPhone}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Monthly Income:</span>
+                                <span class="value">$${parseFloat(application.monthlyIncome).toLocaleString()}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Employer Address:</span>
+                                <span class="value">${application.employerAddress || 'N/A'}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <h4>Previous Landlord</h4>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <span class="label">Landlord Name:</span>
+                                <span class="value">${application.previousLandlordName || 'N/A'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Landlord Phone:</span>
+                                <span class="value">${application.previousLandlordPhone || 'N/A'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Previous Address:</span>
+                                <span class="value">${application.previousAddress || 'N/A'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Reason for Leaving:</span>
+                                <span class="value">${application.reasonForLeaving || 'N/A'}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <h4>References</h4>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <span class="label">Reference 1:</span>
+                                <span class="value">${application.reference1Name || 'N/A'} - ${application.reference1Phone || 'N/A'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Reference 2:</span>
+                                <span class="value">${application.reference2Name || 'N/A'} - ${application.reference2Phone || 'N/A'}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <h4>Additional Information</h4>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <span class="label">Number of Occupants:</span>
+                                <span class="value">${application.numberOfOccupants}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Move-in Date:</span>
+                                <span class="value">${application.moveInDate}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Lease Term:</span>
+                                <span class="value">${application.leaseTerm || 'N/A'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Emergency Contact:</span>
+                                <span class="value">${application.emergencyContact || 'N/A'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Additional Notes:</span>
+                                <span class="value">${application.additionalNotes || 'N/A'}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <h4>Lifestyle Information</h4>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <span class="label">Smoking:</span>
+                                <span class="value">${application.smoking ? 'Yes' : 'No'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Pets:</span>
+                                <span class="value">${application.pets ? 'Yes' : 'No'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Pet Details:</span>
+                                <span class="value">${application.petDetails || 'N/A'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Waterbed:</span>
+                                <span class="value">${application.waterbed ? 'Yes' : 'No'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Aquarium:</span>
+                                <span class="value">${application.aquarium ? 'Yes' : 'No'}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <h4>Vehicle Information</h4>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <span class="label">Vehicle:</span>
+                                <span class="value">${application.vehicleYear || ''} ${application.vehicleMake || ''} ${application.vehicleModel || ''}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Color:</span>
+                                <span class="value">${application.vehicleColor || 'N/A'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">License Plate:</span>
+                                <span class="value">${application.licensePlate || 'N/A'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">State:</span>
+                                <span class="value">${application.vehicleState || 'N/A'}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            detailsModal.style.display = 'flex';
+        }
+
+        // Copy link functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const copyLinkBtn = document.getElementById('copyLinkBtn');
+            if (copyLinkBtn) {
+                copyLinkBtn.addEventListener('click', function() {
+                    const applicationLink = document.getElementById('applicationLink');
+                    applicationLink.select();
+                    applicationLink.setSelectionRange(0, 99999);
+                    document.execCommand('copy');
+                    commonDependencies.commonShowAlert('Application link copied to clipboard!');
+                });
+            }
+        });
 
         initializeAuth(pageInit);
     </script>

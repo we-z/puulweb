@@ -587,6 +587,44 @@ exports.createStripePortalLink = functions.https.onCall(async (data, context) =>
     }
 });
 
+exports.submitApplication = functions.https.onCall(async (data, context) => {
+    if (!context.auth) {
+        throw new functions.https.HttpsError('unauthenticated', 'The function must be called while authenticated.');
+    }
+
+    const { propertyId, applicationData } = data;
+    const uid = context.auth.uid;
+
+    if (!propertyId || !applicationData) {
+        throw new functions.https.HttpsError('invalid-argument', 'Property ID and application data are required.');
+    }
+
+    try {
+        const db = admin.database();
+        const applicationRef = db.ref(`applications/${uid}/${propertyId}`);
+        
+        // Add metadata to application
+        const applicationWithMetadata = {
+            ...applicationData,
+            submittedAt: admin.database.ServerValue.TIMESTAMP,
+            status: 'pending',
+            propertyId: propertyId,
+            userId: uid
+        };
+
+        const newApplicationRef = await applicationRef.push(applicationWithMetadata);
+        
+        return { 
+            success: true, 
+            applicationId: newApplicationRef.key,
+            message: 'Application submitted successfully' 
+        };
+    } catch (error) {
+        console.error('Error submitting application:', error);
+        throw new functions.https.HttpsError('internal', 'Failed to submit application: ' + error.message);
+    }
+});
+
 exports.generateGeminiResponse = functions.https.onCall(async (data, context) => {
     if (!GEMINI_API_KEY) {
         throw new functions.https.HttpsError('failed-precondition', 'The Gemini API key is not configured.');

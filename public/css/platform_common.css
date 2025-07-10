@@ -1612,3 +1612,300 @@ html.js-loading #sidebar-container {
 .settings-section {
     background-color: #fff;
 }
+
+/* Applications Styles */
+.applications-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+    color: #6b7280;
+    transition: all 0.2s ease;
+    margin: 0 4px;
+}
+
+.applications-btn:hover {
+    color: #1f2937;
+    background-color: #f3f4f6;
+}
+
+.applications-btn .icon {
+    width: 18px;
+    height: 18px;
+}
+
+/* New Applications Button Styles */
+.applications-cell {
+    text-align: center;
+    padding: 8px;
+}
+
+.applications-btn-primary {
+    background: #1a202c;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-width: 120px;
+    margin: 0 auto;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.applications-btn-primary:hover {
+    background: #2d3748;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.applications-btn-primary:active {
+    background: #1a202c;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.applications-btn-primary .btn-text {
+    font-weight: 500;
+    letter-spacing: 0.01em;
+}
+
+/* Responsive design for applications button */
+@media (max-width: 768px) {
+    .applications-btn-primary {
+        padding: 8px 12px;
+        font-size: 0.8rem;
+        min-width: 100px;
+    }
+    
+    .applications-btn-primary .btn-text {
+        display: block;
+    }
+}
+
+.applications-header {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.application-link-section {
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.application-link-section h4 {
+    margin: 0 0 10px 0;
+    color: #1a202c;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.application-link-section p {
+    margin: 0 0 15px 0;
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.link-container {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.link-container input {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    background: white;
+    color: #374151;
+}
+
+.copy-btn {
+    background: #1f2937;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.copy-btn:hover {
+    background: #374151;
+}
+
+.applications-list {
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.applications-list h4 {
+    margin: 0 0 20px 0;
+    color: #1a202c;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.no-applications {
+    text-align: center;
+    color: #6b7280;
+    font-style: italic;
+    padding: 40px 20px;
+}
+
+.application-item {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 15px;
+    transition: all 0.2s ease;
+}
+
+.application-item:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: #cbd5e0;
+}
+
+.application-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.applicant-name {
+    font-weight: 600;
+    color: #1a202c;
+    font-size: 1.1rem;
+}
+
+.application-date {
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.application-details {
+    margin-bottom: 15px;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+.detail-item .label {
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.detail-item .value {
+    color: #1a202c;
+    font-weight: 500;
+}
+
+.application-actions {
+    text-align: right;
+}
+
+.view-btn {
+    background: #1f2937;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.view-btn:hover {
+    background: #374151;
+}
+
+/* Application Details Modal */
+.application-details-full {
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.detail-section {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.detail-section h4 {
+    margin: 0 0 15px 0;
+    color: #1a202c;
+    font-size: 1.2rem;
+    font-weight: 600;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 8px;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.detail-grid .detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.detail-grid .detail-item .label {
+    font-size: 0.85rem;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.detail-grid .detail-item .value {
+    font-size: 0.95rem;
+    color: #1a202c;
+    font-weight: 500;
+}
+
+@media (max-width: 768px) {
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .application-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .link-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .copy-btn {
+        width: 100%;
+    }
+}

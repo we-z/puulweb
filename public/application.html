@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rental Application - Puul Platform</title>
+    <link rel="stylesheet" href="/css/platform_common.css">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: #f8fafc;
+            color: #1a202c;
+            line-height: 1.6;
+            width: 100%;
+            overflow-y: auto;
+        }
+
+        .application-container {
+            width: 100%;
+            min-height: 100vh;
+            overflow-y: auto;
+        }
+
+        .application-header {
+            background: #ffffff;
+            border-bottom: 1px solid #f0f0f0;
+            padding: 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            width: 100%;
+        }
+
+        .header-top {
+            width: 100%;
+            padding: 2.5rem 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        @media (max-width: 768px) {
+            .header-top {
+                padding: 1.5rem 1rem;
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .brand {
+                gap: 0.5rem;
+            }
+
+            .brand h1 {
+                font-size: 1.75rem;
+            }
+
+            .logo {
+                width: 2.5rem;
+                height: 2.5rem;
+            }
+
+            .header-subtitle p {
+                font-size: 1rem;
+            }
+
+            .status-badge {
+                padding: 0.5rem 1rem;
+                font-size: 0.8rem;
+            }
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo {
+            width: 3.5rem;
+            height: 3.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .logo:hover {
+            transform: translateY(-2px);
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+        }
+
+        .brand h1 {
+            margin: 0;
+            font-size: 2.25rem;
+            font-weight: 600;
+            color: #1a202c;
+            line-height: 1.2;
+            letter-spacing: -0.025em;
+        }
+
+        .header-subtitle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0.5rem 3rem 0 3rem;
+        }
+
+        .header-subtitle p {
+            margin: 0;
+            font-size: 1.2rem;
+            color: #64748b;
+            font-weight: 500;
+            letter-spacing: 0.025em;
+            text-align: center;
+        }
+
+        .status-badge {
+            background: #f8fafc;
+            color: #475569;
+            padding: 0.75rem 1.5rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border: 1px solid #e2e8f0;
+            letter-spacing: 0.025em;
+            white-space: nowrap;
+        }
+
+        .application-content {
+            width: 100%;
+            padding: 0;
+            overflow-y: auto;
+        }
+
+        .content-wrapper {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 3rem;
+            width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .content-wrapper {
+                padding: 1.5rem 1rem;
+            }
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+            width: 100%;
+        }
+
+        @media (max-width: 1200px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+        }
+
+        .form-section {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+            border: 1px solid #f1f5f9;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            transform: scale(1);
+        }
+
+        @media (max-width: 768px) {
+            .form-section {
+                padding: 1.5rem;
+                border-radius: 16px;
+            }
+        }
+
+        .form-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #1a202c 0%, #2d3748 100%);
+            border-radius: 20px 20px 0 0;
+        }
+
+        .form-section:hover {
+            transform: scale(1.02);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12);
+        }
+
+        .form-section h3 {
+            margin: 0 0 1.5rem 0;
+            color: #1a202c;
+            font-size: 1.5rem;
+            font-weight: 600;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 0.75rem;
+            position: relative;
+        }
+
+
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-row.full-width {
+            grid-template-columns: 1fr;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+                margin-bottom: 0.75rem;
+            }
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.9rem;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #ffffff;
+            color: #1a202c;
+        }
+
+        @media (max-width: 768px) {
+            .form-group input,
+            .form-group select,
+            .form-group textarea {
+                padding: 0.875rem;
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+        }
+
+        .form-group input:hover,
+        .form-group select:hover,
+        .form-group textarea:hover {
+            border-color: #cbd5e0;
+            background: #fafbfc;
+            transform: translateY(-1px);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #1a202c;
+            box-shadow: 0 0 0 4px rgba(26, 32, 44, 0.08);
+            background: #ffffff;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+            cursor: pointer;
+        }
+
+        .checkbox-group:hover {
+            background: #f8fafc;
+            border-color: #e2e8f0;
+            transform: translateX(4px) scale(1.02);
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin: 0;
+            accent-color: #1a202c;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            font-weight: 500;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .checkbox-group:hover label {
+            color: #1a202c;
+        }
+
+        .submit-section {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+            border: 1px solid #f1f5f9;
+            margin-top: 2rem;
+            position: relative;
+            overflow: hidden;
+            transform: scale(1);
+            transition: all 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .submit-section {
+                padding: 2rem 1.5rem;
+                border-radius: 16px;
+                margin-top: 1.5rem;
+            }
+        }
+
+        .submit-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #1a202c 0%, #2d3748 100%);
+            border-radius: 20px 20px 0 0;
+        }
+
+        .submit-section:hover {
+            transform: scale(1.02);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12);
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+            color: white;
+            border: none;
+            padding: 1.25rem 4rem;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 24px rgba(26, 32, 44, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        @media (max-width: 768px) {
+            .submit-btn {
+                padding: 1rem 2rem;
+                font-size: 1rem;
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(26, 32, 44, 0.3);
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .success-message {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #059669;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+
+        .success-message h2 {
+            margin: 0 0 1rem 0;
+            font-size: 2rem;
+        }
+
+        .success-message p {
+            margin: 0;
+            font-size: 1.1rem;
+            opacity: 0.8;
+        }
+
+        .error-message {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .required-field::after {
+            content: " *";
+            color: #dc2626;
+        }
+
+
+    </style>
+</head>
+<body>
+    <div class="application-container">
+        <div class="application-header">
+            <div class="header-top">
+                <div class="brand">
+                    <div class="logo">
+                        <img src="https://firebasestorage.googleapis.com/v0/b/puul-app.appspot.com/o/puul-logo.svg?alt=media&token=aac48fcb-cc8d-4af8-9744-c7eca1e7cf04" alt="Puul Logo">
+                    </div>
+                    <h1>Puul</h1>
+                </div>
+                <div class="header-subtitle">
+                    <p id="propertyAddress">Rental Application</p>
+                </div>
+                <div class="status-badge">Application Form</div>
+            </div>
+            
+        </div>
+
+        <div id="applicationForm" class="application-content">
+            <div class="content-wrapper">
+            <form id="rentalApplicationForm">
+                <div class="form-grid">
+                    <!-- Personal Information -->
+                    <div class="form-section">
+                        <h3>Personal Information</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="firstName" class="required-field">First Name</label>
+                                <input type="text" id="firstName" name="firstName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="lastName" class="required-field">Last Name</label>
+                                <input type="text" id="lastName" name="lastName" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="email" class="required-field">Email Address</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone" class="required-field">Phone Number</label>
+                                <input type="tel" id="phone" name="phone" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="dateOfBirth" class="required-field">Date of Birth</label>
+                                <input type="date" id="dateOfBirth" name="dateOfBirth" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="ssn" class="required-field">Social Security Number</label>
+                                <input type="text" id="ssn" name="ssn" required placeholder="XXX-XX-XXXX">
+                            </div>
+                        </div>
+                        <div class="form-row full-width">
+                            <div class="form-group">
+                                <label for="currentAddress" class="required-field">Current Address</label>
+                                <textarea id="currentAddress" name="currentAddress" required placeholder="Street address, city, state, zip"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Employment Information -->
+                    <div class="form-section">
+                        <h3>Employment Information</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="employerName" class="required-field">Employer Name</label>
+                                <input type="text" id="employerName" name="employerName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="jobTitle" class="required-field">Job Title</label>
+                                <input type="text" id="jobTitle" name="jobTitle" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="employerPhone" class="required-field">Employer Phone</label>
+                                <input type="tel" id="employerPhone" name="employerPhone" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="monthlyIncome" class="required-field">Monthly Income</label>
+                                <input type="number" id="monthlyIncome" name="monthlyIncome" required min="0" step="0.01">
+                            </div>
+                        </div>
+                        <div class="form-row full-width">
+                            <div class="form-group">
+                                <label for="employerAddress">Employer Address</label>
+                                <textarea id="employerAddress" name="employerAddress" placeholder="Street address, city, state, zip"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <!-- Previous Landlord Information -->
+                    <div class="form-section">
+                        <h3>Previous Landlord Information</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="previousLandlordName">Previous Landlord Name</label>
+                                <input type="text" id="previousLandlordName" name="previousLandlordName">
+                            </div>
+                            <div class="form-group">
+                                <label for="previousLandlordPhone">Previous Landlord Phone</label>
+                                <input type="tel" id="previousLandlordPhone" name="previousLandlordPhone">
+                            </div>
+                        </div>
+                        <div class="form-row full-width">
+                            <div class="form-group">
+                                <label for="previousAddress">Previous Address</label>
+                                <textarea id="previousAddress" name="previousAddress" placeholder="Street address, city, state, zip"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row full-width">
+                            <div class="form-group">
+                                <label for="reasonForLeaving">Reason for Leaving Previous Residence</label>
+                                <textarea id="reasonForLeaving" name="reasonForLeaving" placeholder="Please explain why you're moving"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- References -->
+                    <div class="form-section">
+                        <h3>References</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="reference1Name">Reference 1 Name</label>
+                                <input type="text" id="reference1Name" name="reference1Name">
+                            </div>
+                            <div class="form-group">
+                                <label for="reference1Phone">Reference 1 Phone</label>
+                                <input type="tel" id="reference1Phone" name="reference1Phone">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="reference2Name">Reference 2 Name</label>
+                                <input type="text" id="reference2Name" name="reference2Name">
+                            </div>
+                            <div class="form-group">
+                                <label for="reference2Phone">Reference 2 Phone</label>
+                                <input type="tel" id="reference2Phone" name="reference2Phone">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <!-- Additional Information -->
+                    <div class="form-section">
+                        <h3>Additional Information</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="numberOfOccupants" class="required-field">Number of Occupants</label>
+                                <input type="number" id="numberOfOccupants" name="numberOfOccupants" required min="1" max="10">
+                            </div>
+                            <div class="form-group">
+                                <label for="moveInDate" class="required-field">Desired Move-in Date</label>
+                                <input type="date" id="moveInDate" name="moveInDate" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="leaseTerm">Preferred Lease Term</label>
+                                <select id="leaseTerm" name="leaseTerm">
+                                    <option value="">Select lease term</option>
+                                    <option value="6 months">6 months</option>
+                                    <option value="12 months">12 months</option>
+                                    <option value="18 months">18 months</option>
+                                    <option value="24 months">24 months</option>
+                                    <option value="Month-to-month">Month-to-month</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="emergencyContact">Emergency Contact</label>
+                                <input type="text" id="emergencyContact" name="emergencyContact">
+                            </div>
+                        </div>
+                        <div class="form-row full-width">
+                            <div class="form-group">
+                                <label for="additionalNotes">Additional Notes</label>
+                                <textarea id="additionalNotes" name="additionalNotes" placeholder="Any additional information you'd like to share"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lifestyle Questions -->
+                    <div class="form-section">
+                        <h3>Lifestyle Information</h3>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="smoking" name="smoking">
+                            <label for="smoking">Do you smoke?</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="pets" name="pets">
+                            <label for="pets">Do you have pets?</label>
+                        </div>
+                        <div class="form-group">
+                            <label for="petDetails">Pet Details (if applicable)</label>
+                            <textarea id="petDetails" name="petDetails" placeholder="Type, breed, age, weight"></textarea>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="waterbed" name="waterbed">
+                            <label for="waterbed">Do you have a waterbed?</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="aquarium" name="aquarium">
+                            <label for="aquarium">Do you have an aquarium?</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <!-- Vehicle Information -->
+                    <div class="form-section">
+                        <h3>Vehicle Information</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="vehicleMake">Vehicle Make</label>
+                                <input type="text" id="vehicleMake" name="vehicleMake">
+                            </div>
+                            <div class="form-group">
+                                <label for="vehicleModel">Vehicle Model</label>
+                                <input type="text" id="vehicleModel" name="vehicleModel">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="vehicleYear">Vehicle Year</label>
+                                <input type="number" id="vehicleYear" name="vehicleYear" min="1900" max="2030">
+                            </div>
+                            <div class="form-group">
+                                <label for="vehicleColor">Vehicle Color</label>
+                                <input type="text" id="vehicleColor" name="vehicleColor">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="licensePlate">License Plate</label>
+                                <input type="text" id="licensePlate" name="licensePlate">
+                            </div>
+                            <div class="form-group">
+                                <label for="vehicleState">State</label>
+                                <input type="text" id="vehicleState" name="vehicleState">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Empty section for balance -->
+                    <div class="form-section" style="visibility: hidden;">
+                        <h3>Placeholder</h3>
+                        <p>This section is hidden for layout balance.</p>
+                    </div>
+                </div>
+
+                <div class="submit-section">
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        <span id="submitText">Submit Application</span>
+                        <span id="submitLoading" class="loading" style="display: none;"></span>
+                    </button>
+                </div>
+            </form>
+            </div>
+        </div>
+
+        <div id="successMessage" class="success-message" style="display: none;">
+            <h2>Application Submitted!</h2>
+            <p>Thank you for your application. We will review it and contact you soon.</p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { getDatabase, ref, push, serverTimestamp, get } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCTJnqW7xH0TpvDUEv73HWaVWp46bpIV9k",
+            authDomain: "puul-app.firebaseapp.com",
+            databaseURL: "https://puul-app-default-rtdb.firebaseio.com",
+            projectId: "puul-app",
+            storageBucket: "puul-app.appspot.com",
+            messagingSenderId: "155293676322",
+            appId: "1:155293676322:web:100962810832e88305ab7b"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // Get URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const propertyId = urlParams.get('propertyId');
+        const userId = urlParams.get('userId');
+        const applicationId = urlParams.get('applicationId');
+
+        console.log('URL Parameters:', { propertyId, userId, applicationId });
+
+        if (!propertyId || !userId) {
+            document.body.innerHTML = '<div style="text-align: center; padding: 50px; color: #dc2626;"><h2>Invalid Application Link</h2><p>This application link is invalid or has expired.</p></div>';
+        }
+
+        // Load property information
+        async function loadPropertyInfo() {
+            try {
+                console.log('Loading property info for:', userId, propertyId);
+                
+                // Use Firebase Realtime Database reference
+                const propertyRef = ref(database, `properties/${userId}/${propertyId}`);
+                const snapshot = await get(propertyRef);
+                const propertyData = snapshot.val();
+                
+                console.log('Property data:', propertyData);
+                
+                if (propertyData) {
+                    const addressElement = document.getElementById('propertyAddress');
+                    let propertyText = `Rental Application - ${propertyData.address || 'Property Information'}`;
+                    
+                    // Add more property details if available
+                    if (propertyData.type) {
+                        propertyText += ` - ${propertyData.type}`;
+                    }
+                    if (propertyData.bedrooms && propertyData.bathrooms) {
+                        propertyText += ` (${propertyData.bedrooms} bed, ${propertyData.bathrooms} bath)`;
+                    }
+                    if (propertyData.squareFootage) {
+                        propertyText += ` - ${propertyData.squareFootage} sq ft`;
+                    }
+                    if (propertyData.yearBuilt) {
+                        propertyText += ` - Built ${propertyData.yearBuilt}`;
+                    }
+                    
+                    addressElement.textContent = propertyText;
+                    console.log('Set property text to:', propertyText);
+                } else {
+                    document.getElementById('propertyAddress').textContent = 'Rental Application';
+                    console.log('No property data found');
+                }
+                            } catch (error) {
+                    console.error('Error loading property info:', error);
+                    document.getElementById('propertyAddress').textContent = 'Rental Application';
+                }
+        }
+
+        // Handle form submission
+        document.getElementById('rentalApplicationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const submitText = document.getElementById('submitText');
+            const submitLoading = document.getElementById('submitLoading');
+            
+            // Show loading state
+            submitBtn.disabled = true;
+            submitText.style.display = 'none';
+            submitLoading.style.display = 'inline-block';
+
+            // Remove any existing error messages
+            const existingError = document.querySelector('.error-message');
+            if (existingError) {
+                existingError.remove();
+            }
+
+            try {
+                // Collect form data
+                const formData = new FormData(e.target);
+                const applicationData = Object.fromEntries(formData);
+
+                // Basic validation
+                const requiredFields = ['firstName', 'lastName', 'email', 'phone', 'dateOfBirth', 'ssn', 'currentAddress', 'employerName', 'jobTitle', 'employerPhone', 'monthlyIncome', 'numberOfOccupants', 'moveInDate'];
+                const missingFields = requiredFields.filter(field => !applicationData[field] || applicationData[field].trim() === '');
+                
+                if (missingFields.length > 0) {
+                    throw new Error(`Please fill in all required fields: ${missingFields.join(', ')}`);
+                }
+
+                // Email validation
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(applicationData.email)) {
+                    throw new Error('Please enter a valid email address');
+                }
+
+                // Phone validation
+                const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+                const cleanPhone = applicationData.phone.replace(/[\s\-\(\)]/g, '');
+                if (!phoneRegex.test(cleanPhone)) {
+                    throw new Error('Please enter a valid phone number');
+                }
+
+                // Income validation
+                const monthlyIncome = parseFloat(applicationData.monthlyIncome);
+                if (isNaN(monthlyIncome) || monthlyIncome <= 0) {
+                    throw new Error('Please enter a valid monthly income');
+                }
+
+                // Submit to Firebase Functions
+                const { getFunctions, httpsCallable } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
+                const functions = getFunctions(app);
+                const submitApplication = httpsCallable(functions, 'submitApplication');
+                
+                const result = await submitApplication({
+                    propertyId: propertyId,
+                    applicationData: applicationData
+                });
+
+                // Show success message
+                document.getElementById('applicationForm').style.display = 'none';
+                document.getElementById('successMessage').style.display = 'block';
+
+            } catch (error) {
+                console.error('Error submitting application:', error);
+                
+                // Show error message
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message';
+                errorDiv.textContent = error.message || 'There was an error submitting your application. Please try again.';
+                document.querySelector('.submit-section').insertBefore(errorDiv, document.querySelector('.submit-btn'));
+                
+                // Reset button state
+                submitBtn.disabled = false;
+                submitText.style.display = 'inline';
+                submitLoading.style.display = 'none';
+            }
+        });
+
+        // Initialize page
+        loadPropertyInfo();
+    </script>
+</body>
+</html> 

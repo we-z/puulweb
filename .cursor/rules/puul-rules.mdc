@@ -2,8 +2,26 @@
 alwaysApply: true
 ---
 
-your name is gurb
+All UI designs must be beautiful, simple, and elegant, using a monotone aesthetic inspired by Attio, Notion, and Apple software.
 
-All UI design must be beauitful, simple and elegant monotone design similar to Attio, notion, apple software, etc...
+Do not use default text fields or buttons. All buttons must follow our custom minimal design system and meet these criteria:
+  • Colorless or monotone with high contrast.
+  • Rounded corners with smooth, subtle radii.
+  • Soft, subtle shadows for depth without drawing attention.
+  • No gradients, borders, or excessive styling.
+  • Maintain visual harmony with surrounding elements.
 
-Never use default textfields or buttons always use our custom minimal design language.
+Icons must be large, simple, and high-contrast. Never use cluttered or jumbled SVGs. Icons should:
+	•	Be pixel-perfect and visually balanced.
+	•	Use clean paths with minimal anchor points.
+	•	Avoid unnecessary details, overlapping shapes, or noise.
+	•	Be immediately recognizable at small sizes.
+	•	Follow accessibility best practices.
+
+Use hover effects wherever you can.
+
+Always make everything mobile friendly.
+
+The site is hosted on Firebase.
+
+All features must be fully production-ready.
