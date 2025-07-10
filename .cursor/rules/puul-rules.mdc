@@ -24,4 +24,6 @@ Always make everything mobile friendly.
 
 The site is hosted on Firebase.
 
+wait untill you finish all code and rule modifcations before you run firebase deploy to save time.
+
 All features must be fully production-ready.

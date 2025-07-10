@@ -1,6 +1,7 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const axios = require("axios");
+const nodemailer = require("nodemailer");
 const { toolImplementations } = require("./tools");
 let stripe;
 
@@ -587,21 +588,176 @@ exports.createStripePortalLink = functions.https.onCall(async (data, context) =>
     }
 });
 
+// Email sending function
+async function sendApplicationEmail(applicationData, propertyData) {
+    console.log('=== EMAIL SENDING START ===');
+    console.log('Application data received:', JSON.stringify(applicationData, null, 2));
+    console.log('Property data received:', JSON.stringify(propertyData, null, 2));
+    
+    try {
+        // Check email configuration
+        const emailUser = functions.config().email?.user;
+        const emailPassword = functions.config().email?.password;
+        
+        console.log('Email config check:');
+        console.log('- Email user configured:', !!emailUser);
+        console.log('- Email password configured:', !!emailPassword);
+        
+        if (!emailUser || !emailPassword) {
+            console.error('Email configuration missing!');
+            console.log('Available config keys:', Object.keys(functions.config()));
+            throw new Error('Email configuration not set up properly');
+        }
+        
+        // Create transporter using Gmail (you can configure this with your email service)
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: emailUser,
+                pass: emailPassword
+            }
+        });
+        
+        console.log('Email transporter created successfully');
+
+        // Create HTML email content
+        const emailHtml = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>
+                    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                    .header { background: #1a202c; color: white; padding: 20px; text-align: center; }
+                    .content { padding: 20px; }
+                    .section { margin-bottom: 20px; }
+                    .section h3 { color: #1a202c; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; }
+                    .detail-item { margin-bottom: 10px; }
+                    .label { font-weight: bold; color: #4a5568; }
+                    .value { margin-left: 10px; }
+                    .footer { background: #f7fafc; padding: 20px; text-align: center; color: #64748b; }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <h1>Rental Application Confirmation</h1>
+                </div>
+                <div class="content">
+                    <p>Dear ${applicationData.firstName} ${applicationData.lastName},</p>
+                    <p>Thank you for submitting your rental application. We have received your application and will review it shortly.</p>
+                    
+                    <div class="section">
+                        <h3>Property Information</h3>
+                        <div class="detail-item">
+                            <span class="label">Address:</span>
+                            <span class="value">${propertyData?.address || 'Property Information'}</span>
+                        </div>
+                        ${propertyData?.type ? `<div class="detail-item"><span class="label">Type:</span><span class="value">${propertyData.type}</span></div>` : ''}
+                        ${propertyData?.bedrooms ? `<div class="detail-item"><span class="label">Bedrooms:</span><span class="value">${propertyData.bedrooms}</span></div>` : ''}
+                        ${propertyData?.bathrooms ? `<div class="detail-item"><span class="label">Bathrooms:</span><span class="value">${propertyData.bathrooms}</span></div>` : ''}
+                    </div>
+
+                    <div class="section">
+                        <h3>Your Application Details</h3>
+                        <div class="detail-item">
+                            <span class="label">Name:</span>
+                            <span class="value">${applicationData.firstName} ${applicationData.lastName}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">Email:</span>
+                            <span class="value">${applicationData.email}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">Phone:</span>
+                            <span class="value">${applicationData.phone}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">Monthly Income:</span>
+                            <span class="value">$${parseFloat(applicationData.monthlyIncome).toLocaleString()}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">Desired Move-in Date:</span>
+                            <span class="value">${applicationData.moveInDate}</span>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h3>Next Steps</h3>
+                        <p>We will review your application and contact you within 2-3 business days with our decision. Please ensure all information provided is accurate and complete.</p>
+                        <p>If you have any questions, please don't hesitate to contact us.</p>
+                    </div>
+                </div>
+                <div class="footer">
+                    <p>Thank you for choosing our property management services.</p>
+                    <p>Application submitted on: ${new Date().toLocaleDateString()}</p>
+                </div>
+            </body>
+            </html>
+        `;
+
+        // Send email
+        const mailOptions = {
+            from: emailUser,
+            to: applicationData.email,
+            subject: 'Rental Application Confirmation - Puul Platform',
+            html: emailHtml
+        };
+
+        console.log('Sending email with options:', {
+            from: emailUser,
+            to: applicationData.email,
+            subject: 'Rental Application Confirmation - Puul Platform'
+        });
+
+        const result = await transporter.sendMail(mailOptions);
+        console.log('=== EMAIL SENT SUCCESSFULLY ===');
+        console.log('Email message ID:', result.messageId);
+        console.log('Email response:', result);
+        return true;
+    } catch (error) {
+        console.error('=== EMAIL SENDING FAILED ===');
+        console.error('Error details:', error);
+        console.error('Error message:', error.message);
+        console.error('Error stack:', error.stack);
+        return false;
+    }
+}
+
 exports.submitApplication = functions.https.onCall(async (data, context) => {
+    console.log('=== APPLICATION SUBMISSION START ===');
+    console.log('Function called with data:', JSON.stringify(data, null, 2));
+    console.log('Context auth:', context.auth ? 'Authenticated' : 'Not authenticated');
+    
     const { propertyId, applicationData, userId } = data;
     const uid = userId || (context.auth ? context.auth.uid : null);
 
+    console.log('Extracted parameters:');
+    console.log('- propertyId:', propertyId);
+    console.log('- userId:', userId);
+    console.log('- uid:', uid);
+    console.log('- applicationData keys:', Object.keys(applicationData || {}));
+
     if (!uid) {
+        console.error('No user ID provided');
         throw new functions.https.HttpsError('invalid-argument', 'User ID is required.');
     }
 
     if (!propertyId || !applicationData) {
+        console.error('Missing required data:', { propertyId: !!propertyId, applicationData: !!applicationData });
         throw new functions.https.HttpsError('invalid-argument', 'Property ID and application data are required.');
     }
 
     try {
+        console.log('Initializing database...');
         const db = admin.database();
         const applicationRef = db.ref(`applications/${uid}/${propertyId}`);
+        
+        console.log('Fetching property information...');
+        // Get property information for email
+        const propertyRef = db.ref(`properties/${uid}/${propertyId}`);
+        const propertySnapshot = await propertyRef.once('value');
+        const propertyData = propertySnapshot.val();
+        
+        console.log('Property data retrieved:', propertyData ? 'Success' : 'No data found');
         
         // Add metadata to application
         const applicationWithMetadata = {
@@ -612,15 +768,35 @@ exports.submitApplication = functions.https.onCall(async (data, context) => {
             userId: uid
         };
 
+        console.log('Saving application to database...');
         const newApplicationRef = await applicationRef.push(applicationWithMetadata);
+        console.log('Application saved with ID:', newApplicationRef.key);
         
+        // Send confirmation email
+        console.log('Attempting to send confirmation email...');
+        try {
+            const emailResult = await sendApplicationEmail(applicationData, propertyData);
+            console.log('Email sending result:', emailResult);
+        } catch (emailError) {
+            console.error('Failed to send confirmation email:', emailError);
+            console.error('Email error details:', {
+                message: emailError.message,
+                stack: emailError.stack
+            });
+            // Don't fail the application submission if email fails
+        }
+        
+        console.log('=== APPLICATION SUBMISSION SUCCESS ===');
         return { 
             success: true, 
             applicationId: newApplicationRef.key,
             message: 'Application submitted successfully' 
         };
     } catch (error) {
-        console.error('Error submitting application:', error);
+        console.error('=== APPLICATION SUBMISSION FAILED ===');
+        console.error('Error details:', error);
+        console.error('Error message:', error.message);
+        console.error('Error stack:', error.stack);
         throw new functions.https.HttpsError('internal', 'Failed to submit application: ' + error.message);
     }
 });

@@ -443,23 +443,83 @@
 
         .success-message {
             text-align: center;
-            padding: 4rem 2rem;
-            color: #059669;
+            padding: 3rem;
             background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+            border: 1px solid #f1f5f9;
+            margin: 2rem auto;
+            max-width: 800px;
         }
 
         .success-message h2 {
-            margin: 0 0 1rem 0;
+            color: #059669;
+            margin-bottom: 1.5rem;
             font-size: 2rem;
         }
 
         .success-message p {
-            margin: 0;
+            color: #64748b;
             font-size: 1.1rem;
-            opacity: 0.8;
+            margin-bottom: 1rem;
+        }
+
+        .email-confirmation, .next-steps {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem 0;
+            text-align: left;
+            border: 1px solid #e2e8f0;
+        }
+
+        .email-confirmation h3, .next-steps h3 {
+            color: #1a202c;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .email-confirmation p {
+            color: #475569;
+            margin-bottom: 0.5rem;
+        }
+
+        .next-steps ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .next-steps li {
+            color: #475569;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .next-steps li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #059669;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .success-message {
+                padding: 2rem 1.5rem;
+                margin: 1rem;
+            }
+
+            .email-confirmation, .next-steps {
+                padding: 1.5rem;
+                margin: 1.5rem 0;
+            }
+
+            .success-message h2 {
+                font-size: 1.75rem;
+            }
         }
 
         .error-message {
@@ -748,8 +808,21 @@
         </div>
 
         <div id="successMessage" class="success-message" style="display: none;">
-            <h2>Application Submitted!</h2>
-            <p>Thank you for your application. We will review it and contact you soon.</p>
+            <h2>Application Submitted Successfully!</h2>
+            <p>Thank you for your application. We have received your submission and will review it shortly.</p>
+            <div class="email-confirmation">
+                <h3>📧 Email Confirmation</h3>
+                <p>A confirmation email has been sent to your email address with a copy of your application details.</p>
+                <p>Please check your inbox (and spam folder) for the confirmation email.</p>
+            </div>
+            <div class="next-steps">
+                <h3>Next Steps</h3>
+                <ul>
+                    <li>We will review your application within 2-3 business days</li>
+                    <li>You will receive a decision via email</li>
+                    <li>If approved, we will contact you to schedule a property viewing</li>
+                </ul>
+            </div>
         </div>
     </div>
 
@@ -878,6 +951,11 @@
                 }
 
                 // Submit to Firebase Functions
+                console.log('Submitting application to Firebase Functions...');
+                console.log('Application data:', applicationData);
+                console.log('Property ID:', propertyId);
+                console.log('User ID:', userId);
+                
                 const { getFunctions, httpsCallable } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
                 const functions = getFunctions(app);
                 const submitApplication = httpsCallable(functions, 'submitApplication');
@@ -888,6 +966,8 @@
                     userId: userId
                 });
 
+                console.log('Application submission result:', result);
+                
                 // Show success message
                 document.getElementById('applicationForm').style.display = 'none';
                 document.getElementById('successMessage').style.display = 'block';
