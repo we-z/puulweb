@@ -588,12 +588,12 @@ exports.createStripePortalLink = functions.https.onCall(async (data, context) =>
 });
 
 exports.submitApplication = functions.https.onCall(async (data, context) => {
-    if (!context.auth) {
-        throw new functions.https.HttpsError('unauthenticated', 'The function must be called while authenticated.');
-    }
+    const { propertyId, applicationData, userId } = data;
+    const uid = userId || (context.auth ? context.auth.uid : null);
 
-    const { propertyId, applicationData } = data;
-    const uid = context.auth.uid;
+    if (!uid) {
+        throw new functions.https.HttpsError('invalid-argument', 'User ID is required.');
+    }
 
     if (!propertyId || !applicationData) {
         throw new functions.https.HttpsError('invalid-argument', 'Property ID and application data are required.');
