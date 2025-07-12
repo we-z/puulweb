@@ -540,6 +540,44 @@ function setupPageLayoutAndInteractivity() {
 
     // Initialize resizable tables
     initializeResizableTables();
+
+    // Initialize skeleton loading for common elements
+    initializeSkeletonLoading();
+}
+
+// Initialize skeleton loading for tables and content areas
+function initializeSkeletonLoading() {
+    // Show skeletons for common table bodies
+    const tableBodies = document.querySelectorAll('tbody[id$="TableBody"]');
+    tableBodies.forEach(tbody => {
+        if (tbody.children.length === 0) {
+            showSkeletons(tbody, 'table', 6);
+        }
+    });
+
+    // Show skeletons for metric values
+    const metricValues = document.querySelectorAll('[id$="Value"]');
+    metricValues.forEach(metric => {
+        if (metric.textContent === '–' || metric.textContent.trim() === '') {
+            metric.innerHTML = '<span class="skeleton skeleton-block"></span>';
+        }
+    });
+
+    // Show skeletons for chart containers
+    const chartContainers = document.querySelectorAll('.chart-wrapper');
+    chartContainers.forEach(container => {
+        const canvas = container.querySelector('canvas');
+        if (canvas && canvas.style.display === 'none') {
+            // Canvas is hidden, show skeleton
+            const skeleton = container.querySelector('.skeleton');
+            if (!skeleton) {
+                const skeletonDiv = document.createElement('div');
+                skeletonDiv.className = 'skeleton skeleton-block';
+                skeletonDiv.style.height = '200px';
+                container.appendChild(skeletonDiv);
+            }
+        }
+    });
 }
 
 // --- AI Agent Chat Logic ---
@@ -1190,3 +1228,73 @@ async function toggleHistoryDropdown() {
         showAlert("Could not load chat history.");
     }
 } 
+
+// Utility: Show skeletons
+function showSkeletons(container, type = 'table', rows = 5) {
+    if (!container) return;
+    container.innerHTML = '';
+    if (type === 'table') {
+        for (let i = 0; i < rows; i++) {
+            const row = document.createElement('div');
+            row.className = 'skeleton skeleton-table-row';
+            container.appendChild(row);
+        }
+    } else if (type === 'block') {
+        for (let i = 0; i < rows; i++) {
+            const block = document.createElement('div');
+            block.className = 'skeleton skeleton-block';
+            container.appendChild(block);
+        }
+    }
+}
+// Utility: Hide skeletons
+function hideSkeletons(container) {
+    if (!container) return;
+    container.innerHTML = '';
+}
+
+// Utility: Replace skeletons with real data
+function replaceSkeletonsWithData(container, data, renderFunction) {
+    if (!container) return;
+    
+    // Hide skeletons
+    hideSkeletons(container);
+    
+    // Render real data
+    if (renderFunction && typeof renderFunction === 'function') {
+        renderFunction(container, data);
+    }
+}
+
+// Utility: Replace metric skeletons with real values
+function replaceMetricSkeletons(metricId, value) {
+    const metricElement = document.getElementById(metricId);
+    if (metricElement) {
+        const skeleton = metricElement.querySelector('.skeleton');
+        if (skeleton) {
+            skeleton.remove();
+        }
+        metricElement.textContent = value || '–';
+    }
+}
+
+// Utility: Replace chart skeletons with real charts
+function replaceChartSkeletons(chartId) {
+    const chartContainer = document.querySelector(`#${chartId}`).closest('.chart-wrapper');
+    if (chartContainer) {
+        const skeleton = chartContainer.querySelector('.skeleton');
+        const canvas = chartContainer.querySelector('canvas');
+        
+        if (skeleton && canvas) {
+            skeleton.remove();
+            canvas.style.display = '';
+        }
+    }
+}
+
+// Ensure sidebar and AI agent state is restored before showing content
+window.addEventListener('DOMContentLoaded', () => {
+    document.body.style.visibility = '';
+    document.body.style.opacity = '';
+    document.documentElement.classList.remove('initial-loading');
+}); 
