@@ -166,22 +166,22 @@
                 <div class="metrics-grid">
                     <div class="metric-item">
                         <h5>Monthly Recurring Revenue</h5>
-                        <p class="metric-value" id="monthlyRecurringRevenueValue"><span class="skeleton skeleton-block"></span></p>
+                        <p class="metric-value" id="monthlyRecurringRevenueValue">–</p>
                         <p class="metric-detail">View Report</p>
                     </div>
                     <div class="metric-item">
                         <h5>Occupancy Rate</h5>
-                        <p class="metric-value" id="occupancyRateValue"><span class="skeleton skeleton-block"></span></p>
+                        <p class="metric-value" id="occupancyRateValue">–</p>
                         <p class="metric-detail">View Report</p>
                     </div>
                     <div class="metric-item">
                         <h5>Open Maintenance Requests</h5>
-                        <p class="metric-value" id="openMaintenanceValue"><span class="skeleton skeleton-block"></span></p>
+                        <p class="metric-value" id="openMaintenanceValue">–</p>
                         <p class="metric-detail">View Requests</p>
                     </div>
                     <div class="metric-item">
                         <h5>Overdue Payments</h5>
-                        <p class="metric-value" id="overduePaymentsValue"><span class="skeleton skeleton-block"></span></p>
+                        <p class="metric-value" id="overduePaymentsValue">–</p>
                         <p class="metric-detail">View Payments</p>
                     </div>
                 </div>
@@ -194,29 +194,25 @@
                     <div class="chart-container">
                         <h5>Revenue vs Expenses</h5>
                         <div class="chart-wrapper">
-                            <div class="skeleton skeleton-block" style="height: 200px;"></div>
-                            <canvas id="revenueExpensesChart" style="display:none;"></canvas>
+                            <canvas id="revenueExpensesChart"></canvas>
                         </div>
                     </div>
                     <div class="chart-container">
                         <h5>Occupancy Trends</h5>
                         <div class="chart-wrapper">
-                            <div class="skeleton skeleton-block" style="height: 200px;"></div>
-                            <canvas id="occupancyTrendsChart" style="display:none;"></canvas>
+                            <canvas id="occupancyTrendsChart"></canvas>
                         </div>
                     </div>
                     <div class="chart-container">
                         <h5>Maintenance Requests by Priority</h5>
                         <div class="chart-wrapper">
-                            <div class="skeleton skeleton-block" style="height: 200px;"></div>
-                            <canvas id="maintenancePriorityChart" style="display:none;"></canvas>
+                            <canvas id="maintenancePriorityChart"></canvas>
                         </div>
                     </div>
                     <div class="chart-container">
                         <h5>Payment Status Distribution</h5>
                         <div class="chart-wrapper">
-                            <div class="skeleton skeleton-block" style="height: 200px;"></div>
-                            <canvas id="paymentStatusChart" style="display:none;"></canvas>
+                            <canvas id="paymentStatusChart"></canvas>
                         </div>
                     </div>
                 </div>
@@ -330,16 +326,7 @@
 
         function initializeCharts() {
             // Revenue vs Expenses Chart
-            const revenueExpensesCanvas = document.getElementById('revenueExpensesChart');
-            const revenueExpensesSkeleton = revenueExpensesCanvas.previousElementSibling;
-            
-            // Show canvas and hide skeleton
-            if (revenueExpensesSkeleton && revenueExpensesSkeleton.classList.contains('skeleton')) {
-                revenueExpensesSkeleton.remove();
-            }
-            revenueExpensesCanvas.style.display = '';
-            
-            const revenueExpensesCtx = revenueExpensesCanvas.getContext('2d');
+            const revenueExpensesCtx = document.getElementById('revenueExpensesChart').getContext('2d');
             charts.revenueExpenses = new Chart(revenueExpensesCtx, {
                 type: 'line',
                 data: {
@@ -379,16 +366,7 @@
             });
 
             // Occupancy Trends Chart
-            const occupancyTrendsCanvas = document.getElementById('occupancyTrendsChart');
-            const occupancyTrendsSkeleton = occupancyTrendsCanvas.previousElementSibling;
-            
-            // Show canvas and hide skeleton
-            if (occupancyTrendsSkeleton && occupancyTrendsSkeleton.classList.contains('skeleton')) {
-                occupancyTrendsSkeleton.remove();
-            }
-            occupancyTrendsCanvas.style.display = '';
-            
-            const occupancyTrendsCtx = occupancyTrendsCanvas.getContext('2d');
+            const occupancyTrendsCtx = document.getElementById('occupancyTrendsChart').getContext('2d');
             charts.occupancyTrends = new Chart(occupancyTrendsCtx, {
                 type: 'line',
                 data: {
@@ -421,16 +399,7 @@
             });
 
             // Maintenance Priority Chart
-            const maintenancePriorityCanvas = document.getElementById('maintenancePriorityChart');
-            const maintenancePrioritySkeleton = maintenancePriorityCanvas.previousElementSibling;
-            
-            // Show canvas and hide skeleton
-            if (maintenancePrioritySkeleton && maintenancePrioritySkeleton.classList.contains('skeleton')) {
-                maintenancePrioritySkeleton.remove();
-            }
-            maintenancePriorityCanvas.style.display = '';
-            
-            const maintenancePriorityCtx = maintenancePriorityCanvas.getContext('2d');
+            const maintenancePriorityCtx = document.getElementById('maintenancePriorityChart').getContext('2d');
             charts.maintenancePriority = new Chart(maintenancePriorityCtx, {
                 type: 'doughnut',
                 data: {
@@ -456,16 +425,7 @@
             });
 
             // Payment Status Chart
-            const paymentStatusCanvas = document.getElementById('paymentStatusChart');
-            const paymentStatusSkeleton = paymentStatusCanvas.previousElementSibling;
-            
-            // Show canvas and hide skeleton
-            if (paymentStatusSkeleton && paymentStatusSkeleton.classList.contains('skeleton')) {
-                paymentStatusSkeleton.remove();
-            }
-            paymentStatusCanvas.style.display = '';
-            
-            const paymentStatusCtx = paymentStatusCanvas.getContext('2d');
+            const paymentStatusCtx = document.getElementById('paymentStatusChart').getContext('2d');
             charts.paymentStatus = new Chart(paymentStatusCtx, {
                 type: 'pie',
                 data: {
@@ -534,19 +494,12 @@
                 const revenueData = labels.map(month => monthlyData[month].revenue);
                 const expensesData = labels.map(month => monthlyData[month].expenses);
 
-                // If no data, show empty state
-                if (labels.length === 0) {
-                    charts.revenueExpenses.data.labels = ['No data available'];
-                    charts.revenueExpenses.data.datasets[0].data = [0];
-                    charts.revenueExpenses.data.datasets[1].data = [0];
-                } else {
-                    charts.revenueExpenses.data.labels = labels.map(month => {
-                        const [year, monthNum] = month.split('-');
-                        return new Date(year, monthNum - 1).toLocaleDateString('default', { month: 'short', year: '2-digit' });
-                    });
-                    charts.revenueExpenses.data.datasets[0].data = revenueData;
-                    charts.revenueExpenses.data.datasets[1].data = expensesData;
-                }
+                charts.revenueExpenses.data.labels = labels.map(month => {
+                    const [year, monthNum] = month.split('-');
+                    return new Date(year, monthNum - 1).toLocaleDateString('default', { month: 'short', year: '2-digit' });
+                });
+                charts.revenueExpenses.data.datasets[0].data = revenueData;
+                charts.revenueExpenses.data.datasets[1].data = expensesData;
                 charts.revenueExpenses.update();
             });
 
@@ -580,17 +533,11 @@
                     const labels = Object.keys(monthlyOccupancy).sort();
                     const occupancyData = labels.map(month => (monthlyOccupancy[month] / totalUnits) * 100);
 
-                    // If no data, show empty state
-                    if (labels.length === 0) {
-                        charts.occupancyTrends.data.labels = ['No data available'];
-                        charts.occupancyTrends.data.datasets[0].data = [0];
-                    } else {
-                        charts.occupancyTrends.data.labels = labels.map(month => {
-                            const [year, monthNum] = month.split('-');
-                            return new Date(year, monthNum - 1).toLocaleDateString('default', { month: 'short', year: '2-digit' });
-                        });
-                        charts.occupancyTrends.data.datasets[0].data = occupancyData;
-                    }
+                    charts.occupancyTrends.data.labels = labels.map(month => {
+                        const [year, monthNum] = month.split('-');
+                        return new Date(year, monthNum - 1).toLocaleDateString('default', { month: 'short', year: '2-digit' });
+                    });
+                    charts.occupancyTrends.data.datasets[0].data = occupancyData;
                     charts.occupancyTrends.update();
                 });
             });
@@ -609,13 +556,6 @@
                     priorityCounts.medium,
                     priorityCounts.low
                 ];
-                
-                // If no data, show empty state
-                if (priorityCounts.high === 0 && priorityCounts.medium === 0 && priorityCounts.low === 0) {
-                    charts.maintenancePriority.data.labels = ['No maintenance requests'];
-                    charts.maintenancePriority.data.datasets[0].data = [1];
-                    charts.maintenancePriority.data.datasets[0].backgroundColor = ['#e5e7eb'];
-                }
                 charts.maintenancePriority.update();
             });
 
@@ -633,13 +573,6 @@
                     statusCounts.overdue,
                     statusCounts.pending
                 ];
-                
-                // If no data, show empty state
-                if (statusCounts.paid === 0 && statusCounts.overdue === 0 && statusCounts.pending === 0) {
-                    charts.paymentStatus.data.labels = ['No payment data'];
-                    charts.paymentStatus.data.datasets[0].data = [1];
-                    charts.paymentStatus.data.datasets[0].backgroundColor = ['#e5e7eb'];
-                }
                 charts.paymentStatus.update();
             });
         }
@@ -660,11 +593,6 @@
                     });
                 }
                 if (DOMElements.monthlyRecurringRevenueValue) {
-                    // Remove skeleton if present
-                    const skeleton = DOMElements.monthlyRecurringRevenueValue.querySelector('.skeleton');
-                    if (skeleton) {
-                        skeleton.remove();
-                    }
                     DOMElements.monthlyRecurringRevenueValue.textContent = `$${mrr.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
                 }
                 calculateAndDisplayOccupancyRate(activeLeaseCount);
@@ -683,11 +611,6 @@
                     });
                 }
                 if (DOMElements.openMaintenanceValue) {
-                    // Remove skeleton if present
-                    const skeleton = DOMElements.openMaintenanceValue.querySelector('.skeleton');
-                    if (skeleton) {
-                        skeleton.remove();
-                    }
                     DOMElements.openMaintenanceValue.textContent = openCount;
                 }
             });
@@ -704,11 +627,6 @@
                     });
                 }
                 if (DOMElements.overduePaymentsValue) {
-                    // Remove skeleton if present
-                    const skeleton = DOMElements.overduePaymentsValue.querySelector('.skeleton');
-                    if (skeleton) {
-                        skeleton.remove();
-                    }
                     DOMElements.overduePaymentsValue.textContent = `$${totalOverdue.toLocaleString()}`;
                 }
             });
@@ -729,11 +647,6 @@
                     occupancyRate = ((activeLeaseCount / totalUnits) * 100).toFixed(1) + '%';
                 }
                 if (DOMElements.occupancyRateValue) {
-                    // Remove skeleton if present
-                    const skeleton = DOMElements.occupancyRateValue.querySelector('.skeleton');
-                    if (skeleton) {
-                        skeleton.remove();
-                    }
                     DOMElements.occupancyRateValue.textContent = occupancyRate;
                 }
             });
@@ -880,10 +793,7 @@
                         });
                     });
                 }
-            } catch (error) { 
-                console.warn("Could not fetch recent leases:", error);
-            }
-            
+            } catch (error) {}
             try {
                 // Work Orders
                 const workOrdersRef = ref(pageDatabase, `workOrders/${pageCurrentUserId}`);
@@ -900,10 +810,7 @@
                         });
                     });
                 }
-            } catch (error) { 
-                console.warn("Could not fetch recent work orders:", error);
-            }
-            
+            } catch (error) {}
             try {
                 // Payments
                 const receivablesRef = ref(pageDatabase, `receivables/${pageCurrentUserId}`);
@@ -919,10 +826,7 @@
                         });
                     });
                 }
-            } catch (error) { 
-                console.warn("Could not fetch recent payments:", error);
-            }
-            
+            } catch (error) {}
             // Sort and display
             activities.sort((a, b) => b.timestamp - a.timestamp);
             if (activities.length > 0) {
@@ -944,4 +848,4 @@
         initializeAuth(pageInit);
     </script>
 </body>
-</html>
+</html> 
