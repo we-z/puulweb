@@ -138,7 +138,6 @@
     .main-btn {
       position: absolute;
       top: 10%;
-      transform: translateY(-50%);
       background-color: black;
       color: white;
       border: 2px solid #000;
@@ -153,9 +152,12 @@
     .main-btn:hover {
       background-color: transparent;
       color: black;
-      scale: 1.1;
+      transform: scale(1.1);
     }
     /* Styling for the Get Started button specifically, if needed for arrow */
+    .image-container .main-btn {
+      transition: transform 0.5s ease !important;
+    }
     .image-container .main-btn .css-cmnm65 {
       display: flex;
       align-items: center;
@@ -164,13 +166,11 @@
     }
     .image-container .main-btn .movingText {
       position: relative;
-      transition: transform 0.3s ease;
     }
     .image-container .main-btn:hover .movingText {
       transform: translateX(-5px);
     }
     .image-container .main-btn svg {
-      transition: transform 0.3s ease;
       width: 24px; /* Adjust size as needed */
       height: 24px; /* Adjust size as needed */
     }
