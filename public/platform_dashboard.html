@@ -504,43 +504,59 @@
             });
 
             // Load Occupancy Trends data
-            const leasesRef = ref(pageDatabase, `leases/${pageCurrentUserId}`);
-            const leasesQuery = query(leasesRef, orderByChild('startDate'), limitToLast(12));
-            onValue(leasesQuery, (snapshot) => {
-                const monthlyOccupancy = {};
-                let totalUnits = 0;
-
-                // First, get total units from properties
-                const propertiesRef = ref(pageDatabase, `properties/${pageCurrentUserId}`);
-                onValue(propertiesRef, (propertiesSnapshot) => {
-                    propertiesSnapshot.forEach(property => {
-                        totalUnits += parseInt(property.val().numberOfUnits) || 1;
-                    });
-
-                    // Then calculate occupancy rates
-                    snapshot.forEach(lease => {
-                        const leaseData = lease.val();
-                        const startDate = new Date(leaseData.startDate);
-                        const endDate = new Date(leaseData.endDate);
-                        const monthKey = `${startDate.getFullYear()}-${startDate.getMonth() + 1}`;
-                        
-                        if (!monthlyOccupancy[monthKey]) {
-                            monthlyOccupancy[monthKey] = 0;
-                        }
-                        monthlyOccupancy[monthKey]++;
-                    });
-
-                    const labels = Object.keys(monthlyOccupancy).sort();
-                    const occupancyData = labels.map(month => (monthlyOccupancy[month] / totalUnits) * 100);
-
-                    charts.occupancyTrends.data.labels = labels.map(month => {
-                        const [year, monthNum] = month.split('-');
-                        return new Date(year, monthNum - 1).toLocaleDateString('default', { month: 'short', year: '2-digit' });
-                    });
-                    charts.occupancyTrends.data.datasets[0].data = occupancyData;
-                    charts.occupancyTrends.update();
+            // --- BEGIN FIX ---
+            // Generate last 12 months labels (ending with current month)
+            const months = [];
+            const now = new Date();
+            for (let i = 11; i >= 0; i--) {
+                const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                months.push({
+                    key: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`,
+                    start: new Date(d.getFullYear(), d.getMonth(), 1),
+                    end: new Date(d.getFullYear(), d.getMonth() + 1, 0)
                 });
+            }
+
+            // Get all leases and all properties, then calculate occupancy for each month
+            const leasesRef = ref(pageDatabase, `leases/${pageCurrentUserId}`);
+            const propertiesRef = ref(pageDatabase, `properties/${pageCurrentUserId}`);
+            // Fetch all leases and properties once
+            const [leasesSnap, propertiesSnap] = await Promise.all([
+                get(leasesRef),
+                get(propertiesRef)
+            ]);
+            let totalUnits = 0;
+            if (propertiesSnap.exists()) {
+                propertiesSnap.forEach(property => {
+                    totalUnits += parseInt(property.val().numberOfUnits) || 1;
+                });
+            }
+            // Prepare leases array
+            const leases = [];
+            if (leasesSnap.exists()) {
+                leasesSnap.forEach(lease => {
+                    const l = lease.val();
+                    // Only consider leases with status 'Active' and valid dates
+                    if (l.status === 'Active' && l.startDate && l.endDate) {
+                        leases.push({
+                            startDate: new Date(l.startDate),
+                            endDate: new Date(l.endDate)
+                        });
+                    }
+                });
+            }
+            // For each month, count how many leases were active
+            const occupancyData = months.map(month => {
+                const count = leases.filter(l => l.startDate <= month.end && l.endDate >= month.start).length;
+                return totalUnits > 0 ? (count / totalUnits) * 100 : 0;
             });
+            // Update chart
+            charts.occupancyTrends.data.labels = months.map(month => {
+                return month.start.toLocaleDateString('default', { month: 'short', year: '2-digit' });
+            });
+            charts.occupancyTrends.data.datasets[0].data = occupancyData;
+            charts.occupancyTrends.update();
+            // --- END FIX ---
 
             // Load Maintenance Priority data
             const workOrdersRef = ref(pageDatabase, `workOrders/${pageCurrentUserId}`);
@@ -580,23 +596,50 @@
         async function loadKeyMetrics() {
             if (!pageCurrentUserId || !pageDatabase) return;
 
-            // Monthly Recurring Revenue & Active Leases for Occupancy
+            // Monthly Recurring Revenue & Occupancy Rate for Current Month
             const leasesRef = ref(pageDatabase, `leases/${pageCurrentUserId}`);
-            const activeLeasesQuery = query(leasesRef, orderByChild('status'), equalTo('Active'));
-            onValue(activeLeasesQuery, (snapshot) => {
-                let mrr = 0;
-                let activeLeaseCount = 0;
-                if (snapshot.exists()) {
-                    activeLeaseCount = snapshot.size;
-                    snapshot.forEach(childSnapshot => {
-                        mrr += parseFloat(childSnapshot.val().rentAmount) || 0;
-                    });
-                }
-                if (DOMElements.monthlyRecurringRevenueValue) {
-                    DOMElements.monthlyRecurringRevenueValue.textContent = `$${mrr.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-                }
-                calculateAndDisplayOccupancyRate(activeLeaseCount);
-            });
+            const propertiesRef = ref(pageDatabase, `properties/${pageCurrentUserId}`);
+            // Fetch all leases and properties once
+            const [leasesSnap, propertiesSnap] = await Promise.all([
+                get(leasesRef),
+                get(propertiesRef)
+            ]);
+            let mrr = 0;
+            let totalUnits = 0;
+            let activeLeasesThisMonth = 0;
+            const now = new Date();
+            const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+            const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            if (propertiesSnap.exists()) {
+                propertiesSnap.forEach(property => {
+                    totalUnits += parseInt(property.val().numberOfUnits) || 1;
+                });
+            }
+            if (leasesSnap.exists()) {
+                leasesSnap.forEach(childSnapshot => {
+                    const l = childSnapshot.val();
+                    // Only consider leases with status 'Active' and valid dates
+                    if (l.status === 'Active' && l.startDate && l.endDate) {
+                        const leaseStart = new Date(l.startDate);
+                        const leaseEnd = new Date(l.endDate);
+                        // Lease is active at any point in the current month
+                        if (leaseStart <= monthEnd && leaseEnd >= monthStart) {
+                            activeLeasesThisMonth++;
+                            mrr += parseFloat(l.rentAmount) || 0;
+                        }
+                    }
+                });
+            }
+            if (DOMElements.monthlyRecurringRevenueValue) {
+                DOMElements.monthlyRecurringRevenueValue.textContent = `$${mrr.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            }
+            let occupancyRate = "0%";
+            if (totalUnits > 0) {
+                occupancyRate = ((activeLeasesThisMonth / totalUnits) * 100).toFixed(1) + '%';
+            }
+            if (DOMElements.occupancyRateValue) {
+                DOMElements.occupancyRateValue.textContent = occupancyRate;
+            }
 
             // Open Maintenance Requests
             const workOrdersRef = ref(pageDatabase, `workOrders/${pageCurrentUserId}`);

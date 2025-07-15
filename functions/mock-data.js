@@ -320,12 +320,28 @@ const getMockDataForUser = (uid, userEmail, userDisplayName) => {
     // Helper to generate IDs
     const generateIds = (prefix, count) => Array.from({ length: count }, (_, i) => `${prefix}_${i + 1}`);
 
+    // Tenant names for mock data
+    const tenantNames = [
+        'Alice Johnson', 'Bob Williams', 'Charlie Brown', 'Diana Miller', 'Ethan Davis',
+        'Fiona Garcia', 'George Rodriguez', 'Hannah Martinez', 'Ian Hernandez', 'Jane Lopez',
+        'Kevin Scott', 'Laura Green', 'Mike Adams', 'Nancy Baker', 'Oscar Nelson',
+        'Patty Carter', 'Quincy Mitchell', 'Rachel Perez', 'Steve Roberts', 'Tina Turner',
+        'Ursula Evans', 'Victor Phillips', 'Wendy Campbell', 'Xavier Parker', 'Yvonne Edwards'
+    ];
+
     // Generate IDs for all entities
     const propertyIds = generateIds('prop', 15);
-    const tenantIds = generateIds('tenant', 25);
+    // Dynamically size lease/tenant arrays to cover all possible units (plus buffer for expired/future leases)
+    let tempTotalUnits = 0;
+    propertyIds.forEach((id, i) => {
+        const isMultiFamily = (i % 5) === 1;
+        tempTotalUnits += isMultiFamily ? (10 + i) : 1;
+    });
+    const maxLeases = Math.ceil(tempTotalUnits * 1.2); // 20% buffer
+    const tenantIds = generateIds('tenant', maxLeases);
+    const leaseIds = generateIds('lease', maxLeases);
     const ownerIds = generateIds('owner', 5);
     const vendorIds = generateIds('vendor', 10);
-    const leaseIds = generateIds('lease', 25);
     const workOrderIds = generateIds('wo', 50);
     const glAccountIds = generateIds('gl', 20);
     const bankAccountIds = generateIds('bank', 5);
@@ -358,21 +374,131 @@ const getMockDataForUser = (uid, userEmail, userDisplayName) => {
 
     // Properties
     const propertyTypes = ['Single Family Home', 'Multi-Family Building', 'Apartment Unit', 'Commercial Storefront', 'Condominium'];
+    let totalUnits = 0;
     propertyIds.forEach((id, i) => {
         const isMultiFamily = (i % propertyTypes.length) === 1;
-        data.properties[id] = { address: `${100 + i * 12} Maple St, Springfield, IL 62704`, type: propertyTypes[i % propertyTypes.length], numberOfUnits: isMultiFamily ? (10 + i) : 1, squareFootage: 1200 + i * 200, yearBuilt: 1980 + i * 5, bedrooms: isMultiFamily ? 0 : (2 + i % 3), bathrooms: isMultiFamily ? 0 : (1.5 + ((i % 3) * 0.5)), purchasePrice: 150000 + i * 25000, marketValue: 180000 + i * 30000, purchaseDate: `2015-0${(i%12)+1}-15`, status: i < 12 ? 'Occupied' : 'Vacant', userId: uid, createdAt: Date.now() - (365 * 24 * 60 * 60 * 1000 * (5-i)), updatedAt: Date.now() };
+        const units = isMultiFamily ? (10 + i) : 1;
+        totalUnits += units;
+        data.properties[id] = {
+            address: `${100 + i * 12} Maple St, Springfield, IL 62704`,
+            type: propertyTypes[i % propertyTypes.length],
+            numberOfUnits: units,
+            squareFootage: 1200 + i * 200,
+            yearBuilt: 1980 + i * 5,
+            bedrooms: isMultiFamily ? 0 : (2 + i % 3),
+            bathrooms: isMultiFamily ? 0 : (1.5 + ((i % 3) * 0.5)),
+            purchasePrice: 150000 + i * 25000,
+            marketValue: 180000 + i * 30000,
+            purchaseDate: `2015-0${(i%12)+1}-15`,
+            status: 'Occupied', // We'll set actual occupancy via leases
+            userId: uid,
+            createdAt: Date.now() - (365 * 24 * 60 * 60 * 1000 * (5-i)),
+            updatedAt: Date.now()
+        };
     });
 
-    // Tenants & Leases
-    const tenantNames = ['Alice Johnson', 'Bob Williams', 'Charlie Brown', 'Diana Miller', 'Ethan Davis', 'Fiona Garcia', 'George Rodriguez', 'Hannah Martinez', 'Ian Hernandez', 'Jane Lopez', 'Kevin Scott', 'Laura Green', 'Mike Adams', 'Nancy Baker', 'Oscar Nelson', 'Patty Carter', 'Quincy Mitchell', 'Rachel Perez', 'Steve Roberts', 'Tina Turner', 'Ursula Evans', 'Victor Phillips', 'Wendy Campbell', 'Xavier Parker', 'Yvonne Edwards'];
-    leaseIds.forEach((id, i) => {
-        const startDate = new Date(); startDate.setFullYear(startDate.getFullYear() - 1); startDate.setMonth(i % 12);
-        const endDate = new Date(startDate); endDate.setFullYear(endDate.getFullYear() + 1);
-        const status = i < 20 ? 'Active' : (i < 23 ? 'Expired' : 'Future');
-        const leaseData = { tenants: tenantNames[i], propertyId: propertyIds[i % propertyIds.length], startDate: startDate.toISOString().split('T')[0], endDate: endDate.toISOString().split('T')[0], rentAmount: 1200 + i * 50, status, isDelinquent: (i % 7 === 0 && status === 'Active'), delinquentAmount: (i % 7 === 0 && status === 'Active') ? (150 + i * 10) : 0, userId: uid, createdAt: startDate.getTime(), updatedAt: Date.now() };
-        data.leases[id] = leaseData;
-        data.tenants[tenantIds[i]] = { fullName: tenantNames[i], email: `tenant${i}@example.com`, phone: `555-010${i}`, propertyId: propertyIds[i % propertyIds.length], leaseId: id, userId: uid };
+    // --- OCCUPANCY TREND LOGIC ---
+    // We want occupancy to go up and to the right, ending at 90% of total units.
+    const months = [];
+    const now = new Date();
+    for (let i = 11; i >= 0; i--) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        months.push({
+            key: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`,
+            start: new Date(d.getFullYear(), d.getMonth(), 1),
+            end: new Date(d.getFullYear(), d.getMonth() + 1, 0)
+        });
+    }
+    // Target occupancy rates: start at 70%, end at 90%, with random upward variation
+    const minOcc = 0.70, maxOcc = 0.90;
+    let lastRate = minOcc;
+    const occRates = months.map((_, i) => {
+        // Add a little random upward bump, but always increase
+        if (i === 0) return lastRate;
+        let bump = 0.01 + Math.random() * 0.03; // 1-4% bump
+        let next = Math.min(maxOcc, lastRate + bump);
+        // Ensure last month is exactly maxOcc
+        if (i === months.length - 1) next = maxOcc;
+        lastRate = next;
+        return next;
     });
+    const occTargets = occRates.map(r => Math.round(r * totalUnits));
+
+    // --- LEASES ---
+    // We'll create enough leases so that for each month, the number of active leases matches occTargets.
+    // We'll stagger lease start/end dates so that each month, more leases become active.
+    const leaseLengthMonths = 12; // All leases are 12 months for simplicity
+    let leaseIdx = 0;
+    let tenantIdx = 0;
+    let leaseStartBase = new Date(now.getFullYear(), now.getMonth() - leaseLengthMonths + 1, 1);
+    for (let m = 0; m < months.length; m++) {
+        const needed = occTargets[m] - (m === 0 ? 0 : occTargets[m-1]);
+        for (let j = 0; j < needed; j++) {
+            if (leaseIdx >= leaseIds.length || tenantIdx >= tenantIds.length) break;
+            const leaseId = leaseIds[leaseIdx];
+            const tenantId = tenantIds[tenantIdx];
+            // Lease starts at the beginning of this month, ends 12 months later
+            const startDate = new Date(months[m].start);
+            const endDate = new Date(startDate);
+            endDate.setMonth(endDate.getMonth() + leaseLengthMonths);
+            const status = (endDate >= now && startDate <= now) ? 'Active' : (endDate < now ? 'Expired' : 'Future');
+            const leaseData = {
+                tenants: tenantNames[tenantIdx % tenantNames.length],
+                propertyId: propertyIds[(leaseIdx) % propertyIds.length],
+                startDate: startDate.toISOString().split('T')[0],
+                endDate: endDate.toISOString().split('T')[0],
+                rentAmount: 1200 + leaseIdx * 50,
+                status,
+                isDelinquent: false,
+                delinquentAmount: 0,
+                userId: uid,
+                createdAt: startDate.getTime(),
+                updatedAt: Date.now()
+            };
+            data.leases[leaseId] = leaseData;
+            data.tenants[tenantId] = {
+                fullName: tenantNames[tenantIdx % tenantNames.length],
+                email: `tenant${tenantIdx}@example.com`,
+                phone: `555-010${tenantIdx}`,
+                propertyId: leaseData.propertyId,
+                leaseId: leaseId,
+                userId: uid
+            };
+            leaseIdx++;
+            tenantIdx++;
+        }
+    }
+    // Fill remaining leases as expired/future for realism
+    for (; leaseIdx < leaseIds.length && tenantIdx < tenantIds.length; leaseIdx++, tenantIdx++) {
+        const leaseId = leaseIds[leaseIdx];
+        const tenantId = tenantIds[tenantIdx];
+        const startDate = new Date(now.getFullYear(), now.getMonth() - 24 + leaseIdx, 1);
+        const endDate = new Date(startDate);
+        endDate.setMonth(endDate.getMonth() + leaseLengthMonths);
+        const status = (endDate >= now && startDate <= now) ? 'Active' : (endDate < now ? 'Expired' : 'Future');
+        const leaseData = {
+            tenants: tenantNames[tenantIdx % tenantNames.length],
+            propertyId: propertyIds[(leaseIdx) % propertyIds.length],
+            startDate: startDate.toISOString().split('T')[0],
+            endDate: endDate.toISOString().split('T')[0],
+            rentAmount: 1200 + leaseIdx * 50,
+            status,
+            isDelinquent: false,
+            delinquentAmount: 0,
+            userId: uid,
+            createdAt: startDate.getTime(),
+            updatedAt: Date.now()
+        };
+        data.leases[leaseId] = leaseData;
+        data.tenants[tenantId] = {
+            fullName: tenantNames[tenantIdx % tenantNames.length],
+            email: `tenant${tenantIdx}@example.com`,
+            phone: `555-010${tenantIdx}`,
+            propertyId: leaseData.propertyId,
+            leaseId: leaseId,
+            userId: uid
+        };
+    }
     
     // Work Orders
     const woStatuses = ['Open', 'In Progress', 'Closed', 'On Hold'];
@@ -384,17 +510,40 @@ const getMockDataForUser = (uid, userEmail, userDisplayName) => {
         data.workOrders[id] = { title: `Repair in Unit ${i+1}`, description: `Tenant reported an issue.`, propertyId: propertyIds[i % propertyIds.length], status, priority: woPriorities[i % woPriorities.length], createdAt, updatedAt: closed ? createdAt + (5 * 24 * 60 * 60 * 1000) : createdAt, completedDate: closed ? new Date(createdAt + (5 * 24 * 60 * 60 * 1000)).toISOString().split('T')[0] : null, cost: closed ? (50 + i * 5) : 0, userId: uid };
     });
 
-    // Financial Transactions (for charts)
+    // --- TRANSACTIONS (for charts) ---
+    // For each of the last 12 months, sum the rentAmount of all leases active in that month, and use that as the total income for that month.
+    const monthlyMRR = [];
+    for (let i = 0; i < 12; i++) {
+        const month = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const monthStart = new Date(month.getFullYear(), month.getMonth(), 1);
+        const monthEnd = new Date(month.getFullYear(), month.getMonth() + 1, 0);
+        // Find all leases active in this month
+        let mrr = 0;
+        Object.values(data.leases).forEach(l => {
+            const leaseStart = new Date(l.startDate);
+            const leaseEnd = new Date(l.endDate);
+            if (l.status === 'Active' && leaseStart <= monthEnd && leaseEnd >= monthStart) {
+                mrr += parseFloat(l.rentAmount) || 0;
+            }
+        });
+        monthlyMRR.push(mrr);
+    }
+    // Now generate transactions so that the sum of Income for each month matches monthlyMRR
     for (let i = 0; i < 12; i++) { // Last 12 months, i=0 is current month, i=11 is 11 months ago
         const date = new Date();
         date.setMonth(date.getMonth() - i);
-
-        let monthlyRevenue = 0;
-        // Income: higher in more recent months, with slight fluctuations
-        for (let j = 0; j < 15; j++) { // 15 rental payments per month
-            let rentAmount = (1200 + ((11 - i) * 50)) + (j * 20); // Base rent increases as i gets smaller
-            rentAmount *= (1 + (Math.random() - 0.5) * 0.1); // Add +/- 5% random fluctuation
-            monthlyRevenue += rentAmount;
+        const incomeTotal = monthlyMRR[i];
+        const numPayments = 15; // Number of income transactions per month
+        let distributed = 0;
+        for (let j = 0; j < numPayments; j++) {
+            // Distribute the income, last payment gets the remainder for perfect sum
+            let rentAmount;
+            if (j === numPayments - 1) {
+                rentAmount = incomeTotal - distributed;
+            } else {
+                rentAmount = Math.round((incomeTotal / numPayments + (Math.random() - 0.5) * 0.05 * incomeTotal) * 100) / 100;
+                distributed += rentAmount;
+            }
             data.transactions[`inc_${i}_${j}`] = {
                 date: new Date(date.getFullYear(), date.getMonth(), 1).toISOString().split('T')[0],
                 type: 'Income',
@@ -404,10 +553,9 @@ const getMockDataForUser = (uid, userEmail, userDisplayName) => {
                 userId: uid,
             };
         }
-
         // Expenses: a percentage of revenue, ensuring they are always lower and slightly increasing over time.
         const expenseRatio = 0.35 + ((11 - i) * 0.01); // Expenses are ~35% of revenue in oldest month, up to ~46% in newest
-        const monthlyExpenses = monthlyRevenue * expenseRatio;
+        const monthlyExpenses = incomeTotal * expenseRatio;
         const expenseCategories = ['Maintenance', 'Utilities', 'Management Fees', 'Taxes', 'Insurance'];
         for (let j = 0; j < 5; j++) {
             const expenseAmount = (monthlyExpenses / 5) * (1 + (Math.random() - 0.5) * 0.2); // Add some randomness
