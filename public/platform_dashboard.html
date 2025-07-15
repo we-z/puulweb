@@ -103,24 +103,113 @@
             grid-template-columns: repeat(2, 1fr);
             gap: 24px;
             margin-top: 24px;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+        @media (max-width: 1024px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+        }
+        @media (max-width: 600px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
         }
         .chart-container {
             background: white;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            max-width: 100%;
+            min-width: 0;
+            min-height: 220px;
+            overflow: hidden;
+            position: relative;
+            resize: none;
+            transition: box-shadow 0.2s;
+            width: 100%;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+        .chart-container:focus-within, .chart-container:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.13);
+        }
+        .chart-wrapper {
+            position: relative;
+            height: 300px;
+            width: 100%;
+            max-width: 100%;
+            min-width: 120px;
+            min-height: 180px;
+            overflow: auto;
+            transition: height 0.2s, width 0.2s;
+        }
+        .chart-resizer {
+            position: absolute;
+            right: 8px;
+            bottom: 8px;
+            width: 28px;
+            height: 28px;
+            cursor: nwse-resize;
+            z-index: 2;
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-end;
+            opacity: 0.7;
+            background: none;
+            border-radius: 8px;
+            transition: background 0.15s, opacity 0.15s;
+        }
+        .chart-resizer:hover, .chart-resizer:active {
+            background: rgba(0,0,0,0.04);
+            opacity: 1;
+        }
+        .chart-resizer svg {
+            width: 22px;
+            height: 22px;
+            display: block;
+            stroke: #222;
+            stroke-width: 2.2;
+            fill: none;
         }
         .chart-container h5 {
             margin: 0 0 16px 0;
             color: #1e293b;
         }
-        .chart-wrapper {
-            position: relative;
-            height: 300px;
-        }
         @media (max-width: 1024px) {
             .charts-grid {
                 grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            .chart-container {
+                min-width: 0;
+                width: 100%;
+                max-width: 100vw;
+                padding: 10px;
+            }
+            .chart-wrapper {
+                min-width: 0;
+                width: 100%;
+                min-height: 160px;
+                height: 220px;
+            }
+            .chart-resizer {
+                width: 24px;
+                height: 24px;
             }
         }
         .activity-modal-btn {
@@ -195,24 +284,36 @@
                         <h5>Revenue vs Expenses</h5>
                         <div class="chart-wrapper">
                             <canvas id="revenueExpensesChart"></canvas>
+                            <div class="chart-resizer" tabindex="0" aria-label="Resize chart" title="Resize chart">
+                                <svg viewBox="0 0 24 24"><polyline points="6,24 24,24 24,6"/></svg>
+                            </div>
                         </div>
                     </div>
                     <div class="chart-container">
                         <h5>Occupancy Trends</h5>
                         <div class="chart-wrapper">
                             <canvas id="occupancyTrendsChart"></canvas>
+                            <div class="chart-resizer" tabindex="0" aria-label="Resize chart" title="Resize chart">
+                                <svg viewBox="0 0 24 24"><polyline points="6,24 24,24 24,6"/></svg>
+                            </div>
                         </div>
                     </div>
                     <div class="chart-container">
                         <h5>Maintenance Requests by Priority</h5>
                         <div class="chart-wrapper">
                             <canvas id="maintenancePriorityChart"></canvas>
+                            <div class="chart-resizer" tabindex="0" aria-label="Resize chart" title="Resize chart">
+                                <svg viewBox="0 0 24 24"><polyline points="6,24 24,24 24,6"/></svg>
+                            </div>
                         </div>
                     </div>
                     <div class="chart-container">
                         <h5>Payment Status Distribution</h5>
                         <div class="chart-wrapper">
                             <canvas id="paymentStatusChart"></canvas>
+                            <div class="chart-resizer" tabindex="0" aria-label="Resize chart" title="Resize chart">
+                                <svg viewBox="0 0 24 24"><polyline points="6,24 24,24 24,6"/></svg>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -887,6 +988,48 @@
                 activityModalList.innerHTML = '<li>No recent activity to display. Some data may be unavailable due to permissions.</li>';
             }
         }
+
+        // Add chart resizer logic for all chart containers
+        document.querySelectorAll('.chart-container').forEach(container => {
+            const wrapper = container.querySelector('.chart-wrapper');
+            const resizer = container.querySelector('.chart-resizer');
+            let isResizing = false;
+            let startX, startY, startWidth, startHeight;
+
+            function onMouseDown(e) {
+                e.preventDefault();
+                isResizing = true;
+                startX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
+                startY = e.type.startsWith('touch') ? e.touches[0].clientY : e.clientY;
+                startWidth = wrapper.offsetWidth;
+                startHeight = wrapper.offsetHeight;
+                document.body.style.userSelect = 'none';
+            }
+            function onMouseMove(e) {
+                if (!isResizing) return;
+                const clientX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
+                const clientY = e.type.startsWith('touch') ? e.touches[0].clientY : e.clientY;
+                let newWidth = Math.max(180, Math.min(container.offsetWidth, startWidth + (clientX - startX)));
+                let newHeight = Math.max(160, startHeight + (clientY - startY));
+                wrapper.style.width = newWidth + 'px';
+                wrapper.style.height = newHeight + 'px';
+                // Resize Chart.js chart if present
+                const canvas = wrapper.querySelector('canvas');
+                if (canvas && canvas.chart) {
+                    canvas.chart.resize();
+                }
+            }
+            function onMouseUp() {
+                isResizing = false;
+                document.body.style.userSelect = '';
+            }
+            resizer.addEventListener('mousedown', onMouseDown);
+            resizer.addEventListener('touchstart', onMouseDown, {passive: false});
+            window.addEventListener('mousemove', onMouseMove);
+            window.addEventListener('touchmove', onMouseMove, {passive: false});
+            window.addEventListener('mouseup', onMouseUp);
+            window.addEventListener('touchend', onMouseUp);
+        });
 
         initializeAuth(pageInit);
     </script>
