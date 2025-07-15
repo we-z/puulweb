@@ -132,6 +132,11 @@
                         <p>Permanently delete your account and all associated data. This action cannot be undone.</p>
                         <button id="deleteAccountBtn" class="btn-danger">Delete My Account</button>
                     </div>
+                    <div class="form-group">
+                        <label>Reset Demo Data</label>
+                        <p>Clear all your platform data and reload fresh demo data instantly. This will not affect your account or subscription.</p>
+                        <button id="resetDemoDataBtn" class="btn-primary">Reset Demo Data</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -389,6 +394,38 @@
                                 common.showAlert(message, "Error");
                             }
                         }
+                    }
+                });
+            }
+            // Reset Demo Data Button
+            const resetDemoDataBtn = document.getElementById('resetDemoDataBtn');
+            if (resetDemoDataBtn) {
+                resetDemoDataBtn.addEventListener('click', async () => {
+                    const confirmed = await common.showConfirm(
+                        "This will permanently delete all your platform data (properties, leases, tenants, etc.) and reload fresh demo data. Your account and subscription will NOT be affected. Continue?",
+                        "Reset Demo Data"
+                    );
+                    if (!confirmed) return;
+                    try {
+                        common.showAlert("Resetting your data. Please wait...");
+                        // Remove all user data except the user record
+                        const db = getDatabase();
+                        const uid = pageCurrentUser.uid;
+                        const pathsToClear = [
+                            'properties', 'tenants', 'owners', 'vendors', 'leases', 'workOrders', 'glAccounts', 'bankAccounts', 'calendarEvents', 'iotDevices', 'transactions', 'receivables', 'payables', 'recurringWorkOrders', 'inspections', 'unitTurns', 'projects', 'purchaseOrders', 'inventory', 'fixedAssets', 'scheduledReports', 'surveys', 'letters', 'forms', 'conversations', 'messages', 'userProfile', 'notificationPreferences', 'applicationSettings'
+                        ];
+                        // Remove all relevant data for this user
+                        const removePromises = pathsToClear.map(path => set(ref(db, `${path}/${uid}`), null));
+                        await Promise.all(removePromises);
+                        // Call populateUserData cloud function
+                        const functions = getFunctions();
+                        const populateUserData = httpsCallable(functions, 'populateUserData');
+                        await populateUserData();
+                        common.showAlert("Demo data has been reset! Reloading page...");
+                        setTimeout(() => window.location.reload(), 1200);
+                    } catch (error) {
+                        console.error("Error resetting demo data:", error);
+                        common.showAlert("Failed to reset demo data. Please try again or contact support.", "Error");
                     }
                 });
             }
