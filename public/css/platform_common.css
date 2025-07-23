@@ -132,10 +132,11 @@ body {
     margin-right: 10px;
     width: 20px;
     height: 20px;
-    transition: margin 0.3s ease;
-    /* Icons can remain visible if desired when collapsed */
-    /* Ensure they are not affected by the opacity:0 of their parent containers if so */
-    /* For now, they will be hidden by .sidebar.collapsed > * */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    /* Vertically center icon with text */
 }
 
 .nav-menu li a:hover,
